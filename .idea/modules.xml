@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/LavaBot.iml" filepath="$PROJECT_DIR$/.idea/modules/LavaBot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/LavaBot_main.iml" filepath="$PROJECT_DIR$/.idea/modules/LavaBot_main.iml" group="LavaBot" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/LavaBot_test.iml" filepath="$PROJECT_DIR$/.idea/modules/LavaBot_test.iml" group="LavaBot" />
+    </modules>
+  </component>
+</project>
