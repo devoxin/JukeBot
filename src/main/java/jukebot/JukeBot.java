@@ -40,7 +40,7 @@ public class JukeBot {
             } catch(Exception ignored) {
                 System.out.println("[" + (i + 1) + "/" + MaxShards + "] failed to login");
             }
-            Thread.sleep(5000);
+            Thread.sleep(5500);
         }
 
     }
