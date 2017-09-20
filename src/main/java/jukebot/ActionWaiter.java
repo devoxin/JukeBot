@@ -3,6 +3,7 @@ package jukebot;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
+import jukebot.utils.Parsers;
 import jukebot.utils.TrackAction;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
@@ -44,13 +45,10 @@ public class ActionWaiter extends ListenerAdapter {
         TrackAction t = U2M.get(e.getAuthor().getId());
         U2M.remove(e.getAuthor().getId());
 
-        int i = -1;
+        int i = Parsers.Number(e.getMessage().getContent(), -1);
 
-        try {
-            i = Integer.parseInt(e.getMessage().getContent());
-        } catch (Exception err) {
+        if (i == -1)
             t.m.delete().queue();
-        }
 
         if (i >= 0 && i <= t.tracks.size()) {
             if (e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE))

@@ -12,8 +12,6 @@ public class Shard {
     public JDA jda;
 
     Shard(int shardId, int totalShards, String token) throws Exception {
-        System.out.println("Launching shard " + (shardId + 1) + "/" + totalShards);
-
         final JDABuilder jdab = new JDABuilder(AccountType.BOT)
                 .setToken(token)
                 .setAutoReconnect(true)
@@ -24,7 +22,7 @@ public class Shard {
                 .useSharding(shardId, totalShards)
                 .setGame(Game.of(Bot.defaultPrefix + "help | " + Bot.VERSION + " | [" + (shardId + 1) + "/" + totalShards + "]"));
 
-        System.out.println("Logging in...");
+        System.out.println("[" + (shardId + 1) + "/" + totalShards + "] Logging in...");
         this.jda = jdab.buildAsync();
     }
 }

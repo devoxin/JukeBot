@@ -14,5 +14,5 @@ dependencies {
     compile 'net.dv8tion:JDA:3.3.0_273'
     compile 'com.sedmelluq:lavaplayer:1.2.43'
     compile 'com.sedmelluq:jda-nas:1.0.5'
-    compile 'org.xerial:sqlite-jdbc:3.8.6'
+    compile 'org.xerial:sqlite-jdbc:3.20.0'
 }

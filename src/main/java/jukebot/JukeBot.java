@@ -29,19 +29,18 @@ public class JukeBot {
 
         Bot.Configure();
 
-        try {
+        final int MaxShards = Integer.parseInt(db.getPropertyFromConfig("maxshards"));
+        final String token = db.getPropertyFromConfig("token");
 
-            final int MaxShards = Integer.parseInt(db.getPropertyFromConfig("maxshards"));
-            final String token = db.getPropertyFromConfig("token");
+        shards = new Shard[MaxShards];
 
-            shards = new Shard[MaxShards];
-
-            for (int i = 0; i < MaxShards; i++) {
+        for (int i = 0; i < MaxShards; i++) {
+            try {
                 shards[i] = new Shard(i, MaxShards, token);
-                Thread.sleep(5000);
+            } catch(Exception ignored) {
+                System.out.println("[" + (i + 1) + "/" + MaxShards + "] failed to login");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            Thread.sleep(5000);
         }
 
     }
