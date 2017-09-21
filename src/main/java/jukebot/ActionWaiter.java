@@ -13,42 +13,26 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class ActionWaiter extends ListenerAdapter {
 
-    private HashMap<String, TrackAction> U2M = new HashMap<>();
+    public static HashMap<String, TrackAction> UserManagers = new HashMap<>();
 
     public void AddAction(String userID, Message m, List<AudioTrack> tracks, GuildMusicManager manager) {
-        if (!U2M.containsKey(userID)) {
-            U2M.put(userID, new TrackAction(m, tracks, manager));
-            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
-            executor.schedule(() -> {
-                if (U2M.containsKey(userID)) {
-                    U2M.remove(userID);
-                    m.delete().queue();
-                }
-                executor.shutdown();
-            }, 10, TimeUnit.SECONDS);
-        }
+        if (!UserManagers.containsKey(userID))
+            UserManagers.put(userID, new TrackAction(m, tracks, manager, userID));
     }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
 
-        if (!U2M.containsKey(e.getAuthor().getId()) || e.getGuild() == null)
+        if (!UserManagers.containsKey(e.getAuthor().getId()) || e.getGuild() == null)
             return;
 
-        TrackAction t = U2M.get(e.getAuthor().getId());
-        U2M.remove(e.getAuthor().getId());
+        TrackAction t = UserManagers.remove(e.getAuthor().getId());
+        t.waiter.shutdown();
 
         int i = Parsers.Number(e.getMessage().getContent(), -1);
-
-        if (i == -1)
-            t.m.delete().queue();
 
         if (i >= 0 && i <= t.tracks.size()) {
             if (e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE))
@@ -73,7 +57,8 @@ public class ActionWaiter extends ListenerAdapter {
             } else {
                 t.m.delete().queue();
             }
-
+        } else {
+            t.m.delete().queue();
         }
 
         super.onMessageReceived(e);
