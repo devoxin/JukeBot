@@ -61,6 +61,7 @@ public class Play implements Command {
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
 
         if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
+            Bot.Log("Connecting to " + e.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
             audioManager.openAudioConnection(e.getMember().getVoiceState().getChannel());
             audioManager.setSelfDeafened(true);
             musicManager.handler.setChannel(e.getTextChannel());

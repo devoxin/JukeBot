@@ -22,7 +22,7 @@ public class DatabaseHandler {
 
         } catch (Exception e) {
 
-            System.out.println("Failed to retrieve server prefix");
+            Bot.Log("Failed to retrieve server prefix", Bot.LOGTYPE.ERROR);
             return Bot.defaultPrefix;
 
         }
@@ -51,8 +51,7 @@ public class DatabaseHandler {
             }
 
         } catch (Exception e) {
-
-            System.out.println("Failed to update server prefix");
+            Bot.Log("Failed to update server prefix", Bot.LOGTYPE.ERROR);
             return false;
 
         }
@@ -82,7 +81,7 @@ public class DatabaseHandler {
 
         } catch (Exception e) {
 
-            System.out.println("Failed to update user tier");
+            Bot.Log("Failed to update user tier", Bot.LOGTYPE.ERROR);
             return false;
 
         }
@@ -105,7 +104,7 @@ public class DatabaseHandler {
 
         } catch (Exception e) {
 
-            System.out.println("Failed to retrieve user tier");
+            Bot.Log("Failed to retrieve user tier", Bot.LOGTYPE.ERROR);
             return "0";
 
         }
@@ -127,8 +126,7 @@ public class DatabaseHandler {
                 return null;
 
         } catch (Exception e) {
-
-            System.out.println("Failed to retrieve config property");
+            Bot.Log("Failed to retrieve config property", Bot.LOGTYPE.ERROR);
             return null;
 
         }

@@ -22,7 +22,7 @@ public class Shard {
                 .useSharding(shardId, totalShards)
                 .setGame(Game.of(Bot.defaultPrefix + "help | " + Bot.VERSION + " | [" + (shardId + 1) + "/" + totalShards + "]"));
 
-        System.out.println("[" + (shardId + 1) + "/" + totalShards + "] Logging in...");
+        Bot.Log("[" + (shardId + 1) + "/" + totalShards + "] Logging in...", Bot.LOGTYPE.INFORMATION);
         this.jda = jdab.buildAsync();
     }
 }

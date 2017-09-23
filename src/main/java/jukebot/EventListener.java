@@ -74,6 +74,7 @@ public class EventListener extends ListenerAdapter {
             return;
 
         if (e.getMessage().getMentionedUsers().contains(e.getJDA().getSelfUser()) && permissions.canPost(e.getTextChannel())) {
+            Bot.Log("Received mention from " + e.getAuthor().getName(), Bot.LOGTYPE.INFORMATION);
             if (e.getMessage().getContent().contains("help")) {
                 e.getTextChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
@@ -115,11 +116,12 @@ public class EventListener extends ListenerAdapter {
         if (!permissions.canPost(e.getTextChannel())) {
             final PrivateChannel DMChannel = e.getAuthor().openPrivateChannel().complete();
             DMChannel.sendMessage("I cannot send messages/embed links in " + e.getTextChannel().getAsMention() + "\nSwitch to another channel.")
-                    .queue(null, error -> System.out.println("Unable to DM " + e.getAuthor().getName() + "\n" + error.getMessage()));
+                    .queue(null, error -> Bot.Log("Couldn't DM " + e.getAuthor().getName(), Bot.LOGTYPE.WARNING));
             return;
         }
 
-        commands.get(command.toLowerCase()).execute(e, query);
+        Bot.Log("Executing command '" + command + "' with args '" + query + "' from " + e.getAuthor().getName(), Bot.LOGTYPE.INFORMATION);
+        commands.get(command).execute(e, query);
 
         super.onMessageReceived(e);
     }

@@ -20,12 +20,11 @@ public class JukeBot {
     private static Shard[] shards;
 
     public static void main(String[] args) throws Exception {
-        System.out.println(
-                ".:: JukeBot " + Bot.VERSION + " ::.\n" +
-                "JDA Version: " + JDAInfo.VERSION + "\n" +
-                "Lavaplayer Version: " + PlayerLibrary.VERSION + "\n" +
-                "SQLite Version: " + SQLiteJDBCLoader.getVersion()
-        );
+        Bot.Log(".:: JukeBot " + Bot.VERSION + " ::.\n" +
+                ":: JDA: " + JDAInfo.VERSION + "\n" +
+                ":: Lavaplayer: " + PlayerLibrary.VERSION + "\n" +
+                ":: SQLite: " + SQLiteJDBCLoader.getVersion(),
+                Bot.LOGTYPE.INFORMATION);
 
         Bot.Configure();
 
@@ -38,7 +37,7 @@ public class JukeBot {
             try {
                 shards[i] = new Shard(i, MaxShards, token);
             } catch(Exception ignored) {
-                System.out.println("[" + (i + 1) + "/" + MaxShards + "] failed to login");
+                Bot.Log("[" + (i + 1) + "/" + MaxShards + "] failed to login", Bot.LOGTYPE.ERROR);
             }
             Thread.sleep(5500);
         }

@@ -78,6 +78,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public void playNext(AudioTrack track) {
+        Bot.Log("Playing next track in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
         playNextCalled = true;
         try {
             AudioTrack nextTrack = null;
@@ -99,6 +100,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 this.player.startTrack(nextTrack, false);
 
             } else {
+                Bot.Log("Queue ended in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
                 this.player.stopTrack();
                 this.player.setVolume(100);
                 if (permissions.canPost(this.channel)) {
@@ -109,6 +111,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                             .build()
                     ).queue();
                 }
+                Bot.Log("Terminating AudioConnection in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
                 Helpers.ScheduleClose(this.channel.getGuild().getAudioManager());
                 //this.channel.getGuild().getAudioManager().closeAudioConnection();
                 this.repeat = false;

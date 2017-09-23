@@ -12,6 +12,7 @@ public class Helpers {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.schedule(() -> {
             manager.closeAudioConnection();
+            Bot.Log("Terminated AudioConnection in " + manager.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
             executor.shutdown();
         }, 1, TimeUnit.SECONDS);
     }
