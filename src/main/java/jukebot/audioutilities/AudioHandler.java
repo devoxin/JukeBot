@@ -78,7 +78,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public void playNext(AudioTrack track) {
-        Bot.Log("Playing next track in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
         playNextCalled = true;
         try {
             AudioTrack nextTrack = null;
@@ -98,7 +97,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
             if (nextTrack != null) {
                 this.player.startTrack(nextTrack, false);
-
+                Bot.Log("Playing next track in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
             } else {
                 Bot.Log("Queue ended in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
                 this.player.stopTrack();
@@ -109,7 +108,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                             .setTitle("Queue Concluded!")
                             .setDescription("[Support JukeBot and receive some awesome benefits!](https://www.patreon.com/Devoxin)")
                             .build()
-                    ).queue();
+                    ).queue(null, e -> Bot.Log("Failed to post 'QUEUE_END' message to channel " + this.channel.getId(), Bot.LOGTYPE.WARNING));
                 }
                 Bot.Log("Terminating AudioConnection in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
                 Helpers.ScheduleClose(this.channel.getGuild().getAudioManager());
@@ -146,7 +145,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                     .setTitle("Now Playing")
                     .setDescription(track.getInfo().title)
                     .build()
-            ).queue();
+            ).queue(null, e -> Bot.Log("Failed to post 'NOW_PLAYING' message to channel " + this.channel.getId(), Bot.LOGTYPE.WARNING));
         }
     }
 
@@ -158,7 +157,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                     .setTitle("Unable to Play Track")
                     .setDescription(exception.getLocalizedMessage())
                     .build()
-            ).queue();
+            ).queue(null, e -> Bot.Log("Failed to post 'TRACK_ERROR' message to channel " + this.channel.getId(), Bot.LOGTYPE.WARNING));
         }
         playNext(null);
     }
