@@ -46,11 +46,11 @@ public class Permissions {
     }
 
     public boolean canPost(TextChannel channel) {
-        return channel.canTalk() && channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_READ, Permission.MESSAGE_EMBED_LINKS);
+        return channel.canTalk() && channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_EMBED_LINKS);
     }
 
     public boolean canConnect(VoiceChannel channel) {
-        return channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VIEW_CHANNEL);
+        return channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK);
     }
 
 
