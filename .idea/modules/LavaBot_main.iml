@@ -13,6 +13,8 @@
     <orderEntry type="library" name="Gradle: com.sedmelluq:lavaplayer:1.2.43" level="project" />
     <orderEntry type="library" name="Gradle: com.sedmelluq:jda-nas:1.0.5" level="project" />
     <orderEntry type="library" name="Gradle: org.xerial:sqlite-jdbc:3.20.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-core:2.8.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-slf4j-impl:2.8.2" level="project" />
     <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:3.0.2" level="project" />
     <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.commons:commons-collections4:4.1" level="project" />
@@ -29,6 +31,7 @@
     <orderEntry type="library" name="Gradle: org.jsoup:jsoup:1.10.1" level="project" />
     <orderEntry type="library" name="Gradle: net.iharder:base64:2.3.9" level="project" />
     <orderEntry type="library" name="Gradle: com.sedmelluq:udp-queue:1.0.6" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.logging.log4j:log4j-api:2.8.2" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.okio:okio:1.13.0" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.httpcomponents:httpcore:4.4.4" level="project" />
     <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.2" level="project" />

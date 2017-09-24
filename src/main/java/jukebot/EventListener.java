@@ -1,18 +1,15 @@
 package jukebot;
 
 import jukebot.commands.*;
-import jukebot.commands.Queue;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
-import java.awt.*;
 import java.util.HashMap;
 
 import static jukebot.utils.Bot.LOG;
@@ -23,8 +20,6 @@ public class EventListener extends ListenerAdapter {
     private final DatabaseHandler db = new DatabaseHandler();
     private static HashMap<String, Command> commands = new HashMap<>();
     private static HashMap<String, String> aliases = new HashMap<>();
-
-    private static boolean hasFired = false;
 
     EventListener() {
         commands.put("play", new Play());
@@ -125,7 +120,6 @@ public class EventListener extends ListenerAdapter {
         LOG.debug("Executing command '" + command + "' with args '" + query + "' from " + e.getAuthor().getName());
         commands.get(command).execute(e, query);
 
-        super.onMessageReceived(e);
     }
 
     @Override
@@ -135,18 +129,6 @@ public class EventListener extends ListenerAdapter {
         if (bots / (double) e.getGuild().getMembers().size() > 0.6)
             e.getGuild().leave().queue();
 
-        super.onGuildJoin(e);
-    }
-
-    @Override
-    public void onReady(ReadyEvent e) {
-        if (!hasFired && e.getJDA().getSelfUser().getId().equals("314145804807962634")) {
-            hasFired = true;
-            Bot.EmbedColour = Color.decode("#FDD744");
-        }
-
-
-        super.onReady(e);
     }
 
 }

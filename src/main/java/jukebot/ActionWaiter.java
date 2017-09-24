@@ -30,7 +30,7 @@ public class ActionWaiter extends ListenerAdapter {
             return;
 
         TrackAction t = UserManagers.remove(e.getAuthor().getId());
-        t.waiter.shutdown();
+        t.waiter.shutdownNow();
 
         int i = Parsers.Number(e.getMessage().getContent(), -1);
 
@@ -61,7 +61,6 @@ public class ActionWaiter extends ListenerAdapter {
             t.m.delete().queue();
         }
 
-        super.onMessageReceived(e);
     }
 
 }
