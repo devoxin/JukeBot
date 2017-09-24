@@ -9,7 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Gradle: net.dv8tion:JDA:3.3.1_278" level="project" />
+    <orderEntry type="library" name="Gradle: net.dv8tion:JDA:3.3.1_280" level="project" />
     <orderEntry type="library" name="Gradle: com.sedmelluq:lavaplayer:1.2.43" level="project" />
     <orderEntry type="library" name="Gradle: com.sedmelluq:jda-nas:1.0.5" level="project" />
     <orderEntry type="library" name="Gradle: org.xerial:sqlite-jdbc:3.20.0" level="project" />
