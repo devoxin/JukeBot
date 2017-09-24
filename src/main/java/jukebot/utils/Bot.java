@@ -7,6 +7,8 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import jukebot.ActionWaiter;
 import jukebot.DatabaseHandler;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 
 import java.awt.*;
@@ -17,15 +19,20 @@ import java.util.Date;
 public class Bot {
 
     private static final DatabaseHandler db = new DatabaseHandler();
-    public static final SessionReconnectQueue reconnectQueue = new SessionReconnectQueue();
+    private static final SessionReconnectQueue reconnectQueue = new SessionReconnectQueue();
     public static ActionWaiter waiter = new ActionWaiter();
 
-    public static final String VERSION = "6.0.20";
+    public static final String VERSION = "6.0.21";
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
 
     private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+    public static JDABuilder builder = new JDABuilder(AccountType.BOT)
+            .setToken(db.getPropertyFromConfig("token"))
+            .setReconnectQueue(Bot.reconnectQueue)
+            .addEventListener(waiter);
 
     public static void Configure() {
         final String colour = db.getPropertyFromConfig("colour");
@@ -67,6 +74,12 @@ public class Bot {
         ERROR,
         WARNING,
         INFORMATION
+    }
+
+    public enum REPEATMODE {
+        SINGLE,
+        ALL,
+        NONE
     }
 
 }
