@@ -9,7 +9,7 @@ import jukebot.utils.Command;
 import jukebot.utils.Parsers;
 import jukebot.utils.Time;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.List;
 
@@ -17,13 +17,13 @@ public class Queue implements Command {
 
     private final DatabaseHandler db = new DatabaseHandler();
 
-    public void execute(MessageReceivedEvent e, String query) {
+    public void execute(GuildMessageReceivedEvent e, String query) {
 
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
         final List<AudioTrack> currentQueue = musicManager.handler.getQueue();
 
         if (currentQueue.size() == 0) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No songs queued")
                     .setDescription("Use `" + db.getPrefix(e.getGuild().getIdLong()) + "now` to view the current track.")

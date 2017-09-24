@@ -9,18 +9,16 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-
-import java.awt.*;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class Reset implements Command {
 
     final Permissions permissions = new Permissions();
 
-    public void execute(MessageReceivedEvent e, String query) {
+    public void execute(GuildMessageReceivedEvent e, String query) {
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the 'DJ' role!")
@@ -29,7 +27,7 @@ public class Reset implements Command {
             return;
         }
 
-        Message m = e.getTextChannel().sendMessage(new EmbedBuilder()
+        Message m = e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("Resetting Audio")
                 .setDescription("Please wait...")

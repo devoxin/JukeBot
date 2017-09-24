@@ -7,17 +7,17 @@ import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class Save implements Command {
 
-    public void execute(MessageReceivedEvent e, String query) {
+    public void execute(GuildMessageReceivedEvent e, String query) {
 
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
         final AudioTrack currentTrack = musicManager.player.getPlayingTrack();
 
         if (currentTrack == null) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
@@ -27,9 +27,9 @@ public class Save implements Command {
         }
 
         final PrivateChannel DMChannel = e.getAuthor().openPrivateChannel().complete();
-        DMChannel.sendMessage("I cannot send messages/embed links in " + e.getTextChannel().getAsMention() + "\nSwitch to another channel.")
+        DMChannel.sendMessage("I cannot send messages/embed links in " + e.getChannel().getAsMention() + "\nSwitch to another channel.")
                 .queue(null,
-                        error -> e.getTextChannel().sendMessage(new EmbedBuilder()
+                        error -> e.getChannel().sendMessage(new EmbedBuilder()
                                 .setColor(Bot.EmbedColour)
                                 .setTitle("Unable to DM")
                                 .setDescription("I was unable to DM you.\nEnsure I'm not blocked and your DMs are enabled.")

@@ -4,13 +4,13 @@ import jukebot.JukeBot;
 import jukebot.Shard;
 import jukebot.utils.Command;
 import jukebot.utils.Time;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Arrays;
 
 public class Debug implements Command {
 
-    public void execute(MessageReceivedEvent e, String query) {
+    public void execute(GuildMessageReceivedEvent e, String query) {
 
         final StringBuilder toSend = new StringBuilder();
         final long streams = JukeBot.getMusicManagers().values().stream().filter(m -> m.handler != null && m.player.getPlayingTrack() != null).count();
@@ -41,7 +41,7 @@ public class Debug implements Command {
                     .append(s.jda.getPing())
                     .append("ms\n");
 
-        e.getTextChannel().sendMessage("```prolog\n" + toSend.toString().trim() + "\n```").queue();
+        e.getChannel().sendMessage("```prolog\n" + toSend.toString().trim() + "\n```").queue();
 
     }
 

@@ -8,18 +8,18 @@ import jukebot.utils.Bot;
 import jukebot.utils.Permissions;
 import jukebot.utils.Time;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.List;
 
 public class SongResultHandler implements AudioLoadResultHandler {
 
     private final Permissions permissions = new Permissions();
-    private final MessageReceivedEvent e;
+    private final GuildMessageReceivedEvent e;
     private final GuildMusicManager musicManager;
     private final boolean useSelection;
 
-    public SongResultHandler(MessageReceivedEvent e, GuildMusicManager m, boolean UseSelection) {
+    public SongResultHandler(GuildMessageReceivedEvent e, GuildMusicManager m, boolean UseSelection) {
         this.e = e;
         this.musicManager = m;
         this.useSelection = UseSelection;
@@ -29,14 +29,14 @@ public class SongResultHandler implements AudioLoadResultHandler {
     public void trackLoaded(AudioTrack track) {
         int result = musicManager.handler.queue(track, e.getAuthor().getId());
         if (result == 1) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Song Enqueued")
                     .setDescription(track.getInfo().title)
                     .build()
             ).queue();
         } else if (result == -1) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Song Unavailable")
                     .setDescription("The song is either a livestream or exceeds the duration limits.\nYou can queue longer songs & livestreams by [becoming a donator](https://www.patreon.com/Devoxin)")
@@ -59,7 +59,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                     selector.append("`").append(i + 1).append(".` ").append(tracks.get(i).getInfo().title).append(" `").append(Time.format(tracks.get(i).getDuration())).append("`\n");
                 }
 
-                e.getTextChannel().sendMessage(new EmbedBuilder()
+                e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Select Song")
                         .setDescription(selector.toString().trim())
@@ -70,14 +70,14 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                 int result = musicManager.handler.queue(playlist.getTracks().get(0), e.getAuthor().getId());
                 if (result == 1) {
-                    e.getTextChannel().sendMessage(new EmbedBuilder()
+                    e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Song Enqueued")
                             .setDescription(playlist.getTracks().get(0).getInfo().title)
                             .build()
                     ).queue();
                 } else if (result == -1) {
-                    e.getTextChannel().sendMessage(new EmbedBuilder()
+                    e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Song Unavailable")
                             .setDescription("The song is either a livestream or exceeds the duration limits.\nYou can queue longer songs & livestreams by [becoming a donator](https://www.patreon.com/Devoxin)")
@@ -97,7 +97,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 musicManager.handler.queue(track, e.getAuthor().getId());
             }
 
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Enqueued Playlist")
                     .setDescription(playlist.getName() + " - " + tracks.size() + " tracks.")
@@ -109,7 +109,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void noMatches() {
-        e.getTextChannel().sendMessage(new EmbedBuilder()
+        e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("No results found.")
                 .build()
@@ -118,7 +118,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void loadFailed(FriendlyException ex) {
-        e.getTextChannel().sendMessage(new EmbedBuilder()
+        e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("Failed to load track")
                 .setDescription(ex.getMessage())

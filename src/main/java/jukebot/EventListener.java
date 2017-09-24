@@ -7,7 +7,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.HashMap;
@@ -60,9 +60,9 @@ public class EventListener extends ListenerAdapter {
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent e) {
+    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
 
-        if (e.getGuild() == null || !e.getGuild().isAvailable() || e.getAuthor().isBot())
+        if (!e.getGuild().isAvailable() || e.getAuthor().isBot())
             return;
 
         final String prefix = db.getPrefix(e.getGuild().getIdLong());
@@ -70,10 +70,10 @@ public class EventListener extends ListenerAdapter {
         if (!e.getMessage().getContent().startsWith(prefix) && !e.getMessage().getMentionedUsers().contains(e.getJDA().getSelfUser()))
             return;
 
-        if (e.getMessage().getMentionedUsers().contains(e.getJDA().getSelfUser()) && permissions.canPost(e.getTextChannel())) {
+        if (e.getMessage().getMentionedUsers().contains(e.getJDA().getSelfUser()) && permissions.canPost(e.getChannel())) {
             LOG.debug("Received mention from " + e.getAuthor().getName());
             if (e.getMessage().getContent().contains("help")) {
-                e.getTextChannel().sendMessage(new EmbedBuilder()
+                e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Mention | Help")
                         .setDescription("Server Prefix: " + db.getPrefix(e.getGuild().getIdLong()) + "\n\nYou can reset the prefix using '@" + e.getJDA().getSelfUser().getName() + " rp'")
@@ -81,9 +81,9 @@ public class EventListener extends ListenerAdapter {
                 ).queue();
             }
 
-            if (e.getMessage().getContent().contains("rp") && permissions.canPost(e.getTextChannel())) {
+            if (e.getMessage().getContent().contains("rp") && permissions.canPost(e.getChannel())) {
                 if (!permissions.isElevatedUser(e.getMember(), false)) {
-                    e.getTextChannel().sendMessage(new EmbedBuilder()
+                    e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Mention | Prefix Reset")
                             .setDescription("You do not have permission to reset the prefix. (Requires DJ role)")
@@ -91,7 +91,7 @@ public class EventListener extends ListenerAdapter {
                     ).queue();
                 }
                 final boolean result = db.setPrefix(e.getGuild().getIdLong(), db.getPropertyFromConfig("prefix"));
-                e.getTextChannel().sendMessage(new EmbedBuilder()
+                e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Mention | Prefix Reset")
                         .setDescription(result ? "Server prefix reset to '" + db.getPropertyFromConfig("prefix") + "'" : "Failed to reset prefix")
@@ -110,9 +110,9 @@ public class EventListener extends ListenerAdapter {
         if (!commands.containsKey(command))
             return;
 
-        if (!permissions.canPost(e.getTextChannel())) {
+        if (!permissions.canPost(e.getChannel())) {
             final PrivateChannel DMChannel = e.getAuthor().openPrivateChannel().complete();
-            DMChannel.sendMessage("I cannot send messages/embed links in " + e.getTextChannel().getAsMention() + "\nSwitch to another channel.")
+            DMChannel.sendMessage("I cannot send messages/embed links in " + e.getChannel().getAsMention() + "\nSwitch to another channel.")
                     .queue(null, error -> LOG.warn("Couldn't DM " + e.getAuthor().getName()));
             return;
         }

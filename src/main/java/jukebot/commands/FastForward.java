@@ -1,27 +1,25 @@
 package jukebot.commands;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import jukebot.JukeBot;
+import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
-import jukebot.JukeBot;
 import jukebot.utils.Permissions;
-import jukebot.audioutilities.GuildMusicManager;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-
-import java.awt.Color;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class FastForward implements Command {
 
     private final Permissions permissions = new Permissions();
 
-    public void execute(MessageReceivedEvent e, String query) {
+    public void execute(GuildMessageReceivedEvent e, String query) {
 
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
         final AudioTrack currentTrack = musicManager.player.getPlayingTrack();
 
         if (currentTrack == null) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
@@ -31,7 +29,7 @@ public class FastForward implements Command {
         }
 
         if (!permissions.isElevatedUser(e.getMember(), true) || !permissions.isBaller(e.getAuthor().getId(), 2)) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the DJ role and also be [a Donator!](https://www.patreon.com/Devoxin)")
@@ -41,7 +39,7 @@ public class FastForward implements Command {
         }
 
         if (!currentTrack.isSeekable()) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Unable to Seek")
                     .setDescription("The currently playing track doesn't support seeking.")
@@ -64,7 +62,7 @@ public class FastForward implements Command {
             musicManager.handler.playNext(musicManager.player.getPlayingTrack());
         else {
             currentTrack.setPosition(currentTrack.getPosition() + fastf);
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Fast-Forward")
                     .setDescription("The current track has been fastforwarded.")
