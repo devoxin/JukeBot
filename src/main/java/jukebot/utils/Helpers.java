@@ -9,9 +9,9 @@ import java.util.concurrent.TimeUnit;
 import static jukebot.utils.Bot.LOG;
 
 public class Helpers {
+    private static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     public static void ScheduleClose(AudioManager manager) {
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.schedule(() -> {
             manager.closeAudioConnection();
             LOG.debug("Terminated AudioConnection in " + manager.getGuild().getId());

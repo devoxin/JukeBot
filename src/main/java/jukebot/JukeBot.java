@@ -24,8 +24,8 @@ public class JukeBot {
     private static Shard[] shards;
 
     public static void main(String[] args) throws Exception {
-        /* Use default log config--only log INFO+ messages */
         ConfigurationFactory.setConfigurationFactory(new Log4JConfig());
+
         LOG.info(".:: JukeBot " + Bot.VERSION + " ::.\n" +
                 ":: JDA: " + JDAInfo.VERSION + "\n" +
                 ":: Lavaplayer: " + PlayerLibrary.VERSION + "\n" +
