@@ -15,7 +15,6 @@ public class Helpers {
         executor.schedule(() -> {
             manager.closeAudioConnection();
             LOG.debug("Terminated AudioConnection in " + manager.getGuild().getId());
-            executor.shutdown();
         }, 1, TimeUnit.SECONDS);
     }
 

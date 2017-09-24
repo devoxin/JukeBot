@@ -43,7 +43,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="JukeBot.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="JukeBot.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/jukebot/JukeBot.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="170">
@@ -66,11 +66,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Helpers.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Helpers.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/jukebot/utils/Helpers.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="10" column="22" lean-forward="true" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
+            <state relative-caret-position="170">
+              <caret line="16" column="85" lean-forward="false" selection-start-line="16" selection-start-column="85" selection-end-line="16" selection-end-column="85" />
               <folding />
             </state>
           </provider>
@@ -530,9 +530,9 @@
         <option value="$PROJECT_DIR$/src/main/java/jukebot/commands/Prefix.java" />
         <option value="$PROJECT_DIR$/src/main/java/jukebot/commands/Repeat.java" />
         <option value="$PROJECT_DIR$/src/main/java/jukebot/commands/Forceskip.java" />
-        <option value="$PROJECT_DIR$/src/main/java/jukebot/utils/Helpers.java" />
         <option value="$PROJECT_DIR$/src/main/java/jukebot/utils/Bot.java" />
         <option value="$PROJECT_DIR$/src/main/java/jukebot/JukeBot.java" />
+        <option value="$PROJECT_DIR$/src/main/java/jukebot/utils/Helpers.java" />
       </list>
     </option>
   </component>
@@ -1227,14 +1227,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/jukebot/utils/Helpers.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="10" column="22" lean-forward="true" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/jukebot/utils/Bot.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
@@ -1251,6 +1243,14 @@
             <element signature="imports" expanded="true" />
             <marker date="1506288025350" expanded="true" signature="1503:1568" ph="{...}" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/jukebot/utils/Helpers.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="16" column="85" lean-forward="false" selection-start-line="16" selection-start-column="85" selection-end-line="16" selection-end-column="85" />
+          <folding />
         </state>
       </provider>
     </entry>
