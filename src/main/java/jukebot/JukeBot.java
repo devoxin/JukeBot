@@ -29,13 +29,12 @@ public class JukeBot {
         Bot.Configure();
 
         final int MaxShards = Integer.parseInt(db.getPropertyFromConfig("maxshards"));
-        final String token = db.getPropertyFromConfig("token");
 
         shards = new Shard[MaxShards];
 
         for (int i = 0; i < MaxShards; i++) {
             try {
-                shards[i] = new Shard(i, MaxShards, token);
+                shards[i] = new Shard(i, MaxShards);
             } catch(Exception ignored) {
                 Bot.Log("[" + (i + 1) + "/" + MaxShards + "] failed to login", Bot.LOGTYPE.ERROR);
             }

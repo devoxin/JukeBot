@@ -24,7 +24,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private ArrayList<AudioTrack> queue = new ArrayList<>();
     private ArrayList<String> skipVotes = new ArrayList<>();
     private TextChannel channel;
-    public boolean repeat = false;
+    public Bot.REPEATMODE repeat = Bot.REPEATMODE.NONE;
     public boolean shuffle = false;
 
     private boolean playNextCalled = false;
@@ -82,11 +82,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         try {
             AudioTrack nextTrack = null;
 
-            if (this.shuffle && (!this.repeat || track == null)) {
+            if (this.shuffle && (this.repeat == Bot.REPEATMODE.SINGLE || track == null)) {
                 if (!this.queue.isEmpty())
                     nextTrack = this.queue.remove(new Random().nextInt(this.queue.size()));
 
-            } else if (track != null && this.repeat) {
+            } else if (track != null && this.repeat == Bot.REPEATMODE.SINGLE) {
                 nextTrack = track.makeClone();
                 nextTrack.setUserData(track.getUserData());
 
@@ -113,7 +113,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 Bot.Log("Terminating AudioConnection in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
                 Helpers.ScheduleClose(this.channel.getGuild().getAudioManager());
                 //this.channel.getGuild().getAudioManager().closeAudioConnection();
-                this.repeat = false;
+                this.repeat = Bot.REPEATMODE.NONE;
                 this.shuffle = false;
             }
         } finally {
@@ -127,16 +127,19 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        if (this.repeat == Bot.REPEATMODE.ALL)
+            this.queue(track.makeClone(), track.getUserData().toString());
+
         this.skipVotes.clear();
         if (!playNextCalled)
-            playNext(this.repeat ? track : null);
+            playNext(this.repeat == Bot.REPEATMODE.SINGLE ? track : null);
     }
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         this.player.setPaused(false);
         if (permissions.canPost(this.channel)) {
-            if (this.repeat && this.lastPlayed.equals(track.getIdentifier()))
+            if (this.repeat == Bot.REPEATMODE.SINGLE && this.lastPlayed.equals(track.getIdentifier()))
                 return;
 
             this.lastPlayed = track.getIdentifier();
