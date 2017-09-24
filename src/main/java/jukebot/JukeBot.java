@@ -3,11 +3,15 @@ package jukebot;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
+import jukebot.utils.Log4JConfig;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.Guild;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.util.HashMap;
+
+import static jukebot.utils.Bot.LOG;
 
 public class JukeBot {
 
@@ -20,11 +24,12 @@ public class JukeBot {
     private static Shard[] shards;
 
     public static void main(String[] args) throws Exception {
-        Bot.Log(".:: JukeBot " + Bot.VERSION + " ::.\n" +
+        /* Use default log config--only log INFO+ messages */
+        ConfigurationFactory.setConfigurationFactory(new Log4JConfig());
+        LOG.info(".:: JukeBot " + Bot.VERSION + " ::.\n" +
                 ":: JDA: " + JDAInfo.VERSION + "\n" +
                 ":: Lavaplayer: " + PlayerLibrary.VERSION + "\n" +
-                ":: SQLite: " + SQLiteJDBCLoader.getVersion(),
-                Bot.LOGTYPE.INFORMATION);
+                ":: SQLite: " + SQLiteJDBCLoader.getVersion());
 
         Bot.Configure();
 
@@ -37,7 +42,7 @@ public class JukeBot {
             try {
                 shards[i] = new Shard(i, MaxShards, token);
             } catch(Exception ignored) {
-                Bot.Log("[" + (i + 1) + "/" + MaxShards + "] failed to login", Bot.LOGTYPE.ERROR);
+                LOG.error("[" + (i + 1) + "/" + MaxShards + "] failed to login");
             }
             Thread.sleep(5500);
         }

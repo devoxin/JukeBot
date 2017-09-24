@@ -4,6 +4,8 @@ import jukebot.utils.Bot;
 
 import java.sql.*;
 
+import static jukebot.utils.Bot.LOG;
+
 public class DatabaseHandler {
 
     public String getPrefix(long id) {
@@ -22,7 +24,7 @@ public class DatabaseHandler {
 
         } catch (Exception e) {
 
-            Bot.Log("Failed to retrieve server prefix", Bot.LOGTYPE.ERROR);
+            LOG.error("Failed to retrieve server prefix");
             return Bot.defaultPrefix;
 
         }
@@ -51,7 +53,7 @@ public class DatabaseHandler {
             }
 
         } catch (Exception e) {
-            Bot.Log("Failed to update server prefix", Bot.LOGTYPE.ERROR);
+            LOG.error("Failed to update server prefix");
             return false;
 
         }
@@ -81,7 +83,7 @@ public class DatabaseHandler {
 
         } catch (Exception e) {
 
-            Bot.Log("Failed to update user tier", Bot.LOGTYPE.ERROR);
+            LOG.error("Failed to update user tier");
             return false;
 
         }
@@ -104,7 +106,7 @@ public class DatabaseHandler {
 
         } catch (Exception e) {
 
-            Bot.Log("Failed to retrieve user tier", Bot.LOGTYPE.ERROR);
+            LOG.error("Failed to retrieve user tier");
             return "0";
 
         }
@@ -126,7 +128,7 @@ public class DatabaseHandler {
                 return null;
 
         } catch (Exception e) {
-            Bot.Log("Failed to retrieve config property", Bot.LOGTYPE.ERROR);
+            LOG.error("Failed to retrieve config property");
             return null;
 
         }

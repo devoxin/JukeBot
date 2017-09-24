@@ -7,6 +7,8 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 
+import static jukebot.utils.Bot.LOG;
+
 public class Shard {
 
     public JDA jda;
@@ -22,7 +24,7 @@ public class Shard {
                 .useSharding(shardId, totalShards)
                 .setGame(Game.of(Bot.defaultPrefix + "help | " + Bot.VERSION + " | [" + (shardId + 1) + "/" + totalShards + "]"));
 
-        Bot.Log("[" + (shardId + 1) + "/" + totalShards + "] Logging in...", Bot.LOGTYPE.INFORMATION);
+        LOG.info("[" + (shardId + 1) + "/" + totalShards + "] Logging in...");
         this.jda = jdab.buildAsync();
     }
 }

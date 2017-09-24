@@ -16,6 +16,8 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static jukebot.utils.Bot.LOG;
+
 public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {
 
     private final Permissions permissions = new Permissions();
@@ -97,9 +99,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
             if (nextTrack != null) {
                 this.player.startTrack(nextTrack, false);
-                Bot.Log("Playing next track in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
+                LOG.debug("Playing next track in " + this.channel.getGuild().getId());
             } else {
-                Bot.Log("Queue ended in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
+                LOG.debug("Queue ended in " + this.channel.getGuild().getId());
                 this.player.stopTrack();
                 this.player.setVolume(100);
                 if (permissions.canPost(this.channel)) {
@@ -108,9 +110,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                             .setTitle("Queue Concluded!")
                             .setDescription("[Support JukeBot and receive some awesome benefits!](https://www.patreon.com/Devoxin)")
                             .build()
-                    ).queue(null, e -> Bot.Log("Failed to post 'QUEUE_END' message to channel " + this.channel.getId(), Bot.LOGTYPE.WARNING));
+                    ).queue(null, e -> LOG.warn("Failed to post 'QUEUE_END' message to channel " + this.channel.getId()));
                 }
-                Bot.Log("Terminating AudioConnection in " + this.channel.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
+                LOG.debug("Terminating AudioConnection in " + this.channel.getGuild().getId());
                 Helpers.ScheduleClose(this.channel.getGuild().getAudioManager());
                 //this.channel.getGuild().getAudioManager().closeAudioConnection();
                 this.repeat = false;
@@ -145,7 +147,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                     .setTitle("Now Playing")
                     .setDescription(track.getInfo().title)
                     .build()
-            ).queue(null, e -> Bot.Log("Failed to post 'NOW_PLAYING' message to channel " + this.channel.getId(), Bot.LOGTYPE.WARNING));
+            ).queue(null, e -> LOG.warn("Failed to post 'NOW_PLAYING' message to channel " + this.channel.getId()));
         }
     }
 
@@ -157,7 +159,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                     .setTitle("Unable to Play Track")
                     .setDescription(exception.getLocalizedMessage())
                     .build()
-            ).queue(null, e -> Bot.Log("Failed to post 'TRACK_ERROR' message to channel " + this.channel.getId(), Bot.LOGTYPE.WARNING));
+            ).queue(null, e -> LOG.warn("Failed to post 'TRACK_ERROR' message to channel " + this.channel.getId()));
         }
         playNext(null);
     }

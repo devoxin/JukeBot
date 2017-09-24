@@ -10,6 +10,8 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
+import static jukebot.utils.Bot.LOG;
+
 public class Play implements Command {
 
     private final Permissions permissions = new Permissions();
@@ -61,7 +63,7 @@ public class Play implements Command {
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
 
         if (!audioManager.isConnected() && !audioManager.isAttemptingToConnect()) {
-            Bot.Log("Connecting to " + e.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
+            LOG.debug("Connecting to " + e.getGuild().getId());
             audioManager.openAudioConnection(e.getMember().getVoiceState().getChannel());
             audioManager.setSelfDeafened(true);
             musicManager.handler.setChannel(e.getTextChannel());
