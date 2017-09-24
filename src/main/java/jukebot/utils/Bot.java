@@ -10,11 +10,10 @@ import jukebot.DatabaseHandler;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Bot {
 
@@ -27,7 +26,7 @@ public class Bot {
     public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
 
-    private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+    public static final Logger LOG = LogManager.getLogger("JukeBot");
 
     public static JDABuilder builder = new JDABuilder(AccountType.BOT)
             .setToken(db.getPropertyFromConfig("token"))
@@ -35,12 +34,14 @@ public class Bot {
             .addEventListener(waiter);
 
     public static void Configure() {
-        final String colour = db.getPropertyFromConfig("colour");
+        String colour = db.getPropertyFromConfig("colour");
+        if (colour == null)
+            colour = db.getPropertyFromConfig("color");
         if (colour != null)
             try {
                 EmbedColour = Color.decode(colour);
             } catch (Exception e) {
-                Bot.Log("Failed to decode 'colour' property in DB. Did you specify as a hex?", LOGTYPE.ERROR);
+                LOG.error("Failed to decode 'colour' property in DB. Did you specify as a hex?");
             }
 
         YoutubeAudioSourceManager YTSM = new YoutubeAudioSourceManager();
@@ -54,28 +55,6 @@ public class Bot {
         AudioSourceManagers.registerRemoteSources(playerManager);
 
     }
-
-    public static void Log(String message, LOGTYPE type) {
-        Date date = new Date();
-        switch (type) {
-            case INFORMATION:
-                System.out.println("[" + timeFormat.format(date) + "] [INFO] " + message);
-                break;
-            case WARNING:
-                System.out.println("[" + timeFormat.format(date) + "] [WARN] " + message);
-                break;
-            case ERROR:
-                System.out.println("[" + timeFormat.format(date) + "] [ERR ] " + message);
-                break;
-        }
-    }
-
-    public enum LOGTYPE {
-        ERROR,
-        WARNING,
-        INFORMATION
-    }
-
     public enum REPEATMODE {
         SINGLE,
         ALL,

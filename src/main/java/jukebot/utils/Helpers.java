@@ -6,13 +6,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static jukebot.utils.Bot.LOG;
+
 public class Helpers {
 
     public static void ScheduleClose(AudioManager manager) {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.schedule(() -> {
             manager.closeAudioConnection();
-            Bot.Log("Terminated AudioConnection in " + manager.getGuild().getId(), Bot.LOGTYPE.INFORMATION);
+            LOG.debug("Terminated AudioConnection in " + manager.getGuild().getId());
             executor.shutdown();
         }, 1, TimeUnit.SECONDS);
     }

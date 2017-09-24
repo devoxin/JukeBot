@@ -15,6 +15,8 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import java.awt.*;
 import java.util.HashMap;
 
+import static jukebot.utils.Bot.LOG;
+
 public class EventListener extends ListenerAdapter {
 
     private final Permissions permissions = new Permissions();
@@ -74,7 +76,7 @@ public class EventListener extends ListenerAdapter {
             return;
 
         if (e.getMessage().getMentionedUsers().contains(e.getJDA().getSelfUser()) && permissions.canPost(e.getTextChannel())) {
-            Bot.Log("Received mention from " + e.getAuthor().getName(), Bot.LOGTYPE.INFORMATION);
+            LOG.debug("Received mention from " + e.getAuthor().getName());
             if (e.getMessage().getContent().contains("help")) {
                 e.getTextChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
@@ -116,11 +118,11 @@ public class EventListener extends ListenerAdapter {
         if (!permissions.canPost(e.getTextChannel())) {
             final PrivateChannel DMChannel = e.getAuthor().openPrivateChannel().complete();
             DMChannel.sendMessage("I cannot send messages/embed links in " + e.getTextChannel().getAsMention() + "\nSwitch to another channel.")
-                    .queue(null, error -> Bot.Log("Couldn't DM " + e.getAuthor().getName(), Bot.LOGTYPE.WARNING));
+                    .queue(null, error -> LOG.warn("Couldn't DM " + e.getAuthor().getName()));
             return;
         }
 
-        Bot.Log("Executing command '" + command + "' with args '" + query + "' from " + e.getAuthor().getName(), Bot.LOGTYPE.INFORMATION);
+        LOG.debug("Executing command '" + command + "' with args '" + query + "' from " + e.getAuthor().getName());
         commands.get(command).execute(e, query);
 
         super.onMessageReceived(e);
