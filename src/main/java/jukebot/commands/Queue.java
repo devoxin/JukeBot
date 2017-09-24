@@ -6,12 +6,11 @@ import jukebot.JukeBot;
 import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
-import jukebot.utils.Time;
 import jukebot.utils.Parsers;
+import jukebot.utils.Time;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.awt.*;
 import java.util.List;
 
 public class Queue implements Command {
@@ -55,7 +54,7 @@ public class Queue implements Command {
                 .setColor(Bot.EmbedColour)
                 .setTitle("Queue (" + currentQueue.size() + " songs, " + queueDuration + ")")
                 .setDescription(queue.toString().trim())
-                .addField("Playback", "**Repeat:** " + (musicManager.handler.repeat ? "On" : "Off") + " **/ Shuffle:** " + (musicManager.handler.shuffle ? "On" : "Off"), true)
+                .addField("Playback", "**Repeat:** " + String.valueOf(musicManager.handler.repeat).toLowerCase() + " **/ Shuffle:** " + (musicManager.handler.shuffle ? "On" : "Off"), true)
                 .setFooter("Viewing page " + (page) + "/" + (maxPages), null)
                 .build()
         ).queue();

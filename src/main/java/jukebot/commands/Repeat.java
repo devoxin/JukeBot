@@ -8,8 +8,6 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.awt.*;
-
 public class Repeat implements Command {
 
     private final Permissions permissions = new Permissions();
@@ -48,12 +46,44 @@ public class Repeat implements Command {
         }
 
         GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild());
-        manager.handler.repeat = !manager.handler.repeat;
+
+        if (query.length() > 0) {
+            switch (query.toLowerCase()) {
+                case "a":
+                case "all":
+                    manager.handler.repeat = Bot.REPEATMODE.ALL;
+                    break;
+                case "s":
+                case "single":
+                    manager.handler.repeat = Bot.REPEATMODE.SINGLE;
+                    break;
+                case "n":
+                case "none":
+                    manager.handler.repeat = Bot.REPEATMODE.NONE;
+                    break;
+                default:
+                    e.getTextChannel().sendMessage(new EmbedBuilder()
+                            .setColor(Bot.EmbedColour)
+                            .setTitle("Repeat Modes")
+                            .setDescription("(**S**)ingle | (**A**)ll | (**N**)one")
+                            .build()
+                    ).queue();
+                    return;
+            }
+        } else {
+            e.getTextChannel().sendMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("Repeat Modes")
+                    .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + String.valueOf(manager.handler.repeat).toLowerCase())
+                    .build()
+            ).queue();
+            return;
+        }
 
         e.getTextChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("Repeat")
-                .setDescription("Repeat **" + (manager.handler.repeat ? "enabled" : "disabled") + "**")
+                .setDescription("Repeat set to **" + String.valueOf(manager.handler.repeat).toLowerCase() + "**")
                 .build()
         ).queue();
 
