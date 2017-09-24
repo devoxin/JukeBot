@@ -53,7 +53,7 @@ public class Log4JConfig extends ConfigurationFactory {
      * @author ThatsNoMoon
      */
     public Log4JConfig() {
-        JUKEBOT_LOG_LEVEL = Level.INFO;
+        JUKEBOT_LOG_LEVEL = Level.DEBUG;
         LIB_LOG_LEVEL = Level.INFO;
     }
 
