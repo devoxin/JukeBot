@@ -28,7 +28,7 @@ public class Repeat implements Command {
                 e.getGuild().getAudioManager().isConnected() && !e.getMember().getVoiceState().getChannel().getId().equalsIgnoreCase(e.getGuild().getAudioManager().getConnectedChannel().getId())) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle("Pause")
+                    .setTitle("Repeat")
                     .setDescription("You need to be in my voicechannel to toggle repeat.")
                     .build()
             ).queue();
