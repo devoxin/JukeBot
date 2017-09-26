@@ -141,7 +141,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         this.player.setPaused(false);
         if (permissions.canPost(this.channel)) {
-            if (this.repeat == Bot.REPEATMODE.SINGLE && this.lastPlayed.equals(track.getIdentifier()))
+            if (this.lastPlayed.equals(track.getIdentifier()))
                 return;
 
             this.lastPlayed = track.getIdentifier();
