@@ -11,6 +11,9 @@ public class Helpers {
     private static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     public static void ScheduleClose(AudioManager manager) {
+        if (!manager.isConnected() || manager.isAttemptingToConnect())
+            return;
+
         executor.execute(() -> {
             manager.closeAudioConnection();
             LOG.debug("Terminated AudioConnection in " + manager.getGuild().getId());

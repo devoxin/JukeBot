@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.utils.Bot;
+import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import jukebot.utils.Time;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -114,6 +115,8 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 .setTitle("No results found.")
                 .build()
         ).queue();
+        if (this.musicManager.player.getPlayingTrack() == null && this.musicManager.handler.getQueue().isEmpty())
+            Helpers.ScheduleClose(this.e.getGuild().getAudioManager());
     }
 
     @Override
@@ -124,6 +127,8 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 .setDescription(ex.getMessage())
                 .build()
         ).queue();
+        if (this.musicManager.player.getPlayingTrack() == null && this.musicManager.handler.getQueue().isEmpty())
+            Helpers.ScheduleClose(this.e.getGuild().getAudioManager());
     }
 
 }
