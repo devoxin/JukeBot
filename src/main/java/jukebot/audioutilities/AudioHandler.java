@@ -21,15 +21,19 @@ import static jukebot.utils.Bot.LOG;
 public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {
 
     private final Permissions permissions = new Permissions();
+
     private AudioPlayer player;
     private AudioFrame lastFrame;
+
     private ArrayList<AudioTrack> queue = new ArrayList<>();
     private ArrayList<String> skipVotes = new ArrayList<>();
     private TextChannel channel;
+
     public Bot.REPEATMODE repeat = Bot.REPEATMODE.NONE;
     public boolean shuffle = false;
 
     private boolean playNextCalled = false;
+    public boolean isResetting = false;
     private String lastPlayed = "";
 
     AudioHandler(AudioPlayer player) {
@@ -104,7 +108,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 LOG.debug("Queue ended in " + this.channel.getGuild().getId());
                 this.player.stopTrack();
                 this.player.setVolume(100);
-                if (permissions.canPost(this.channel)) {
+                if (permissions.canPost(this.channel) && !isResetting) {
                     this.channel.sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Queue Concluded!")
@@ -112,9 +116,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                             .build()
                     ).queue(null, e -> LOG.warn("Failed to post 'QUEUE_END' message to channel " + this.channel.getId()));
                 }
+                isResetting = false;
                 LOG.debug("Terminating AudioConnection in " + this.channel.getGuild().getId());
                 Helpers.ScheduleClose(this.channel.getGuild().getAudioManager());
-                //this.channel.getGuild().getAudioManager().closeAudioConnection();
                 this.repeat = Bot.REPEATMODE.NONE;
                 this.shuffle = false;
             }

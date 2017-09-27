@@ -26,19 +26,19 @@ public class Save implements Command {
             return;
         }
 
-        final PrivateChannel DMChannel = e.getAuthor().openPrivateChannel().complete();
-
-        DMChannel.sendMessage(new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
-                .setTitle(currentTrack.getInfo().title, currentTrack.getInfo().uri)
-                .build()
-        ).queue(null,
-                error -> e.getChannel().sendMessage(new EmbedBuilder()
-                                .setColor(Bot.EmbedColour)
-                                .setTitle("Unable to DM")
-                                .setDescription("I was unable to DM you.\nEnsure I'm not blocked and your DMs are enabled.")
-                                .build()
-                ).queue());
-
+        e.getAuthor().openPrivateChannel().queue((PrivateChannel DM) ->
+            DM.sendMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle(currentTrack.getInfo().title, currentTrack.getInfo().uri)
+                    .build()
+            ).queue(null, error ->
+                    e.getChannel().sendMessage(new EmbedBuilder()
+                            .setColor(Bot.EmbedColour)
+                            .setTitle("Unable to DM")
+                            .setDescription("I was unable to DM you.\nEnsure I'm not blocked and your DMs are enabled.")
+                            .build()
+                    ).queue()
+            )
+        );
     }
 }

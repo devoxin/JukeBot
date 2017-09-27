@@ -5,7 +5,6 @@ import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -111,9 +110,10 @@ public class EventListener extends ListenerAdapter {
             return;
 
         if (!permissions.canPost(e.getChannel())) {
-            final PrivateChannel DMChannel = e.getAuthor().openPrivateChannel().complete();
-            DMChannel.sendMessage("I cannot send messages/embed links in " + e.getChannel().getAsMention() + "\nSwitch to another channel.")
-                    .queue(null, error -> LOG.warn("Couldn't DM " + e.getAuthor().getName()));
+            e.getAuthor().openPrivateChannel().queue(dm ->
+                dm.sendMessage("I cannot send messages/embed links in " + e.getChannel().getAsMention() + "\nSwitch to another channel.")
+                        .queue(null, error -> LOG.warn("Couldn't DM " + e.getAuthor().getName()))
+            );
             return;
         }
 
