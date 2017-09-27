@@ -7,7 +7,6 @@ import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -34,7 +33,7 @@ public class Reset implements Command {
                 .setTitle("Resetting Audio")
                 .setDescription("Please wait...")
                 .build()
-        ).queue((Message m) -> {
+        ).queue(m -> {
             musicManager.handler.isResetting = true;
 
             AudioTrack current = musicManager.player.getPlayingTrack();

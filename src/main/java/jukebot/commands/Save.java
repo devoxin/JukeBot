@@ -6,7 +6,6 @@ import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class Save implements Command {
@@ -26,8 +25,8 @@ public class Save implements Command {
             return;
         }
 
-        e.getAuthor().openPrivateChannel().queue((PrivateChannel DM) ->
-            DM.sendMessage(new EmbedBuilder()
+        e.getAuthor().openPrivateChannel().queue(dm ->
+            dm.sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle(currentTrack.getInfo().title, currentTrack.getInfo().uri)
                     .build()
