@@ -38,11 +38,11 @@ public class Select implements Command {
 
         AudioManager audioManager = e.getGuild().getAudioManager();
 
-        if (audioManager.isConnected() && !e.getMember().getVoiceState().getChannel().getId().equalsIgnoreCase(audioManager.getConnectedChannel().getId())) {
+        if ((audioManager.isConnected() || audioManager.isAttemptingToConnect()) && !e.getMember().getVoiceState().getChannel().getId().equalsIgnoreCase(audioManager.getConnectedChannel().getId())) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No Mutual VoiceChannel")
-                    .setDescription("Join my voicechannel to use this command.")
+                    .setDescription("Join my VoiceChannel to use this command.")
                     .build()
             ).queue();
             return;
@@ -54,7 +54,7 @@ public class Select implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Invalid Channel Permissions")
-                    .setDescription("The target voicechannel doesn't allow me to Connect/Speak\n\nPlease reconfigure channel permissions or move to another channel.")
+                    .setDescription("Your VoiceChannel doesn't allow me to Connect/Speak\n\nPlease grant me the 'Connect' and 'Speak' permissions or move to another channel.")
                     .build()
             ).queue();
             return;
