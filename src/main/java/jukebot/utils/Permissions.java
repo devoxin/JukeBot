@@ -49,9 +49,20 @@ public class Permissions {
         return channel.canTalk() && channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_EMBED_LINKS);
     }
 
-    public boolean canConnect(VoiceChannel channel) {
-        return channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK);
+    public CONNECT_STATUS canConnect(VoiceChannel channel) {
+        if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK))
+            return CONNECT_STATUS.NO_CONNECT_SPEAK;
+
+        if (channel.getMembers().size() >= channel.getUserLimit() && !channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
+            return CONNECT_STATUS.USER_LIMIT;
+
+        return CONNECT_STATUS.CONNECT;
     }
 
+    public enum CONNECT_STATUS {
+        NO_CONNECT_SPEAK,
+        USER_LIMIT,
+        CONNECT
+    }
 
 }

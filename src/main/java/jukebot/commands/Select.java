@@ -7,11 +7,8 @@ import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
-
-import java.awt.*;
 
 public class Select implements Command {
 
@@ -44,18 +41,28 @@ public class Select implements Command {
         if (audioManager.isConnected() && !e.getMember().getVoiceState().getChannel().getId().equalsIgnoreCase(audioManager.getConnectedChannel().getId())) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle("Join my voicechannel")
-                    .setDescription("You need to join my voicechannel before you can queue songs.")
+                    .setTitle("No Mutual VoiceChannel")
+                    .setDescription("Join my voicechannel to use this command.")
                     .build()
             ).queue();
             return;
         }
 
-        if (!permissions.canConnect(e.getMember().getVoiceState().getChannel())) {
+        Permissions.CONNECT_STATUS canConnect = permissions.canConnect(e.getMember().getVoiceState().getChannel());
+
+        if (canConnect == Permissions.CONNECT_STATUS.NO_CONNECT_SPEAK) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle("Invalid Channel permissions")
+                    .setTitle("Invalid Channel Permissions")
                     .setDescription("The target voicechannel doesn't allow me to Connect/Speak\n\nPlease reconfigure channel permissions or move to another channel.")
+                    .build()
+            ).queue();
+            return;
+        } else if (canConnect == Permissions.CONNECT_STATUS.USER_LIMIT) {
+            e.getChannel().sendMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("VoiceChannel Full")
+                    .setDescription("Your VoiceChannel is full. Raise the user limit or grant me the 'Move Members' permission.")
                     .build()
             ).queue();
             return;

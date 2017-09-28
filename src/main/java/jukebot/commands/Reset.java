@@ -48,7 +48,7 @@ public class Reset implements Command {
 
             musicManager.ResetPlayer();
 
-            if (vc != null && permissions.canConnect(vc))
+            if (vc != null && permissions.canConnect(vc) == Permissions.CONNECT_STATUS.CONNECT)
                 e.getGuild().getAudioManager().openAudioConnection(vc);
 
             if (clone != null && (e.getGuild().getAudioManager().isAttemptingToConnect() || e.getGuild().getAudioManager().isConnected()))
