@@ -44,16 +44,18 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
      * Custom Events
      */
 
-    public int queue(AudioTrack track, String userID) {
+    public TRACK_STATUS queue(AudioTrack track, String userID) {
         if (track.getInfo().isStream && !permissions.isBaller(userID, 1) || !track.getInfo().isStream && (track.getDuration() / 1000 > 4000 && !permissions.isBaller(userID, 1) || track.getDuration() / 1000 > 20000))
-            return -1;
+            return TRACK_STATUS.LIMITED;
+
         if (userID != null)
             track.setUserData(userID);
+
         if (!this.player.startTrack(track, true)) {
             this.queue.add(track);
-            return 1;
+            return TRACK_STATUS.QUEUED;
         }
-        return 0;
+        return TRACK_STATUS.PLAYING;
     }
 
     public ArrayList<AudioTrack> getQueue() {
@@ -189,6 +191,12 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public boolean isOpus() {
         return true;
+    }
+
+    public enum TRACK_STATUS {
+        PLAYING,
+        QUEUED,
+        LIMITED
     }
 
 }

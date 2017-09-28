@@ -28,15 +28,15 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        int result = musicManager.handler.queue(track, e.getAuthor().getId());
-        if (result == 1) {
+        AudioHandler.TRACK_STATUS result = musicManager.handler.queue(track, e.getAuthor().getId());
+        if (result == AudioHandler.TRACK_STATUS.QUEUED) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Song Enqueued")
                     .setDescription(track.getInfo().title)
                     .build()
             ).queue();
-        } else if (result == -1) {
+        } else if (result == AudioHandler.TRACK_STATUS.LIMITED) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Song Unavailable")
@@ -69,15 +69,15 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
             } else {
 
-                int result = musicManager.handler.queue(playlist.getTracks().get(0), e.getAuthor().getId());
-                if (result == 1) {
+                AudioHandler.TRACK_STATUS result = musicManager.handler.queue(playlist.getTracks().get(0), e.getAuthor().getId());
+                if (result == AudioHandler.TRACK_STATUS.QUEUED) {
                     e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Song Enqueued")
                             .setDescription(playlist.getTracks().get(0).getInfo().title)
                             .build()
                     ).queue();
-                } else if (result == -1) {
+                } else if (result == AudioHandler.TRACK_STATUS.LIMITED) {
                     e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Song Unavailable")

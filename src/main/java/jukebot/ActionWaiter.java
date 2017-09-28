@@ -1,6 +1,7 @@
 package jukebot;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Parsers;
@@ -39,15 +40,15 @@ public class ActionWaiter extends ListenerAdapter {
                 e.getMessage().delete().queue();
 
             AudioTrack track = t.tracks.get(i - 1);
-            int result = t.manager.handler.queue(track, e.getAuthor().getId());
-            if (result == 1) {
+            AudioHandler.TRACK_STATUS result = t.manager.handler.queue(track, e.getAuthor().getId());
+            if (result == AudioHandler.TRACK_STATUS.QUEUED) {
                 t.m.editMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Song Enqueued")
                         .setDescription(track.getInfo().title)
                         .build()
                 ).queue();
-            } else if (result == -1) {
+            } else if (result == AudioHandler.TRACK_STATUS.LIMITED) {
                 t.m.editMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Song Unavailable")
