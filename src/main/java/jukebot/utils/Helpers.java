@@ -34,7 +34,7 @@ public class Helpers {
         if (!track.getInfo().isStream) {
             if (track.getDuration() / 1000 > DURATION_LIMIT_NORMAL && permissionLevel < 1)
                 return QUEUE_STATUS.EXCEEDS_DURATION;
-            if (track.getDuration() / 1000 > DURATION_LIMIT_PREMIUM && permissionLevel < 2)
+            if (track.getDuration() / 1000 > DURATION_LIMIT_PREMIUM)
                 return QUEUE_STATUS.EXCEEDS_DURATION;
         }
 
