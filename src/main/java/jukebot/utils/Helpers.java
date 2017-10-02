@@ -13,7 +13,7 @@ public class Helpers {
     private static Permissions permissions = new Permissions();
 
     private static int DURATION_LIMIT_NORMAL = 8000; // 2 hours
-    private static int DURATION_LIMIT_PREMIUM = 20000;
+    private static int DURATION_LIMIT_PREMIUM = 20000; // 5 hours
 
     public static void ScheduleClose(AudioManager manager) {
         if (!manager.isConnected() && !manager.isAttemptingToConnect())
