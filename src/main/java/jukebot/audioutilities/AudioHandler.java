@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
+import jukebot.commands.Help;
 import jukebot.utils.Bot;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
@@ -45,7 +46,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
      */
 
     public TRACK_STATUS queue(AudioTrack track, String userID) {
-        if (track.getInfo().isStream && !permissions.isBaller(userID, 1) || !track.getInfo().isStream && (track.getDuration() / 1000 > 4000 && !permissions.isBaller(userID, 1) || track.getDuration() / 1000 > 20000))
+        if (Helpers.CanQueue(track, userID) != Helpers.QUEUE_STATUS.CAN_QUEUE)
             return TRACK_STATUS.LIMITED;
 
         if (userID != null)

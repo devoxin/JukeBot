@@ -45,6 +45,10 @@ public class Permissions {
         return isBotOwner(userID) || Integer.parseInt(db.getTier(Long.parseLong(userID))) >= tier;
     }
 
+    public int getTierLevel(String userID) {
+        return isBotOwner(userID) ? 3 : Integer.parseInt(db.getTier(Long.parseLong(userID)));
+    }
+
     public boolean canPost(TextChannel channel) {
         return channel.canTalk() && channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_EMBED_LINKS);
     }

@@ -69,6 +69,14 @@ public class DatabaseHandler {
 
             boolean entryExists = state.executeQuery().next();
 
+            if (Integer.parseInt(newTier) == 0) {
+                if (!entryExists)
+                    return true;
+                PreparedStatement update = con.prepareStatement("DELETE FROM donators WHERE id = ?");
+                update.setLong(1, id);
+                return update.executeUpdate() == 1;
+            }
+
             if (entryExists) {
                 PreparedStatement update = con.prepareStatement("UPDATE donators SET tier = ? WHERE id = ?");
                 update.setString(1, newTier);
