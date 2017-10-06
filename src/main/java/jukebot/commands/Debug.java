@@ -2,6 +2,7 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.Shard;
+import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Time;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;

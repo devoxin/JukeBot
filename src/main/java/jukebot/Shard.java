@@ -17,7 +17,7 @@ public class Shard {
                 .setAudioSendFactory(new NativeAudioSendFactory())
                 .addEventListener(new EventListener())
                 .useSharding(shardId, totalShards)
-                .setGame(Game.of(Bot.defaultPrefix + "help | " + Bot.VERSION))
+                .setGame(Game.of(Bot.defaultPrefix + "help | jukebot-discord.xyz"))
                 .buildAsync();
     }
 }

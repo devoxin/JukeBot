@@ -26,6 +26,7 @@ public class Help implements Command {
                     .addField("Playback Control", "play\npause\nstop\nresume\nskip\nforceskip\nselect", true)
                     .addField("General Media", "queue\nunqueue\nnow\nshuffle\nfastforward\nvolume\nsave\nrepeat", true)
                     .addField("Misc", "debug\ninvite\nhelp\nmanage\npatreon\nprefix\nreset", true)
+                    .setFooter("JukeBot v" + Bot.VERSION, null)
                     .build()
             ).queue();
         }
