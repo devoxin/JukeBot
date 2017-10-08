@@ -5,6 +5,7 @@ import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -128,6 +129,13 @@ public class EventListener extends ListenerAdapter {
         double bots = e.getGuild().getMembers().stream().filter(m -> m.getUser().isBot()).count();
         if (bots / (double) e.getGuild().getMembers().size() > 0.6)
             e.getGuild().leave().queue();
+
+    }
+
+    @Override
+    public void onReady(ReadyEvent e) {
+
+        e.getJDA().asBot().getApplicationInfo().queue(app -> Bot.BotOwnerID = app.getOwner().getId());
 
     }
 

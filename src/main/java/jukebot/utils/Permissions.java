@@ -23,7 +23,7 @@ public class Permissions {
     }
 
     public boolean isBotOwner(String userID) {
-        return db.getPropertyFromConfig("owners").contains(userID);
+        return userID.equalsIgnoreCase(Bot.BotOwnerID);
     }
 
     /*public boolean isBlocked(Member m) {
@@ -37,15 +37,15 @@ public class Permissions {
             return m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getId());
     }
 
-    public boolean isALoner(Member m) {
+    private boolean isALoner(Member m) {
         return (m.getVoiceState().inVoiceChannel() && m.getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count() == 1);
     }
 
     public boolean isBaller(String userID, int tier) {
-        return isBotOwner(userID) || Integer.parseInt(db.getTier(Long.parseLong(userID))) >= tier;
+        return getTierLevel(userID) >= tier;
     }
 
-    public int getTierLevel(String userID) {
+    private int getTierLevel(String userID) {
         return isBotOwner(userID) ? 3 : Integer.parseInt(db.getTier(Long.parseLong(userID)));
     }
 
