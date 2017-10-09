@@ -45,7 +45,7 @@ public class Permissions {
         return getTierLevel(userID) >= tier;
     }
 
-    private int getTierLevel(String userID) {
+    int getTierLevel(String userID) {
         return isBotOwner(userID) ? 3 : Integer.parseInt(db.getTier(Long.parseLong(userID)));
     }
 
