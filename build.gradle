@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     compile 'net.dv8tion:JDA:3.3.1_286'
-    compile 'com.sedmelluq:lavaplayer:1.2.43'
+    compile 'com.sedmelluq:lavaplayer:1.2.44'
     compile 'com.sedmelluq:jda-nas:1.0.5'
     compile 'org.xerial:sqlite-jdbc:3.20.0'
     compile 'org.apache.logging.log4j:log4j-core:2.8.2'
