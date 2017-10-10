@@ -23,11 +23,14 @@ public class ScSearch implements Command {
             return;
         }
 
-        if (!Helpers.ConnectVoice(e.getGuild().getAudioManager(), e.getChannel(), e.getMember()))
+        Helpers.VOICE_STATUS status = Helpers.ConnectVoice(e.getGuild().getAudioManager(), e.getChannel(), e.getMember());
+
+        if (status == Helpers.VOICE_STATUS.CANNOT_CONNECT)
             return;
 
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
-        musicManager.handler.setChannel(e.getChannel());
+        if (status == Helpers.VOICE_STATUS.CONNECTED)
+            musicManager.handler.setChannel(e.getChannel());
 
         Bot.playerManager.loadItem("scsearch:" + query, new SongResultHandler(e, musicManager, false));
 

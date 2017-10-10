@@ -30,7 +30,7 @@ public class Helpers {
         });
     }
 
-    public static boolean ConnectVoice(AudioManager manager, TextChannel channel, Member author) {
+    public static VOICE_STATUS ConnectVoice(AudioManager manager, TextChannel channel, Member author) {
 
         if (!permissions.hasMutualVoiceChannel(author)) {
             channel.sendMessage(new EmbedBuilder()
@@ -39,7 +39,7 @@ public class Helpers {
                     .setDescription("Join my VoiceChannel to use this command.")
                     .build()
             ).queue();
-            return false;
+            return VOICE_STATUS.CANNOT_CONNECT;
         }
 
         Permissions.CONNECT_STATUS canConnect = permissions.canConnect(author.getVoiceState().getChannel());
@@ -51,7 +51,7 @@ public class Helpers {
                     .setDescription("Your VoiceChannel doesn't allow me to Connect/Speak\n\nPlease grant me the 'Connect' and 'Speak' permissions or move to another channel.")
                     .build()
             ).queue();
-            return false;
+            return VOICE_STATUS.CANNOT_CONNECT;
         } else if (canConnect == Permissions.CONNECT_STATUS.USER_LIMIT) {
             channel.sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
@@ -59,16 +59,17 @@ public class Helpers {
                     .setDescription("Your VoiceChannel is full. Raise the user limit or grant me the 'Move Members' permission.")
                     .build()
             ).queue();
-            return false;
+            return VOICE_STATUS.CANNOT_CONNECT;
         }
 
         if (!manager.isConnected() && !manager.isAttemptingToConnect()) {
             LOG.debug("Connecting to " + channel.getGuild().getId());
             manager.openAudioConnection(author.getVoiceState().getChannel());
             manager.setSelfDeafened(true);
+            return VOICE_STATUS.CONNECTED;
         }
 
-        return true;
+        return VOICE_STATUS.ALREADY_CONNECTED;
     }
 
     public static QUEUE_STATUS CanQueue(AudioTrack track, String userID) {
@@ -92,5 +93,11 @@ public class Helpers {
         CAN_QUEUE,
         IS_STREAM,
         EXCEEDS_DURATION
+    }
+
+    public enum VOICE_STATUS {
+        ALREADY_CONNECTED,
+        CONNECTED,
+        CANNOT_CONNECT
     }
 }
