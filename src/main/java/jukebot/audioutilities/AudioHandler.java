@@ -120,7 +120,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 }
                 isResetting = false;
                 LOG.debug("Terminating AudioConnection in " + this.channel.getGuild().getId());
-                Helpers.ScheduleClose(this.channel.getGuild().getAudioManager());
+                Helpers.DisconnectVoice(this.channel.getGuild().getAudioManager());
                 this.repeat = Bot.REPEATMODE.NONE;
                 this.shuffle = false;
             }

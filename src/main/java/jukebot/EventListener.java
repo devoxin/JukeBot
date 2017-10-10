@@ -45,6 +45,7 @@ public class EventListener extends ListenerAdapter {
         commands.put("reset", new Reset());
         commands.put("unqueue", new Unqueue());
         commands.put("move", new Move());
+        commands.put("scsearch", new ScSearch());
 
         aliases.put("p", "play");
         aliases.put("q", "queue");
@@ -57,6 +58,7 @@ public class EventListener extends ListenerAdapter {
         aliases.put("sel", "select");
         aliases.put("uq", "unqueue");
         aliases.put("m", "move");
+        aliases.put("sc", "scsearch");
     }
 
     @Override

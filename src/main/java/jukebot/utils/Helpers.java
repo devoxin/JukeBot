@@ -1,6 +1,11 @@
 package jukebot.utils;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
 import java.util.concurrent.Executors;
@@ -15,7 +20,7 @@ public class Helpers {
     private static int DURATION_LIMIT_NORMAL = 8000; // 2 hours
     private static int DURATION_LIMIT_PREMIUM = 20000; // 5 hours
 
-    public static void ScheduleClose(AudioManager manager) {
+    public static void DisconnectVoice(AudioManager manager) {
         if (!manager.isConnected() && !manager.isAttemptingToConnect())
             return;
 
@@ -23,6 +28,47 @@ public class Helpers {
             manager.closeAudioConnection();
             LOG.debug("Terminated AudioConnection in " + manager.getGuild().getId());
         });
+    }
+
+    public static boolean ConnectVoice(AudioManager manager, TextChannel channel, Member author) {
+
+        if (!permissions.hasMutualVoiceChannel(author)) {
+            channel.sendMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("No Mutual VoiceChannel")
+                    .setDescription("Join my VoiceChannel to use this command.")
+                    .build()
+            ).queue();
+            return false;
+        }
+
+        Permissions.CONNECT_STATUS canConnect = permissions.canConnect(author.getVoiceState().getChannel());
+
+        if (canConnect == Permissions.CONNECT_STATUS.NO_CONNECT_SPEAK) {
+            channel.sendMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("Invalid Channel Permissions")
+                    .setDescription("Your VoiceChannel doesn't allow me to Connect/Speak\n\nPlease grant me the 'Connect' and 'Speak' permissions or move to another channel.")
+                    .build()
+            ).queue();
+            return false;
+        } else if (canConnect == Permissions.CONNECT_STATUS.USER_LIMIT) {
+            channel.sendMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("VoiceChannel Full")
+                    .setDescription("Your VoiceChannel is full. Raise the user limit or grant me the 'Move Members' permission.")
+                    .build()
+            ).queue();
+            return false;
+        }
+
+        if (!manager.isConnected() && !manager.isAttemptingToConnect()) {
+            LOG.debug("Connecting to " + channel.getGuild().getId());
+            manager.openAudioConnection(author.getVoiceState().getChannel());
+            manager.setSelfDeafened(true);
+        }
+
+        return true;
     }
 
     public static QUEUE_STATUS CanQueue(AudioTrack track, String userID) {

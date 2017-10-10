@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.managers.AudioManager;
 
 import java.util.List;
 
@@ -61,6 +62,12 @@ public class Permissions {
             return CONNECT_STATUS.USER_LIMIT;
 
         return CONNECT_STATUS.CONNECT;
+    }
+
+    public boolean hasMutualVoiceChannel(Member m) {
+        final AudioManager manager = m.getGuild().getAudioManager();
+        return m.getVoiceState().inVoiceChannel() &&
+                (!manager.isAttemptingToConnect() && !manager.isConnected()) || manager.getConnectedChannel().getId().equalsIgnoreCase(m.getVoiceState().getChannel().getId());
     }
 
     public enum CONNECT_STATUS {

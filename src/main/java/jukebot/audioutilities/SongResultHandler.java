@@ -116,7 +116,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 .build()
         ).queue();
         if (this.musicManager.player.getPlayingTrack() == null && this.musicManager.handler.getQueue().isEmpty())
-            Helpers.ScheduleClose(this.e.getGuild().getAudioManager());
+            Helpers.DisconnectVoice(this.e.getGuild().getAudioManager());
     }
 
     @Override
@@ -128,7 +128,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 .build()
         ).queue();
         if (this.musicManager.player.getPlayingTrack() == null && this.musicManager.handler.getQueue().isEmpty())
-            Helpers.ScheduleClose(this.e.getGuild().getAudioManager());
+            Helpers.DisconnectVoice(this.e.getGuild().getAudioManager());
     }
 
 }

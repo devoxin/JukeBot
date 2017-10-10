@@ -21,7 +21,7 @@ public class Bot {
     private static final SessionReconnectQueue reconnectQueue = new SessionReconnectQueue();
     public static ActionWaiter waiter = new ActionWaiter();
 
-    public static final String VERSION = "6.0.21";
+    public static final String VERSION = "6.0.22";
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 
     public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
