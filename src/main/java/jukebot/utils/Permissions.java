@@ -23,8 +23,8 @@ public class Permissions {
 
     }
 
-    public boolean isBotOwner(String userID) {
-        return userID.equalsIgnoreCase(Bot.BotOwnerID);
+    public boolean isBotOwner(long userID) {
+        return userID == Bot.BotOwnerID;
     }
 
     /*public boolean isBlocked(Member m) {
@@ -33,21 +33,21 @@ public class Permissions {
 
     public boolean isElevatedUser(Member m, boolean AllowLone) {
         if (AllowLone)
-            return isALoner(m) || m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getId());
+            return isALoner(m) || m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getIdLong());
         else
-            return m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getId());
+            return m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getIdLong());
     }
 
     private boolean isALoner(Member m) {
         return (m.getVoiceState().inVoiceChannel() && m.getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count() == 1);
     }
 
-    public boolean isBaller(String userID, int tier) {
+    public boolean isBaller(long userID, int tier) {
         return getTierLevel(userID) >= tier;
     }
 
-    int getTierLevel(String userID) {
-        return isBotOwner(userID) ? 3 : Integer.parseInt(db.getTier(Long.parseLong(userID)));
+    int getTierLevel(long userID) {
+        return isBotOwner(userID) ? 3 : Integer.parseInt(db.getTier(userID));
     }
 
     public boolean canPost(TextChannel channel) {

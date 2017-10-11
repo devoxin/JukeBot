@@ -28,7 +28,7 @@ public class FastForward implements Command {
             return;
         }
 
-        if (!permissions.isElevatedUser(e.getMember(), true) || !permissions.isBaller(e.getAuthor().getId(), 2)) {
+        if (!permissions.isElevatedUser(e.getMember(), true) || !permissions.isBaller(e.getAuthor().getIdLong(), 2)) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Permission Error")

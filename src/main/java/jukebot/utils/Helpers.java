@@ -72,7 +72,7 @@ public class Helpers {
         return VOICE_STATUS.ALREADY_CONNECTED;
     }
 
-    public static QUEUE_STATUS CanQueue(AudioTrack track, String userID) {
+    public static QUEUE_STATUS CanQueue(AudioTrack track, long userID) {
         int permissionLevel = permissions.getTierLevel(userID);
 
         if (track.getInfo().isStream && permissionLevel < 1)

@@ -26,7 +26,7 @@ public class Bot {
 
     public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
-    public static String BotOwnerID = null;
+    public static long BotOwnerID = 0L;
 
     public static final Logger LOG = LogManager.getLogger("JukeBot");
 

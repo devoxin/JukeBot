@@ -25,7 +25,7 @@ public class Help implements Command {
                     .setDescription("[Click here for additional help](http://jukebot-discord.xyz/documentation)\nUse `" + db.getPrefix(e.getGuild().getIdLong()) + "help -a` to view command aliases.")
                     .addField("Playback Control", "play\npause\nstop\nresume\nskip\nforceskip\nselect\nscsearch", true)
                     .addField("General Media", "queue\nunqueue\nnow\nshuffle\nfastforward\nvolume\nsave\nrepeat", true)
-                    .addField("Misc", "debug\ninvite\nhelp\nmanage\npatreon\nprefix\nreset", true)
+                    .addField("Misc", "debug\ninvite\nhelp\ndonators\npatreon\nprefix\nreset", true)
                     .setFooter("JukeBot v" + Bot.VERSION, null)
                     .build()
             ).queue();

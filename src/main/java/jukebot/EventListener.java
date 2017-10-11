@@ -36,7 +36,7 @@ public class EventListener extends ListenerAdapter {
         commands.put("fastforward", new FastForward());
         commands.put("prefix", new Prefix());
         commands.put("volume", new Volume());
-        commands.put("manage", new Manage());
+        commands.put("donators", new Donators());
         commands.put("save", new Save());
         commands.put("repeat", new Repeat());
         commands.put("select", new Select());
@@ -137,8 +137,8 @@ public class EventListener extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent e) {
 
-        if (Bot.BotOwnerID == null)
-            e.getJDA().asBot().getApplicationInfo().queue(app -> Bot.BotOwnerID = app.getOwner().getId());
+        if (Bot.BotOwnerID == 0L)
+            e.getJDA().asBot().getApplicationInfo().queue(app -> Bot.BotOwnerID = app.getOwner().getIdLong());
 
     }
 

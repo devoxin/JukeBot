@@ -44,12 +44,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
      * Custom Events
      */
 
-    public TRACK_STATUS queue(AudioTrack track, String userID) {
+    public TRACK_STATUS queue(AudioTrack track, long userID) {
         if (Helpers.CanQueue(track, userID) != Helpers.QUEUE_STATUS.CAN_QUEUE)
             return TRACK_STATUS.LIMITED;
 
-        if (userID != null)
-            track.setUserData(userID);
+        track.setUserData(userID);
 
         if (!this.player.startTrack(track, true)) {
             this.queue.add(track);
@@ -136,7 +135,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (this.repeat == Bot.REPEATMODE.ALL)
-            this.queue(track.makeClone(), track.getUserData().toString());
+            this.queue(track.makeClone(), (long) track.getUserData());
 
         this.skipVotes.clear();
         if (!playNextCalled)

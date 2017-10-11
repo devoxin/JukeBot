@@ -28,7 +28,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        AudioHandler.TRACK_STATUS result = musicManager.handler.queue(track, e.getAuthor().getId());
+        AudioHandler.TRACK_STATUS result = musicManager.handler.queue(track, e.getAuthor().getIdLong());
         if (result == AudioHandler.TRACK_STATUS.QUEUED) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
@@ -69,7 +69,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
             } else {
 
-                AudioHandler.TRACK_STATUS result = musicManager.handler.queue(playlist.getTracks().get(0), e.getAuthor().getId());
+                AudioHandler.TRACK_STATUS result = musicManager.handler.queue(playlist.getTracks().get(0), e.getAuthor().getIdLong());
                 if (result == AudioHandler.TRACK_STATUS.QUEUED) {
                     e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
@@ -91,11 +91,11 @@ public class SongResultHandler implements AudioLoadResultHandler {
         } else {
 
             List<AudioTrack> tracks = playlist.getTracks();
-            if (tracks.size() > 100 && !permissions.isBaller(e.getAuthor().getId(), 1))
+            if (tracks.size() > 100 && !permissions.isBaller(e.getAuthor().getIdLong(), 1))
                 tracks = tracks.subList(0, 100);
 
             for (AudioTrack track : tracks) {
-                musicManager.handler.queue(track, e.getAuthor().getId());
+                musicManager.handler.queue(track, e.getAuthor().getIdLong());
             }
 
             e.getChannel().sendMessage(new EmbedBuilder()

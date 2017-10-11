@@ -52,7 +52,7 @@ public class Reset implements Command {
                 e.getGuild().getAudioManager().openAudioConnection(vc);
 
             if (clone != null && (e.getGuild().getAudioManager().isAttemptingToConnect() || e.getGuild().getAudioManager().isConnected()))
-                musicManager.handler.queue(clone, current.getUserData().toString());
+                musicManager.handler.queue(clone, (long) current.getUserData());
 
             musicManager.handler.isResetting = false;
 
