@@ -58,13 +58,13 @@ public class Permissions {
         if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK))
             return CONNECT_STATUS.NO_CONNECT_SPEAK;
 
-        if (channel.getMembers().size() >= channel.getUserLimit() && !channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
+        if (channel.getUserLimit() != 0 && channel.getMembers().size() >= channel.getUserLimit() && !channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
             return CONNECT_STATUS.USER_LIMIT;
 
         return CONNECT_STATUS.CONNECT;
     }
 
-    public boolean hasMutualVoiceChannel(Member m) {
+    boolean hasMutualVoiceChannel(Member m) {
         final AudioManager manager = m.getGuild().getAudioManager();
 
         if (!manager.isAttemptingToConnect() && !manager.isConnected())
