@@ -3,6 +3,7 @@ package jukebot.commands;
 import jukebot.DatabaseHandler;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
+import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.User;
@@ -52,41 +53,7 @@ public class Donators implements Command {
                     ).queue();
                     return;
                 }
-
-                StringBuilder t1 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
-                StringBuilder t2 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
-                StringBuilder t3 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
-
-                for (HashMap.Entry<Long, String> entry : donators.entrySet()) {
-                    User donator = e.getJDA().getUserById(entry.getKey());
-                    if (donator == null)
-                        donator = e.getJDA().retrieveUserById(entry.getKey()).complete();
-
-                    if ("1".equalsIgnoreCase(entry.getValue())) {
-                        t1.append("`")
-                                .append(entry.getKey()).append("` ")
-                                .append(donator.getName())
-                                .append("\n");
-                    } else if ("2".equalsIgnoreCase(entry.getValue())) {
-                        t2.append("`")
-                                .append(entry.getKey()).append("` ")
-                                .append(donator.getName())
-                                .append("\n");
-                    } else if ("3".equalsIgnoreCase(entry.getValue())) {
-                        t3.append("`")
-                                .append(entry.getKey()).append("` ")
-                                .append(donator.getName())
-                                .append("\n");
-                    }
-                }
-
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
-                        .addField("Tier 1", t1.toString(), true)
-                        .addField("Tier 2", t2.toString(), true)
-                        .addField("Tier 3", t3.toString(), true)
-                        .build()
-                ).queue();
+                Helpers.getAllDonators(e.getChannel(), donators);
 
             } else {
                 e.getChannel().sendMessage(new EmbedBuilder()
