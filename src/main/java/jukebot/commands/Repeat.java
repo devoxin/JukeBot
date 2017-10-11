@@ -6,16 +6,16 @@ import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class Repeat implements Command {
 
     private final Permissions permissions = new Permissions();
 
-    public void execute(MessageReceivedEvent e, String query) {
+    public void execute(GuildMessageReceivedEvent e, String query) {
 
         if (!e.getGuild().getAudioManager().isConnected()) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
@@ -26,9 +26,9 @@ public class Repeat implements Command {
 
         if (!e.getMember().getVoiceState().inVoiceChannel() ||
                 e.getGuild().getAudioManager().isConnected() && !e.getMember().getVoiceState().getChannel().getId().equalsIgnoreCase(e.getGuild().getAudioManager().getConnectedChannel().getId())) {
-                e.getTextChannel().sendMessage(new EmbedBuilder()
+                e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle("Pause")
+                    .setTitle("Repeat")
                     .setDescription("You need to be in my voicechannel to toggle repeat.")
                     .build()
             ).queue();
@@ -36,7 +36,7 @@ public class Repeat implements Command {
         }
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the DJ role and also be [a Donator!](https://www.patreon.com/Devoxin)")
@@ -62,7 +62,7 @@ public class Repeat implements Command {
                     manager.handler.repeat = Bot.REPEATMODE.NONE;
                     break;
                 default:
-                    e.getTextChannel().sendMessage(new EmbedBuilder()
+                    e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Repeat Modes")
                             .setDescription("(**S**)ingle | (**A**)ll | (**N**)one")
@@ -71,7 +71,7 @@ public class Repeat implements Command {
                     return;
             }
         } else {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Repeat Modes")
                     .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + String.valueOf(manager.handler.repeat).toLowerCase())
@@ -80,7 +80,7 @@ public class Repeat implements Command {
             return;
         }
 
-        e.getTextChannel().sendMessage(new EmbedBuilder()
+        e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("Repeat")
                 .setDescription("Repeat set to **" + String.valueOf(manager.handler.repeat).toLowerCase() + "**")

@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.managers.AudioManager;
 
 import java.util.List;
 
@@ -22,8 +23,8 @@ public class Permissions {
 
     }
 
-    public boolean isBotOwner(String userID) {
-        return db.getPropertyFromConfig("owners").contains(userID);
+    public boolean isBotOwner(long userID) {
+        return userID == Bot.BotOwnerID;
     }
 
     /*public boolean isBlocked(Member m) {
@@ -32,26 +33,50 @@ public class Permissions {
 
     public boolean isElevatedUser(Member m, boolean AllowLone) {
         if (AllowLone)
-            return isALoner(m) || m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getId());
+            return isALoner(m) || m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getIdLong());
         else
-            return m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getId());
+            return m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getIdLong());
     }
 
-    public boolean isALoner(Member m) {
+    private boolean isALoner(Member m) {
         return (m.getVoiceState().inVoiceChannel() && m.getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count() == 1);
     }
 
-    public boolean isBaller(String userID, int tier) {
-        return isBotOwner(userID) || Integer.parseInt(db.getTier(Long.parseLong(userID))) >= tier;
+    public boolean isBaller(long userID, int tier) {
+        return getTierLevel(userID) >= tier;
+    }
+
+    int getTierLevel(long userID) {
+        return isBotOwner(userID) ? 3 : Integer.parseInt(db.getTier(userID));
     }
 
     public boolean canPost(TextChannel channel) {
         return channel.canTalk() && channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_EMBED_LINKS);
     }
 
-    public boolean canConnect(VoiceChannel channel) {
-        return channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK);
+    public CONNECT_STATUS canConnect(VoiceChannel channel) {
+        if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK))
+            return CONNECT_STATUS.NO_CONNECT_SPEAK;
+
+        if (channel.getUserLimit() != 0 && channel.getMembers().size() >= channel.getUserLimit() && !channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
+            return CONNECT_STATUS.USER_LIMIT;
+
+        return CONNECT_STATUS.CONNECT;
     }
 
+    boolean hasMutualVoiceChannel(Member m) {
+        final AudioManager manager = m.getGuild().getAudioManager();
+
+        if (!manager.isAttemptingToConnect() && !manager.isConnected())
+            return m.getVoiceState().inVoiceChannel();
+
+        return manager.getConnectedChannel().getId().equalsIgnoreCase(m.getVoiceState().getChannel().getId());
+    }
+
+    public enum CONNECT_STATUS {
+        NO_CONNECT_SPEAK,
+        USER_LIMIT,
+        CONNECT
+    }
 
 }

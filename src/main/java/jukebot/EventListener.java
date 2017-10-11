@@ -1,18 +1,15 @@
 package jukebot;
 
 import jukebot.commands.*;
-import jukebot.commands.Queue;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
-import java.awt.*;
 import java.util.HashMap;
 
 import static jukebot.utils.Bot.LOG;
@@ -23,8 +20,6 @@ public class EventListener extends ListenerAdapter {
     private final DatabaseHandler db = new DatabaseHandler();
     private static HashMap<String, Command> commands = new HashMap<>();
     private static HashMap<String, String> aliases = new HashMap<>();
-
-    private static boolean hasFired = false;
 
     EventListener() {
         commands.put("play", new Play());
@@ -41,7 +36,7 @@ public class EventListener extends ListenerAdapter {
         commands.put("fastforward", new FastForward());
         commands.put("prefix", new Prefix());
         commands.put("volume", new Volume());
-        commands.put("manage", new Manage());
+        commands.put("donators", new Donators());
         commands.put("save", new Save());
         commands.put("repeat", new Repeat());
         commands.put("select", new Select());
@@ -50,6 +45,7 @@ public class EventListener extends ListenerAdapter {
         commands.put("reset", new Reset());
         commands.put("unqueue", new Unqueue());
         commands.put("move", new Move());
+        commands.put("scsearch", new ScSearch());
 
         aliases.put("p", "play");
         aliases.put("q", "queue");
@@ -62,12 +58,13 @@ public class EventListener extends ListenerAdapter {
         aliases.put("sel", "select");
         aliases.put("uq", "unqueue");
         aliases.put("m", "move");
+        aliases.put("sc", "scsearch");
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent e) {
+    public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
 
-        if (e.getGuild() == null || !e.getGuild().isAvailable() || e.getAuthor().isBot())
+        if (!e.getGuild().isAvailable() || e.getAuthor().isBot())
             return;
 
         final String prefix = db.getPrefix(e.getGuild().getIdLong());
@@ -75,10 +72,10 @@ public class EventListener extends ListenerAdapter {
         if (!e.getMessage().getContent().startsWith(prefix) && !e.getMessage().getMentionedUsers().contains(e.getJDA().getSelfUser()))
             return;
 
-        if (e.getMessage().getMentionedUsers().contains(e.getJDA().getSelfUser()) && permissions.canPost(e.getTextChannel())) {
+        if (e.getMessage().getMentionedUsers().contains(e.getJDA().getSelfUser()) && permissions.canPost(e.getChannel())) {
             LOG.debug("Received mention from " + e.getAuthor().getName());
             if (e.getMessage().getContent().contains("help")) {
-                e.getTextChannel().sendMessage(new EmbedBuilder()
+                e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Mention | Help")
                         .setDescription("Server Prefix: " + db.getPrefix(e.getGuild().getIdLong()) + "\n\nYou can reset the prefix using '@" + e.getJDA().getSelfUser().getName() + " rp'")
@@ -86,9 +83,9 @@ public class EventListener extends ListenerAdapter {
                 ).queue();
             }
 
-            if (e.getMessage().getContent().contains("rp") && permissions.canPost(e.getTextChannel())) {
+            if (e.getMessage().getContent().contains("rp") && permissions.canPost(e.getChannel())) {
                 if (!permissions.isElevatedUser(e.getMember(), false)) {
-                    e.getTextChannel().sendMessage(new EmbedBuilder()
+                    e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Mention | Prefix Reset")
                             .setDescription("You do not have permission to reset the prefix. (Requires DJ role)")
@@ -96,7 +93,7 @@ public class EventListener extends ListenerAdapter {
                     ).queue();
                 }
                 final boolean result = db.setPrefix(e.getGuild().getIdLong(), db.getPropertyFromConfig("prefix"));
-                e.getTextChannel().sendMessage(new EmbedBuilder()
+                e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Mention | Prefix Reset")
                         .setDescription(result ? "Server prefix reset to '" + db.getPropertyFromConfig("prefix") + "'" : "Failed to reset prefix")
@@ -115,17 +112,17 @@ public class EventListener extends ListenerAdapter {
         if (!commands.containsKey(command))
             return;
 
-        if (!permissions.canPost(e.getTextChannel())) {
-            final PrivateChannel DMChannel = e.getAuthor().openPrivateChannel().complete();
-            DMChannel.sendMessage("I cannot send messages/embed links in " + e.getTextChannel().getAsMention() + "\nSwitch to another channel.")
-                    .queue(null, error -> LOG.warn("Couldn't DM " + e.getAuthor().getName()));
+        if (!permissions.canPost(e.getChannel())) {
+            e.getAuthor().openPrivateChannel().queue(dm ->
+                dm.sendMessage("I cannot send messages/embed links in " + e.getChannel().getAsMention() + "\nSwitch to another channel.")
+                        .queue(null, error -> LOG.warn("Couldn't DM " + e.getAuthor().getName()))
+            );
             return;
         }
 
         LOG.debug("Executing command '" + command + "' with args '" + query + "' from " + e.getAuthor().getName());
         commands.get(command).execute(e, query);
 
-        super.onMessageReceived(e);
     }
 
     @Override
@@ -135,18 +132,14 @@ public class EventListener extends ListenerAdapter {
         if (bots / (double) e.getGuild().getMembers().size() > 0.6)
             e.getGuild().leave().queue();
 
-        super.onGuildJoin(e);
     }
 
     @Override
     public void onReady(ReadyEvent e) {
-        if (!hasFired && e.getJDA().getSelfUser().getId().equals("314145804807962634")) {
-            hasFired = true;
-            Bot.EmbedColour = Color.decode("#FDD744");
-        }
 
+        if (Bot.BotOwnerID == 0L)
+            e.getJDA().asBot().getApplicationInfo().queue(app -> Bot.BotOwnerID = app.getOwner().getIdLong());
 
-        super.onReady(e);
     }
 
 }

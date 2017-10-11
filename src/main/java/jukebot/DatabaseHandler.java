@@ -3,6 +3,7 @@ package jukebot;
 import jukebot.utils.Bot;
 
 import java.sql.*;
+import java.util.HashMap;
 
 import static jukebot.utils.Bot.LOG;
 
@@ -69,6 +70,14 @@ public class DatabaseHandler {
 
             boolean entryExists = state.executeQuery().next();
 
+            if (Integer.parseInt(newTier) == 0) {
+                if (!entryExists)
+                    return true;
+                PreparedStatement update = con.prepareStatement("DELETE FROM donators WHERE id = ?");
+                update.setLong(1, id);
+                return update.executeUpdate() == 1;
+            }
+
             if (entryExists) {
                 PreparedStatement update = con.prepareStatement("UPDATE donators SET tier = ? WHERE id = ?");
                 update.setString(1, newTier);
@@ -108,6 +117,30 @@ public class DatabaseHandler {
 
             LOG.error("Failed to retrieve user tier");
             return "0";
+
+        }
+
+    }
+
+    public HashMap<Long, String> getAllDonators() {
+
+        try (Connection con = connect()) {
+
+            Statement state = con.createStatement();
+            ResultSet results = state.executeQuery("SELECT * FROM donators");
+
+            HashMap<Long, String> donators = new HashMap<>();
+
+            while (results.next())
+                donators.put(results.getLong(1), results.getString(2));
+
+            return donators;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            LOG.error("Failed to retrieve all donators from table");
+            return null;
 
         }
 

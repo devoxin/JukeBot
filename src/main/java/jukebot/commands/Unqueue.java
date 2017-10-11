@@ -7,21 +7,20 @@ import jukebot.utils.Command;
 import jukebot.utils.Parsers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class Unqueue implements Command {
 
     final Permissions permissions = new Permissions();
 
-    public void execute(MessageReceivedEvent e, String query) {
+    public void execute(GuildMessageReceivedEvent e, String query) {
 
         final ArrayList<AudioTrack> queue = JukeBot.getGuildMusicManager(e.getGuild()).handler.getQueue();
 
         if (queue.size() == 0) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Queue is empty")
                     .setDescription("There is nothing to unqueue.")
@@ -31,7 +30,7 @@ public class Unqueue implements Command {
         }
 
         if (query.length() == 0) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Specify song position")
                     .setDescription("You need to specify the position of the song in the queue.")
@@ -43,7 +42,7 @@ public class Unqueue implements Command {
         final int selected = Parsers.Number(query, 0);
 
         if (selected < 1 || selected > queue.size()) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Invalid position specified")
                     .setDescription("You need to specify a valid number.")
@@ -55,7 +54,7 @@ public class Unqueue implements Command {
         final AudioTrack selectedTrack = queue.get(selected - 1);
 
         if (!selectedTrack.getUserData().equals(e.getAuthor().getId()) && !permissions.isElevatedUser(e.getMember(), false)) {
-            e.getTextChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Cannot unqueue track")
                     .setDescription("You can only unqueue tracks that weren't queued by you if you have the DJ role.")
@@ -66,7 +65,7 @@ public class Unqueue implements Command {
 
         queue.remove(selected - 1);
 
-        e.getTextChannel().sendMessage(new EmbedBuilder()
+        e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("Track Unqueued")
                 .setDescription("Removed **" + selectedTrack.getInfo().title + "** from the queue.")

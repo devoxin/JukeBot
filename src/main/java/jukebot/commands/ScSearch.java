@@ -9,15 +9,15 @@ import jukebot.utils.Helpers;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-public class Play implements Command {
+public class ScSearch implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle("Specify something")
-                    .setDescription("YouTube: Search Term/URL\nSoundCloud: URL")
+                    .setTitle("No Search Query Specified")
+                    .setDescription("Specify a term to search SoundCloud for")
                     .build()
             ).queue();
             return;
@@ -32,12 +32,7 @@ public class Play implements Command {
         if (status == Helpers.VOICE_STATUS.CONNECTED)
             musicManager.handler.setChannel(e.getChannel());
 
-        final String userQuery = query.replaceAll("[<>]", "");
-
-        if (userQuery.startsWith("http"))
-            Bot.playerManager.loadItem(userQuery, new SongResultHandler(e, musicManager, false));
-        else
-            Bot.playerManager.loadItem( "ytsearch:" + userQuery, new SongResultHandler(e, musicManager, false));
+        Bot.playerManager.loadItem("scsearch:" + query, new SongResultHandler(e, musicManager, false));
 
     }
 }

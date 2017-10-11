@@ -21,15 +21,19 @@ import static jukebot.utils.Bot.LOG;
 public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {
 
     private final Permissions permissions = new Permissions();
+
     private AudioPlayer player;
     private AudioFrame lastFrame;
+
     private ArrayList<AudioTrack> queue = new ArrayList<>();
     private ArrayList<String> skipVotes = new ArrayList<>();
     private TextChannel channel;
+
     public Bot.REPEATMODE repeat = Bot.REPEATMODE.NONE;
     public boolean shuffle = false;
 
     private boolean playNextCalled = false;
+    public boolean isResetting = false;
     private String lastPlayed = "";
 
     AudioHandler(AudioPlayer player) {
@@ -40,16 +44,17 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
      * Custom Events
      */
 
-    public int queue(AudioTrack track, String userID) {
-        if (track.getInfo().isStream && !permissions.isBaller(userID, 1) || !track.getInfo().isStream && (track.getDuration() / 1000 > 4000 && !permissions.isBaller(userID, 1) || track.getDuration() / 1000 > 20000))
-            return -1;
-        if (userID != null)
-            track.setUserData(userID);
+    public TRACK_STATUS queue(AudioTrack track, long userID) {
+        if (Helpers.CanQueue(track, userID) != Helpers.QUEUE_STATUS.CAN_QUEUE)
+            return TRACK_STATUS.LIMITED;
+
+        track.setUserData(userID);
+
         if (!this.player.startTrack(track, true)) {
             this.queue.add(track);
-            return 1;
+            return TRACK_STATUS.QUEUED;
         }
-        return 0;
+        return TRACK_STATUS.PLAYING;
     }
 
     public ArrayList<AudioTrack> getQueue() {
@@ -104,7 +109,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 LOG.debug("Queue ended in " + this.channel.getGuild().getId());
                 this.player.stopTrack();
                 this.player.setVolume(100);
-                if (permissions.canPost(this.channel)) {
+                if (permissions.canPost(this.channel) && !isResetting) {
                     this.channel.sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Queue Concluded!")
@@ -112,9 +117,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                             .build()
                     ).queue(null, e -> LOG.warn("Failed to post 'QUEUE_END' message to channel " + this.channel.getId()));
                 }
+                isResetting = false;
                 LOG.debug("Terminating AudioConnection in " + this.channel.getGuild().getId());
-                Helpers.ScheduleClose(this.channel.getGuild().getAudioManager());
-                //this.channel.getGuild().getAudioManager().closeAudioConnection();
+                Helpers.DisconnectVoice(this.channel.getGuild().getAudioManager());
                 this.repeat = Bot.REPEATMODE.NONE;
                 this.shuffle = false;
             }
@@ -130,7 +135,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         if (this.repeat == Bot.REPEATMODE.ALL)
-            this.queue(track.makeClone(), track.getUserData().toString());
+            this.queue(track.makeClone(), (long) track.getUserData());
 
         this.skipVotes.clear();
         if (!playNextCalled)
@@ -141,7 +146,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         this.player.setPaused(false);
         if (permissions.canPost(this.channel)) {
-            if (this.repeat == Bot.REPEATMODE.SINGLE && this.lastPlayed.equals(track.getIdentifier()))
+            if (this.lastPlayed.equals(track.getIdentifier()))
                 return;
 
             this.lastPlayed = track.getIdentifier();
@@ -185,6 +190,12 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public boolean isOpus() {
         return true;
+    }
+
+    public enum TRACK_STATUS {
+        PLAYING,
+        QUEUED,
+        LIMITED
     }
 
 }

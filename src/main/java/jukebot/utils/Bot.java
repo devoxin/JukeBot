@@ -21,10 +21,12 @@ public class Bot {
     private static final SessionReconnectQueue reconnectQueue = new SessionReconnectQueue();
     public static ActionWaiter waiter = new ActionWaiter();
 
-    public static final String VERSION = "6.0.21";
+    public static final String VERSION = "6.0.22";
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+
     public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
+    public static long BotOwnerID = 0L;
 
     public static final Logger LOG = LogManager.getLogger("JukeBot");
 
@@ -41,7 +43,7 @@ public class Bot {
             try {
                 EmbedColour = Color.decode(colour);
             } catch (Exception e) {
-                LOG.error("Failed to decode 'colour' property in DB. Did you specify as a hex?");
+                LOG.error("Failed to decode 'colour' property in DB. Did you specify a hex?");
             }
 
         YoutubeAudioSourceManager YTSM = new YoutubeAudioSourceManager();
@@ -55,6 +57,7 @@ public class Bot {
         AudioSourceManagers.registerRemoteSources(playerManager);
 
     }
+
     public enum REPEATMODE {
         SINGLE,
         ALL,

@@ -14,5 +14,5 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 jukebot.db
-JukeBot.jar
-LavaBot.jar
+out/
+.idea/
