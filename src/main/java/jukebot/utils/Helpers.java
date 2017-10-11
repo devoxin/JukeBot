@@ -89,7 +89,7 @@ public class Helpers {
     }
 
     public static void getAllDonators(TextChannel channel, HashMap<Long, String> donators) {
-        executor.execute(() -> {
+        executor.execute(() -> { // THREAD ABUUUUUSE
             Message m = channel.sendMessage("Please wait...").complete();
 
             StringBuilder t1 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
