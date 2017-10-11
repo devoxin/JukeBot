@@ -22,7 +22,7 @@ public class Help implements Command {
         else {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setDescription("[Click here for additional help](http://jukebot-discord.xyz/documentation)\nUse `" + db.getPrefix(e.getGuild().getIdLong()) + "help -a` to view command aliases.")
+                    .setDescription("[Click here for additional help](http://jukebot.xyz/documentation)\nUse `" + db.getPrefix(e.getGuild().getIdLong()) + "help -a` to view command aliases.")
                     .addField("Playback Control", "play\npause\nstop\nresume\nskip\nforceskip\nselect\nscsearch", true)
                     .addField("General Media", "queue\nunqueue\nnow\nshuffle\nfastforward\nvolume\nsave\nrepeat", true)
                     .addField("Misc", "debug\ninvite\nhelp\ndonators\npatreon\nprefix\nreset", true)
