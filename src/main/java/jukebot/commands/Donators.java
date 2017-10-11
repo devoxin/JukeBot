@@ -5,6 +5,7 @@ import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.HashMap;
@@ -57,21 +58,26 @@ public class Donators implements Command {
                 StringBuilder t3 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
 
                 for (HashMap.Entry<Long, String> entry : donators.entrySet()) {
-                    if ("1".equalsIgnoreCase(entry.getValue()))
+                    User donator = e.getJDA().getUserById(entry.getKey());
+                    if (donator == null)
+                        donator = e.getJDA().retrieveUserById(entry.getKey()).complete();
+
+                    if ("1".equalsIgnoreCase(entry.getValue())) {
                         t1.append("`")
                                 .append(entry.getKey()).append("` ")
-                                .append(e.getJDA().retrieveUserById(entry.getKey()).complete().getName())
+                                .append(donator.getName())
                                 .append("\n");
-                    else if ("2".equalsIgnoreCase(entry.getValue()))
+                    } else if ("2".equalsIgnoreCase(entry.getValue())) {
                         t2.append("`")
                                 .append(entry.getKey()).append("` ")
-                                .append(e.getJDA().retrieveUserById(entry.getKey()).complete().getName())
+                                .append(donator.getName())
                                 .append("\n");
-                    else if ("3".equalsIgnoreCase(entry.getValue()))
+                    } else if ("3".equalsIgnoreCase(entry.getValue())) {
                         t3.append("`")
                                 .append(entry.getKey()).append("` ")
-                                .append(e.getJDA().retrieveUserById(entry.getKey()).complete().getName())
+                                .append(donator.getName())
                                 .append("\n");
+                    }
                 }
 
                 e.getChannel().sendMessage(new EmbedBuilder()
