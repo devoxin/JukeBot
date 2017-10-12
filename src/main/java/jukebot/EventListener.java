@@ -21,7 +21,7 @@ public class EventListener extends ListenerAdapter {
     private static HashMap<String, Command> commands = new HashMap<>();
     private static HashMap<String, String> aliases = new HashMap<>();
 
-    EventListener() {
+    public EventListener() {
         commands.put("play", new Play());
         commands.put("skip", new Skip());
         commands.put("queue", new Queue());

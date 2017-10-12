@@ -29,7 +29,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private ArrayList<String> skipVotes = new ArrayList<>();
     private TextChannel channel;
 
-    public Bot.REPEATMODE repeat = Bot.REPEATMODE.NONE;
+    public REPEATMODE repeat = REPEATMODE.NONE;
     public boolean shuffle = false;
 
     private boolean playNextCalled = false;
@@ -89,11 +89,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         try {
             AudioTrack nextTrack = null;
 
-            if (this.shuffle && (this.repeat == Bot.REPEATMODE.SINGLE || track == null)) {
+            if (this.shuffle && (this.repeat == REPEATMODE.SINGLE || track == null)) {
                 if (!this.queue.isEmpty())
                     nextTrack = this.queue.remove(new Random().nextInt(this.queue.size()));
 
-            } else if (track != null && this.repeat == Bot.REPEATMODE.SINGLE) {
+            } else if (track != null && this.repeat == REPEATMODE.SINGLE) {
                 nextTrack = track.makeClone();
                 nextTrack.setUserData(track.getUserData());
 
@@ -120,7 +120,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 isResetting = false;
                 LOG.debug("Terminating AudioConnection in " + this.channel.getGuild().getId());
                 Helpers.DisconnectVoice(this.channel.getGuild().getAudioManager());
-                this.repeat = Bot.REPEATMODE.NONE;
+                this.repeat = REPEATMODE.NONE;
                 this.shuffle = false;
             }
         } finally {
@@ -134,12 +134,12 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        if (this.repeat == Bot.REPEATMODE.ALL)
+        if (this.repeat == REPEATMODE.ALL)
             this.queue(track.makeClone(), (long) track.getUserData());
 
         this.skipVotes.clear();
         if (!playNextCalled)
-            playNext(this.repeat == Bot.REPEATMODE.SINGLE ? track : null);
+            playNext(this.repeat == REPEATMODE.SINGLE ? track : null);
     }
 
     @Override
@@ -196,6 +196,12 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         PLAYING,
         QUEUED,
         LIMITED
+    }
+
+    public enum REPEATMODE {
+        SINGLE,
+        ALL,
+        NONE
     }
 
 }

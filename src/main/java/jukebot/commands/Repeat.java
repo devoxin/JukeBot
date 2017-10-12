@@ -1,6 +1,7 @@
 package jukebot.commands;
 
 import jukebot.JukeBot;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
@@ -51,15 +52,15 @@ public class Repeat implements Command {
             switch (query.toLowerCase()) {
                 case "a":
                 case "all":
-                    manager.handler.repeat = Bot.REPEATMODE.ALL;
+                    manager.handler.repeat = AudioHandler.REPEATMODE.ALL;
                     break;
                 case "s":
                 case "single":
-                    manager.handler.repeat = Bot.REPEATMODE.SINGLE;
+                    manager.handler.repeat = AudioHandler.REPEATMODE.ALL;
                     break;
                 case "n":
                 case "none":
-                    manager.handler.repeat = Bot.REPEATMODE.NONE;
+                    manager.handler.repeat = AudioHandler.REPEATMODE.ALL;
                     break;
                 default:
                     e.getChannel().sendMessage(new EmbedBuilder()
