@@ -3,9 +3,9 @@ package jukebot.commands;
 import jukebot.DatabaseHandler;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
-import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -55,7 +55,9 @@ public class Donators implements Command {
                     ).queue();
                     return;
                 }
-              
+
+                Message m = e.getChannel().sendMessage("Please wait...").complete();
+
                 StringBuilder t1 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
                 StringBuilder t2 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
                 StringBuilder t3 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
@@ -69,27 +71,17 @@ public class Donators implements Command {
                 for (HashMap.Entry<Long, String> entry : donatorsMap.entrySet()) {
                     long id = entry.getKey();
                     String level = entry.getValue();
-                    User donator = e.getJDA().getUserById(entry.getKey());
-                    if (donator == null) {
-                        e.getJDA().retrieveUserById(entry.getKey()).queue(u -> {
-                            donatorsList.add(new Donator(u.getName(), level, id));
-                            if (donatorsList.size() == numOfDonators) {
-                                usersFuture.complete(donatorsList);
-                            }
-                        }, t -> {
-                            donatorsList.add(new Donator("Unknown User", level, id));
-                            if (donatorsList.size() == numOfDonators) {
-                                usersFuture.complete(donatorsList);
-                            }
-                        });
-                    }
-                    else {
-                        donatorsList.add(new Donator(donator.getName(), level, id));
-                    }
-                    if (donatorsList.size() == numOfDonators) {
-                        usersFuture.complete(donatorsList);
-                        break;
-                    }
+                    e.getJDA().retrieveUserById(entry.getKey()).queue(u -> {
+                        donatorsList.add(new Donator(u.getName(), level, id));
+                        if (donatorsList.size() == numOfDonators) {
+                            usersFuture.complete(donatorsList);
+                        }
+                    }, t -> {
+                        donatorsList.add(new Donator("Unknown User", level, id));
+                        if (donatorsList.size() == numOfDonators) {
+                            usersFuture.complete(donatorsList);
+                        }
+                    });
                 }
                 usersFuture.thenAcceptAsync(list -> {
                     for (Donator d : list) {
@@ -110,7 +102,7 @@ public class Donators implements Command {
                                     .append("\n");
                         }
                     }
-                    e.getChannel().sendMessage(new EmbedBuilder()
+                    m.editMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .addField("Tier 1", t1.toString(), true)
                             .addField("Tier 2", t2.toString(), true)
