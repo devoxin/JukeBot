@@ -75,6 +75,11 @@ public class Donators implements Command {
                             if (donatorsList.size() == numOfDonators) {
                                 usersFuture.complete(donatorsList);
                             }
+                        }, t -> {
+                            donatorsList.add(new Donator("Unknown User", level, id));
+                            if (donatorsList.size() == numOfDonators) {
+                                usersFuture.complete(donatorsList);
+                            }
                         });
                     }
                     else {
