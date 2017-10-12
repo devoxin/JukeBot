@@ -3,11 +3,11 @@ package jukebot.utils;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -86,7 +86,43 @@ public class Helpers {
         }
 
         return QUEUE_STATUS.CAN_QUEUE;
+    }
 
+    public static void getAllDonators(TextChannel channel, HashMap<Long, String> donators) {
+        executor.execute(() -> { // THREAD ABUUUUUSE
+            Message m = channel.sendMessage("Please wait...").complete();
+
+            StringBuilder t1 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
+            StringBuilder t2 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
+            StringBuilder t3 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
+
+            for (HashMap.Entry<Long, String> entry : donators.entrySet()) {
+                if ("1".equalsIgnoreCase(entry.getValue())) {
+                    t1.append("`")
+                            .append(entry.getKey()).append("` ")
+                            .append(channel.getJDA().retrieveUserById(entry.getKey()).complete().getName())
+                            .append("\n");
+                } else if ("2".equalsIgnoreCase(entry.getValue())) {
+                    t2.append("`")
+                            .append(entry.getKey()).append("` ")
+                            .append(channel.getJDA().retrieveUserById(entry.getKey()).complete().getName())
+                            .append("\n");
+                } else if ("3".equalsIgnoreCase(entry.getValue())) {
+                    t3.append("`")
+                            .append(entry.getKey()).append("` ")
+                            .append(channel.getJDA().retrieveUserById(entry.getKey()).complete().getName())
+                            .append("\n");
+                }
+            }
+
+            m.editMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .addField("Tier 1", t1.toString(), true)
+                    .addField("Tier 2", t2.toString(), true)
+                    .addField("Tier 3", t3.toString(), true)
+                    .build()
+            ).queue();
+        });
     }
 
     public enum QUEUE_STATUS {

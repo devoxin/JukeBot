@@ -3,6 +3,7 @@ package jukebot.commands;
 import jukebot.DatabaseHandler;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
+import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.User;
@@ -54,7 +55,7 @@ public class Donators implements Command {
                     ).queue();
                     return;
                 }
-
+              
                 StringBuilder t1 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
                 StringBuilder t2 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
                 StringBuilder t3 = new StringBuilder().append("\u200B"); // Fail-safe in case no donators exist in this tier
@@ -117,8 +118,6 @@ public class Donators implements Command {
                             .build()
                     ).queue();
                 });
-
-
             } else {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
