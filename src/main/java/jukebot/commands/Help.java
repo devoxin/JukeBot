@@ -15,8 +15,8 @@ public class Help implements Command {
         if (query.contains("-a"))
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .addField("Alias", "p\nq\nfs\nr\nps\nn\nff\nvol\nsel\nuq\nsc", true)
-                    .addField("Relative Command", "play\nqueue\nforceskip\nresume\npause\nnow\nfastforward\nvolume\nselect\nunqueue\nscsearch", true)
+                    .addField("Alias", "p\nq\nfs\nr\nps\nn\nff\nvol\nsel\nuq\nsc\nph", true)
+                    .addField("Relative Command", "play\nqueue\nforceskip\nresume\npause\nnow\nfastforward\nvolume\nselect\nunqueue\nscsearch\nposthere", true)
                     .build()
             ).queue();
         else {
@@ -25,7 +25,7 @@ public class Help implements Command {
                     .setDescription("[Click here for additional help](http://jukebot.xyz/documentation)\nUse `" + db.getPrefix(e.getGuild().getIdLong()) + "help -a` to view command aliases.")
                     .addField("Playback Control", "play\npause\nstop\nresume\nskip\nforceskip\nselect\nscsearch", true)
                     .addField("General Media", "queue\nunqueue\nnow\nshuffle\nfastforward\nvolume\nsave\nrepeat", true)
-                    .addField("Misc", "debug\ninvite\nhelp\ndonators\npatreon\nprefix\nreset", true)
+                    .addField("Misc", "prefix\nposthere\nreset\nhelp\ninvite\npatreon\ndebug\ndonators", true)
                     .setFooter("JukeBot v" + Bot.VERSION, null)
                     .build()
             ).queue();

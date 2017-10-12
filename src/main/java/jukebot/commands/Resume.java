@@ -14,7 +14,7 @@ public class Resume implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        if (!e.getGuild().getAudioManager().isConnected()) {
+        if (JukeBot.getGuildMusicManager(e.getGuild()).player.getPlayingTrack() == null) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")

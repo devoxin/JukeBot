@@ -13,7 +13,7 @@ public class Skip implements Command {
 
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
 
-        if (!e.getGuild().getAudioManager().isConnected() || musicManager.player.getPlayingTrack() == null) {
+        if (musicManager.player.getPlayingTrack() == null) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
