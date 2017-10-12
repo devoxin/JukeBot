@@ -61,8 +61,6 @@ public class Donators implements Command {
 
                 final int numOfDonators = donatorsMap.size();
 
-                System.out.println("Num of donors: " + numOfDonators);
-
                 CompletableFuture<List<Donator>> usersFuture = new CompletableFuture<>();
 
                 List<Donator> donatorsList = new ArrayList<>();
@@ -72,9 +70,7 @@ public class Donators implements Command {
                     String level = entry.getValue();
                     User donator = e.getJDA().getUserById(entry.getKey());
                     if (donator == null) {
-                        System.out.println("retrieving user " + id);
                         e.getJDA().retrieveUserById(entry.getKey()).queue(u -> {
-                            System.out.println("adding user " + id + "\t size: " + donatorsList.size());
                             donatorsList.add(new Donator(u.getName(), level, id));
                             if (donatorsList.size() == numOfDonators) {
                                 usersFuture.complete(donatorsList);
@@ -82,7 +78,6 @@ public class Donators implements Command {
                         });
                     }
                     else {
-                        System.out.println("adding user " + id + "\t size: " + donatorsList.size());
                         donatorsList.add(new Donator(donator.getName(), level, id));
                     }
                     if (donatorsList.size() == numOfDonators) {
