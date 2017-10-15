@@ -17,7 +17,7 @@ public class TrackAction {
     public final GuildMusicManager manager;
     public final ScheduledExecutorService waiter = Executors.newSingleThreadScheduledExecutor();
 
-    public TrackAction(Message m, List<AudioTrack> tracks, GuildMusicManager manager, String UserID) {
+    public TrackAction(Message m, List<AudioTrack> tracks, GuildMusicManager manager, Long UserID) {
         this.m = m;
         this.tracks = tracks;
         this.manager = manager;

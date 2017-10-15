@@ -65,7 +65,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                         .setTitle("Select Song")
                         .setDescription(selector.toString().trim())
                         .build()
-                ).queue(m -> Bot.waiter.AddAction(e.getAuthor().getId(), m, tracks, musicManager));
+                ).queue(m -> Bot.waiter.AddAction(e.getAuthor().getIdLong(), m, tracks, musicManager));
 
             } else {
 
