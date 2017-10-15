@@ -29,7 +29,7 @@ public class Helpers {
 
     public static VOICE_STATUS ConnectVoice(AudioManager manager, TextChannel channel, Member author) {
 
-        if (!permissions.hasMutualVoiceChannel(author)) {
+        if (!permissions.CheckVoiceChannel(author)) {
             channel.sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No Mutual VoiceChannel")

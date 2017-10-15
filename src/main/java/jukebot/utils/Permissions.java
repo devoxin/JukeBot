@@ -60,13 +60,11 @@ public class Permissions {
         return CONNECT_STATUS.CONNECT;
     }
 
-    boolean hasMutualVoiceChannel(Member m) {
+    boolean CheckVoiceChannel(Member m) {
         final AudioManager manager = m.getGuild().getAudioManager();
 
-        if (!manager.isAttemptingToConnect() && !manager.isConnected())
-            return m.getVoiceState().inVoiceChannel();
+        return m.getVoiceState().inVoiceChannel() && (!manager.isAttemptingToConnect() && !manager.isConnected() || manager.getConnectedChannel().getId().equalsIgnoreCase(m.getVoiceState().getChannel().getId()));
 
-        return manager.getConnectedChannel().getId().equalsIgnoreCase(m.getVoiceState().getChannel().getId());
     }
 
     public enum CONNECT_STATUS {
