@@ -57,7 +57,7 @@ public class ActionWaiter extends ListenerAdapter {
             t.m.editMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Song Unavailable")
-                    .setDescription("Livestreams or long tracks cannot be .\nYou can queue longer songs & livestreams by [becoming a donator](https://www.patreon.com/Devoxin)")
+                    .setDescription("Livestreams/Long tracks are unavailable.\nYou can queue them by [becoming a donator](https://www.patreon.com/Devoxin)")
                     .build()
             ).queue();
         } else if (AudioHandler.TRACK_STATUS.PLAYING == result){

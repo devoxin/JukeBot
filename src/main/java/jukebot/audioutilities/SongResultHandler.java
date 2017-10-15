@@ -40,7 +40,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Song Unavailable")
-                    .setDescription("The song is either a livestream or exceeds the duration limits.\nYou can queue longer songs & livestreams by [becoming a donator](https://www.patreon.com/Devoxin)")
+                    .setDescription("Livestreams/Long tracks are unavailable.\nYou can queue them by [becoming a donator](https://www.patreon.com/Devoxin)")
                     .build()
             ).queue();
         }
@@ -81,7 +81,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                     e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Song Unavailable")
-                            .setDescription("The song is either a livestream or exceeds the duration limits.\nYou can queue longer songs & livestreams by [becoming a donator](https://www.patreon.com/Devoxin)")
+                            .setDescription("Livestreams/Long tracks are unavailable.\nYou can queue them by [becoming a donator](https://www.patreon.com/Devoxin)")
                             .build()
                     ).queue();
                 }
