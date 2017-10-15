@@ -29,7 +29,8 @@ public class JukeBot {
         LOG.info(".:: JukeBot " + Bot.VERSION + " ::.\n" +
                 ":: JDA: " + JDAInfo.VERSION + "\n" +
                 ":: Lavaplayer: " + PlayerLibrary.VERSION + "\n" +
-                ":: SQLite: " + SQLiteJDBCLoader.getVersion());
+                ":: SQLite: " + SQLiteJDBCLoader.getVersion() + "\n" +
+                ":: JVM running in " + System.getProperty("sun.arch.data.model") + "-bit mode");
 
         Bot.Configure();
 
