@@ -34,7 +34,7 @@ public class Skip implements Command {
             return;
         }
 
-        final boolean skipAdded = musicManager.handler.voteSkip(e.getAuthor().getId());
+        final boolean skipAdded = musicManager.handler.voteSkip(e.getAuthor().getIdLong());
 
         final int Votes = musicManager.handler.getVotes();
         final long NeededVotes = Math.round(((double) e.getMember().getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count()) / 2);

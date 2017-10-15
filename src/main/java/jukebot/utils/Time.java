@@ -10,7 +10,7 @@ public class Time {
         int minutes = (int) Math.floor((((time % 31536000) % 86400) % 3600) / 60);
         int seconds = (int) Math.round((((time % 31536000) % 86400) % 3600) % 60);
 
-        String sdays    = days    > 9 ? "" + days    : "0" + days;
+        String sdays    = days    > 9 ? Integer.toString(days)    : "0" + days;
         String shours   = hours   > 9 ? "" + hours   : "0" + hours;
         String sminutes = minutes > 9 ? "" + minutes : "0" + minutes;
         String sseconds = seconds > 9 ? "" + seconds : "0" + seconds;

@@ -35,30 +35,31 @@ public class ActionWaiter extends ListenerAdapter {
 
         int i = Parsers.Number(e.getMessage().getContent(), -1);
 
-        if (i >= 0 && i <= t.tracks.size()) {
-            if (e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE))
-                e.getMessage().delete().queue();
+        if (i <= 0 || i > t.tracks.size()) {
+            t.m.editMessage(new EmbedBuilder().setColor(Bot.EmbedColour).setTitle("Selection Cancelled").setDescription("An invalid option was specified").build()).queue();
+            return;
+        }
 
-            AudioTrack track = t.tracks.get(i - 1);
-            AudioHandler.TRACK_STATUS result = t.manager.handler.queue(track, e.getAuthor().getIdLong());
-            if (result == AudioHandler.TRACK_STATUS.QUEUED) {
-                t.m.editMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
-                        .setTitle("Song Enqueued")
-                        .setDescription(track.getInfo().title)
-                        .build()
-                ).queue();
-            } else if (result == AudioHandler.TRACK_STATUS.LIMITED) {
-                t.m.editMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
-                        .setTitle("Song Unavailable")
-                        .setDescription("The song is either a livestream or exceeds the duration limits.\nYou can queue longer songs & livestreams by [becoming a donator](https://www.patreon.com/Devoxin)")
-                        .build()
-                ).queue();
-            } else {
-                t.m.delete().queue();
-            }
-        } else {
+        if (e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE))
+            e.getMessage().delete().queue();
+
+        AudioTrack track = t.tracks.get(i - 1);
+        AudioHandler.TRACK_STATUS result = t.manager.handler.queue(track, e.getAuthor().getIdLong());
+        if (AudioHandler.TRACK_STATUS.QUEUED == result) {
+            t.m.editMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("Song Enqueued")
+                    .setDescription(track.getInfo().title)
+                    .build()
+            ).queue();
+        } else if (AudioHandler.TRACK_STATUS.LIMITED == result) {
+            t.m.editMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("Song Unavailable")
+                    .setDescription("Livestreams or long tracks cannot be .\nYou can queue longer songs & livestreams by [becoming a donator](https://www.patreon.com/Devoxin)")
+                    .build()
+            ).queue();
+        } else if (AudioHandler.TRACK_STATUS.PLAYING == result){
             t.m.delete().queue();
         }
 

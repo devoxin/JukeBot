@@ -26,14 +26,13 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private AudioFrame lastFrame;
 
     private ArrayList<AudioTrack> queue = new ArrayList<>();
-    private ArrayList<String> skipVotes = new ArrayList<>();
+    private ArrayList<Long> skipVotes = new ArrayList<>();
     private TextChannel channel;
 
     public REPEATMODE repeat = REPEATMODE.NONE;
     public boolean shuffle = false;
 
     private boolean playNextCalled = false;
-    public boolean isResetting = false;
     private String lastPlayed = "";
 
     AudioHandler(AudioPlayer player) {
@@ -61,7 +60,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         return this.queue;
     }
 
-    public boolean voteSkip(String userID) {
+    public boolean voteSkip(Long userID) {
         if (this.skipVotes.contains(userID))
             return false;
         this.skipVotes.add(userID);
@@ -104,12 +103,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
             if (nextTrack != null) {
                 this.player.startTrack(nextTrack, false);
-                LOG.debug("Playing next track in " + this.channel.getGuild().getId());
             } else {
-                LOG.debug("Queue ended in " + this.channel.getGuild().getId());
                 this.player.stopTrack();
                 this.player.setVolume(100);
-                if (permissions.canPost(this.channel) && !isResetting) {
+                if (permissions.canPost(this.channel)) {
                     this.channel.sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Queue Concluded!")
@@ -117,8 +114,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                             .build()
                     ).queue(null, e -> LOG.warn("Failed to post 'QUEUE_END' message to channel " + this.channel.getId()));
                 }
-                isResetting = false;
-                LOG.debug("Terminating AudioConnection in " + this.channel.getGuild().getId());
                 Helpers.DisconnectVoice(this.channel.getGuild().getAudioManager());
                 this.repeat = REPEATMODE.NONE;
                 this.shuffle = false;

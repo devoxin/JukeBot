@@ -28,8 +28,7 @@ public class EventListener extends ListenerAdapter {
         commands.put("forceskip", new Forceskip());
         commands.put("invite", new Invite());
         commands.put("help", new Help());
-        commands.put("pause", new Pause());
-        commands.put("resume", new Resume());
+        commands.put("togglepause", new TogglePause());
         commands.put("stop", new Stop());
         commands.put("shuffle", new Shuffle());
         commands.put("now", new Now());
@@ -51,8 +50,7 @@ public class EventListener extends ListenerAdapter {
         aliases.put("p", "play");
         aliases.put("q", "queue");
         aliases.put("fs", "forceskip");
-        aliases.put("r", "resume");
-        aliases.put("ps", "pause");
+        aliases.put("tp", "togglepause");
         aliases.put("n", "now");
         aliases.put("ff", "fastforward");
         aliases.put("vol", "volume");

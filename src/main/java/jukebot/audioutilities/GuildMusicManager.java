@@ -19,7 +19,5 @@ public class GuildMusicManager {
         this.player = Bot.playerManager.createPlayer();
         this.handler.setPlayer(this.player);
         this.player.addListener(this.handler);
-
-        // TODO: Clone queues
     }
 }

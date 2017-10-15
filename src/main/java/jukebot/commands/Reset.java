@@ -28,41 +28,19 @@ public class Reset implements Command {
 
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
 
+        VoiceChannel vc = e.getGuild().getAudioManager().getConnectedChannel();
+
+        if (vc != null)
+            e.getGuild().getAudioManager().closeAudioConnection();
+
+        musicManager.ResetPlayer();
+
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
-                .setTitle("Resetting Audio")
-                .setDescription("Please wait...")
+                .setTitle("Audio Reset")
+                .setDescription("Everything should now be in working order.")
                 .build()
-        ).queue(m -> {
-            musicManager.handler.isResetting = true;
-
-            AudioTrack current = musicManager.player.getPlayingTrack();
-            AudioTrack clone = current == null ? null : current.makeClone();
-            VoiceChannel vc = e.getGuild().getAudioManager().getConnectedChannel();
-
-            if (current != null && current.isSeekable())
-                clone.setPosition(current.getPosition());
-
-            if (vc != null)
-                e.getGuild().getAudioManager().closeAudioConnection();
-
-            musicManager.ResetPlayer();
-
-            if (vc != null && permissions.canConnect(vc) == Permissions.CONNECT_STATUS.CONNECT)
-                e.getGuild().getAudioManager().openAudioConnection(vc);
-
-            if (clone != null && (e.getGuild().getAudioManager().isAttemptingToConnect() || e.getGuild().getAudioManager().isConnected()))
-                musicManager.handler.queue(clone, (long) current.getUserData());
-
-            musicManager.handler.isResetting = false;
-
-            m.editMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
-                    .setTitle("Audio Reset")
-                    .setDescription("Everything should now be in working order.")
-                    .build()
-            ).queue();
-        });
+        ).queue();
 
     }
 

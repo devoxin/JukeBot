@@ -27,10 +27,6 @@ public class Permissions {
         return userID == Bot.BotOwnerID;
     }
 
-    /*public boolean isBlocked(Member m) {
-        return hasRole(m, "NoMusic") && !m.isOwner() && !isBotOwner(m.getUser().getId());
-    }*/
-
     public boolean isElevatedUser(Member m, boolean AllowLone) {
         if (AllowLone)
             return isALoner(m) || m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getIdLong());

@@ -8,7 +8,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-public class Pause implements Command {
+public class TogglePause implements Command {
 
     private final Permissions permissions = new Permissions();
 
@@ -28,8 +28,8 @@ public class Pause implements Command {
                 e.getGuild().getAudioManager().isConnected() && !e.getMember().getVoiceState().getChannel().getId().equalsIgnoreCase(e.getGuild().getAudioManager().getConnectedChannel().getId())) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle("Pause")
-                    .setDescription("You need to be in my voicechannel to pause.")
+                    .setTitle("No Mutual VoiceChannel")
+                    .setDescription("Join my VoiceChannel to use this command.")
                     .build()
             ).queue();
             return;
@@ -47,7 +47,7 @@ public class Pause implements Command {
 
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
 
-        musicManager.player.setPaused(true);
+        musicManager.player.setPaused(!musicManager.player.isPaused());
 
     }
 

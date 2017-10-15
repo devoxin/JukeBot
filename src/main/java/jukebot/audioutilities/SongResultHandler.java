@@ -29,14 +29,14 @@ public class SongResultHandler implements AudioLoadResultHandler {
     @Override
     public void trackLoaded(AudioTrack track) {
         AudioHandler.TRACK_STATUS result = musicManager.handler.queue(track, e.getAuthor().getIdLong());
-        if (result == AudioHandler.TRACK_STATUS.QUEUED) {
+        if (AudioHandler.TRACK_STATUS.QUEUED == result) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Song Enqueued")
                     .setDescription(track.getInfo().title)
                     .build()
             ).queue();
-        } else if (result == AudioHandler.TRACK_STATUS.LIMITED) {
+        } else if (AudioHandler.TRACK_STATUS.LIMITED == result) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Song Unavailable")

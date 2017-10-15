@@ -24,10 +24,7 @@ public class Helpers {
         if (!manager.isConnected() && !manager.isAttemptingToConnect())
             return;
 
-        executor.execute(() -> {
-            manager.closeAudioConnection();
-            LOG.debug("Terminated AudioConnection in " + manager.getGuild().getId());
-        });
+        executor.execute(manager::closeAudioConnection);
     }
 
     public static VOICE_STATUS ConnectVoice(AudioManager manager, TextChannel channel, Member author) {
@@ -63,7 +60,6 @@ public class Helpers {
         }
 
         if (!manager.isConnected() && !manager.isAttemptingToConnect()) {
-            LOG.debug("Connecting to " + channel.getGuild().getId());
             manager.openAudioConnection(author.getVoiceState().getChannel());
             manager.setSelfDeafened(true);
             return VOICE_STATUS.CONNECTED;
