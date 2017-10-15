@@ -39,6 +39,8 @@ public class ActionWaiter extends ListenerAdapter {
         if (i <= 0 || i > t.tracks.size()) {
             if (!e.getMessage().getContent().toLowerCase().contains("sel"))
                 t.m.editMessage(new EmbedBuilder().setColor(Bot.EmbedColour).setTitle("Selection Cancelled").setDescription("An invalid option was specified").build()).queue();
+            else
+                t.m.delete().queue();
             return;
         }
 
