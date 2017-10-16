@@ -56,11 +56,11 @@ public class Repeat implements Command {
                     break;
                 case "s":
                 case "single":
-                    manager.handler.repeat = AudioHandler.REPEATMODE.ALL;
+                    manager.handler.repeat = AudioHandler.REPEATMODE.SINGLE;
                     break;
                 case "n":
                 case "none":
-                    manager.handler.repeat = AudioHandler.REPEATMODE.ALL;
+                    manager.handler.repeat = AudioHandler.REPEATMODE.NONE;
                     break;
                 default:
                     e.getChannel().sendMessage(new EmbedBuilder()
