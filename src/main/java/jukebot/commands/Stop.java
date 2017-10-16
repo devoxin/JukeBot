@@ -29,7 +29,7 @@ public class Stop implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Permission Error")
-                    .setDescription("You don't have permission to use this command.\n\n(DJ role required)")
+                    .setDescription("You need to have the DJ role!")
                     .build()
             ).queue();
 
