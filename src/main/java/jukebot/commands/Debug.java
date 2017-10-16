@@ -5,6 +5,7 @@ import jukebot.Shard;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Time;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Arrays;
@@ -15,7 +16,9 @@ public class Debug implements Command {
 
         final StringBuilder toSend = new StringBuilder();
         final long streams = JukeBot.getMusicManagers().values().stream().filter(m -> m.handler != null && m.player.getPlayingTrack() != null).count();
-        final long servers = Arrays.stream(JukeBot.getShards()).map(s -> s.jda.getGuilds().size()).reduce(0, (a, b) -> a + b);
+        final long servers = Arrays.stream(JukeBot.getShards())
+                .filter(s -> s.jda.getStatus() == JDA.Status.CONNECTED)
+                .map(s -> s.jda.getGuilds().size()).reduce(0, (a, b) -> a + b);
 
         toSend.append("S: ")
                 .append(servers)
@@ -35,9 +38,9 @@ public class Debug implements Command {
                     .append("] ")
                     .append(s.jda.getStatus().toString())
                     .append(" G: ")
-                    .append(s.jda.getGuilds().size())
+                    .append(s.jda.getStatus() == JDA.Status.CONNECTED ? s.jda.getGuilds().size() : "0")
                     .append(" U: ")
-                    .append(s.jda.getUsers().size())
+                    .append(s.jda.getStatus() == JDA.Status.CONNECTED ? s.jda.getUsers().size() : "0")
                     .append(" L: ")
                     .append(s.jda.getPing())
                     .append("ms\n");
