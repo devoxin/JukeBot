@@ -104,7 +104,7 @@ public class EventListener extends ListenerAdapter {
         }
 
         String command = e.getMessage().getContent().split(" ")[0].substring(prefix.length()).toLowerCase();
-        String query = e.getMessage().getContent().split(" ").length > 1 ? e.getMessage().getContent().split(" ", 2)[1] : "";
+        String query = e.getMessage().getContent().contains(" ") ? e.getMessage().getContent().split(" ", 2)[1] : "";
 
         if (aliases.containsKey(command))
             command = aliases.get(command);
@@ -137,7 +137,7 @@ public class EventListener extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent e) {
 
-        if (Bot.BotOwnerID == 0L)
+        if (Bot.BotOwnerID == null)
             e.getJDA().asBot().getApplicationInfo().queue(app -> Bot.BotOwnerID = app.getOwner().getIdLong());
 
     }

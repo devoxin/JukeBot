@@ -105,6 +105,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 this.player.startTrack(nextTrack, false);
             } else {
                 this.player.stopTrack();
+                this.lastPlayed = "";
                 this.player.setVolume(100);
                 if (permissions.canPost(this.channel)) {
                     this.channel.sendMessage(new EmbedBuilder()

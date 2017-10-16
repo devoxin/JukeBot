@@ -26,7 +26,7 @@ public class Forceskip implements Command {
             return;
         }
 
-        if (!permissions.isElevatedUser(e.getMember(), true) && !e.getAuthor().getId().equalsIgnoreCase(musicManager.player.getPlayingTrack().getUserData().toString())) {
+        if (!permissions.isElevatedUser(e.getMember(), true) && e.getAuthor().getIdLong() != (long) musicManager.player.getPlayingTrack().getUserData()) {
 
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
