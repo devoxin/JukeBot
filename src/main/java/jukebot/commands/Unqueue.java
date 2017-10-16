@@ -53,7 +53,7 @@ public class Unqueue implements Command {
 
         final AudioTrack selectedTrack = queue.get(selected - 1);
 
-        if (!selectedTrack.getUserData().equals(e.getAuthor().getIdLong()) && !permissions.isElevatedUser(e.getMember(), false)) {
+        if ((long) selectedTrack.getUserData() != e.getAuthor().getIdLong() && !permissions.isElevatedUser(e.getMember(), false)) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Cannot unqueue track")
