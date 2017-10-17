@@ -24,6 +24,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     private AudioPlayer player;
     private AudioFrame lastFrame;
+    private Random selector = new Random();
 
     private ArrayList<AudioTrack> queue = new ArrayList<>();
     private ArrayList<Long> skipVotes = new ArrayList<>();
@@ -90,7 +91,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 nextTrack.setUserData(track.getUserData());
             } else if (!this.queue.isEmpty()) {
                 if (this.shuffle)
-                    nextTrack = this.queue.remove(new Random().nextInt(this.queue.size()));
+                    nextTrack = this.queue.remove(selector.nextInt(this.queue.size()));
                 else
                     nextTrack = this.queue.remove(0);
             }
