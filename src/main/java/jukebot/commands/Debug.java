@@ -4,8 +4,10 @@ import jukebot.JukeBot;
 import jukebot.Shard;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
+import jukebot.utils.Helpers;
 import jukebot.utils.Time;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Arrays;
@@ -34,7 +36,7 @@ public class Debug implements Command {
 
         for (Shard s : JukeBot.getShards())
             toSend.append(s.jda.getShardInfo().getShardId() == e.getJDA().getShardInfo().getShardId() ? "*[" : " [")
-                    .append(s.jda.getShardInfo().getShardId() + 1)
+                    .append(Helpers.PadRight(" ", Integer.toString(s.jda.getShardInfo().getShardId() + 1), 2))
                     .append("] ")
                     .append(s.jda.getStatus().toString())
                     .append(" G: ")

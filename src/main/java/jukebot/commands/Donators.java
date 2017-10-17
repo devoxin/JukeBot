@@ -46,7 +46,7 @@ public class Donators implements Command {
         if (args.length != 3) {
             if ("getall".equalsIgnoreCase(args[0])) {
                 final HashMap<Long, String> donatorsMap = db.getAllDonators();
-                if (donatorsMap == null || donatorsMap.isEmpty()) {
+                if (donatorsMap.isEmpty()) {
                     e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Donators")

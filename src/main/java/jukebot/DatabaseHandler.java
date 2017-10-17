@@ -124,12 +124,12 @@ public class DatabaseHandler {
 
     public HashMap<Long, String> getAllDonators() {
 
+        HashMap<Long, String> donators = new HashMap<>();
+
         try (Connection con = connect()) {
 
             Statement state = con.createStatement();
             ResultSet results = state.executeQuery("SELECT * FROM donators");
-
-            HashMap<Long, String> donators = new HashMap<>();
 
             while (results.next())
                 donators.put(results.getLong(1), results.getString(2));
@@ -138,9 +138,8 @@ public class DatabaseHandler {
 
         } catch (Exception e) {
 
-            e.printStackTrace();
             LOG.error("Failed to retrieve all donators from table");
-            return null;
+            return donators;
 
         }
 

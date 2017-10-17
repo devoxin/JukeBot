@@ -20,6 +20,34 @@ public class Helpers {
     private static int DURATION_LIMIT_NORMAL = 8000; // 2 hours
     private static int DURATION_LIMIT_PREMIUM = 20000; // 5 hours
 
+    public static String PadLeft(String character, String text, int length) {
+
+        if (text.length() == length)
+            return text;
+
+        StringBuilder textBuilder = new StringBuilder(text);
+
+        while (textBuilder.length() < length)
+            textBuilder.insert(0, character);
+
+        return textBuilder.toString();
+
+    }
+
+    public static String PadRight(String character, String text, int length) {
+
+        if (text.length() == length)
+            return text;
+
+        StringBuilder textBuilder = new StringBuilder(text);
+
+        while (textBuilder.length() < length)
+            textBuilder.append(character);
+
+        return textBuilder.toString();
+
+    }
+
     public static void DisconnectVoice(AudioManager manager) {
         if (!manager.isConnected() && !manager.isAttemptingToConnect())
             return;
