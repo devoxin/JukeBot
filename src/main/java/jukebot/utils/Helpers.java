@@ -8,7 +8,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class Helpers {
     private static ExecutorService executor = Executors.newSingleThreadExecutor();
