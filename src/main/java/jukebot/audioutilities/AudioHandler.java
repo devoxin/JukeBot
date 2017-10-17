@@ -61,10 +61,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public boolean voteSkip(Long userID) {
-        if (this.skipVotes.contains(userID))
-            return false;
-        this.skipVotes.add(userID);
-        return true;
+        return !this.skipVotes.contains(userID) && this.skipVotes.add(userID);
     }
 
     public int getVotes() {
@@ -88,24 +85,23 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         try {
             AudioTrack nextTrack = null;
 
-            if (this.shuffle && (this.repeat == REPEATMODE.SINGLE || track == null)) {
-                if (!this.queue.isEmpty())
-                    nextTrack = this.queue.remove(new Random().nextInt(this.queue.size()));
-
-            } else if (track != null && this.repeat == REPEATMODE.SINGLE) {
+            if (this.repeat == REPEATMODE.SINGLE && track != null) {
                 nextTrack = track.makeClone();
                 nextTrack.setUserData(track.getUserData());
-
-            } else {
-                if (!this.queue.isEmpty())
+            } else if (!this.queue.isEmpty()) {
+                if (this.shuffle)
+                    nextTrack = this.queue.remove(new Random().nextInt(this.queue.size()));
+                else
                     nextTrack = this.queue.remove(0);
             }
 
             if (nextTrack != null) {
                 this.player.startTrack(nextTrack, false);
             } else {
-                this.player.stopTrack();
+                this.repeat = REPEATMODE.NONE;
+                this.shuffle = false;
                 this.lastPlayed = "";
+                this.player.stopTrack();
                 this.player.setVolume(100);
                 if (permissions.canPost(this.channel)) {
                     this.channel.sendMessage(new EmbedBuilder()
@@ -116,8 +112,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                     ).queue(null, e -> LOG.warn("Failed to post 'QUEUE_END' message to channel " + this.channel.getId()));
                 }
                 Helpers.DisconnectVoice(this.channel.getGuild().getAudioManager());
-                this.repeat = REPEATMODE.NONE;
-                this.shuffle = false;
             }
         } finally {
             playNextCalled = false;
@@ -130,10 +124,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        this.skipVotes.clear();
+
         if (this.repeat == REPEATMODE.ALL)
             this.queue(track.makeClone(), (long) track.getUserData());
 
-        this.skipVotes.clear();
         if (!playNextCalled)
             playNext(this.repeat == REPEATMODE.SINGLE ? track : null);
     }
