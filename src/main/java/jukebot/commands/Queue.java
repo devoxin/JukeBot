@@ -54,7 +54,7 @@ public class Queue implements Command {
                 .setColor(Bot.EmbedColour)
                 .setTitle("Queue (" + currentQueue.size() + " songs, " + queueDuration + ")")
                 .setDescription(queue.toString().trim())
-                .addField("Playback", "**Repeat:** " + String.valueOf(musicManager.handler.repeat).toLowerCase() + " **/ Shuffle:** " + (musicManager.handler.shuffle ? "On" : "Off"), true)
+                .addField("\u200B", "**Repeat:** " + String.valueOf(musicManager.handler.repeat).toLowerCase() + " **/ Shuffle:** " + (musicManager.handler.shuffle ? "On" : "Off"), true)
                 .setFooter("Viewing page " + (page) + "/" + (maxPages), null)
                 .build()
         ).queue();
