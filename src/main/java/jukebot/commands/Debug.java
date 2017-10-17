@@ -36,7 +36,7 @@ public class Debug implements Command {
 
         for (Shard s : JukeBot.getShards())
             toSend.append(s.jda.getShardInfo().getShardId() == e.getJDA().getShardInfo().getShardId() ? "*[" : " [")
-                    .append(Helpers.PadRight(" ", Integer.toString(s.jda.getShardInfo().getShardId() + 1), 2))
+                    .append(Helpers.PadLeft(" ", Integer.toString(s.jda.getShardInfo().getShardId() + 1), 2))
                     .append("] ")
                     .append(s.jda.getStatus().toString())
                     .append(" G: ")

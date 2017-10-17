@@ -26,7 +26,7 @@ public class Bot {
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     public static final ActionWaiter waiter = new ActionWaiter();
 
-    public static final String VERSION = "6.0.23";
+    public static final String VERSION = "6.0.24";
     public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
     public static Long BotOwnerID = null;
