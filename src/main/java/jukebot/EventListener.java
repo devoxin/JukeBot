@@ -52,6 +52,7 @@ public class EventListener extends ListenerAdapter {
         aliases.put("fs", "forceskip");
         aliases.put("tp", "togglepause");
         aliases.put("n", "now");
+        aliases.put("np", "now");
         aliases.put("ff", "fastforward");
         aliases.put("vol", "volume");
         aliases.put("sel", "select");
