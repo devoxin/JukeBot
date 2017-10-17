@@ -6,11 +6,12 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class Helpers {
-    private static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    private static ExecutorService executor = Executors.newSingleThreadExecutor();
     private static Permissions permissions = new Permissions();
 
     private static int DURATION_LIMIT_NORMAL = 8000; // 2 hours
