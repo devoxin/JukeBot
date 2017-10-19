@@ -38,16 +38,16 @@ public class Permissions {
         return (m.getVoiceState().inVoiceChannel() && m.getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count() == 1);
     }
 
-    public boolean isBaller(long userID, int tier) {
+    public boolean isBaller(Long userID, int tier) {
         return getTierLevel(userID) >= tier;
     }
 
-    int getTierLevel(long userID) {
+    int getTierLevel(Long userID) {
         return isBotOwner(userID) ? 3 : Integer.parseInt(db.getTier(userID));
     }
 
     public boolean canPost(TextChannel channel) {
-        return channel.canTalk() && channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_EMBED_LINKS);
+        return channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS);
     }
 
     public CONNECT_STATUS canConnect(VoiceChannel channel) {
