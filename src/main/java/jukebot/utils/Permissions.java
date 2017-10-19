@@ -14,35 +14,30 @@ public class Permissions {
 
     private final DatabaseHandler db = new DatabaseHandler();
 
-    private boolean hasRole(Member m, String r) {
-
-        final List<Role> FoundRoles = m.getGuild().getRolesByName(r, false);
-        Role fRole = FoundRoles.isEmpty() ? null : FoundRoles.get(0);
-
-        return fRole != null && m.getRoles().contains(fRole);
-
-    }
-
     public boolean isBotOwner(long userID) {
         return userID == Bot.BotOwnerID;
     }
 
+    public boolean hasDJRole(Member m) {
+        return m.getRoles().stream().anyMatch(r -> "dj".equalsIgnoreCase(r.getName()));
+    }
+
     public boolean isElevatedUser(Member m, boolean AllowLone) {
         if (AllowLone)
-            return isALoner(m) || m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getIdLong());
+            return isALoner(m) || m.isOwner() || isBotOwner(m.getUser().getIdLong()) || hasDJRole(m);
         else
-            return m.isOwner() || hasRole(m, "DJ") || isBotOwner(m.getUser().getIdLong());
+            return m.isOwner() || isBotOwner(m.getUser().getIdLong()) || hasDJRole(m);
     }
 
     private boolean isALoner(Member m) {
         return (m.getVoiceState().inVoiceChannel() && m.getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count() == 1);
     }
 
-    public boolean isBaller(Long userID, int tier) {
+    public boolean isBaller(long userID, int tier) {
         return getTierLevel(userID) >= tier;
     }
 
-    int getTierLevel(Long userID) {
+    int getTierLevel(long userID) {
         return isBotOwner(userID) ? 3 : Integer.parseInt(db.getTier(userID));
     }
 

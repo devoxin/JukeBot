@@ -29,7 +29,7 @@ public class Bot {
     public static final String VERSION = "6.0.24-BETA";
     public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
-    public static Long BotOwnerID = null;
+    public static Long BotOwnerID = 0L;
 
     public static final Logger LOG = LogManager.getLogger("JukeBot");
 
