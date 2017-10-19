@@ -138,7 +138,7 @@ public class EventListener extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent e) {
 
-        if (Bot.BotOwnerID != 0L)
+        if (Bot.BotOwnerID == 0L)
             e.getJDA().asBot().getApplicationInfo().queue(app -> Bot.BotOwnerID = app.getOwner().getIdLong());
 
     }
