@@ -2,10 +2,7 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
-import jukebot.utils.Bot;
-import jukebot.utils.Command;
-import jukebot.utils.Parsers;
-import jukebot.utils.Permissions;
+import jukebot.utils.*;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -39,7 +36,7 @@ public class Unqueue implements Command {
             return;
         }
 
-        final int selected = Parsers.Number(query, 0);
+        final int selected = Helpers.ParseNumber(query, 0);
 
         if (selected < 1 || selected > queue.size()) {
             e.getChannel().sendMessage(new EmbedBuilder()

@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
+import jukebot.utils.Helpers;
 import jukebot.utils.Parsers;
 import jukebot.utils.TrackAction;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -34,7 +35,7 @@ public class ActionWaiter extends ListenerAdapter {
         TrackAction t = UserManagers.remove(e.getAuthor().getIdLong());
         t.waiter.shutdownNow();
 
-        int i = Parsers.Number(e.getMessage().getContent(), -1);
+        int i = Helpers.ParseNumber(e.getMessage().getContent(), -1);
 
         if (i <= 0 || i > t.tracks.size()) {
             if (!e.getMessage().getContent().toLowerCase().contains("sel"))

@@ -4,10 +4,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.DatabaseHandler;
 import jukebot.JukeBot;
 import jukebot.audioutilities.GuildMusicManager;
-import jukebot.utils.Bot;
-import jukebot.utils.Command;
-import jukebot.utils.Parsers;
-import jukebot.utils.Time;
+import jukebot.utils.*;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -36,7 +33,7 @@ public class Queue implements Command {
         final StringBuilder queue = new StringBuilder();
 
         final int maxPages = (int) Math.ceil((double) currentQueue.size() / 10);
-        int page = Parsers.Number(query, 1);
+        int page = Helpers.ParseNumber(query, 1);
 
         if (page < 1)
             page = 1;

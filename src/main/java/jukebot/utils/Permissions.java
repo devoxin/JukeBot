@@ -58,8 +58,9 @@ public class Permissions {
     public boolean checkVoiceChannel(Member m) {
         final AudioManager manager = m.getGuild().getAudioManager();
 
-        return m.getVoiceState().inVoiceChannel() && (!manager.isAttemptingToConnect() && !manager.isConnected() || manager.getConnectedChannel().getIdLong() == m.getVoiceState().getChannel().getIdLong());
+        Bot.LOG.debug("Member OK: " + (m != null) + " | M-VC OK: " + (m.getVoiceState().inVoiceChannel()) + " | CONNECTED: " + (manager.isConnected() || manager.isAttemptingToConnect()));
 
+        return m.getVoiceState().inVoiceChannel() && (!manager.isAttemptingToConnect() && !manager.isConnected() || manager.getConnectedChannel().getIdLong() == m.getVoiceState().getChannel().getIdLong());
     }
 
     public enum CONNECT_STATUS {

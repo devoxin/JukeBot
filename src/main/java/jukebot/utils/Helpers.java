@@ -44,6 +44,14 @@ public class Helpers {
 
     }
 
+    public static int ParseNumber(String num, int def) {
+        try {
+            return Integer.parseInt(num);
+        } catch(Exception e) {
+            return def;
+        }
+    }
+
     public static void DisconnectVoice(AudioManager manager) {
         if (!manager.isConnected() && !manager.isAttemptingToConnect())
             return;

@@ -2,10 +2,7 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
-import jukebot.utils.Bot;
-import jukebot.utils.Command;
-import jukebot.utils.Parsers;
-import jukebot.utils.Permissions;
+import jukebot.utils.*;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -39,8 +36,8 @@ public class Move implements Command {
             return;
         }
 
-        final int target = Parsers.Number(query.split(" ")[0], 0);
-        final int dest = Parsers.Number(query.split(" ")[1], 0);
+        final int target = Helpers.ParseNumber(query.split(" ")[0], 0);
+        final int dest = Helpers.ParseNumber(query.split(" ")[1], 0);
 
         if (target < 1 || dest < 1 || target == dest || target > queue.size()) {
             e.getChannel().sendMessage(new EmbedBuilder()
