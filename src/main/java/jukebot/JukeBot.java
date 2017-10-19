@@ -19,7 +19,7 @@ public class JukeBot {
 
     private static final DatabaseHandler db = new DatabaseHandler();
 
-    private static final HashMap<String, GuildMusicManager> musicManagers = new HashMap<>();
+    private static final HashMap<Long, GuildMusicManager> musicManagers = new HashMap<>();
 
     private static Shard[] shards;
 
@@ -53,13 +53,13 @@ public class JukeBot {
         return shards;
     }
 
-    public static HashMap<String, GuildMusicManager> getMusicManagers() {
+    public static HashMap<Long, GuildMusicManager> getMusicManagers() {
         return musicManagers;
     }
 
     public static GuildMusicManager getGuildMusicManager(final Guild guild) {
 
-        GuildMusicManager musicManager = musicManagers.computeIfAbsent(guild.getId(), k -> new GuildMusicManager());
+        GuildMusicManager musicManager = musicManagers.computeIfAbsent(guild.getIdLong(), k -> new GuildMusicManager());
 
         if (guild.getAudioManager().getSendingHandler() == null)
             guild.getAudioManager().setSendingHandler(musicManager.handler);

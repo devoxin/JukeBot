@@ -53,7 +53,7 @@ public class Helpers {
 
     public static VOICE_STATUS ConnectVoice(AudioManager manager, TextChannel channel, Member author) {
 
-        if (!permissions.CheckVoiceChannel(author)) {
+        if (!permissions.checkVoiceChannel(author)) {
             channel.sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No Mutual VoiceChannel")

@@ -18,7 +18,7 @@ public class Prefix implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Server Prefix")
-                    .setDescription("You must specify a new prefix. E.g. '" + db.getPrefix(e.getGuild().getIdLong()) + "prefix !'")
+                    .setDescription("You must specify a new prefix. E.g. `" + db.getPrefix(e.getGuild().getIdLong()) + "prefix !`")
                     .build()
             ).queue();
         } else {

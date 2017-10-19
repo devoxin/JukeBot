@@ -24,11 +24,10 @@ public class Shuffle implements Command {
             return;
         }
 
-        if (!e.getMember().getVoiceState().inVoiceChannel() ||
-                e.getGuild().getAudioManager().isConnected() && !e.getMember().getVoiceState().getChannel().getId().equalsIgnoreCase(e.getGuild().getAudioManager().getConnectedChannel().getId())) {
+        if (!permissions.checkVoiceChannel(e.getMember())) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle("Pause")
+                    .setTitle("Shuffle")
                     .setDescription("You need to be in my voicechannel to toggle shuffle.")
                     .build()
             ).queue();

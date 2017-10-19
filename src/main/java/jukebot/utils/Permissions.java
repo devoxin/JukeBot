@@ -55,10 +55,10 @@ public class Permissions {
         return CONNECT_STATUS.CONNECT;
     }
 
-    boolean CheckVoiceChannel(Member m) {
+    public boolean checkVoiceChannel(Member m) {
         final AudioManager manager = m.getGuild().getAudioManager();
 
-        return m.getVoiceState().inVoiceChannel() && (!manager.isAttemptingToConnect() && !manager.isConnected() || manager.getConnectedChannel().getId().equalsIgnoreCase(m.getVoiceState().getChannel().getId()));
+        return m.getVoiceState().inVoiceChannel() && (!manager.isAttemptingToConnect() && !manager.isConnected() || manager.getConnectedChannel().getIdLong() == m.getVoiceState().getChannel().getIdLong());
 
     }
 

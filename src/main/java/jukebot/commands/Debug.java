@@ -17,7 +17,7 @@ public class Debug implements Command {
     public void execute(GuildMessageReceivedEvent e, String query) {
 
         final StringBuilder toSend = new StringBuilder();
-        final long streams = JukeBot.getMusicManagers().values().stream().filter(m -> m.handler != null && m.player.getPlayingTrack() != null).count();
+        final long streams = JukeBot.getMusicManagers().values().stream().filter(m -> m.player.getPlayingTrack() != null).count();
         final long servers = Arrays.stream(JukeBot.getShards())
                 .filter(s -> s.jda.getStatus() == JDA.Status.CONNECTED)
                 .map(s -> s.jda.getGuilds().size()).reduce(0, (a, b) -> a + b);
