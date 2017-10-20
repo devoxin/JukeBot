@@ -61,7 +61,7 @@ public class DatabaseHandler {
 
     }
 
-    public boolean setTier(long id, String newTier) {
+    public boolean setTier(long id, int newTier) {
 
         try (Connection con = connect()) {
 
@@ -70,7 +70,7 @@ public class DatabaseHandler {
 
             boolean entryExists = state.executeQuery().next();
 
-            if (Integer.parseInt(newTier) == 0) {
+            if (newTier == 0) {
                 if (!entryExists)
                     return true;
                 PreparedStatement update = con.prepareStatement("DELETE FROM donators WHERE id = ?");
@@ -80,13 +80,13 @@ public class DatabaseHandler {
 
             if (entryExists) {
                 PreparedStatement update = con.prepareStatement("UPDATE donators SET tier = ? WHERE id = ?");
-                update.setString(1, newTier);
+                update.setInt(1, newTier);
                 update.setLong(2, id);
                 return update.executeUpdate() == 1;
             } else {
                 PreparedStatement update = con.prepareStatement("INSERT INTO donators VALUES (?, ?);");
                 update.setLong(1, id);
-                update.setString(2, newTier);
+                update.setInt(2, newTier);
                 return update.executeUpdate() == 1;
             }
 
@@ -109,7 +109,7 @@ public class DatabaseHandler {
             ResultSet tier = state.executeQuery();
 
             if (tier.next())
-                return Integer.parseInt(tier.getString("tier"));
+                return tier.getInt("tier");
             else
                 return 0;
 
@@ -122,9 +122,9 @@ public class DatabaseHandler {
 
     }
 
-    public HashMap<Long, String> getAllDonators() {
+    public HashMap<Long, Integer> getAllDonators() {
 
-        HashMap<Long, String> donators = new HashMap<>();
+        HashMap<Long, Integer> donators = new HashMap<>();
 
         try (Connection con = connect()) {
 
@@ -132,7 +132,7 @@ public class DatabaseHandler {
             ResultSet results = state.executeQuery("SELECT * FROM donators");
 
             while (results.next())
-                donators.put(results.getLong(1), results.getString(2));
+                donators.put(results.getLong(1), results.getInt(2));
 
             return donators;
 

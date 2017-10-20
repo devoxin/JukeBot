@@ -44,7 +44,7 @@ public class Donators implements Command {
 
         if (args.length != 3) {
             if ("getall".equalsIgnoreCase(args[0])) {
-                final HashMap<Long, String> donatorsMap = db.getAllDonators();
+                final HashMap<Long, Integer> donatorsMap = db.getAllDonators();
                 if (donatorsMap.isEmpty()) {
                     e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
@@ -67,9 +67,9 @@ public class Donators implements Command {
 
                 List<Donator> donatorsList = new ArrayList<>();
 
-                for (HashMap.Entry<Long, String> entry : donatorsMap.entrySet()) {
+                for (HashMap.Entry<Long, Integer> entry : donatorsMap.entrySet()) {
                     long id = entry.getKey();
-                    String level = entry.getValue();
+                    int level = entry.getValue();
                     e.getJDA().retrieveUserById(entry.getKey()).queue(u -> {
                         donatorsList.add(new Donator(u.getName(), level, id));
                         if (donatorsList.size() == numOfDonators) {
@@ -84,17 +84,17 @@ public class Donators implements Command {
                 }
                 usersFuture.thenAcceptAsync(list -> {
                     for (Donator d : list) {
-                        if ("1".equalsIgnoreCase(d.level)) {
+                        if (1 == d.level) {
                             t1.append("`")
                                     .append(d.id).append("` ")
                                     .append(d.name)
                                     .append("\n");
-                        } else if ("2".equalsIgnoreCase(d.level)) {
+                        } else if (2 == d.level) {
                             t2.append("`")
                                     .append(d.id).append("` ")
                                     .append(d.name)
                                     .append("\n");
-                        } else if ("3".equalsIgnoreCase(d.level)) {
+                        } else if (3 == d.level) {
                             t3.append("`")
                                     .append(d.id).append("` ")
                                     .append(d.name)
@@ -109,6 +109,14 @@ public class Donators implements Command {
                             .build()
                     ).queue();
                 });
+            } else if ("get".equalsIgnoreCase(args[0])){
+                final int userTier = db.getTier(Long.parseLong(args[1]));
+                e.getChannel().sendMessage(new EmbedBuilder()
+                        .setColor(Bot.EmbedColour)
+                        .setTitle("Donator Status")
+                        .setDescription("User **" + args[1] + "** has Tier **" + userTier + "**")
+                        .build()
+                ).queue();
             } else {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
@@ -118,18 +126,8 @@ public class Donators implements Command {
                 ).queue();
             }
         } else {
-            if ("get".equalsIgnoreCase(args[0])) {
-                final int userTier = db.getTier(Long.parseLong(args[1]));
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
-                        .setTitle("Donator Status")
-                        .setDescription("User **" + args[1] + "** has Tier **" + userTier + "**")
-                        .build()
-                ).queue();
-            }
-
             if ("set".equalsIgnoreCase(args[0])) {
-                final boolean result = db.setTier(Long.parseLong(args[1]), args[2]);
+                final boolean result = db.setTier(Long.parseLong(args[1]), Integer.parseInt(args[2]));
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Donator Tier")
@@ -143,10 +141,10 @@ public class Donators implements Command {
 
     private static class Donator {
         String name;
-        String level;
+        int level;
         long id;
 
-        Donator(String name, String level, long id) {
+        Donator(String name, int level, long id) {
             this.name = name;
             this.level = level;
             this.id = id;
