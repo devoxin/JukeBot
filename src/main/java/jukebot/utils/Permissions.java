@@ -18,7 +18,7 @@ public class Permissions {
         return userID == Bot.BotOwnerID;
     }
 
-    public boolean hasDJRole(Member m) {
+    private boolean hasDJRole(Member m) {
         return m.getRoles().stream().anyMatch(r -> "dj".equalsIgnoreCase(r.getName()));
     }
 
@@ -38,7 +38,7 @@ public class Permissions {
     }
 
     int getTierLevel(long userID) {
-        return isBotOwner(userID) ? 3 : Integer.parseInt(db.getTier(userID));
+        return isBotOwner(userID) ? 3 : db.getTier(userID);
     }
 
     public boolean canPost(TextChannel channel) {

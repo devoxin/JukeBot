@@ -41,7 +41,6 @@ public class EventListener extends ListenerAdapter {
         commands.put("select", new Select());
         commands.put("patreon", new Patreon());
         commands.put("debug", new Debug());
-        commands.put("reset", new Reset());
         commands.put("unqueue", new Unqueue());
         commands.put("move", new Move());
         commands.put("scsearch", new ScSearch());

@@ -22,29 +22,21 @@ public class JukeBot {
 
     private static final HashMap<Long, GuildMusicManager> musicManagers = new HashMap<>();
 
-    private static Shard[] shards;
+    private static Shard[] shards = new Shard[Integer.parseInt(db.getPropertyFromConfig("maxshards"))];
 
     public static void main(String[] args) throws Exception {
         ConfigurationFactory.setConfigurationFactory(new Log4JConfig());
 
-        LOG.info(".:: JukeBot " + Bot.VERSION + " ::.\n" +
-                ":: JDA: " + JDAInfo.VERSION + "\n" +
-                ":: Lavaplayer: " + PlayerLibrary.VERSION + "\n" +
-                ":: SQLite: " + SQLiteJDBCLoader.getVersion() + "\n" +
-                ":: JVM running in " + System.getProperty("sun.arch.data.model") + "-bit mode");
+        LOG.info("JukeBot " + Bot.VERSION +
+                "\n:: JDA: " + JDAInfo.VERSION +
+                "\n:: Lavaplayer: " + PlayerLibrary.VERSION +
+                "\n:: SQLite: " + SQLiteJDBCLoader.getVersion() +
+                "\n:: JVM running in " + System.getProperty("sun.arch.data.model") + "-bit mode");
 
         Bot.Configure();
 
-        final int MaxShards = Integer.parseInt(db.getPropertyFromConfig("maxshards"));
-
-        shards = new Shard[MaxShards];
-
-        for (int i = 0; i < MaxShards; i++) {
-            try {
-                shards[i] = new Shard(i, MaxShards);
-            } catch(Exception ignored) {
-                LOG.error("[" + (i + 1) + "/" + MaxShards + "] failed to login");
-            }
+        for (int i = 0; i < shards.length; i++) {
+            shards[i] = new Shard(i, shards.length);
             Thread.sleep(5500);
         }
 
@@ -60,7 +52,7 @@ public class JukeBot {
 
     public static GuildMusicManager getGuildMusicManager(final AudioManager manager) {
 
-        GuildMusicManager musicManager = musicManagers.computeIfAbsent(manager.getGuild().getIdLong(), k -> new GuildMusicManager());
+        GuildMusicManager musicManager = musicManagers.computeIfAbsent(manager.getGuild().getIdLong(), v -> new GuildMusicManager());
 
         if (manager.getSendingHandler() == null)
             manager.setSendingHandler(musicManager.handler);

@@ -22,8 +22,7 @@ public class ActionWaiter extends ListenerAdapter {
     public static HashMap<Long, TrackAction> UserManagers = new HashMap<>();
 
     public void AddAction(Long userID, Message m, List<AudioTrack> tracks, GuildMusicManager manager) {
-        if (!UserManagers.containsKey(userID))
-            UserManagers.put(userID, new TrackAction(m, tracks, manager, userID));
+        UserManagers.computeIfAbsent(userID, v -> new TrackAction(m, tracks, manager, userID));
     }
 
     @Override

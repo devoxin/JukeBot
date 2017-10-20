@@ -52,7 +52,6 @@ public class Help implements Command {
                                     + "**`now     `**: Displays information about the currently playing track\n"
                                     + "**`save    `**: Direct messages you information about the currently playing track\n"
                                     + "**`posthere`**: Uses the current channel for now playing messages\n"
-                                    + "**`reset   `**: Recreates the audio player in case something breaks"
                     )).queue();
                     break;
                 case "4":

@@ -99,7 +99,7 @@ public class DatabaseHandler {
 
     }
 
-    public String getTier(long id) {
+    public int getTier(long id) {
 
         try (Connection con = connect()) {
 
@@ -109,14 +109,14 @@ public class DatabaseHandler {
             ResultSet tier = state.executeQuery();
 
             if (tier.next())
-                return tier.getString("tier");
+                return Integer.parseInt(tier.getString("tier"));
             else
-                return "0";
+                return 0;
 
         } catch (Exception e) {
 
             LOG.error("Failed to retrieve user tier");
-            return "0";
+            return 0;
 
         }
 
