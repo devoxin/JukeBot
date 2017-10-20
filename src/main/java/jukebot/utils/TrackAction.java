@@ -15,7 +15,7 @@ public class TrackAction {
     public final Message m;
     public final List<AudioTrack> tracks;
     public final GuildMusicManager manager;
-    public final ScheduledExecutorService waiter = Executors.newSingleThreadScheduledExecutor();
+    public final ScheduledExecutorService waiter = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "JukeBot-SelectionWaiter"));
 
     public TrackAction(Message m, List<AudioTrack> tracks, GuildMusicManager manager, Long UserID) {
         this.m = m;
