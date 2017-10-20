@@ -5,7 +5,6 @@ import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Log4JConfig;
 import net.dv8tion.jda.core.JDAInfo;
-import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.managers.AudioManager;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.sqlite.SQLiteJDBCLoader;

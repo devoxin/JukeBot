@@ -2,7 +2,10 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
-import jukebot.utils.*;
+import jukebot.utils.Bot;
+import jukebot.utils.Command;
+import jukebot.utils.Helpers;
+import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 

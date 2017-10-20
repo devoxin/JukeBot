@@ -2,12 +2,10 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.Shard;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
 import jukebot.utils.Time;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Arrays;

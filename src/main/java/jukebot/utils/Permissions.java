@@ -3,12 +3,9 @@ package jukebot.utils;
 import jukebot.DatabaseHandler;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
-
-import java.util.List;
 
 public class Permissions {
 
