@@ -119,7 +119,7 @@ public class Donators implements Command {
             }
         } else {
             if ("get".equalsIgnoreCase(args[0])) {
-                final String userTier = db.getTier(Long.parseLong(args[1]));
+                final int userTier = db.getTier(Long.parseLong(args[1]));
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Donator Status")
