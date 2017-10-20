@@ -41,6 +41,7 @@ public class Bot {
             .setGame(Game.of(defaultPrefix + "help | jukebot.xyz"));
 
     public static void Configure() {
+        Thread.currentThread().setName("JukeBot-Main");
         String colour = db.getPropertyFromConfig("colour");
         if (colour == null)
             colour = db.getPropertyFromConfig("color");

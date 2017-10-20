@@ -14,7 +14,7 @@ public class Unqueue implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final ArrayList<AudioTrack> queue = JukeBot.getGuildMusicManager(e.getGuild()).handler.getQueue();
+        final ArrayList<AudioTrack> queue = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).handler.getQueue();
 
         if (queue.size() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()

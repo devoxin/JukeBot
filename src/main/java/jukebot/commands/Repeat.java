@@ -45,7 +45,7 @@ public class Repeat implements Command {
             return;
         }
 
-        GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild());
+        GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
 
         if (query.length() > 0) {
             switch (query.toLowerCase()) {

@@ -15,7 +15,7 @@ public class FastForward implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
+        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
         final AudioTrack currentTrack = musicManager.player.getPlayingTrack();
 
         if (currentTrack == null) {

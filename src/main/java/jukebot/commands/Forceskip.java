@@ -14,7 +14,7 @@ public class Forceskip implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
+        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
 
         if (musicManager.player.getPlayingTrack() == null) {
             e.getChannel().sendMessage(new EmbedBuilder()

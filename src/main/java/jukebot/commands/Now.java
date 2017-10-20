@@ -12,7 +12,7 @@ public class Now implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioTrack current = JukeBot.getGuildMusicManager(e.getGuild()).player.getPlayingTrack();
+        final AudioTrack current = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).player.getPlayingTrack();
 
         if (current == null) {
             e.getChannel().sendMessage(new EmbedBuilder()

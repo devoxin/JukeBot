@@ -14,7 +14,7 @@ public class TogglePause implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        if (JukeBot.getGuildMusicManager(e.getGuild()).player.getPlayingTrack() == null) {
+        if (JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).player.getPlayingTrack() == null) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
@@ -45,7 +45,7 @@ public class TogglePause implements Command {
             return;
         }
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
+        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
 
         musicManager.player.setPaused(!musicManager.player.isPaused());
 

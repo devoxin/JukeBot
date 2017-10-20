@@ -6,6 +6,7 @@ import jukebot.utils.Bot;
 import jukebot.utils.Log4JConfig;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.managers.AudioManager;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
@@ -57,12 +58,12 @@ public class JukeBot {
         return musicManagers;
     }
 
-    public static GuildMusicManager getGuildMusicManager(final Guild guild) {
+    public static GuildMusicManager getGuildMusicManager(final AudioManager manager) {
 
-        GuildMusicManager musicManager = musicManagers.computeIfAbsent(guild.getIdLong(), k -> new GuildMusicManager());
+        GuildMusicManager musicManager = musicManagers.computeIfAbsent(manager.getGuild().getIdLong(), k -> new GuildMusicManager());
 
-        if (guild.getAudioManager().getSendingHandler() == null)
-            guild.getAudioManager().setSendingHandler(musicManager.handler);
+        if (manager.getSendingHandler() == null)
+            manager.setSendingHandler(musicManager.handler);
 
         return musicManager;
 

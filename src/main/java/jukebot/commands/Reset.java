@@ -26,7 +26,7 @@ public class Reset implements Command {
             return;
         }
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild());
+        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
 
         VoiceChannel vc = e.getGuild().getAudioManager().getConnectedChannel();
 

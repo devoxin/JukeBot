@@ -19,7 +19,7 @@ public class Debug implements Command {
         final StringBuilder toSend = new StringBuilder();
         final long streams = JukeBot.getMusicManagers().values().stream().filter(m -> m.player.getPlayingTrack() != null).count();
         final long servers = Arrays.stream(JukeBot.getShards())
-                .filter(s -> s.jda != null && s.jda.getStatus() == JDA.Status.CONNECTED)
+                .filter(s -> s.jda != null)
                 .map(s -> s.jda.getGuilds().size())
                 .reduce(0, (a, b) -> a + b);
 
@@ -35,7 +35,11 @@ public class Debug implements Command {
                 .append((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)
                 .append("MB\n\n");
 
-        for (Shard s : JukeBot.getShards())
+        for (Shard s : JukeBot.getShards()) {
+            if (s.jda == null) {
+                toSend.append(" [] UNKNOWN\n");
+                continue;
+            }
             toSend.append(s.jda.getShardInfo().getShardId() == e.getJDA().getShardInfo().getShardId() ? "*[" : " [")
                     .append(Helpers.PadLeft(" ", Integer.toString(s.jda.getShardInfo().getShardId() + 1), 2))
                     .append("] ")
@@ -47,6 +51,7 @@ public class Debug implements Command {
                     .append(" L: ")
                     .append(s.jda.getPing())
                     .append("ms\n");
+        }
 
         e.getChannel().sendMessage("```prolog\n" + toSend.toString().trim() + "\n```").queue();
 

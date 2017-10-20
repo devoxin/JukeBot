@@ -14,7 +14,7 @@ public class Shuffle implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        if (JukeBot.getGuildMusicManager(e.getGuild()).player.getPlayingTrack() == null) {
+        if (JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).player.getPlayingTrack() == null) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
@@ -44,7 +44,7 @@ public class Shuffle implements Command {
             return;
         }
 
-        GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild());
+        GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
         manager.handler.shuffle = !manager.handler.shuffle;
 
         e.getChannel().sendMessage(new EmbedBuilder()
