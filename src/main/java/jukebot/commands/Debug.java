@@ -19,7 +19,7 @@ public class Debug implements Command {
         final StringBuilder toSend = new StringBuilder();
         final long streams = JukeBot.getMusicManagers().values().stream().filter(m -> m.player.getPlayingTrack() != null).count();
         final long servers = Arrays.stream(JukeBot.getShards())
-                .filter(s -> s.jda != null)
+                .filter(s ->  s != null && s.jda != null)
                 .map(s -> s.jda.getGuilds().size())
                 .reduce(0, (a, b) -> a + b);
 
@@ -36,7 +36,7 @@ public class Debug implements Command {
                 .append("MB\n\n");
 
         for (Shard s : JukeBot.getShards()) {
-            if (s.jda == null) {
+            if (s == null || s.jda == null) {
                 toSend.append(" [] UNKNOWN\n");
                 continue;
             }
