@@ -20,8 +20,8 @@ public class DatabaseHandler {
 
             if (prefix.next())
                 return prefix.getString("prefix");
-            else
-                return Bot.defaultPrefix;
+
+            return Bot.defaultPrefix;
 
         } catch (Exception e) {
 
@@ -110,8 +110,8 @@ public class DatabaseHandler {
 
             if (tier.next())
                 return tier.getInt("tier");
-            else
-                return 0;
+
+            return 0;
 
         } catch (Exception e) {
 
@@ -156,8 +156,8 @@ public class DatabaseHandler {
 
             if (property.next())
                 return property.getString("content");
-            else
-                return null;
+
+            return null;
 
         } catch (Exception e) {
             LOG.error("Failed to retrieve config property");

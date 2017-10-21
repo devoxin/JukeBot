@@ -69,11 +69,10 @@ public class EventListener extends ListenerAdapter {
 
         final String prefix = db.getPrefix(e.getGuild().getIdLong());
 
-        if (!e.getMessage().getContent().startsWith(prefix) && !e.getMessage().getMentionedUsers().contains(e.getJDA().getSelfUser()))
+        if (!e.getMessage().getContent().startsWith(prefix) && !e.getMessage().isMentioned(e.getJDA().getSelfUser()))
             return;
 
-        if (e.getMessage().getMentionedUsers().contains(e.getJDA().getSelfUser()) && permissions.canPost(e.getChannel())) {
-            LOG.debug("Received mention from " + e.getAuthor().getName());
+        if (e.getMessage().isMentioned(e.getJDA().getSelfUser()) && permissions.canPost(e.getChannel())) {
             if (e.getMessage().getContent().contains("help")) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)

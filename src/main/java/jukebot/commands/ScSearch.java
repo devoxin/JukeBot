@@ -30,11 +30,10 @@ public class ScSearch implements Command {
         final GuildMusicManager gmanager = JukeBot.getGuildMusicManager(manager);
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
-            final String context = (manager.isAttemptingToConnect() || manager.isConnected()) ? "my" : "a";
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No Mutual VoiceChannel")
-                    .setDescription("Join " + context + " VoiceChannel to use this command.")
+                    .setDescription("Join my VoiceChannel to use this command.")
                     .build()
             ).queue();
             return;

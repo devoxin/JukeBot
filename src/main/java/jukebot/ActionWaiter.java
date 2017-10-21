@@ -46,7 +46,7 @@ public class ActionWaiter extends ListenerAdapter {
             e.getMessage().delete().queue();
 
         AudioTrack track = t.tracks.get(i - 1);
-        AudioHandler.TRACK_STATUS result = t.manager.handler.queue(track, e.getAuthor().getIdLong());
+        AudioHandler.TRACK_STATUS result = t.manager.handler.addToQueue(track, e.getAuthor().getIdLong());
         if (AudioHandler.TRACK_STATUS.QUEUED == result) {
             t.m.editMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)

@@ -16,7 +16,7 @@ public class PostHere implements Command {
 
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
 
-        if (musicManager.player.getPlayingTrack() == null) {
+        if (!musicManager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
@@ -30,7 +30,7 @@ public class PostHere implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Permission Error")
-                    .setDescription("You need to have the DJ role!")
+                    .setDescription("You need to have the DJ role.")
                     .build()
             ).queue();
             return;

@@ -4,16 +4,19 @@ import jukebot.JukeBot;
 import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
+import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class Skip implements Command {
 
+    final Permissions permissions = new Permissions();
+
     public void execute(GuildMessageReceivedEvent e, String query) {
 
         final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
 
-        if (musicManager.player.getPlayingTrack() == null) {
+        if (!musicManager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
@@ -23,12 +26,11 @@ public class Skip implements Command {
             return;
         }
 
-        if (!e.getMember().getVoiceState().inVoiceChannel() ||
-                e.getGuild().getAudioManager().isConnected() && !e.getMember().getVoiceState().getChannel().getId().equalsIgnoreCase(e.getGuild().getAudioManager().getConnectedChannel().getId())) {
+        if (!permissions.checkVoiceChannel(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle("Vote Skip")
-                    .setDescription("You need to be in my voicechannel to skip.")
+                    .setTitle("No Mutual VoiceChannel")
+                    .setDescription("Join my VoiceChannel to use this command.")
                     .build()
             ).queue();
             return;

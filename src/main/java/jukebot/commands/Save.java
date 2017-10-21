@@ -2,6 +2,7 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
@@ -28,9 +29,9 @@ public class Save implements Command {
         }
 
         if (query.length() > 0 && "all".equalsIgnoreCase(query)) {
-            List<AudioTrack> queue = musicManager.handler.getQueue();
+            AudioHandler handler = musicManager.handler;
 
-            if (queue.size() == 0) {
+            if (handler.queue.isEmpty()) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("No songs queued")
@@ -42,7 +43,7 @@ public class Save implements Command {
 
             StringBuilder sb = new StringBuilder();
 
-            for (AudioTrack track : queue)
+            for (AudioTrack track : handler.queue)
                 sb.append(track.getInfo().title)
                         .append(" - ")
                         .append(track.getInfo().uri)

@@ -14,7 +14,9 @@ public class Stop implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        if (JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).player.getPlayingTrack() == null) {
+        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+
+        if (!musicManager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
@@ -25,20 +27,16 @@ public class Stop implements Command {
         }
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
-
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the DJ role!")
                     .build()
             ).queue();
-
             return;
         }
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
-
-        musicManager.handler.clearQueue();
+        musicManager.handler.queue.clear();
         musicManager.handler.playNext(null);
 
     }

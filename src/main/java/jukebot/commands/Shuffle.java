@@ -14,7 +14,9 @@ public class Shuffle implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        if (JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).player.getPlayingTrack() == null) {
+        final GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+
+        if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
@@ -27,8 +29,8 @@ public class Shuffle implements Command {
         if (!permissions.checkVoiceChannel(e.getMember())) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle("Shuffle")
-                    .setDescription("You need to be in my voicechannel to toggle shuffle.")
+                        .setTitle("No Mutual VoiceChannel")
+                        .setDescription("Join my VoiceChannel to use this command.")
                     .build()
             ).queue();
             return;
@@ -38,13 +40,13 @@ public class Shuffle implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Permission Error")
-                    .setDescription("You need to have the DJ role and also be [a Donator!](https://www.patreon.com/Devoxin)")
+                    .setDescription("You need to have the DJ role.")
                     .build()
             ).queue();
             return;
         }
 
-        GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+
         manager.handler.shuffle = !manager.handler.shuffle;
 
         e.getChannel().sendMessage(new EmbedBuilder()

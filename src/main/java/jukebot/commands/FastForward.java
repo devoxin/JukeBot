@@ -5,6 +5,7 @@ import jukebot.JukeBot;
 import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
+import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -15,10 +16,10 @@ public class FastForward implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
-        final AudioTrack currentTrack = musicManager.player.getPlayingTrack();
+        final GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+        final AudioTrack currentTrack = manager.player.getPlayingTrack();
 
-        if (currentTrack == null) {
+        if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
@@ -48,20 +49,12 @@ public class FastForward implements Command {
             return;
         }
 
-        int fastf = 10000;
+        int forwardTime = Helpers.ParseNumber(query, 10) * 1000;
 
-        if (query.length() > 0) {
-            try {
-                fastf = Integer.parseInt(query) * 1000;
-            } catch (Exception err) {
-                fastf = 10000;
-            }
-        }
-
-        if (currentTrack.getPosition() + fastf >= currentTrack.getDuration())
-            musicManager.handler.playNext(musicManager.player.getPlayingTrack());
+        if (currentTrack.getPosition() + forwardTime >= currentTrack.getDuration())
+            manager.handler.playNext(manager.player.getPlayingTrack());
         else {
-            currentTrack.setPosition(currentTrack.getPosition() + fastf);
+            currentTrack.setPosition(currentTrack.getPosition() + forwardTime);
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Fast-Forward")

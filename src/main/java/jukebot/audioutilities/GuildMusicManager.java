@@ -14,10 +14,7 @@ public class GuildMusicManager {
         this.player.addListener(this.handler);
     }
 
-    public void ResetPlayer() {
-        this.player.destroy();
-        this.player = Bot.playerManager.createPlayer();
-        this.handler.setPlayer(this.player);
-        this.player.addListener(this.handler);
+    public boolean isPlaying() {
+        return this.player.getPlayingTrack() != null;
     }
 }

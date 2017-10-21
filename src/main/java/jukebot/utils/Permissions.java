@@ -1,5 +1,6 @@
 package jukebot.utils;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.DatabaseHandler;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
@@ -30,6 +31,10 @@ public class Permissions {
         return (m.getVoiceState().inVoiceChannel() && m.getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count() == 1);
     }
 
+    public boolean isTrackRequester(AudioTrack track, long requester) {
+        return (long) track.getUserData() == requester;
+    }
+
     public boolean isBaller(long userID, int tier) {
         return getTierLevel(userID) >= tier;
     }
@@ -55,7 +60,7 @@ public class Permissions {
     public boolean checkVoiceChannel(Member m) {
         final AudioManager manager = m.getGuild().getAudioManager();
 
-        Bot.LOG.debug("Member OK: " + (m != null) + " | M-VC OK: " + (m.getVoiceState().inVoiceChannel()) + " | CONNECTED: " + (manager.isConnected() || manager.isAttemptingToConnect()));
+        Bot.LOG.debug("M-VC OK: " + (m.getVoiceState().inVoiceChannel()) + " | CONNECTED: " + (manager.isConnected() || manager.isAttemptingToConnect()));
 
         return m.getVoiceState().inVoiceChannel() && (!manager.isAttemptingToConnect() && !manager.isConnected() || manager.getConnectedChannel().getIdLong() == m.getVoiceState().getChannel().getIdLong());
     }

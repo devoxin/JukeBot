@@ -14,9 +14,9 @@ public class Forceskip implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+        final GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
 
-        if (musicManager.player.getPlayingTrack() == null) {
+        if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
@@ -26,19 +26,19 @@ public class Forceskip implements Command {
             return;
         }
 
-        if (!permissions.isElevatedUser(e.getMember(), true) && e.getAuthor().getIdLong() != (long) musicManager.player.getPlayingTrack().getUserData()) {
+        if (!permissions.isElevatedUser(e.getMember(), true)
+                && !permissions.isTrackRequester(manager.player.getPlayingTrack(), e.getAuthor().getIdLong())) {
 
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Permission Error")
-                    .setDescription("You need to have the DJ role!")
+                    .setDescription("You need to have the DJ role.")
                     .build()
             ).queue();
-
             return;
         }
 
-        musicManager.handler.playNext(null);
+        manager.handler.playNext(null);
 
     }
 }

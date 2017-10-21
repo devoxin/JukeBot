@@ -26,7 +26,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private AudioFrame lastFrame;
     private Random selector = new Random();
 
-    private ArrayList<AudioTrack> queue = new ArrayList<>();
+    public ArrayList<AudioTrack> queue = new ArrayList<>();
     private ArrayList<Long> skipVotes = new ArrayList<>();
     private TextChannel channel;
 
@@ -44,7 +44,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
      * Custom Events
      */
 
-    public TRACK_STATUS queue(AudioTrack track, long userID) {
+    public TRACK_STATUS addToQueue(AudioTrack track, long userID) {
         if (Helpers.CanQueue(track, userID) != Helpers.QUEUE_STATUS.CAN_QUEUE)
             return TRACK_STATUS.LIMITED;
 
@@ -57,11 +57,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         return TRACK_STATUS.PLAYING;
     }
 
-    public ArrayList<AudioTrack> getQueue() {
-        return this.queue;
-    }
-
-    public boolean voteSkip(Long userID) {
+    public boolean voteSkip(long userID) {
         return !this.skipVotes.contains(userID) && this.skipVotes.add(userID);
     }
 
@@ -71,14 +67,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     public void setChannel(TextChannel channel) {
         this.channel = channel;
-    }
-
-    public void setPlayer(AudioPlayer player) {
-        this.player = player;
-    }
-
-    public void clearQueue() {
-        this.queue.clear();
     }
 
     public void playNext(AudioTrack track) {
@@ -128,7 +116,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         this.skipVotes.clear();
 
         if (this.repeat == REPEATMODE.ALL)
-            this.queue(track.makeClone(), (long) track.getUserData());
+            this.addToQueue(track.makeClone(), (long) track.getUserData());
 
         if (!playNextCalled)
             playNext(this.repeat == REPEATMODE.SINGLE ? track : null);

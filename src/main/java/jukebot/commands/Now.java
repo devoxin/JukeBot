@@ -2,9 +2,10 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
+import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
-import jukebot.utils.Time;
+import jukebot.utils.Helpers;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -12,9 +13,12 @@ public class Now implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioTrack current = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).player.getPlayingTrack();
 
-        if (current == null) {
+        final GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+        final AudioTrack current = manager.player.getPlayingTrack();
+
+
+        if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
@@ -28,7 +32,9 @@ public class Now implements Command {
                 .setColor(Bot.EmbedColour)
                 .setTitle("Now Playing")
                 .setDescription("**[" + current.getInfo().title + "](" + current.getInfo().uri + ")**\n" +
-                        "(" + Time.format(current.getPosition()) + "/" + (current.getInfo().isStream ? "LIVE)" : Time.format(current.getDuration()) + ") - <@" + current.getUserData() + ">"))
+                        "(" + Helpers.fTime(current.getPosition()) + "/" + (current.getInfo().isStream
+                        ? "LIVE)"
+                        : Helpers.fTime(current.getDuration()) + ") - <@" + current.getUserData() + ">"))
                 .build()
         ).queue();
 

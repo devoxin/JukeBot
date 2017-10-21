@@ -22,7 +22,6 @@ public class Bot {
 
     private static final DatabaseHandler db = new DatabaseHandler();
 
-    private static final SessionReconnectQueue reconnectQueue = new SessionReconnectQueue();
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     public static final ActionWaiter waiter = new ActionWaiter();
 
@@ -35,7 +34,7 @@ public class Bot {
 
     public static JDABuilder builder = new JDABuilder(AccountType.BOT)
             .setToken(db.getPropertyFromConfig("token"))
-            .setReconnectQueue(Bot.reconnectQueue)
+            .setReconnectQueue(new SessionReconnectQueue())
             .addEventListener(waiter, new EventListener())
             .setAudioSendFactory(new NativeAudioSendFactory())
             .setGame(Game.of(defaultPrefix + "help | jukebot.xyz"));

@@ -2,6 +2,7 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
@@ -17,9 +18,9 @@ public class Unqueue implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final ArrayList<AudioTrack> queue = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).handler.getQueue();
+        final AudioHandler handler = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).handler;
 
-        if (queue.size() == 0) {
+        if (handler.queue.isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Queue is empty")
@@ -41,7 +42,7 @@ public class Unqueue implements Command {
 
         final int selected = Helpers.ParseNumber(query, 0);
 
-        if (selected < 1 || selected > queue.size()) {
+        if (selected < 1 || selected > handler.queue.size()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Invalid position specified")
@@ -51,19 +52,19 @@ public class Unqueue implements Command {
             return;
         }
 
-        final AudioTrack selectedTrack = queue.get(selected - 1);
+        final AudioTrack selectedTrack = handler.queue.get(selected - 1);
 
         if ((long) selectedTrack.getUserData() != e.getAuthor().getIdLong() && !permissions.isElevatedUser(e.getMember(), false)) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Cannot unqueue track")
-                    .setDescription("You can only unqueue tracks that weren't queued by you if you have the DJ role.")
+                    .setDescription("You need to have the DJ role to unqueue other users' tracks.")
                     .build()
             ).queue();
             return;
         }
 
-        queue.remove(selected - 1);
+        handler.queue.remove(selected - 1);
 
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)

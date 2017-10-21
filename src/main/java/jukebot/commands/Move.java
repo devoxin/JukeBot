@@ -2,6 +2,7 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
@@ -17,9 +18,9 @@ public class Move implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final ArrayList<AudioTrack> queue = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).handler.getQueue();
+        final AudioHandler handler = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).handler;
 
-        if (queue.size() == 0) {
+        if (handler.queue.isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Queue is empty")
@@ -42,7 +43,7 @@ public class Move implements Command {
         final int target = Helpers.ParseNumber(query.split(" ")[0], 0);
         final int dest = Helpers.ParseNumber(query.split(" ")[1], 0);
 
-        if (target < 1 || dest < 1 || target == dest || target > queue.size()) {
+        if (target < 1 || dest < 1 || target == dest || target > handler.queue.size()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Invalid position(s) specified")
@@ -52,21 +53,20 @@ public class Move implements Command {
             return;
         }
 
-        final AudioTrack selectedTrack = queue.get(target - 1);
+        final AudioTrack selectedTrack = handler.queue.get(target - 1);
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Cannot move track")
-                    .setDescription("You can only move tracks that weren't queued by you if you have the DJ role.")
+                    .setDescription("You need the DJ role to move other users' tracks.")
                     .build()
             ).queue();
             return;
         }
 
-        queue.remove(target - 1);
-
-        queue.add(dest - 1, selectedTrack);
+        handler.queue.remove(target - 1);
+        handler.queue.add(dest - 1, selectedTrack);
 
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)

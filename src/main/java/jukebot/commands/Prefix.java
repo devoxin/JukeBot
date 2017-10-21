@@ -27,7 +27,7 @@ public class Prefix implements Command {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Permission Error")
-                        .setDescription("You need to have the DJ role!")
+                        .setDescription("You need to have the DJ role.")
                         .build()
                 ).queue();
                 return;
