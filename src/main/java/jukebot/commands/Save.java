@@ -15,10 +15,10 @@ public class Save implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
-        final AudioTrack currentTrack = musicManager.player.getPlayingTrack();
+        final GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+        final AudioTrack currentTrack = manager.player.getPlayingTrack();
 
-        if (currentTrack == null) {
+        if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No playback activity")
@@ -29,9 +29,8 @@ public class Save implements Command {
         }
 
         if (query.length() > 0 && "all".equalsIgnoreCase(query)) {
-            AudioHandler handler = musicManager.handler;
 
-            if (handler.queue.isEmpty()) {
+            if (manager.handler.queue.isEmpty()) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("No songs queued")
@@ -43,7 +42,7 @@ public class Save implements Command {
 
             StringBuilder sb = new StringBuilder();
 
-            for (AudioTrack track : handler.queue)
+            for (AudioTrack track : manager.handler.queue)
                 sb.append(track.getInfo().title)
                         .append(" - ")
                         .append(track.getInfo().uri)
