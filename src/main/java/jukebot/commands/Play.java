@@ -40,16 +40,6 @@ public class Play implements Command {
             return;
         }
 
-        if (!permissions.checkVoiceChannel(e.getMember())) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
-                    .setTitle("No Mutual VoiceChannel")
-                    .setDescription("Join my VoiceChannel to use this command.")
-                    .build()
-            ).queue();
-            return;
-        }
-
         if (!manager.isAttemptingToConnect() && !manager.isConnected()) {
             ConnectionError connectionStatus = permissions.canConnect(e.getMember().getVoiceState().getChannel());
 
