@@ -21,9 +21,9 @@ public class JukeBot {
 
     private static final HashMap<Long, GuildMusicManager> musicManagers = new HashMap<>();
 
-    private static Shard[] shards = new Shard[Integer.parseInt(db.getPropertyFromConfig("maxshards"))];
+    private static final Shard[] shards = new Shard[Integer.parseInt(db.getPropertyFromConfig("maxshards"))];
 
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         ConfigurationFactory.setConfigurationFactory(new Log4JConfig());
 
         LOG.info("JukeBot " + Bot.VERSION +

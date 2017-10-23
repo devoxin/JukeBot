@@ -46,13 +46,10 @@ public class Shuffle implements Command {
             return;
         }
 
-
-        manager.handler.shuffle = !manager.handler.shuffle;
-
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("Shuffle")
-                .setDescription("Shuffle **" + (manager.handler.shuffle ? "enabled" : "disabled") + "**")
+                .setDescription("Shuffle **" + (manager.handler.toggleShuffle() ? "enabled" : "disabled") + "**")
                 .build()
         ).queue();
 

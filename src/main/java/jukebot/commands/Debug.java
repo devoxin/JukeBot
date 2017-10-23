@@ -12,6 +12,8 @@ import java.util.Arrays;
 
 public class Debug implements Command {
 
+    private final int padLength = String.valueOf(JukeBot.getShards().length).length();
+
     public void execute(GuildMessageReceivedEvent e, String query) {
 
         final StringBuilder toSend = new StringBuilder();
@@ -26,7 +28,7 @@ public class Debug implements Command {
                 .append(" | V: ")
                 .append(streams)
                 .append(" | T: ")
-                .append(Thread.activeCount())
+                .append(Thread.activeCount()) // muh special thread leaks
                 .append(" | ")
                 .append(Helpers.fTime(System.currentTimeMillis() - JukeBot.startTime))
                 .append(" | ")
@@ -39,7 +41,7 @@ public class Debug implements Command {
                 continue;
             }
             toSend.append(s.jda.getShardInfo().getShardId() == e.getJDA().getShardInfo().getShardId() ? "*[" : " [")
-                    .append(Helpers.PadLeft(" ", Integer.toString(s.jda.getShardInfo().getShardId() + 1), 2))
+                    .append(Helpers.PadLeft(" ", Integer.toString(s.jda.getShardInfo().getShardId() + 1), padLength))
                     .append("] ")
                     .append(s.jda.getStatus().toString())
                     .append(" G: ")

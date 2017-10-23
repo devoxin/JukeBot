@@ -38,16 +38,17 @@ public class Skip implements Command {
 
         final boolean skipAdded = musicManager.handler.voteSkip(e.getAuthor().getIdLong());
 
-        final int Votes = musicManager.handler.getVotes();
-        final long NeededVotes = Math.round(((double) e.getMember().getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count()) / 2);
+        final int votes = musicManager.handler.getVotes();
+        final int neededVotes = (int) Math.ceil(e.getGuild().getAudioManager().getConnectedChannel()
+                .getMembers().stream().filter(u -> !u.getUser().isBot()).count() * 0.5);
 
-        if (NeededVotes - Votes <= 0)
+        if (neededVotes - votes <= 0)
             musicManager.handler.playNext(null);
         else
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle(skipAdded ? "Vote Acknowledged" : "Already Voted")
-                    .setDescription((NeededVotes - Votes) + " votes needed to skip.")
+                    .setDescription((neededVotes - votes) + " votes needed to skip.")
                     .build()
             ).queue();
     }

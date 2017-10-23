@@ -36,7 +36,7 @@ public class Stop implements Command {
             return;
         }
 
-        musicManager.handler.queue.clear();
+        musicManager.handler.clearQueue();
         musicManager.handler.playNext(null);
 
     }

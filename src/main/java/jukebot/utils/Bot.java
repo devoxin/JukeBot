@@ -25,7 +25,7 @@ public class Bot {
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     public static final ActionWaiter waiter = new ActionWaiter();
 
-    public static final String VERSION = "6.0.24-BETA";
+    public static final String VERSION = "6.0.24-DEV"; // tfw it goes from beta to dev bc it's so borked
     public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
     public static Long BotOwnerID = 0L;
@@ -41,24 +41,18 @@ public class Bot {
 
     public static void Configure() {
         Thread.currentThread().setName("JukeBot-Main");
-        String colour = db.getPropertyFromConfig("colour");
-        if (colour == null)
-            colour = db.getPropertyFromConfig("color");
-        if (colour != null)
+        String color = db.getPropertyFromConfig("color");
+        if (color != null) {
             try {
-                EmbedColour = Color.decode(colour);
+                EmbedColour = Color.decode(color);
             } catch (Exception e) {
                 LOG.error("Failed to decode 'colour' property in DB. Did you specify a hex? (e.g. 0xFFFFFF or #FFFFFF)");
             }
-
-        YoutubeAudioSourceManager YTSM = new YoutubeAudioSourceManager();
-        YTSM.setPlaylistPageCount(10);
+        }
 
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
         playerManager.getConfiguration().setOpusEncodingQuality(9);
-
-        playerManager.registerSourceManager(YTSM);
         AudioSourceManagers.registerRemoteSources(playerManager);
 
     }

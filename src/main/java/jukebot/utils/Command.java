@@ -4,6 +4,6 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public interface Command {
 
-    void execute(GuildMessageReceivedEvent e, String query);
+    void execute(final GuildMessageReceivedEvent e, final String query);
 
 }

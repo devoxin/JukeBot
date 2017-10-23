@@ -16,15 +16,15 @@ public class Permissions {
         return userID == Bot.BotOwnerID;
     }
 
-    private boolean hasDJRole(Member m) {
+    private boolean isDJ(Member m) {
         return m.getRoles().stream().anyMatch(r -> "dj".equalsIgnoreCase(r.getName()));
     }
 
     public boolean isElevatedUser(Member m, boolean AllowLone) {
         if (AllowLone)
-            return isALoner(m) || m.isOwner() || isBotOwner(m.getUser().getIdLong()) || hasDJRole(m);
+            return isALoner(m) || m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
         else
-            return m.isOwner() || isBotOwner(m.getUser().getIdLong()) || hasDJRole(m);
+            return m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
     }
 
     private boolean isALoner(Member m) {
@@ -35,11 +35,7 @@ public class Permissions {
         return (long) track.getUserData() == requester;
     }
 
-    public boolean isBaller(long userID, int tier) {
-        return getTierLevel(userID) >= tier;
-    }
-
-    int getTierLevel(long userID) {
+    public int getTierLevel(long userID) {
         return isBotOwner(userID) ? 3 : db.getTier(userID);
     }
 

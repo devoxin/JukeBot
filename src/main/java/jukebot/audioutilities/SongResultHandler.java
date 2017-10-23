@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import jukebot.ActionWaiter;
 import jukebot.utils.Bot;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
@@ -27,27 +28,15 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        AudioHandler.TRACK_STATUS result = musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
-        if (AudioHandler.TRACK_STATUS.QUEUED == result) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
-                    .setTitle("Song Enqueued")
-                    .setDescription(track.getInfo().title)
-                    .build()
-            ).queue();
-        } else if (AudioHandler.TRACK_STATUS.LIMITED == result) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
-                    .setTitle("Song Unavailable")
-                    .setDescription("Livestreams/Long tracks are unavailable.\nYou can queue them by [becoming a donator](https://www.patreon.com/Devoxin)")
-                    .build()
-            ).queue();
+        if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
+            // TODO: Throw Error
+        } else {
+            musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
         }
     }
 
     @Override
     public void playlistLoaded(AudioPlaylist playlist) {
-
         if (playlist.isSearchResult()) {
 
             if (this.useSelection) {
@@ -65,43 +54,63 @@ public class SongResultHandler implements AudioLoadResultHandler {
                             .append(Helpers.fTime(tracks.get(i).getDuration()))
                             .append("`\n");
 
-
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Select Song")
                         .setDescription(selector.toString().trim())
                         .build()
-                ).queue(m -> Bot.waiter.AddAction(e.getAuthor().getIdLong(), m, tracks, musicManager));
+                ).queue(m -> {
+                    Bot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
+                        if (selected <= 0 || selected > tracks.size()) {
+                            m.editMessage(new EmbedBuilder()
+                                    .setColor(Bot.EmbedColour)
+                                    .setTitle("Selection Cancelled")
+                                    .setDescription("An invalid option was specified")
+                                    .build()
+                            ).queue();
+                            return;
+                        }
+
+                        AudioTrack track = tracks.get(selected - 1);
+
+                        if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
+                            m.editMessage(new EmbedBuilder()
+                                    .setColor(Bot.EmbedColour)
+                                    .setTitle("Track Unavailable")
+                                    .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
+                                    .build()
+                            ).queue();
+                            return;
+                        }
+
+                        m.editMessage(new EmbedBuilder()
+                                .setColor(Bot.EmbedColour)
+                                .setTitle("Track Enqueued")
+                                .setDescription(track.getInfo().title)
+                                .build()
+                        ).queue();
+
+                        musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
+                    });
+                });
 
             } else {
+                AudioTrack track = playlist.getTracks().get(0);
 
-                AudioHandler.TRACK_STATUS result = musicManager.handler.addToQueue(playlist.getTracks().get(0), e.getAuthor().getIdLong());
-                if (AudioHandler.TRACK_STATUS.QUEUED == result) {
-                    e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(Bot.EmbedColour)
-                            .setTitle("Song Enqueued")
-                            .setDescription(playlist.getTracks().get(0).getInfo().title)
-                            .build()
-                    ).queue();
-                } else if (AudioHandler.TRACK_STATUS.LIMITED == result) {
-                    e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(Bot.EmbedColour)
-                            .setTitle("Song Unavailable")
-                            .setDescription("Livestreams/Long tracks are unavailable.\nYou can queue them by [becoming a donator](https://www.patreon.com/Devoxin)")
-                            .build()
-                    ).queue();
+                if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
+                    // TODO: Throw Error
+                } else {
+                    musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
                 }
-
             }
 
         } else {
 
-            List<AudioTrack> tracks = playlist.getTracks();
-            if (tracks.size() > 100 && !permissions.isBaller(e.getAuthor().getIdLong(), 1))
-                tracks = tracks.subList(0, 100);
+            List<AudioTrack> tracks = playlist.getTracks().subList(0, getPlaylistLimit(e.getAuthor().getIdLong()));
 
             for (AudioTrack track : tracks)
-                musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
+                if (canQueueTrack(track, e.getAuthor().getIdLong()))
+                    musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
 
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
@@ -120,7 +129,8 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 .setTitle("No results found.")
                 .build()
         ).queue();
-        if (!this.musicManager.isPlaying() && this.musicManager.handler.queue.isEmpty())
+
+        if (!this.musicManager.isPlaying() && this.musicManager.handler.getQueue().isEmpty())
             Helpers.DisconnectVoice(this.e.getGuild().getAudioManager());
     }
 
@@ -132,8 +142,28 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 .setDescription(ex.getMessage())
                 .build()
         ).queue();
-        if (!this.musicManager.isPlaying() && this.musicManager.handler.queue.isEmpty())
+
+        if (!this.musicManager.isPlaying() && this.musicManager.handler.getQueue().isEmpty())
             Helpers.DisconnectVoice(this.e.getGuild().getAudioManager());
+    }
+
+    public boolean canQueueTrack(AudioTrack track, long requesterID) {
+        final int trackLength = (int) Math.ceil(track.getDuration() / 1000);
+        final int requesterTier = permissions.getTierLevel(requesterID);
+
+        return trackLength <= 7500 || requesterTier >= 1;
+    }
+
+    public int getPlaylistLimit(long requesterID) {
+        final int requesterTier = permissions.getTierLevel(requesterID);
+
+        if (requesterTier < 1)
+            return 100;
+
+        if (requesterTier < 2)
+            return 1000;
+
+        return Integer.MAX_VALUE;
     }
 
 }

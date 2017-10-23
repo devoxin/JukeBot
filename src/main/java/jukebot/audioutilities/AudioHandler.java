@@ -13,7 +13,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.entities.TextChannel;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 import static jukebot.utils.Bot.LOG;
@@ -24,16 +24,15 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     private AudioPlayer player;
     private AudioFrame lastFrame;
-    private Random selector = new Random();
+    private final Random selector = new Random();
 
-    public ArrayList<AudioTrack> queue = new ArrayList<>();
-    private ArrayList<Long> skipVotes = new ArrayList<>();
+    private final LinkedList<AudioTrack> queue = new LinkedList<>();
+    private final LinkedList<Long> skipVotes = new LinkedList<>();
     private TextChannel channel;
 
-    public REPEATMODE repeat = REPEATMODE.NONE;
-    public boolean shuffle = false;
+    private REPEATMODE repeat = REPEATMODE.NONE;
+    private boolean shuffle = false;
 
-    private boolean playNextCalled = false;
     private String lastPlayed = "";
 
     AudioHandler(AudioPlayer player) {
@@ -44,17 +43,35 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
      * Custom Events
      */
 
-    public TRACK_STATUS addToQueue(AudioTrack track, long userID) {
-        if (Helpers.CanQueue(track, userID) != Helpers.QUEUE_STATUS.CAN_QUEUE)
-            return TRACK_STATUS.LIMITED;
-
+    public void addToQueue(AudioTrack track, long userID) {
         track.setUserData(userID);
 
-        if (!this.player.startTrack(track, true)) {
+        if (!this.player.startTrack(track, true))
             this.queue.add(track);
-            return TRACK_STATUS.QUEUED;
-        }
-        return TRACK_STATUS.PLAYING;
+    }
+
+    public LinkedList<AudioTrack> getQueue() {
+        return this.queue;
+    }
+
+    public void clearQueue() {
+        this.queue.clear();
+    }
+
+    public String getStringifiedRepeat() {
+        return String.valueOf(this.repeat).toLowerCase();
+    }
+
+    public boolean isShuffleEnabled() {
+        return this.shuffle;
+    }
+
+    public boolean toggleShuffle() {
+        return this.shuffle = !this.shuffle;
+    }
+
+    public void setRepeat(REPEATMODE mode) {
+        this.repeat = mode;
     }
 
     public boolean voteSkip(long userID) {
@@ -70,41 +87,41 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public void playNext(AudioTrack track) {
-        playNextCalled = true;
-        try {
-            AudioTrack nextTrack = null;
+        AudioTrack nextTrack = null;
 
-            if (this.repeat == REPEATMODE.SINGLE && track != null) {
-                nextTrack = track.makeClone();
-                nextTrack.setUserData(track.getUserData());
-            } else if (!this.queue.isEmpty()) {
-                if (this.shuffle)
-                    nextTrack = this.queue.remove(selector.nextInt(this.queue.size()));
-                else
-                    nextTrack = this.queue.remove(0);
-            }
-
-            if (nextTrack != null) {
-                this.player.startTrack(nextTrack, false);
-            } else {
-                this.repeat = REPEATMODE.NONE;
-                this.shuffle = false;
-                this.lastPlayed = "";
-                this.player.stopTrack();
-                this.player.setVolume(100);
-                if (permissions.canPost(this.channel)) {
-                    this.channel.sendMessage(new EmbedBuilder()
-                            .setColor(Bot.EmbedColour)
-                            .setTitle("Queue Concluded!")
-                            .setDescription("[Support JukeBot and receive some awesome benefits!](https://www.patreon.com/Devoxin)")
-                            .build()
-                    ).queue(null, e -> LOG.warn("Failed to post 'QUEUE_END' message to channel " + this.channel.getId()));
-                }
-                Helpers.DisconnectVoice(this.channel.getGuild().getAudioManager());
-            }
-        } finally {
-            playNextCalled = false;
+        if (this.repeat == REPEATMODE.SINGLE && track != null) {
+            nextTrack = track.makeClone();
+            nextTrack.setUserData(track.getUserData());
+        } else if (!this.queue.isEmpty()) {
+            if (this.shuffle)
+                nextTrack = this.queue.remove(selector.nextInt(this.queue.size()));
+            else
+                nextTrack = this.queue.removeFirst();
         }
+
+        if (nextTrack != null) {
+            this.player.startTrack(nextTrack, false);
+        } else {
+            resetPlayer();
+            Helpers.DisconnectVoice(this.channel.getGuild().getAudioManager());
+            if (permissions.canPost(this.channel)) {
+                this.channel.sendMessage(new EmbedBuilder()
+                        .setColor(Bot.EmbedColour)
+                        .setTitle("Queue Concluded!")
+                        .setDescription("[Support JukeBot and receive some awesome benefits!](https://www.patreon.com/Devoxin)")
+                        .build()
+                ).queue(null, e -> LOG.warn("Failed to post 'QUEUE_END' message to channel " + this.channel.getId()));
+            }
+        }
+    }
+
+
+    private void resetPlayer() {
+        this.repeat = REPEATMODE.NONE;
+        this.shuffle = false;
+        this.lastPlayed = "";
+        this.player.stopTrack();
+        this.player.setVolume(100);
     }
 
     /*
@@ -113,13 +130,14 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        // This is fired when the track ends naturally
         this.skipVotes.clear();
 
         if (this.repeat == REPEATMODE.ALL)
             this.addToQueue(track.makeClone(), (long) track.getUserData());
 
-        if (!playNextCalled)
-            playNext(this.repeat == REPEATMODE.SINGLE ? track : null);
+        if (endReason.mayStartNext)
+            playNext(track);
     }
 
     @Override
@@ -144,7 +162,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         if (permissions.canPost(this.channel)) {
             this.channel.sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle("Unable to Play Track")
+                    .setTitle("Track Playback Failed")
                     .setDescription(exception.getLocalizedMessage())
                     .build()
             ).queue(null, e -> LOG.warn("Failed to post 'TRACK_ERROR' message to channel " + this.channel.getId()));
@@ -169,12 +187,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public boolean isOpus() {
         return true;
-    }
-
-    public enum TRACK_STATUS {
-        PLAYING,
-        QUEUED,
-        LIMITED
     }
 
     public enum REPEATMODE {

@@ -20,7 +20,7 @@ public class Move implements Command {
 
         final AudioHandler handler = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).handler;
 
-        if (handler.queue.isEmpty()) {
+        if (handler.getQueue().isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Queue is empty")
@@ -43,7 +43,7 @@ public class Move implements Command {
         final int target = Helpers.ParseNumber(query.split(" ")[0], 0);
         final int dest = Helpers.ParseNumber(query.split(" ")[1], 0);
 
-        if (target < 1 || dest < 1 || target == dest || target > handler.queue.size()) {
+        if (target < 1 || dest < 1 || target == dest || target > handler.getQueue().size()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Invalid position(s) specified")
@@ -53,7 +53,7 @@ public class Move implements Command {
             return;
         }
 
-        final AudioTrack selectedTrack = handler.queue.get(target - 1);
+        final AudioTrack selectedTrack = handler.getQueue().get(target - 1);
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
             e.getChannel().sendMessage(new EmbedBuilder()
@@ -65,8 +65,8 @@ public class Move implements Command {
             return;
         }
 
-        handler.queue.remove(target - 1);
-        handler.queue.add(dest - 1, selectedTrack);
+        handler.getQueue().remove(target - 1);
+        handler.getQueue().add(dest - 1, selectedTrack);
 
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)

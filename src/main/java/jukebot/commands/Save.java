@@ -30,7 +30,7 @@ public class Save implements Command {
 
         if (query.length() > 0 && "all".equalsIgnoreCase(query)) {
 
-            if (manager.handler.queue.isEmpty()) {
+            if (manager.handler.getQueue().isEmpty()) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("No songs queued")
@@ -42,7 +42,7 @@ public class Save implements Command {
 
             StringBuilder sb = new StringBuilder();
 
-            for (AudioTrack track : manager.handler.queue)
+            for (AudioTrack track : manager.handler.getQueue())
                 sb.append(track.getInfo().title)
                         .append(" - ")
                         .append(track.getInfo().uri)

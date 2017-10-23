@@ -51,15 +51,15 @@ public class Repeat implements Command {
             switch (query.toLowerCase()) {
                 case "a":
                 case "all":
-                    manager.handler.repeat = AudioHandler.REPEATMODE.ALL;
+                    manager.handler.setRepeat(AudioHandler.REPEATMODE.ALL);
                     break;
                 case "s":
                 case "single":
-                    manager.handler.repeat = AudioHandler.REPEATMODE.SINGLE;
+                    manager.handler.setRepeat(AudioHandler.REPEATMODE.SINGLE);
                     break;
                 case "n":
                 case "none":
-                    manager.handler.repeat = AudioHandler.REPEATMODE.NONE;
+                    manager.handler.setRepeat(AudioHandler.REPEATMODE.NONE);
                     break;
                 default:
                     e.getChannel().sendMessage(new EmbedBuilder()
@@ -74,7 +74,7 @@ public class Repeat implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Repeat Modes")
-                    .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + String.valueOf(manager.handler.repeat).toLowerCase())
+                    .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + manager.handler.getStringifiedRepeat())
                     .build()
             ).queue();
             return;
@@ -83,7 +83,7 @@ public class Repeat implements Command {
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("Repeat")
-                .setDescription("Repeat set to **" + String.valueOf(manager.handler.repeat).toLowerCase() + "**")
+                .setDescription("Repeat set to **" + manager.handler.getStringifiedRepeat() + "**")
                 .build()
         ).queue();
 

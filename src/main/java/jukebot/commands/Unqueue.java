@@ -20,7 +20,7 @@ public class Unqueue implements Command {
 
         final AudioHandler handler = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).handler;
 
-        if (handler.queue.isEmpty()) {
+        if (handler.getQueue().isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Queue is empty")
@@ -42,7 +42,7 @@ public class Unqueue implements Command {
 
         final int selected = Helpers.ParseNumber(query, 0);
 
-        if (selected < 1 || selected > handler.queue.size()) {
+        if (selected < 1 || selected > handler.getQueue().size()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Invalid position specified")
@@ -52,7 +52,7 @@ public class Unqueue implements Command {
             return;
         }
 
-        final AudioTrack selectedTrack = handler.queue.get(selected - 1);
+        final AudioTrack selectedTrack = handler.getQueue().get(selected - 1);
 
         if ((long) selectedTrack.getUserData() != e.getAuthor().getIdLong() && !permissions.isElevatedUser(e.getMember(), false)) {
             e.getChannel().sendMessage(new EmbedBuilder()
@@ -64,7 +64,7 @@ public class Unqueue implements Command {
             return;
         }
 
-        handler.queue.remove(selected - 1);
+        handler.getQueue().remove(selected - 1);
 
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
