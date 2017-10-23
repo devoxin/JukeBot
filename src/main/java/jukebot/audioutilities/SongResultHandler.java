@@ -4,7 +4,6 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import jukebot.ActionWaiter;
 import jukebot.utils.Bot;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
@@ -59,40 +58,33 @@ public class SongResultHandler implements AudioLoadResultHandler {
                         .setTitle("Select Song")
                         .setDescription(selector.toString().trim())
                         .build()
-                ).queue(m -> {
-                    Bot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
-                        if (selected <= 0 || selected > tracks.size()) {
-                            m.editMessage(new EmbedBuilder()
-                                    .setColor(Bot.EmbedColour)
-                                    .setTitle("Selection Cancelled")
-                                    .setDescription("An invalid option was specified")
-                                    .build()
-                            ).queue();
-                            return;
-                        }
+                ).queue(m -> Bot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
+                    if (selected <= 0 || selected > tracks.size()) {
+                        m.delete().queue();
+                        return;
+                    }
 
-                        AudioTrack track = tracks.get(selected - 1);
+                    AudioTrack track = tracks.get(selected - 1);
 
-                        if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
-                            m.editMessage(new EmbedBuilder()
-                                    .setColor(Bot.EmbedColour)
-                                    .setTitle("Track Unavailable")
-                                    .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
-                                    .build()
-                            ).queue();
-                            return;
-                        }
-
+                    if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
                         m.editMessage(new EmbedBuilder()
                                 .setColor(Bot.EmbedColour)
-                                .setTitle("Track Enqueued")
-                                .setDescription(track.getInfo().title)
+                                .setTitle("Track Unavailable")
+                                .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
                                 .build()
                         ).queue();
+                        return;
+                    }
 
-                        musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
-                    });
-                });
+                    m.editMessage(new EmbedBuilder()
+                            .setColor(Bot.EmbedColour)
+                            .setTitle("Track Enqueued")
+                            .setDescription(track.getInfo().title)
+                            .build()
+                    ).queue();
+
+                    musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
+                }));
 
             } else {
                 AudioTrack track = playlist.getTracks().get(0);

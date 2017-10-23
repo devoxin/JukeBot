@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 public class ActionWaiter extends ListenerAdapter {
 
     private HashMap<Long, Consumer<Integer>> selectionMenus = new HashMap<>();
-    private HashMap<Long, ScheduledFuture> schedulers = new HashMap<>();
     // TODO: Incorporate schedulers into the <Long, Consumer> HashMap for ease?
 
     //private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
