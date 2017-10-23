@@ -35,6 +35,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     private String lastPlayed = "";
 
+    public int trackPacketLoss = 0;
+    public int trackPackets = 0;
+
     AudioHandler(AudioPlayer player) {
         this.player = player;
     }
@@ -43,19 +46,19 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
      * Custom Events
      */
 
-    public void addToQueue(AudioTrack track, long userID) {
+    boolean addToQueue(AudioTrack track, long userID) { // boolean: shouldAnnounce
         track.setUserData(userID);
 
-        if (!this.player.startTrack(track, true))
-            this.queue.add(track);
+        if (!this.player.startTrack(track, true)) {
+            this.queue.offer(track);
+            return true;
+        }
+
+        return false;
     }
 
     public LinkedList<AudioTrack> getQueue() {
         return this.queue;
-    }
-
-    public void clearQueue() {
-        this.queue.clear();
     }
 
     public String getStringifiedRepeat() {
@@ -74,11 +77,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         this.repeat = mode;
     }
 
-    public boolean voteSkip(long userID) {
-        return !this.skipVotes.contains(userID) && this.skipVotes.add(userID);
-    }
-
-    public int getVotes() {
+    public int voteSkip(long userID) {
+        if (!this.skipVotes.contains(userID))
+            this.skipVotes.add(userID);
         return this.skipVotes.size();
     }
 
@@ -115,7 +116,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         }
     }
 
-
     private void resetPlayer() {
         this.repeat = REPEATMODE.NONE;
         this.shuffle = false;
@@ -130,8 +130,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        // This is fired when the track ends naturally
+        // This event is fired when the track ends naturally
         this.skipVotes.clear();
+        this.trackPacketLoss = 0; // Reset Track Performance Statistics
+        this.trackPackets = 0;   // Reset Track Performance Statistics
 
         if (this.repeat == REPEATMODE.ALL)
             this.addToQueue(track.makeClone(), (long) track.getUserData());
@@ -176,7 +178,13 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public boolean canProvide() {
-        return (lastFrame = this.player.provide()) != null;
+        lastFrame = this.player.provide();
+        if (lastFrame == null)
+            this.trackPacketLoss++;
+        else
+            this.trackPackets++;
+
+        return lastFrame != null;
     }
 
     @Override
@@ -190,9 +198,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public enum REPEATMODE {
-        SINGLE,
-        ALL,
-        NONE
+        SINGLE, ALL, NONE
     }
 
 }

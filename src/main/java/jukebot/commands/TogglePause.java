@@ -1,7 +1,7 @@
 package jukebot.commands;
 
 import jukebot.JukeBot;
-import jukebot.audioutilities.GuildMusicManager;
+import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
@@ -14,7 +14,7 @@ public class TogglePause implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+        final MusicManager musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
 
         if (!musicManager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
@@ -26,7 +26,7 @@ public class TogglePause implements Command {
             return;
         }
 
-        if (permissions.checkVoiceChannel(e.getMember())) {
+        if (!permissions.checkVoiceChannel(e.getMember())) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No Mutual VoiceChannel")

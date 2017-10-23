@@ -5,7 +5,6 @@ import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import jukebot.ActionWaiter;
 import jukebot.DatabaseHandler;
 import jukebot.EventListener;
@@ -25,7 +24,7 @@ public class Bot {
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     public static final ActionWaiter waiter = new ActionWaiter();
 
-    public static final String VERSION = "6.0.24-DEV"; // tfw it goes from beta to dev bc it's so borked
+    public static final String VERSION = "6.1.0-BETA";
     public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
     public static Long BotOwnerID = 0L;

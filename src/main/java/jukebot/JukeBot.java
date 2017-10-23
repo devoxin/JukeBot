@@ -1,7 +1,7 @@
 package jukebot;
 
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
-import jukebot.audioutilities.GuildMusicManager;
+import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Log4JConfig;
 import net.dv8tion.jda.core.JDAInfo;
@@ -19,7 +19,7 @@ public class JukeBot {
 
     private static final DatabaseHandler db = new DatabaseHandler();
 
-    private static final HashMap<Long, GuildMusicManager> musicManagers = new HashMap<>();
+    private static final HashMap<Long, MusicManager> musicManagers = new HashMap<>();
 
     private static final Shard[] shards = new Shard[Integer.parseInt(db.getPropertyFromConfig("maxshards"))];
 
@@ -45,13 +45,13 @@ public class JukeBot {
         return shards;
     }
 
-    public static HashMap<Long, GuildMusicManager> getMusicManagers() {
+    public static HashMap<Long, MusicManager> getMusicManagers() {
         return musicManagers;
     }
 
-    public static GuildMusicManager getGuildMusicManager(final AudioManager manager) {
+    public static MusicManager getMusicManager(final AudioManager manager) {
 
-        GuildMusicManager musicManager = musicManagers.computeIfAbsent(manager.getGuild().getIdLong(), v -> new GuildMusicManager());
+        MusicManager musicManager = musicManagers.computeIfAbsent(manager.getGuild().getIdLong(), v -> new MusicManager());
 
         if (manager.getSendingHandler() == null)
             manager.setSendingHandler(musicManager.handler);

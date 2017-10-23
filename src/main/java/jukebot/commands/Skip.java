@@ -1,7 +1,7 @@
 package jukebot.commands;
 
 import jukebot.JukeBot;
-import jukebot.audioutilities.GuildMusicManager;
+import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
@@ -14,7 +14,7 @@ public class Skip implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+        final MusicManager musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
 
         if (!musicManager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
@@ -36,19 +36,18 @@ public class Skip implements Command {
             return;
         }
 
-        final boolean skipAdded = musicManager.handler.voteSkip(e.getAuthor().getIdLong());
+        final int totalVotes = musicManager.handler.voteSkip(e.getAuthor().getIdLong());
 
-        final int votes = musicManager.handler.getVotes();
         final int neededVotes = (int) Math.ceil(e.getGuild().getAudioManager().getConnectedChannel()
                 .getMembers().stream().filter(u -> !u.getUser().isBot()).count() * 0.5);
 
-        if (neededVotes - votes <= 0)
+        if (neededVotes - totalVotes <= 0)
             musicManager.handler.playNext(null);
         else
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
-                    .setTitle(skipAdded ? "Vote Acknowledged" : "Already Voted")
-                    .setDescription((neededVotes - votes) + " votes needed to skip.")
+                    .setTitle("Vote Acknowledged")
+                    .setDescription((neededVotes - totalVotes) + " votes needed to skip.")
                     .build()
             ).queue();
     }

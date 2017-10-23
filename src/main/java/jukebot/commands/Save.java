@@ -2,20 +2,17 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
-import jukebot.audioutilities.AudioHandler;
-import jukebot.audioutilities.GuildMusicManager;
+import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-import java.util.List;
-
 public class Save implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+        final MusicManager manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
         final AudioTrack currentTrack = manager.player.getPlayingTrack();
 
         if (!manager.isPlaying()) {

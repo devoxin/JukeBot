@@ -10,15 +10,13 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-import java.util.ArrayList;
-
 public class Unqueue implements Command {
 
     final Permissions permissions = new Permissions();
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler handler = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).handler;
+        final AudioHandler handler = JukeBot.getMusicManager(e.getGuild().getAudioManager()).handler;
 
         if (handler.getQueue().isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()

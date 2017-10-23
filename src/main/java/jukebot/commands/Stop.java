@@ -1,7 +1,7 @@
 package jukebot.commands;
 
 import jukebot.JukeBot;
-import jukebot.audioutilities.GuildMusicManager;
+import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
@@ -14,7 +14,7 @@ public class Stop implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final GuildMusicManager musicManager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+        final MusicManager musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
 
         if (!musicManager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
@@ -36,7 +36,7 @@ public class Stop implements Command {
             return;
         }
 
-        musicManager.handler.clearQueue();
+        musicManager.handler.getQueue().clear();
         musicManager.handler.playNext(null);
 
     }

@@ -2,7 +2,7 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
-import jukebot.audioutilities.GuildMusicManager;
+import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
@@ -15,7 +15,7 @@ public class Repeat implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final GuildMusicManager manager = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager());
+        final MusicManager manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
 
         if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()

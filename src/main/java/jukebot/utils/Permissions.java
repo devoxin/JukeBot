@@ -43,14 +43,14 @@ public class Permissions {
         return channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS);
     }
 
-    public CONNECT_STATUS canConnect(VoiceChannel channel) {
+    public ConnectionError canConnect(VoiceChannel channel) {
         if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK))
-            return CONNECT_STATUS.NO_CONNECT_SPEAK;
+            return new ConnectionError("Invalid Channel Permissions", "Your VoiceChannel doesn't allow me to Connect/Speak\n\nPlease grant me the 'Connect' and 'Speak' permissions or move to another channel.");
 
         if (channel.getUserLimit() != 0 && channel.getMembers().size() >= channel.getUserLimit() && !channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
-            return CONNECT_STATUS.USER_LIMIT;
+            return new ConnectionError("VoiceChannel Full", "Your VoiceChannel is full. Raise the user limit or grant me the 'Move Members' permission.");
 
-        return CONNECT_STATUS.CONNECT;
+        return null;
     }
 
     public boolean checkVoiceChannel(Member m) {

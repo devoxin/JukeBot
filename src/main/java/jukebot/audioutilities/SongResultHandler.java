@@ -16,10 +16,10 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     private final Permissions permissions = new Permissions();
     private final GuildMessageReceivedEvent e;
-    private final GuildMusicManager musicManager;
+    private final MusicManager musicManager;
     private final boolean useSelection;
 
-    public SongResultHandler(GuildMessageReceivedEvent e, GuildMusicManager m, boolean UseSelection) {
+    public SongResultHandler(GuildMessageReceivedEvent e, MusicManager m, boolean UseSelection) {
         this.e = e;
         this.musicManager = m;
         this.useSelection = UseSelection;
@@ -27,11 +27,23 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
-            // TODO: Throw Error
-        } else {
-            musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
+        if (!canQueueTrack(track, this.e.getAuthor().getIdLong())) {
+            this.e.getChannel().sendMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("Track Unavailable")
+                    .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
+                    .build()
+            ).queue();
+            return;
         }
+
+        if (musicManager.handler.addToQueue(track, this.e.getAuthor().getIdLong()))
+            e.getChannel().sendMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("Track Enqueued")
+                    .setDescription(track.getInfo().title)
+                    .build()
+            ).queue();
     }
 
     @Override
@@ -44,21 +56,23 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 final List<AudioTrack> tracks = playlist.getTracks()
                         .subList(0, (playlist.getTracks().size() > 5 ? 5 : playlist.getTracks().size()));
 
-                for (int i = 0; i < tracks.size(); i++)
+                for (int i = 0; i < tracks.size(); i++) {
+                    final AudioTrack track = tracks.get(i);
                     selector.append("`")
                             .append(i + 1)
                             .append(".` ")
-                            .append(tracks.get(i).getInfo().title)
+                            .append(track.getInfo().title)
                             .append(" `")
-                            .append(Helpers.fTime(tracks.get(i).getDuration()))
+                            .append(Helpers.fTime(track.getDuration()))
                             .append("`\n");
+                }
 
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Select Song")
                         .setDescription(selector.toString().trim())
                         .build()
-                ).queue(m -> Bot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
+                ).queue(m -> Bot.waiter.waitForSelection(this.e.getAuthor().getIdLong(), selected -> {
                     if (selected <= 0 || selected > tracks.size()) {
                         m.delete().queue();
                         return;
@@ -66,7 +80,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                     AudioTrack track = tracks.get(selected - 1);
 
-                    if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
+                    if (!canQueueTrack(track, this.e.getAuthor().getIdLong())) {
                         m.editMessage(new EmbedBuilder()
                                 .setColor(Bot.EmbedColour)
                                 .setTitle("Track Unavailable")
@@ -78,31 +92,45 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                     m.editMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
-                            .setTitle("Track Enqueued")
+                            .setTitle("Track Selected")
                             .setDescription(track.getInfo().title)
                             .build()
                     ).queue();
 
-                    musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
+                    musicManager.handler.addToQueue(track, this.e.getAuthor().getIdLong());
                 }));
 
             } else {
                 AudioTrack track = playlist.getTracks().get(0);
 
-                if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
-                    // TODO: Throw Error
-                } else {
-                    musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
+                if (!canQueueTrack(track, this.e.getAuthor().getIdLong())) {
+                    this.e.getChannel().sendMessage(new EmbedBuilder()
+                            .setColor(Bot.EmbedColour)
+                            .setTitle("Track Unavailable")
+                            .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
+                            .build()
+                    ).queue();
+                    return;
                 }
+
+                if (musicManager.handler.addToQueue(track, this.e.getAuthor().getIdLong()))
+                    e.getChannel().sendMessage(new EmbedBuilder()
+                            .setColor(Bot.EmbedColour)
+                            .setTitle("Track Enqueued")
+                            .setDescription(track.getInfo().title)
+                            .build()
+                    ).queue();
+
+
             }
 
         } else {
 
-            List<AudioTrack> tracks = playlist.getTracks().subList(0, getPlaylistLimit(e.getAuthor().getIdLong()));
+            List<AudioTrack> tracks = playlist.getTracks().subList(0, getPlaylistLimit(this.e.getAuthor().getIdLong()));
 
             for (AudioTrack track : tracks)
-                if (canQueueTrack(track, e.getAuthor().getIdLong()))
-                    musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
+                if (canQueueTrack(track, this.e.getAuthor().getIdLong()))
+                    musicManager.handler.addToQueue(track, this.e.getAuthor().getIdLong());
 
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
@@ -116,9 +144,9 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void noMatches() {
-        e.getChannel().sendMessage(new EmbedBuilder()
+        this.e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
-                .setTitle("No results found.")
+                .setTitle("No results found")
                 .build()
         ).queue();
 
@@ -128,7 +156,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void loadFailed(FriendlyException ex) {
-        e.getChannel().sendMessage(new EmbedBuilder()
+        this.e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("Failed to load track")
                 .setDescription(ex.getMessage())
@@ -139,14 +167,27 @@ public class SongResultHandler implements AudioLoadResultHandler {
             Helpers.DisconnectVoice(this.e.getGuild().getAudioManager());
     }
 
-    public boolean canQueueTrack(AudioTrack track, long requesterID) {
+    private boolean canQueueTrack(AudioTrack track, long requesterID) {
         final int trackLength = (int) Math.ceil(track.getDuration() / 1000);
         final int requesterTier = permissions.getTierLevel(requesterID);
 
-        return trackLength <= 7500 || requesterTier >= 1;
+        if (track.getInfo().isStream && requesterTier < 1)
+            return false;
+
+        /* 7500 = ~ 2 hours
+         * 18500 = ~ 5 hours
+         */
+
+        int maxTrackDuration = 7500;
+        if (requesterTier == 1)
+            maxTrackDuration = 18500;
+        if (requesterTier >= 2)
+            maxTrackDuration = Integer.MAX_VALUE;
+
+        return track.getInfo().isStream || trackLength <= maxTrackDuration;
     }
 
-    public int getPlaylistLimit(long requesterID) {
+    private int getPlaylistLimit(long requesterID) {
         final int requesterTier = permissions.getTierLevel(requesterID);
 
         if (requesterTier < 1)

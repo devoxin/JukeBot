@@ -4,12 +4,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.DatabaseHandler;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
-import jukebot.audioutilities.GuildMusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+
+import java.util.LinkedList;
 
 public class Queue implements Command {
 
@@ -17,9 +18,10 @@ public class Queue implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler handler = JukeBot.getGuildMusicManager(e.getGuild().getAudioManager()).handler;
+        final AudioHandler handler = JukeBot.getMusicManager(e.getGuild().getAudioManager()).handler;
+        final LinkedList<AudioTrack> queue = handler.getQueue();
 
-        if (handler.getQueue().isEmpty()) {
+        if (queue.isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No songs queued")
@@ -29,10 +31,10 @@ public class Queue implements Command {
             return;
         }
 
-        final String queueDuration = Helpers.fTime(handler.getQueue().stream().map(AudioTrack::getDuration).reduce(0L, (a, b) -> a + b));
-        final StringBuilder queue = new StringBuilder();
+        final String queueDuration = Helpers.fTime(queue.stream().map(AudioTrack::getDuration).reduce(0L, (a, b) -> a + b));
+        final StringBuilder fQueue = new StringBuilder();
 
-        final int maxPages = (int) Math.ceil((double) handler.getQueue().size() / 10);
+        final int maxPages = (int) Math.ceil((double) queue.size() / 10);
         int page = Helpers.ParseNumber(query, 1);
 
         if (page < 1)
@@ -42,23 +44,25 @@ public class Queue implements Command {
             page = maxPages;
 
         int begin = (page - 1) * 10;
-        int end = (begin + 10) > handler.getQueue().size() ? handler.getQueue().size() : (begin + 10);
+        int end = (begin + 10) > queue.size() ? queue.size() : (begin + 10);
 
-        for (int i = begin; i < end; i++)
-            queue.append("`")
+        for (int i = begin; i < end; i++) {
+            final AudioTrack track = queue.get(i);
+            fQueue.append("`")
                     .append(i + 1)
                     .append(".` **[")
-                    .append(handler.getQueue().get(i).getInfo().title)
+                    .append(track.getInfo().title)
                     .append("](")
-                    .append(handler.getQueue().get(i).getInfo().uri)
+                    .append(track.getInfo().uri)
                     .append(")** <@")
-                    .append(handler.getQueue().get(i).getUserData())
+                    .append(track.getUserData())
                     .append(">\n");
+        }
 
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
-                .setTitle("Queue (" + handler.getQueue().size() + " songs, " + queueDuration + ")")
-                .setDescription(queue.toString().trim())
+                .setTitle("Queue (" + queue.size() + " songs, " + queueDuration + ")")
+                .setDescription(fQueue.toString().trim())
                 .addField("\u200B", "**Repeat:** " + handler.getStringifiedRepeat() +
                         " **/ Shuffle:** " + (handler.isShuffleEnabled() ? "On" : "Off"), true)
                 .setFooter("Viewing page " + (page) + "/" + (maxPages), null)

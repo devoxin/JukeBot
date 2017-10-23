@@ -2,7 +2,7 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.Shard;
-import jukebot.audioutilities.GuildMusicManager;
+import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.core.JDA;
@@ -17,7 +17,7 @@ public class Debug implements Command {
     public void execute(GuildMessageReceivedEvent e, String query) {
 
         final StringBuilder toSend = new StringBuilder();
-        final long streams = JukeBot.getMusicManagers().values().stream().filter(GuildMusicManager::isPlaying).count();
+        final long streams = JukeBot.getMusicManagers().values().stream().filter(MusicManager::isPlaying).count();
         final long servers = Arrays.stream(JukeBot.getShards())
                 .filter(s ->  s != null && s.jda != null)
                 .map(s -> s.jda.getGuilds().size())

@@ -3,12 +3,12 @@ package jukebot.audioutilities;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import jukebot.utils.Bot;
 
-public class GuildMusicManager {
+public class MusicManager {
 
     public AudioPlayer player;
     public AudioHandler handler;
 
-    public GuildMusicManager() {
+    public MusicManager() {
         this.player = Bot.playerManager.createPlayer();
         this.handler = new AudioHandler(this.player);
         this.player.addListener(this.handler);
@@ -17,4 +17,5 @@ public class GuildMusicManager {
     public boolean isPlaying() {
         return this.player.getPlayingTrack() != null;
     }
+
 }
