@@ -15,7 +15,7 @@ public class MusicManager {
     }
 
     public boolean isPlaying() {
-        return this.player.getPlayingTrack() != null;
+        return player.getPlayingTrack() != null;
     }
 
 }

@@ -27,8 +27,8 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        if (!canQueueTrack(track, this.e.getAuthor().getIdLong())) {
-            this.e.getChannel().sendMessage(new EmbedBuilder()
+        if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Track Unavailable")
                     .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
@@ -37,7 +37,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
             return;
         }
 
-        if (musicManager.handler.addToQueue(track, this.e.getAuthor().getIdLong()))
+        if (musicManager.handler.addToQueue(track, e.getAuthor().getIdLong()))
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Track Enqueued")
@@ -50,7 +50,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
     public void playlistLoaded(AudioPlaylist playlist) {
         if (playlist.isSearchResult()) {
 
-            if (this.useSelection) {
+            if (useSelection) {
 
                 StringBuilder selector = new StringBuilder();
                 final List<AudioTrack> tracks = playlist.getTracks()
@@ -72,7 +72,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                         .setTitle("Select Song")
                         .setDescription(selector.toString().trim())
                         .build()
-                ).queue(m -> Bot.waiter.waitForSelection(this.e.getAuthor().getIdLong(), selected -> {
+                ).queue(m -> Bot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
                     if (selected <= 0 || selected > tracks.size()) {
                         m.delete().queue();
                         return;
@@ -80,7 +80,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                     AudioTrack track = tracks.get(selected - 1);
 
-                    if (!canQueueTrack(track, this.e.getAuthor().getIdLong())) {
+                    if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
                         m.editMessage(new EmbedBuilder()
                                 .setColor(Bot.EmbedColour)
                                 .setTitle("Track Unavailable")
@@ -97,14 +97,14 @@ public class SongResultHandler implements AudioLoadResultHandler {
                             .build()
                     ).queue();
 
-                    musicManager.handler.addToQueue(track, this.e.getAuthor().getIdLong());
+                    musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
                 }));
 
             } else {
                 AudioTrack track = playlist.getTracks().get(0);
 
-                if (!canQueueTrack(track, this.e.getAuthor().getIdLong())) {
-                    this.e.getChannel().sendMessage(new EmbedBuilder()
+                if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
+                    e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Track Unavailable")
                             .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
@@ -113,7 +113,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                     return;
                 }
 
-                if (musicManager.handler.addToQueue(track, this.e.getAuthor().getIdLong()))
+                if (musicManager.handler.addToQueue(track, e.getAuthor().getIdLong()))
                     e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Track Enqueued")
@@ -124,7 +124,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
         } else {
 
-            final int importLimit = getPlaylistLimit(this.e.getAuthor().getIdLong());
+            final int importLimit = getPlaylistLimit(e.getAuthor().getIdLong());
 
             List<AudioTrack> tracks = playlist.getTracks();
 
@@ -132,8 +132,8 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 tracks = tracks.subList(0, importLimit);
 
             for (AudioTrack track : tracks)
-                if (canQueueTrack(track, this.e.getAuthor().getIdLong()))
-                    musicManager.handler.addToQueue(track, this.e.getAuthor().getIdLong());
+                if (canQueueTrack(track, e.getAuthor().getIdLong()))
+                    musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
 
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
@@ -147,27 +147,27 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void noMatches() {
-        this.e.getChannel().sendMessage(new EmbedBuilder()
+        e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("No results found")
                 .build()
         ).queue();
 
-        if (!this.musicManager.isPlaying())
-            Helpers.DisconnectVoice(this.e.getGuild().getAudioManager());
+        if (!musicManager.isPlaying())
+            Helpers.DisconnectVoice(e.getGuild().getAudioManager());
     }
 
     @Override
     public void loadFailed(FriendlyException ex) {
-        this.e.getChannel().sendMessage(new EmbedBuilder()
+        e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(Bot.EmbedColour)
                 .setTitle("Failed to load track")
                 .setDescription(ex.getMessage())
                 .build()
         ).queue();
 
-        if (!this.musicManager.isPlaying())
-            Helpers.DisconnectVoice(this.e.getGuild().getAudioManager());
+        if (!musicManager.isPlaying())
+            Helpers.DisconnectVoice(e.getGuild().getAudioManager());
     }
 
     private boolean canQueueTrack(AudioTrack track, long requesterID) {

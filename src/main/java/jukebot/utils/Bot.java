@@ -59,7 +59,7 @@ public class Bot {
 
     }
 
-    public static void dickbutt() {
+    private static void dickbutt() {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("banner.txt"));
             String currentLine;
