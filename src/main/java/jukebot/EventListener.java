@@ -103,7 +103,9 @@ public class EventListener extends ListenerAdapter {
         }
 
         String command = e.getMessage().getContent().split(" ")[0].substring(prefix.length()).toLowerCase();
-        String query = e.getMessage().getContent().contains(" ") ? e.getMessage().getContent().split(" ", 2)[1] : "";
+        // Fun fact, using substring instead of split is faster; when parsing the query 100,000,000 times, 'split' would be faster by ~300ms
+        // where there were no additional arguments in the message, but performed up to 7 seconds slower when a single argument was present
+        final String query = e.getMessage().getContent().substring(prefix.length() + command.length()).trim();
 
         if (aliases.containsKey(command))
             command = aliases.get(command);
@@ -126,19 +128,15 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(GuildJoinEvent e) {
-
         double bots = e.getGuild().getMembers().stream().filter(m -> m.getUser().isBot()).count();
         if (bots / (double) e.getGuild().getMembers().size() > 0.6)
             e.getGuild().leave().queue();
-
     }
 
     @Override
     public void onReady(ReadyEvent e) {
-
         if (Bot.BotOwnerID == 0L)
             e.getJDA().asBot().getApplicationInfo().queue(app -> Bot.BotOwnerID = app.getOwner().getIdLong());
-
     }
 
 }

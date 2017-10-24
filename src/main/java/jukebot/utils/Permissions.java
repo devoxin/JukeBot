@@ -23,8 +23,8 @@ public class Permissions {
     public boolean isElevatedUser(Member m, boolean AllowLone) {
         if (AllowLone)
             return isALoner(m) || m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
-        else
-            return m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
+
+        return m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
     }
 
     private boolean isALoner(Member m) {
@@ -55,8 +55,6 @@ public class Permissions {
 
     public boolean checkVoiceChannel(Member m) {
         final AudioManager manager = m.getGuild().getAudioManager();
-
-        Bot.LOG.debug("M-VC OK: " + (m.getVoiceState().inVoiceChannel()) + " | CONNECTED: " + (manager.isConnected() || manager.isAttemptingToConnect()));
 
         return m.getVoiceState().inVoiceChannel() &&
                 (!manager.isAttemptingToConnect() &&

@@ -64,9 +64,9 @@ public class Bot {
             BufferedReader reader = new BufferedReader(new FileReader("banner.txt"));
             String currentLine;
 
-            while ((currentLine = reader.readLine()) != null) {
+            while ((currentLine = reader.readLine()) != null)
                 System.out.println(currentLine);
-            }
+
         } catch (Exception e) {
             LOG.error("No dickbutt here...");
         }
