@@ -120,13 +120,16 @@ public class SongResultHandler implements AudioLoadResultHandler {
                             .setDescription(track.getInfo().title)
                             .build()
                     ).queue();
-
-
             }
 
         } else {
 
-            List<AudioTrack> tracks = playlist.getTracks().subList(0, getPlaylistLimit(this.e.getAuthor().getIdLong()));
+            final int importLimit = getPlaylistLimit(this.e.getAuthor().getIdLong());
+
+            List<AudioTrack> tracks = playlist.getTracks();
+
+            if (importLimit != -1 && playlist.getTracks().size() > importLimit)
+                tracks = tracks.subList(0, importLimit);
 
             for (AudioTrack track : tracks)
                 if (canQueueTrack(track, this.e.getAuthor().getIdLong()))
@@ -150,7 +153,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 .build()
         ).queue();
 
-        if (!this.musicManager.isPlaying() && this.musicManager.handler.getQueue().isEmpty())
+        if (!this.musicManager.isPlaying())
             Helpers.DisconnectVoice(this.e.getGuild().getAudioManager());
     }
 
@@ -163,7 +166,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 .build()
         ).queue();
 
-        if (!this.musicManager.isPlaying() && this.musicManager.handler.getQueue().isEmpty())
+        if (!this.musicManager.isPlaying())
             Helpers.DisconnectVoice(this.e.getGuild().getAudioManager());
     }
 
@@ -196,7 +199,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
         if (requesterTier < 2)
             return 1000;
 
-        return Integer.MAX_VALUE;
+        return -1;
     }
 
 }

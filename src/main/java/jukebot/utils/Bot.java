@@ -16,6 +16,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 public class Bot {
 
@@ -53,7 +55,21 @@ public class Bot {
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
         playerManager.getConfiguration().setOpusEncodingQuality(9);
         AudioSourceManagers.registerRemoteSources(playerManager);
+        dickbutt();
 
+    }
+
+    public static void dickbutt() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("banner.txt"));
+            String currentLine;
+
+            while ((currentLine = reader.readLine()) != null) {
+                System.out.println(currentLine);
+            }
+        } catch (Exception e) {
+            LOG.error("No dickbutt here...");
+        }
     }
 
 }

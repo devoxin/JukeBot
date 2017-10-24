@@ -58,13 +58,11 @@ public class Permissions {
 
         Bot.LOG.debug("M-VC OK: " + (m.getVoiceState().inVoiceChannel()) + " | CONNECTED: " + (manager.isConnected() || manager.isAttemptingToConnect()));
 
-        return m.getVoiceState().inVoiceChannel() && (!manager.isAttemptingToConnect() && !manager.isConnected() || manager.getConnectedChannel().getIdLong() == m.getVoiceState().getChannel().getIdLong());
-    }
-
-    public enum CONNECT_STATUS {
-        NO_CONNECT_SPEAK,
-        USER_LIMIT,
-        CONNECT
+        return m.getVoiceState().inVoiceChannel() &&
+                (!manager.isAttemptingToConnect() &&
+                        !manager.isConnected() ||
+                        manager.getConnectedChannel().getIdLong() == m.getVoiceState().getChannel().getIdLong());
+        // Trust me the above looks like shit but it's for debugging
     }
 
 }
