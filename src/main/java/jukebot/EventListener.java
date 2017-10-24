@@ -77,7 +77,7 @@ public class EventListener extends ListenerAdapter {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Mention | Help")
-                        .setDescription("Server Prefix: " + db.getPrefix(e.getGuild().getIdLong()) + "\n\nYou can reset the prefix using '@" + e.getJDA().getSelfUser().getName() + " rp'")
+                        .setDescription("Server Prefix: " + db.getPrefix(e.getGuild().getIdLong()) + "\n\nYou can reset the prefix using `@" + e.getJDA().getSelfUser().getName() + " rp`")
                         .build()
                 ).queue();
             }
@@ -95,7 +95,7 @@ public class EventListener extends ListenerAdapter {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Mention | Prefix Reset")
-                        .setDescription(result ? "Server prefix reset to '" + db.getPropertyFromConfig("prefix") + "'" : "Failed to reset prefix")
+                        .setDescription(result ? "Server prefix reset to `" + db.getPropertyFromConfig("prefix") + "`" : "Failed to reset prefix")
                         .build()
                 ).queue();
             }

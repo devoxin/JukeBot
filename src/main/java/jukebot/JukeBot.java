@@ -25,13 +25,6 @@ public class JukeBot {
 
     public static void main(final String[] args) throws Exception {
         ConfigurationFactory.setConfigurationFactory(new Log4JConfig());
-
-        LOG.info("JukeBot " + Bot.VERSION +
-                "\n:: JDA: " + JDAInfo.VERSION +
-                "\n:: Lavaplayer: " + PlayerLibrary.VERSION +
-                "\n:: SQLite: " + SQLiteJDBCLoader.getVersion() +
-                "\n:: JVM running in " + System.getProperty("sun.arch.data.model") + "-bit mode");
-
         Bot.Configure();
 
         for (int i = 0; i < shards.length; i++) {

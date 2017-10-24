@@ -5,15 +5,18 @@ import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.ActionWaiter;
 import jukebot.DatabaseHandler;
 import jukebot.EventListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -41,6 +44,7 @@ public class Bot {
             .setGame(Game.of(defaultPrefix + "help | jukebot.xyz"));
 
     public static void Configure() {
+        printBanner();
         Thread.currentThread().setName("JukeBot-Main");
         String color = db.getPropertyFromConfig("color");
         if (color != null) {
@@ -55,11 +59,10 @@ public class Bot {
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
         playerManager.getConfiguration().setOpusEncodingQuality(9);
         AudioSourceManagers.registerRemoteSources(playerManager);
-        dickbutt();
 
     }
 
-    private static void dickbutt() {
+    private static void printBanner() {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("banner.txt"));
             String currentLine;
@@ -67,8 +70,16 @@ public class Bot {
             while ((currentLine = reader.readLine()) != null)
                 System.out.println(currentLine);
 
+            System.out.println(
+                    "\nJukeBot v" + VERSION +
+                    " | JDA " + JDAInfo.VERSION +
+                    " | Lavaplayer " + PlayerLibrary.VERSION +
+                    " | SQLite " + SQLiteJDBCLoader.getVersion() +
+                    " | " + System.getProperty("sun.arch.data.model") + "-bit JVM\n"
+            );
+
         } catch (Exception e) {
-            LOG.error("No dickbutt here...");
+            LOG.error("Failed to read 'banner.txt'");
         }
     }
 
