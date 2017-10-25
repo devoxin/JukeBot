@@ -102,7 +102,8 @@ public class EventListener extends ListenerAdapter {
             return;
         }
 
-        String command = e.getMessage().getContent().split(" ")[0].substring(prefix.length()).toLowerCase();
+        //String command = e.getMessage().getContent().substring(prefix.length()).trim().split(" ")[0].toLowerCase(); // Spaced prefixes, anyone?
+        String command = e.getMessage().getContent().substring(prefix.length()).split(" ")[0].toLowerCase();
         // Fun fact, using substring instead of split is faster; when parsing the query 100,000,000 times, 'split' would be faster by ~300ms
         // where there were no additional arguments in the message, but performed up to 7 seconds slower when a single argument was present
         final String query = e.getMessage().getContent().substring(prefix.length() + command.length()).trim();

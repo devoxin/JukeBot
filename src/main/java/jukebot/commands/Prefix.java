@@ -22,7 +22,6 @@ public class Prefix implements Command {
                     .build()
             ).queue();
         } else {
-
             if (!permissions.isElevatedUser(e.getMember(), false)) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
@@ -33,21 +32,14 @@ public class Prefix implements Command {
                 return;
             }
 
-            final boolean updatedPrefix = db.setPrefix(e.getGuild().getIdLong(), query.split(" ")[0].trim());
-            if (updatedPrefix)
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
-                        .setTitle("Server Prefix")
-                        .setDescription("Prefix updated to " + query.split(" ")[0].trim())
-                        .build()
-                ).queue();
-            else
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
-                        .setTitle("Server Prefix")
-                        .setDescription("Failed to update prefix")
-                        .build()
-                ).queue();
+            final String prefix = query.split(" ")[0].trim();
+            final boolean updatedPrefix = db.setPrefix(e.getGuild().getIdLong(), prefix);
+            e.getChannel().sendMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("Server Prefix")
+                    .setDescription(updatedPrefix ? "Prefix updated to " + prefix : "Prefix update failed")
+                    .build()
+            ).queue();
         }
 
     }
