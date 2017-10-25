@@ -2,6 +2,7 @@ package jukebot.audioutilities;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.player.event.TrackStartEvent;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
@@ -111,7 +112,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                         .setTitle("Queue Concluded!")
                         .setDescription("[Support JukeBot and receive some awesome benefits!](https://www.patreon.com/Devoxin)")
                         .build()
-                ).queue(null, e -> LOG.warn("Failed to post 'QUEUE_END' message to channel " + channel.getId()));
+                ).queue();
             }
         }
     }
@@ -130,10 +131,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        // This event is fired when the track ends naturally
+        LOG.debug("[AUDIOHANDLER] Player " + player + " encountered event TRACK_END (Track: " + track + ")");
         skipVotes.clear();
-        trackPacketLoss = 0; // Reset Track Performance Statistics
-        trackPackets = 0;   // Reset Track Performance Statistics
+        trackPacketLoss = 0;
+        trackPackets = 0;
 
         if (repeat == REPEATMODE.ALL)
             addToQueue(track.makeClone(), (long) track.getUserData());
@@ -144,6 +145,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
+        LOG.debug("[AUDIOHANDLER] Player " + player + " encountered event TRACK_START (Track: " + track + ")");
         player.setPaused(false);
         if (permissions.canPost(channel)) {
             if (lastPlayed.equals(track.getIdentifier()))
@@ -155,19 +157,34 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                     .setTitle("Now Playing")
                     .setDescription(track.getInfo().title)
                     .build()
-            ).queue(null, e -> LOG.warn("Failed to post 'NOW_PLAYING' message to channel " + channel.getId()));
+            ).queue();
         }
     }
 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
+        LOG.debug("[AUDIOHANDLER] Player " + player + " encountered event TRACK_EXCEPTION (Track: " + track + ")");
         if (permissions.canPost(channel)) {
             channel.sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Track Playback Failed")
                     .setDescription(exception.getLocalizedMessage())
                     .build()
-            ).queue(null, e -> LOG.warn("Failed to post 'TRACK_ERROR' message to channel " + channel.getId()));
+            ).queue();
+        }
+        playNext(null);
+    }
+
+    @Override
+    public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
+        LOG.debug("[AUDIOHANDLER] Player " + player + " encountered event TRACK_STUCK (Track: " + track + ")");
+        if (permissions.canPost(channel)) {
+            channel.sendMessage(new EmbedBuilder()
+                    .setColor(Bot.EmbedColour)
+                    .setTitle("Track Stuck")
+                    .setDescription("JukeBot has automatically detected a stuck track and will now play the next song in the queue.")
+                    .build()
+            ).queue();
         }
         playNext(null);
     }

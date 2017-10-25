@@ -24,7 +24,6 @@ public class DatabaseHandler {
             return Bot.defaultPrefix;
 
         } catch (Exception e) {
-            LOG.error("Failed to retrieve server prefix");
             return Bot.defaultPrefix;
         }
 
@@ -52,7 +51,6 @@ public class DatabaseHandler {
             }
 
         } catch (Exception e) {
-            LOG.error("Failed to update server prefix");
             return false;
         }
 
@@ -88,7 +86,6 @@ public class DatabaseHandler {
             }
 
         } catch (Exception e) {
-            LOG.error("Failed to update user tier");
             return false;
         }
 
@@ -109,7 +106,6 @@ public class DatabaseHandler {
             return 0;
 
         } catch (Exception e) {
-            LOG.error("Failed to retrieve user tier");
             return 0;
         }
 
@@ -130,7 +126,6 @@ public class DatabaseHandler {
             return donators;
 
         } catch (Exception e) {
-            LOG.error("Failed to retrieve all donators from table");
             return donators;
         }
 
@@ -151,7 +146,6 @@ public class DatabaseHandler {
             return null;
 
         } catch (Exception e) {
-            LOG.error("Failed to retrieve config property");
             return null;
         }
 

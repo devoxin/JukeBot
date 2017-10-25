@@ -54,7 +54,6 @@ public class Play implements Command {
             }
 
             manager.openAudioConnection(e.getMember().getVoiceState().getChannel());
-            manager.setSelfDeafened(true);
             gmanager.handler.setChannel(e.getChannel());
         }
 

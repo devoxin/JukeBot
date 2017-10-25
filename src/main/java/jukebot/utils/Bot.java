@@ -16,6 +16,7 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
@@ -29,24 +30,24 @@ public class Bot {
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     public static final ActionWaiter waiter = new ActionWaiter();
 
-    public static final String VERSION = "6.1.0-BETA";
+    private static final String VERSION = "6.1.0-BETA";
     public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
     public static Long BotOwnerID = 0L;
 
-    public static final Logger LOG = LogManager.getLogger("JukeBot");
-
     public static JDABuilder builder = new JDABuilder(AccountType.BOT)
             .setToken(db.getPropertyFromConfig("token"))
             .setReconnectQueue(new SessionReconnectQueue())
-            .addEventListener(waiter, new EventListener())
+            .addEventListener(Bot.waiter, new EventListener())
             .setAudioSendFactory(new NativeAudioSendFactory())
-            .setGame(Game.of(defaultPrefix + "help | jukebot.xyz"));
+            .setGame(Game.of(Bot.defaultPrefix + "help | jukebot.xyz"));
+
+    public static final Logger LOG = LogManager.getLogger("JukeBot");
 
     public static void Configure() {
-        printBanner();
         Thread.currentThread().setName("JukeBot-Main");
-        String color = db.getPropertyFromConfig("color");
+
+        final String color = db.getPropertyFromConfig("color");
         if (color != null) {
             try {
                 EmbedColour = Color.decode(color);
@@ -60,27 +61,22 @@ public class Bot {
         playerManager.getConfiguration().setOpusEncodingQuality(9);
         AudioSourceManagers.registerRemoteSources(playerManager);
 
+        printBanner();
     }
 
     private static void printBanner() {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("banner.txt"));
-            String currentLine;
-
-            while ((currentLine = reader.readLine()) != null)
-                System.out.println(currentLine);
-
-            System.out.println(
-                    "\nJukeBot v" + VERSION +
-                    " | JDA " + JDAInfo.VERSION +
-                    " | Lavaplayer " + PlayerLibrary.VERSION +
-                    " | SQLite " + SQLiteJDBCLoader.getVersion() +
-                    " | " + System.getProperty("sun.arch.data.model") + "-bit JVM\n"
-            );
-
+            new BufferedReader(new FileReader("banner.txt")).lines().forEach(System.out::println);
         } catch (Exception e) {
             LOG.error("Failed to read 'banner.txt'");
         }
+        System.out.println(
+                "\nJukeBot v" + VERSION +
+                " | JDA " + JDAInfo.VERSION +
+                " | Lavaplayer " + PlayerLibrary.VERSION +
+                " | SQLite " + SQLiteJDBCLoader.getVersion() +
+                " | " + System.getProperty("sun.arch.data.model") + "-bit JVM\n"
+        );
     }
 
 }

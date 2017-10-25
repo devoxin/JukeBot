@@ -3,6 +3,7 @@ package jukebot.utils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
@@ -22,10 +23,8 @@ import java.net.URI;
 @Order(50)
 public class Log4JConfig extends ConfigurationFactory {
 
-    /* Level of jukebot's log messages (everything through the 'JukeBot' logger) to be displayed */
-    private final Level JUKEBOT_LOG_LEVEL;
-    /* Level of library log messages (everything except through the 'JukeBot' logger--JDA and Lavaplayer) to be displayed */
-    private final Level LIB_LOG_LEVEL;
+    private final Level JUKEBOT_LOG_LEVEL; // Logging level for messages logged from JukeBot
+    private final Level LIB_LOG_LEVEL; // Logging level for messages not logged from JukeBot
 
     /**
      * Log config constructor for individual control of JukeBot's log level and 3rd party library log level
@@ -75,6 +74,7 @@ public class Log4JConfig extends ConfigurationFactory {
         builder.add(builder.newLogger("JukeBot", JUKEBOT_LOG_LEVEL)
                 .add(builder.newAppenderRef("STDOUT"))
                 .addAttribute("additivity", false));
+
         /* Create root logger--messages not from the above logger will all go through this one */
         builder.add(builder.newRootLogger(LIB_LOG_LEVEL).add(builder.newAppenderRef("STDOUT")));
         return builder.build();

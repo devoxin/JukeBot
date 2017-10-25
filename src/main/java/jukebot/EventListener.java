@@ -116,13 +116,14 @@ public class EventListener extends ListenerAdapter {
         if (!permissions.canPost(e.getChannel())) {
             e.getAuthor().openPrivateChannel().queue(dm ->
                 dm.sendMessage("I cannot send messages/embed links in " + e.getChannel().getAsMention() + "\nSwitch to another channel.")
-                        .queue(null, error -> LOG.warn("Couldn't DM " + e.getAuthor().getName()))
+                        .queue(null, error -> {})
             );
             return;
         }
 
-        LOG.debug("Executing command '" + command + "' with args '" + query + "' from " + e.getAuthor().getName());
+        final long startTime = System.currentTimeMillis();
         commands.get(command).execute(e, query);
+        LOG.debug("[" + command.toUpperCase() + "] execution time: " + (System.currentTimeMillis() - startTime) + "ms");
 
     }
 
