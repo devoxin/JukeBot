@@ -5,8 +5,6 @@ import jukebot.utils.Bot;
 import java.sql.*;
 import java.util.HashMap;
 
-import static jukebot.utils.Bot.LOG;
-
 public class DatabaseHandler {
 
     public String getPrefix(long id) {

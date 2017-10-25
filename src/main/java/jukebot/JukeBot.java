@@ -1,14 +1,9 @@
 package jukebot;
 
-import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Bot;
 import jukebot.utils.Log4JConfig;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.managers.AudioManager;
-import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 
 import java.util.HashMap;

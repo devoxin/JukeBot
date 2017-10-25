@@ -116,7 +116,7 @@ public class EventListener extends ListenerAdapter {
         if (!permissions.canPost(e.getChannel())) {
             e.getAuthor().openPrivateChannel().queue(dm ->
                 dm.sendMessage("I cannot send messages/embed links in " + e.getChannel().getAsMention() + "\nSwitch to another channel.")
-                        .queue(null, error -> {})
+                        .queue()
             );
             return;
         }

@@ -16,7 +16,6 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
