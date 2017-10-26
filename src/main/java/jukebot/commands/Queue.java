@@ -14,8 +14,6 @@ import java.util.LinkedList;
 
 public class Queue implements Command {
 
-    private final Database db = new Database();
-
     public void execute(GuildMessageReceivedEvent e, String query) {
 
         final AudioHandler handler = JukeBot.getMusicManager(e.getGuild().getAudioManager()).handler;
@@ -25,7 +23,7 @@ public class Queue implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("No songs queued")
-                    .setDescription("Use `" + db.getPrefix(e.getGuild().getIdLong()) + "now` to view the current track.")
+                    .setDescription("Use `" + Database.getPrefix(e.getGuild().getIdLong()) + "now` to view the current track.")
                     .build()
             ).queue();
             return;

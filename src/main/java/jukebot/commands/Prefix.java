@@ -9,7 +9,6 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class Prefix implements Command {
 
-    private final Database db = new Database();
     private final Permissions permissions = new Permissions();
 
     public void execute(GuildMessageReceivedEvent e, String query) {
@@ -18,7 +17,7 @@ public class Prefix implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Server Prefix")
-                    .setDescription("You must specify a new prefix. E.g. `" + db.getPrefix(e.getGuild().getIdLong()) + "prefix !`")
+                    .setDescription("You must specify a new prefix. E.g. `" + Database.getPrefix(e.getGuild().getIdLong()) + "prefix !`")
                     .build()
             ).queue();
         } else {
@@ -33,7 +32,7 @@ public class Prefix implements Command {
             }
 
             final String prefix = query.split(" ")[0].trim();
-            final boolean updatedPrefix = db.setPrefix(e.getGuild().getIdLong(), prefix);
+            final boolean updatedPrefix = Database.setPrefix(e.getGuild().getIdLong(), prefix);
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Server Prefix")

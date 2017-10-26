@@ -10,8 +10,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 
 public class Permissions {
 
-    private final Database db = new Database();
-
     public boolean isBotOwner(long userID) {
         return userID == Bot.BotOwnerID;
     }
@@ -36,7 +34,7 @@ public class Permissions {
     }
 
     public int getTierLevel(long userID) {
-        return isBotOwner(userID) ? 3 : db.getTier(userID);
+        return isBotOwner(userID) ? 3 : Database.getTier(userID);
     }
 
     public boolean canPost(TextChannel channel) {

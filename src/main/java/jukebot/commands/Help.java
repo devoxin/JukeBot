@@ -9,15 +9,13 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class Help implements Command {
 
-    private final Database db = new Database();
-
     public void execute(GuildMessageReceivedEvent e, String query) {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
                     .setTitle("Help Categories")
-                    .setDescription("`1.` Getting Started\n`2.` Controls\n`3.` Media\n`4.` Miscellaneous\n\nUse `" + db.getPrefix(e.getGuild().getIdLong()) + "help <number>` to select a category")
+                    .setDescription("`1.` Getting Started\n`2.` Controls\n`3.` Media\n`4.` Miscellaneous\n\nUse `" + Database.getPrefix(e.getGuild().getIdLong()) + "help <number>` to select a category")
                     .build()
             ).queue();
         } else {
@@ -25,7 +23,7 @@ public class Help implements Command {
                 case "1":
                     e.getChannel().sendMessage(CreateHelpEmbed(
                                     "You can use the **play** command to make JukeBot join your channel, search for the specified song and begin playing.\n`"
-                                            + db.getPrefix(e.getGuild().getIdLong()) + "play <URL/Search Query>`"
+                                            + Database.getPrefix(e.getGuild().getIdLong()) + "play <URL/Search Query>`"
                     )).queue();
                     break;
                 case "2":
@@ -69,7 +67,7 @@ public class Help implements Command {
                     e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
                             .setTitle("Invalid Category Specified")
-                            .setDescription("`1.` Getting Started\n`2.` Controls\n`3.` Media\n`4.` Miscellaneous\n\nUse `" + db.getPrefix(e.getGuild().getIdLong()) + "help <number>` to select a category")
+                            .setDescription("`1.` Getting Started\n`2.` Controls\n`3.` Media\n`4.` Miscellaneous\n\nUse `" + Database.getPrefix(e.getGuild().getIdLong()) + "help <number>` to select a category")
                             .build()
                     ).queue();
             }

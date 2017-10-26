@@ -15,7 +15,6 @@ import java.util.concurrent.CompletableFuture;
 
 public class Donators implements Command {
 
-    private final Database db = new Database();
     private final Permissions permissions = new Permissions();
 
     public void execute(GuildMessageReceivedEvent e, String query) {
@@ -44,7 +43,7 @@ public class Donators implements Command {
 
         if (args.length != 3) {
             if ("getall".equalsIgnoreCase(args[0])) {
-                final HashMap<Long, Integer> donatorsMap = db.getAllDonators();
+                final HashMap<Long, Integer> donatorsMap = Database.getAllDonators();
                 if (donatorsMap.isEmpty()) {
                     e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(Bot.EmbedColour)
@@ -110,7 +109,7 @@ public class Donators implements Command {
                     ).queue();
                 });
             } else if ("get".equalsIgnoreCase(args[0])){
-                final int userTier = db.getTier(Long.parseLong(args[1]));
+                final int userTier = Database.getTier(Long.parseLong(args[1]));
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Donator Status")
@@ -127,7 +126,7 @@ public class Donators implements Command {
             }
         } else {
             if ("set".equalsIgnoreCase(args[0])) {
-                final boolean result = db.setTier(Long.parseLong(args[1]), Integer.parseInt(args[2]));
+                final boolean result = Database.setTier(Long.parseLong(args[1]), Integer.parseInt(args[2]));
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Donator Tier")
