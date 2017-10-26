@@ -163,6 +163,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
         LOG.debug("[AUDIOHANDLER] Player " + player + " encountered event TRACK_EXCEPTION (Track: " + track + ")");
+
+        if (repeat != REPEATMODE.NONE)
+            repeat = REPEATMODE.NONE;
+
         if (permissions.canPost(channel)) {
             channel.sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
@@ -177,6 +181,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
         LOG.debug("[AUDIOHANDLER] Player " + player + " encountered event TRACK_STUCK (Track: " + track + ")");
+
+        if (repeat != REPEATMODE.NONE)
+            repeat = REPEATMODE.NONE;
+
         if (permissions.canPost(channel)) {
             channel.sendMessage(new EmbedBuilder()
                     .setColor(Bot.EmbedColour)
