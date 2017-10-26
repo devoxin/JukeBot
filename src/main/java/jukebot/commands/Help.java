@@ -1,6 +1,6 @@
 package jukebot.commands;
 
-import jukebot.DatabaseHandler;
+import jukebot.Database;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class Help implements Command {
 
-    private final DatabaseHandler db = new DatabaseHandler();
+    private final Database db = new Database();
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 

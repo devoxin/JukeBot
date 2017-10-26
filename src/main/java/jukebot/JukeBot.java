@@ -12,20 +12,20 @@ public class JukeBot {
 
     public static final long startTime = System.currentTimeMillis();
 
-    private static final DatabaseHandler db = new DatabaseHandler();
     private static final HashMap<Long, MusicManager> musicManagers = new HashMap<>();
 
-    private static final Shard[] shards = new Shard[Integer.parseInt(db.getPropertyFromConfig("maxshards"))];
+    private static Shard[] shards;
 
     public static void main(final String[] args) throws Exception {
         ConfigurationFactory.setConfigurationFactory(new Log4JConfig());
         Bot.Configure();
 
+        shards = new Shard[Integer.parseInt(Database.getPropertyFromConfig("maxshards"))];
+
         for (int i = 0; i < shards.length; i++) {
             shards[i] = new Shard(i, shards.length);
             Thread.sleep(5500);
         }
-
     }
 
     public static Shard[] getShards() {

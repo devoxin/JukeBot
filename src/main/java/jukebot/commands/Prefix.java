@@ -1,6 +1,6 @@
 package jukebot.commands;
 
-import jukebot.DatabaseHandler;
+import jukebot.Database;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class Prefix implements Command {
 
-    private final DatabaseHandler db = new DatabaseHandler();
+    private final Database db = new Database();
     private final Permissions permissions = new Permissions();
 
     public void execute(GuildMessageReceivedEvent e, String query) {

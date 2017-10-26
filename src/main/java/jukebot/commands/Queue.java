@@ -1,7 +1,7 @@
 package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import jukebot.DatabaseHandler;
+import jukebot.Database;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Bot;
@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 public class Queue implements Command {
 
-    private final DatabaseHandler db = new DatabaseHandler();
+    private final Database db = new Database();
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 

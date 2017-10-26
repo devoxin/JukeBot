@@ -7,7 +7,7 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.ActionWaiter;
-import jukebot.DatabaseHandler;
+import jukebot.Database;
 import jukebot.EventListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
@@ -18,26 +18,26 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sqlite.SQLiteJDBCLoader;
 
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 
 public class Bot {
-
-    private static final DatabaseHandler db = new DatabaseHandler();
 
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     public static final ActionWaiter waiter = new ActionWaiter();
 
     private static final String VERSION = "6.1.0-BETA";
-    public static final String defaultPrefix = db.getPropertyFromConfig("prefix");
+    public static final String defaultPrefix = Database.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
     public static Long BotOwnerID = 0L;
 
     public static JDABuilder builder = new JDABuilder(AccountType.BOT)
-            .setToken(db.getPropertyFromConfig("token"))
+            .setToken(Database.getPropertyFromConfig("token"))
             .setReconnectQueue(new SessionReconnectQueue())
-            .addEventListener(Bot.waiter, new EventListener())
+            .addEventListener(Bot.waiter)
             .setAudioSendFactory(new NativeAudioSendFactory())
             .setGame(Game.of(Bot.defaultPrefix + "help | jukebot.xyz"));
 
@@ -46,7 +46,7 @@ public class Bot {
     public static void Configure() {
         Thread.currentThread().setName("JukeBot-Main");
 
-        final String color = db.getPropertyFromConfig("color");
+        final String color = Database.getPropertyFromConfig("color");
         if (color != null) {
             try {
                 EmbedColour = Color.decode(color);
@@ -64,11 +64,14 @@ public class Bot {
     }
 
     private static void printBanner() {
-        try {
-            new BufferedReader(new FileReader("banner.txt")).lines().forEach(System.out::println);
-        } catch (Exception e) {
-            LOG.error("Failed to read 'banner.txt'");
-        }
+        try (
+                final FileReader file = new FileReader("banner.txt");
+                final BufferedReader reader = new BufferedReader(file)
+        )
+        {
+            reader.lines().forEach(System.out::println);
+        } catch (IOException unused) {}
+
         System.out.println(
                 "\nJukeBot v" + VERSION +
                 " | JDA " + JDAInfo.VERSION +

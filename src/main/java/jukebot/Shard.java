@@ -16,6 +16,7 @@ public class Shard {
         LOG.info("[" + (shardId + 1) + "/" + totalShards + "] Logging in...");
         try {
             this.jda = Bot.builder
+                    .addEventListener(new EventListener())
                     .useSharding(shardId, totalShards)
                     .buildAsync();
         } catch (LoginException | RateLimitedException ignored) {

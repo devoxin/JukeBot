@@ -3,6 +3,7 @@ package jukebot;
 import jukebot.commands.*;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
+import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.ReadyEvent;
@@ -17,7 +18,6 @@ import static jukebot.utils.Bot.LOG;
 public class EventListener extends ListenerAdapter {
 
     private final Permissions permissions = new Permissions();
-    private final DatabaseHandler db = new DatabaseHandler();
     private static HashMap<String, Command> commands = new HashMap<>();
     private static HashMap<String, String> aliases = new HashMap<>();
 
@@ -67,7 +67,7 @@ public class EventListener extends ListenerAdapter {
         if (!e.getGuild().isAvailable() || e.getAuthor().isBot())
             return;
 
-        final String prefix = db.getPrefix(e.getGuild().getIdLong());
+        final String prefix = Database.getPrefix(e.getGuild().getIdLong());
 
         if (!e.getMessage().getContent().startsWith(prefix) && !e.getMessage().isMentioned(e.getJDA().getSelfUser()))
             return;
@@ -77,7 +77,7 @@ public class EventListener extends ListenerAdapter {
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Mention | Help")
-                        .setDescription("Server Prefix: " + db.getPrefix(e.getGuild().getIdLong()) + "\n\nYou can reset the prefix using `@" + e.getJDA().getSelfUser().getName() + " rp`")
+                        .setDescription("Server Prefix: **" + Database.getPrefix(e.getGuild().getIdLong()) + "**\n\nYou can reset the prefix using `@" + e.getJDA().getSelfUser().getName() + " rp`")
                         .build()
                 ).queue();
             }
@@ -91,11 +91,11 @@ public class EventListener extends ListenerAdapter {
                             .build()
                     ).queue();
                 }
-                final boolean result = db.setPrefix(e.getGuild().getIdLong(), db.getPropertyFromConfig("prefix"));
+                final boolean result = Database.setPrefix(e.getGuild().getIdLong(), Database.getPropertyFromConfig("prefix"));
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(Bot.EmbedColour)
                         .setTitle("Mention | Prefix Reset")
-                        .setDescription(result ? "Server prefix reset to `" + db.getPropertyFromConfig("prefix") + "`" : "Failed to reset prefix")
+                        .setDescription(result ? "Server prefix reset to **" + Database.getPropertyFromConfig("prefix") + "**" : "Failed to reset prefix")
                         .build()
                 ).queue();
             }
