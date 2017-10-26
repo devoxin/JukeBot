@@ -3,7 +3,6 @@ package jukebot;
 import jukebot.commands.*;
 import jukebot.utils.Bot;
 import jukebot.utils.Command;
-import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.ReadyEvent;

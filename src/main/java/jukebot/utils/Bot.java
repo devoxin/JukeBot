@@ -8,7 +8,6 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.ActionWaiter;
 import jukebot.Database;
-import jukebot.EventListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.JDAInfo;
@@ -18,7 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sqlite.SQLiteJDBCLoader;
 
-import javax.xml.crypto.Data;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -47,7 +45,7 @@ public class Bot {
         Thread.currentThread().setName("JukeBot-Main");
 
         final String color = Database.getPropertyFromConfig("color");
-        if (color != null) {
+        if (!"".equals(color)) {
             try {
                 EmbedColour = Color.decode(color);
             } catch (Exception e) {
