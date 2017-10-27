@@ -1,6 +1,5 @@
 package jukebot.utils;
 
-import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -8,10 +7,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.ActionWaiter;
 import jukebot.Database;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.JDAInfo;
-import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,18 +22,12 @@ public class Bot {
 
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     public static final ActionWaiter waiter = new ActionWaiter();
+    public static final SessionReconnectQueue sesh = new SessionReconnectQueue();
 
     private static final String VERSION = "6.1.0-BETA";
     public static final String defaultPrefix = Database.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
     public static Long BotOwnerID = 0L;
-
-    public static JDABuilder builder = new JDABuilder(AccountType.BOT)
-            .setToken(Database.getPropertyFromConfig("token"))
-            .setReconnectQueue(new SessionReconnectQueue())
-            .addEventListener(Bot.waiter)
-            .setAudioSendFactory(new NativeAudioSendFactory())
-            .setGame(Game.of(Bot.defaultPrefix + "help | jukebot.xyz"));
 
     public static final Logger LOG = LogManager.getLogger("JukeBot");
 
