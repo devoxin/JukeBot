@@ -72,7 +72,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                         .setTitle("Select Song")
                         .setDescription(selector.toString().trim())
                         .build()
-                ).queue(m -> Bot.   waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
+                ).queue(m -> Bot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
                     if (selected <= 0 || selected > tracks.size()) {
                         m.delete().queue();
                         if (!musicManager.isPlaying())
