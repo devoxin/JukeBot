@@ -28,7 +28,7 @@ public class EventListener extends ListenerAdapter {
         commands.put("stop", new Stop());
         commands.put("shuffle", new Shuffle());
         commands.put("now", new Now());
-        commands.put("fastforward", new FastForward());
+        commands.put("seek", new Seek());
         commands.put("prefix", new Prefix());
         commands.put("volume", new Volume());
         commands.put("donators", new Donators());
@@ -48,7 +48,6 @@ public class EventListener extends ListenerAdapter {
         aliases.put("tp", "togglepause");
         aliases.put("n", "now");
         aliases.put("np", "now");
-        aliases.put("ff", "fastforward");
         aliases.put("vol", "volume");
         aliases.put("sel", "select");
         aliases.put("uq", "unqueue");

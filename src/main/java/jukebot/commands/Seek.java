@@ -9,7 +9,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-public class FastForward implements Command {
+public class Seek implements Command {
 
     private final Permissions permissions = new Permissions();
 

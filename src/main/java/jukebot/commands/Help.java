@@ -37,7 +37,7 @@ public class Help implements Command {
                                     + "**`skip       `**: Initiates a vote to skip the currently playing track\n"
                                     + "**`forceskip  `**: Immediately skips the currently playing track without voting\n"
                                     + "**`repeat     `**: Allows toggling between queue, song or no looping\n"
-                                    + "**`fastforward`**: Skip the specified amount of seconds into the current track\n"
+                                    + "**`seek       `**: Fastforward/Rewind by the specified amount of seconds\n"
                                     + "**`shuffle    `**: Toggle queue randomization\n"
                                     + "**`volume     `**: Change the volume of the bot's audio playback"
                     )).queue();
