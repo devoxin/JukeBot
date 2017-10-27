@@ -3,7 +3,6 @@ package jukebot.commands;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
@@ -20,7 +19,7 @@ public class Move implements Command {
 
         if (handler.getQueue().isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Queue is empty")
                     .setDescription("There is nothing to move.")
                     .build()
@@ -30,7 +29,7 @@ public class Move implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Specify song position")
                     .setDescription("You need to specify the position of the song in the queue.")
                     .build()
@@ -43,7 +42,7 @@ public class Move implements Command {
 
         if (target < 1 || dest < 1 || target == dest || target > handler.getQueue().size()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Invalid position(s) specified")
                     .setDescription("You need to specify a valid target track, and a valid target position.")
                     .build()
@@ -55,7 +54,7 @@ public class Move implements Command {
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Cannot move track")
                     .setDescription("You need the DJ role to move other users' tracks.")
                     .build()
@@ -67,7 +66,7 @@ public class Move implements Command {
         handler.getQueue().add(dest - 1, selectedTrack);
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
+                .setColor(JukeBot.EmbedColour)
                 .setTitle("Track Moved")
                 .setDescription("Moved **" + selectedTrack.getInfo().title + "**")
                 .build()

@@ -4,7 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import jukebot.utils.Bot;
+import jukebot.JukeBot;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -29,7 +29,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
     public void trackLoaded(AudioTrack track) {
         if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Track Unavailable")
                     .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
                     .build()
@@ -39,7 +39,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
         if (musicManager.handler.addToQueue(track, e.getAuthor().getIdLong()))
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Track Enqueued")
                     .setDescription(track.getInfo().title)
                     .build()
@@ -68,11 +68,11 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 }
 
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
+                        .setColor(JukeBot.EmbedColour)
                         .setTitle("Select Song")
                         .setDescription(selector.toString().trim())
                         .build()
-                ).queue(m -> Bot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
+                ).queue(m -> JukeBot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
                     if (selected <= 0 || selected > tracks.size()) {
                         m.delete().queue();
                         if (!musicManager.isPlaying())
@@ -84,7 +84,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                     if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
                         m.editMessage(new EmbedBuilder()
-                                .setColor(Bot.EmbedColour)
+                                .setColor(JukeBot.EmbedColour)
                                 .setTitle("Track Unavailable")
                                 .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
                                 .build()
@@ -93,7 +93,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                     }
 
                     m.editMessage(new EmbedBuilder()
-                            .setColor(Bot.EmbedColour)
+                            .setColor(JukeBot.EmbedColour)
                             .setTitle("Track Selected")
                             .setDescription(track.getInfo().title)
                             .build()
@@ -107,7 +107,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                 if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
                     e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(Bot.EmbedColour)
+                            .setColor(JukeBot.EmbedColour)
                             .setTitle("Track Unavailable")
                             .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
                             .build()
@@ -117,7 +117,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                 if (musicManager.handler.addToQueue(track, e.getAuthor().getIdLong()))
                     e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(Bot.EmbedColour)
+                            .setColor(JukeBot.EmbedColour)
                             .setTitle("Track Enqueued")
                             .setDescription(track.getInfo().title)
                             .build()
@@ -138,7 +138,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                     musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
 
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Enqueued Playlist")
                     .setDescription(playlist.getName() + " - " + tracks.size() + " tracks.")
                     .build()
@@ -150,7 +150,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
     @Override
     public void noMatches() {
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
+                .setColor(JukeBot.EmbedColour)
                 .setTitle("No results found")
                 .build()
         ).queue();
@@ -162,7 +162,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
     @Override
     public void loadFailed(FriendlyException ex) {
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
+                .setColor(JukeBot.EmbedColour)
                 .setTitle("Failed to load track")
                 .setDescription(ex.getMessage())
                 .build()

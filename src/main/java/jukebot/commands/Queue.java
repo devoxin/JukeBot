@@ -4,7 +4,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.Database;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -21,7 +20,7 @@ public class Queue implements Command {
 
         if (queue.isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No songs queued")
                     .setDescription("Use `" + Database.getPrefix(e.getGuild().getIdLong()) + "now` to view the current track.")
                     .build()
@@ -58,7 +57,7 @@ public class Queue implements Command {
         }
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
+                .setColor(JukeBot.EmbedColour)
                 .setTitle("Queue (" + queue.size() + " songs, " + queueDuration + ")")
                 .setDescription(fQueue.toString().trim())
                 .addField("\u200B", "**Repeat:** " + handler.getStringifiedRepeat() +

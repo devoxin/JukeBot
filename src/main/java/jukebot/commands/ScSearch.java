@@ -3,7 +3,6 @@ package jukebot.commands;
 import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
 import jukebot.audioutilities.SongResultHandler;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.ConnectionError;
 import jukebot.utils.Permissions;
@@ -19,7 +18,7 @@ public class ScSearch implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No Search Query Specified")
                     .setDescription("Specify a term to search SoundCloud for")
                     .build()
@@ -32,7 +31,7 @@ public class ScSearch implements Command {
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No Mutual VoiceChannel")
                     .setDescription("Join my VoiceChannel to use this command.")
                     .build()
@@ -45,7 +44,7 @@ public class ScSearch implements Command {
 
             if (null != connectionStatus) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
+                        .setColor(JukeBot.EmbedColour)
                         .setTitle(connectionStatus.title)
                         .setDescription(connectionStatus.description)
                         .build()
@@ -57,7 +56,7 @@ public class ScSearch implements Command {
             gmanager.handler.setChannel(e.getChannel());
         }
 
-        Bot.playerManager.loadItem("scsearch:" + query, new SongResultHandler(e, gmanager, false));
+        JukeBot.playerManager.loadItem("scsearch:" + query, new SongResultHandler(e, gmanager, false));
 
     }
 }

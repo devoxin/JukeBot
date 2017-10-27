@@ -2,7 +2,6 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -18,7 +17,7 @@ public class Skip implements Command {
 
         if (!musicManager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -28,7 +27,7 @@ public class Skip implements Command {
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No Mutual VoiceChannel")
                     .setDescription("Join my VoiceChannel to use this command.")
                     .build()
@@ -42,10 +41,10 @@ public class Skip implements Command {
                 .getMembers().stream().filter(u -> !u.getUser().isBot()).count() * 0.5);
 
         if (neededVotes - totalVotes <= 0)
-            musicManager.handler.playNext(null);
+            musicManager.handler.playNext();
         else
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Vote Acknowledged")
                     .setDescription((neededVotes - totalVotes) + " votes needed to skip.")
                     .build()

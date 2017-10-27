@@ -1,7 +1,7 @@
 package jukebot.audioutilities;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import jukebot.utils.Bot;
+import jukebot.JukeBot;
 
 public class MusicManager {
 
@@ -9,7 +9,7 @@ public class MusicManager {
     public AudioHandler handler;
 
     public MusicManager() {
-        this.player = Bot.playerManager.createPlayer();
+        this.player = JukeBot.playerManager.createPlayer();
         this.handler = new AudioHandler(this.player);
         this.player.addListener(this.handler);
     }

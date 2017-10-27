@@ -2,7 +2,6 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -18,7 +17,7 @@ public class Forceskip implements Command {
 
         if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -30,7 +29,7 @@ public class Forceskip implements Command {
                 && !permissions.isTrackRequester(manager.player.getPlayingTrack(), e.getAuthor().getIdLong())) {
 
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the DJ role.")
                     .build()
@@ -38,7 +37,7 @@ public class Forceskip implements Command {
             return;
         }
 
-        manager.handler.playNext(null);
+        manager.handler.playNext();
 
     }
 }

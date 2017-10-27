@@ -3,7 +3,6 @@ package jukebot.commands;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
@@ -20,7 +19,7 @@ public class Unqueue implements Command {
 
         if (handler.getQueue().isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Queue is empty")
                     .setDescription("There is nothing to unqueue.")
                     .build()
@@ -30,7 +29,7 @@ public class Unqueue implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Specify song position")
                     .setDescription("You need to specify the position of the song in the queue.")
                     .build()
@@ -42,7 +41,7 @@ public class Unqueue implements Command {
 
         if (selected < 1 || selected > handler.getQueue().size()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Invalid position specified")
                     .setDescription("You need to specify a valid number.")
                     .build()
@@ -54,7 +53,7 @@ public class Unqueue implements Command {
 
         if ((long) selectedTrack.getUserData() != e.getAuthor().getIdLong() && !permissions.isElevatedUser(e.getMember(), false)) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Cannot unqueue track")
                     .setDescription("You need to have the DJ role to unqueue other users' tracks.")
                     .build()
@@ -65,7 +64,7 @@ public class Unqueue implements Command {
         handler.getQueue().remove(selected - 1);
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
+                .setColor(JukeBot.EmbedColour)
                 .setTitle("Track Unqueued")
                 .setDescription("Removed **" + selectedTrack.getInfo().title + "** from the queue.")
                 .build()

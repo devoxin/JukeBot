@@ -1,7 +1,7 @@
 package jukebot.commands;
 
 import jukebot.Database;
-import jukebot.utils.Bot;
+import jukebot.JukeBot;
 import jukebot.utils.Command;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -13,7 +13,7 @@ public class Help implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Help Categories")
                     .setDescription("`1.` Getting Started\n`2.` Controls\n`3.` Media\n`4.` Miscellaneous\n\nUse `" + Database.getPrefix(e.getGuild().getIdLong()) + "help <number>` to select a category")
                     .build()
@@ -65,7 +65,7 @@ public class Help implements Command {
                     break;
                 default:
                     e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(Bot.EmbedColour)
+                            .setColor(JukeBot.EmbedColour)
                             .setTitle("Invalid Category Specified")
                             .setDescription("`1.` Getting Started\n`2.` Controls\n`3.` Media\n`4.` Miscellaneous\n\nUse `" + Database.getPrefix(e.getGuild().getIdLong()) + "help <number>` to select a category")
                             .build()
@@ -77,7 +77,7 @@ public class Help implements Command {
 
     private MessageEmbed CreateHelpEmbed(String description) {
         return new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
+                .setColor(JukeBot.EmbedColour)
                 .setDescription(description)
                 .build();
     }

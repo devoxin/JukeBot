@@ -3,7 +3,6 @@ package jukebot.commands;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.MusicManager;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -19,7 +18,7 @@ public class Repeat implements Command {
 
         if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -29,7 +28,7 @@ public class Repeat implements Command {
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                         .setTitle("No Mutual VoiceChannel")
                         .setDescription("Join my VoiceChannel to use this command.")
                     .build()
@@ -39,7 +38,7 @@ public class Repeat implements Command {
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the DJ role.")
                     .build()
@@ -63,7 +62,7 @@ public class Repeat implements Command {
                     break;
                 default:
                     e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(Bot.EmbedColour)
+                            .setColor(JukeBot.EmbedColour)
                             .setTitle("Repeat Modes")
                             .setDescription("(**S**)ingle | (**A**)ll | (**N**)one")
                             .build()
@@ -72,7 +71,7 @@ public class Repeat implements Command {
             }
         } else {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Repeat Modes")
                     .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + manager.handler.getStringifiedRepeat())
                     .build()
@@ -81,7 +80,7 @@ public class Repeat implements Command {
         }
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
+                .setColor(JukeBot.EmbedColour)
                 .setTitle("Repeat")
                 .setDescription("Repeat set to **" + manager.handler.getStringifiedRepeat() + "**")
                 .build()

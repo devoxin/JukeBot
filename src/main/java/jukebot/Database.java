@@ -1,7 +1,6 @@
 package jukebot;
 
 import com.zaxxer.hikari.HikariDataSource;
-import jukebot.utils.Bot;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -26,10 +25,10 @@ public class Database {
 
             ResultSet prefix = state.executeQuery();
 
-            return prefix.next() ? prefix.getString("prefix") : Bot.defaultPrefix;
+            return prefix.next() ? prefix.getString("prefix") : JukeBot.defaultPrefix;
 
         } catch (SQLException e) {
-            return Bot.defaultPrefix;
+            return JukeBot.defaultPrefix;
         }
 
     }
@@ -132,7 +131,7 @@ public class Database {
 
     }
 
-    public static String getPropertyFromConfig(String prop) {
+    static String getPropertyFromConfig(String prop) {
 
         try (Connection connection = SetupDatabase()) {//pool.getConnection()) {
 

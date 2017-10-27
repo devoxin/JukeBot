@@ -2,7 +2,6 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -18,7 +17,7 @@ public class Shuffle implements Command {
 
         if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -28,7 +27,7 @@ public class Shuffle implements Command {
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                         .setTitle("No Mutual VoiceChannel")
                         .setDescription("Join my VoiceChannel to use this command.")
                     .build()
@@ -38,7 +37,7 @@ public class Shuffle implements Command {
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the DJ role.")
                     .build()
@@ -47,7 +46,7 @@ public class Shuffle implements Command {
         }
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
+                .setColor(JukeBot.EmbedColour)
                 .setTitle("Shuffle")
                 .setDescription("Shuffle **" + (manager.handler.toggleShuffle() ? "enabled" : "disabled") + "**")
                 .build()

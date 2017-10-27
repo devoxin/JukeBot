@@ -3,7 +3,6 @@ package jukebot.commands;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -20,7 +19,7 @@ public class Now implements Command {
 
         if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -29,7 +28,7 @@ public class Now implements Command {
         }
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
+                .setColor(JukeBot.EmbedColour)
                 .setTitle("Now Playing")
                 .setDescription("**[" + current.getInfo().title + "](" + current.getInfo().uri + ")**\n" +
                         "(" + Helpers.fTime(current.getPosition()) + "/" + (current.getInfo().isStream

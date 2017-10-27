@@ -6,7 +6,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-import jukebot.utils.Bot;
+import jukebot.JukeBot;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -15,8 +15,6 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.LinkedList;
 import java.util.Random;
-
-import static jukebot.utils.Bot.LOG;
 
 public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {
 
@@ -33,7 +31,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private REPEATMODE repeat = REPEATMODE.NONE;
     private boolean shuffle = false;
 
-    private String lastPlayed = "";
+    private AudioTrack current = null;
 
     public int trackPacketLoss = 0;
     public int trackPackets = 0;
@@ -87,13 +85,13 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         this.channel = channel;
     }
 
-    public void playNext(AudioTrack track) {
+    public void playNext() {
         AudioTrack nextTrack = null;
 
-        if (repeat == REPEATMODE.SINGLE && track != null) {
-            nextTrack = track.makeClone();
-            nextTrack.setUserData(track.getUserData());
-        } else if (!queue.isEmpty()) {
+        if (repeat == REPEATMODE.SINGLE && current != null) {
+            nextTrack = current.makeClone();
+            nextTrack.setUserData(current.getUserData());
+        } if (!queue.isEmpty()) {
             if (shuffle)
                 nextTrack = queue.remove(selector.nextInt(queue.size()));
             else
@@ -107,7 +105,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             Helpers.DisconnectVoice(channel.getGuild().getAudioManager());
             if (permissions.canPost(channel)) {
                 channel.sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
+                        .setColor(JukeBot.EmbedColour)
                         .setTitle("Queue Concluded!")
                         .setDescription("[Support JukeBot and receive some awesome benefits!](https://www.patreon.com/Devoxin)")
                         .build()
@@ -119,7 +117,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private void resetPlayer() {
         repeat = REPEATMODE.NONE;
         shuffle = false;
-        lastPlayed = "";
+        current = null;
         player.stopTrack();
         player.setVolume(100);
     }
@@ -130,7 +128,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        LOG.debug("[AUDIOHANDLER] Player " + player + " encountered event TRACK_END (Track: " + track + ")");
         skipVotes.clear();
         trackPacketLoss = 0;
         trackPackets = 0;
@@ -139,20 +136,19 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             addToQueue(track.makeClone(), (long) track.getUserData());
 
         if (endReason.mayStartNext)
-            playNext(track);
+            playNext();
     }
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        LOG.debug("[AUDIOHANDLER] Player " + player + " encountered event TRACK_START (Track: " + track + ")");
         player.setPaused(false);
         if (permissions.canPost(channel)) {
-            if (lastPlayed.equals(track.getIdentifier()))
+            if (current != null && current.getIdentifier().equals(track.getIdentifier()))
                 return;
 
-            lastPlayed = track.getIdentifier();
+            current = track;
             channel.sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Now Playing")
                     .setDescription(track.getInfo().title)
                     .build()
@@ -162,38 +158,34 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
-        LOG.debug("[AUDIOHANDLER] Player " + player + " encountered event TRACK_EXCEPTION (Track: " + track + ")");
-
         if (repeat != REPEATMODE.NONE)
             repeat = REPEATMODE.NONE;
 
         if (permissions.canPost(channel)) {
             channel.sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Track Playback Failed")
                     .setDescription(exception.getLocalizedMessage())
                     .build()
             ).queue();
         }
-        playNext(null);
+        playNext();
     }
 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
-        LOG.debug("[AUDIOHANDLER] Player " + player + " encountered event TRACK_STUCK (Track: " + track + ")");
-
         if (repeat != REPEATMODE.NONE)
             repeat = REPEATMODE.NONE;
 
         if (permissions.canPost(channel)) {
             channel.sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Track Stuck")
                     .setDescription("JukeBot has automatically detected a stuck track and will now play the next song in the queue.")
                     .build()
             ).queue();
         }
-        playNext(null);
+        playNext();
     }
 
     /*

@@ -1,7 +1,7 @@
 package jukebot.commands;
 
 import jukebot.Database;
-import jukebot.utils.Bot;
+import jukebot.JukeBot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -15,7 +15,7 @@ public class Prefix implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Server Prefix")
                     .setDescription("You must specify a new prefix. E.g. `" + Database.getPrefix(e.getGuild().getIdLong()) + "prefix !`")
                     .build()
@@ -23,7 +23,7 @@ public class Prefix implements Command {
         } else {
             if (!permissions.isElevatedUser(e.getMember(), false)) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
+                        .setColor(JukeBot.EmbedColour)
                         .setTitle("Permission Error")
                         .setDescription("You need to have the DJ role.")
                         .build()
@@ -34,7 +34,7 @@ public class Prefix implements Command {
             final String prefix = query.split(" ")[0].trim();
             final boolean updatedPrefix = Database.setPrefix(e.getGuild().getIdLong(), prefix);
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Server Prefix")
                     .setDescription(updatedPrefix ? "Prefix updated to " + prefix : "Prefix update failed")
                     .build()

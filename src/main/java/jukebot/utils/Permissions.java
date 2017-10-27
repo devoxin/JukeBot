@@ -2,6 +2,7 @@ package jukebot.utils;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.Database;
+import jukebot.JukeBot;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
@@ -11,7 +12,7 @@ import net.dv8tion.jda.core.managers.AudioManager;
 public class Permissions {
 
     public boolean isBotOwner(long userID) {
-        return userID == Bot.BotOwnerID;
+        return userID == JukeBot.BotOwnerID;
     }
 
     private boolean isDJ(Member m) {

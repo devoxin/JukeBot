@@ -3,7 +3,6 @@ package jukebot.commands;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -17,7 +16,7 @@ public class Save implements Command {
 
         if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -29,7 +28,7 @@ public class Save implements Command {
 
             if (manager.handler.getQueue().isEmpty()) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
+                        .setColor(JukeBot.EmbedColour)
                         .setTitle("No songs queued")
                         .setDescription("There are no songs in the queue.")
                         .build()
@@ -50,7 +49,7 @@ public class Save implements Command {
                             sb.toString().getBytes(), "queue.txt", null
                     ).queue(null, error ->
                             e.getChannel().sendMessage(new EmbedBuilder()
-                                    .setColor(Bot.EmbedColour)
+                                    .setColor(JukeBot.EmbedColour)
                                     .setTitle("Unable to DM")
                                     .setDescription("I was unable to DM you.\nEnsure I'm not blocked and your DMs are enabled.")
                                     .build()
@@ -61,12 +60,12 @@ public class Save implements Command {
             e.getAuthor().openPrivateChannel().queue(dm ->
                     dm.sendMessage(
                             new EmbedBuilder()
-                            .setColor(Bot.EmbedColour)
+                            .setColor(JukeBot.EmbedColour)
                             .setTitle(currentTrack.getInfo().title, currentTrack.getInfo().uri)
                             .build()
                     ).queue(null, error ->
                             e.getChannel().sendMessage(new EmbedBuilder()
-                                    .setColor(Bot.EmbedColour)
+                                    .setColor(JukeBot.EmbedColour)
                                     .setTitle("Unable to DM")
                                     .setDescription("I was unable to DM you.\nEnsure I'm not blocked and your DMs are enabled.")
                                     .build()

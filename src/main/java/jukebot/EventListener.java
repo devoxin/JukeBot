@@ -1,7 +1,6 @@
 package jukebot;
 
 import jukebot.commands.*;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -11,8 +10,6 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.HashMap;
-
-import static jukebot.utils.Bot.LOG;
 
 public class EventListener extends ListenerAdapter {
 
@@ -74,7 +71,7 @@ public class EventListener extends ListenerAdapter {
         if (e.getMessage().isMentioned(e.getJDA().getSelfUser()) && permissions.canPost(e.getChannel())) {
             if (e.getMessage().getContent().contains("help")) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
+                        .setColor(JukeBot.EmbedColour)
                         .setTitle("Mention | Help")
                         .setDescription("Server Prefix: **" + Database.getPrefix(e.getGuild().getIdLong()) + "**\n\nYou can reset the prefix using `@" + e.getJDA().getSelfUser().getName() + " rp`")
                         .build()
@@ -84,7 +81,7 @@ public class EventListener extends ListenerAdapter {
             if (e.getMessage().getContent().contains("rp") && permissions.canPost(e.getChannel())) {
                 if (!permissions.isElevatedUser(e.getMember(), false)) {
                     e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(Bot.EmbedColour)
+                            .setColor(JukeBot.EmbedColour)
                             .setTitle("Mention | Prefix Reset")
                             .setDescription("You do not have permission to reset the prefix. (Requires DJ role)")
                             .build()
@@ -92,7 +89,7 @@ public class EventListener extends ListenerAdapter {
                 }
                 final boolean result = Database.setPrefix(e.getGuild().getIdLong(), Database.getPropertyFromConfig("prefix"));
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
+                        .setColor(JukeBot.EmbedColour)
                         .setTitle("Mention | Prefix Reset")
                         .setDescription(result ? "Server prefix reset to **" + Database.getPropertyFromConfig("prefix") + "**" : "Failed to reset prefix")
                         .build()
@@ -123,7 +120,7 @@ public class EventListener extends ListenerAdapter {
 
         final long startTime = System.currentTimeMillis();
         commands.get(command).execute(e, query);
-        LOG.debug("[" + command.toUpperCase() + "] execution time: " + (System.currentTimeMillis() - startTime) + "ms");
+        JukeBot.LOG.debug("[" + command.toUpperCase() + "] execution time: " + (System.currentTimeMillis() - startTime) + "ms");
 
     }
 
@@ -136,8 +133,8 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent e) {
-        if (Bot.BotOwnerID == 0L)
-            e.getJDA().asBot().getApplicationInfo().queue(app -> Bot.BotOwnerID = app.getOwner().getIdLong());
+        if (JukeBot.BotOwnerID == 0L)
+            e.getJDA().asBot().getApplicationInfo().queue(app -> JukeBot.BotOwnerID = app.getOwner().getIdLong());
     }
 
 }

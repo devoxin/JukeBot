@@ -1,6 +1,6 @@
 package jukebot.commands;
 
-import jukebot.utils.Bot;
+import jukebot.JukeBot;
 import jukebot.utils.Command;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -10,7 +10,7 @@ public class Patreon implements Command {
     public void execute(GuildMessageReceivedEvent e, String query) {
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(Bot.EmbedColour)
+                .setColor(JukeBot.EmbedColour)
                 .setTitle("Become a Patron!", "https://patreon.com/Devoxin")
                 .setDescription("By becoming a patron, you'll have access to extra features within JukeBot!")
                 .addField("Tier 1 ($1)", "-> Donator Role in [JukeBot's Server](https://discord.gg/xvtH2Yn)\n" +

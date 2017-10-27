@@ -2,7 +2,6 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
-import jukebot.utils.Bot;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
@@ -19,7 +18,7 @@ public class Volume implements Command {
 
         if (!musicManager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -29,7 +28,7 @@ public class Volume implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Volume")
                     .setDescription("\uD83D\uDD08 " + musicManager.player.getVolume() + "%")
                     .build()
@@ -37,7 +36,7 @@ public class Volume implements Command {
         } else {
             if (!permissions.isElevatedUser(e.getMember(), false)) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(Bot.EmbedColour)
+                        .setColor(JukeBot.EmbedColour)
                         .setTitle("Permission Error")
                         .setDescription("You need to have the DJ role.")
                         .build()
@@ -50,7 +49,7 @@ public class Volume implements Command {
             musicManager.player.setVolume(newVolume);
 
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(Bot.EmbedColour)
+                    .setColor(JukeBot.EmbedColour)
                     .setTitle("Volume")
                     .setDescription("\uD83D\uDD08 " + musicManager.player.getVolume() + "%")
                     .build()
