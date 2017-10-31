@@ -89,6 +89,16 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         AudioTrack nextTrack = null;
 
         if (repeat == REPEATMODE.SINGLE && current != null) {
+            try {
+                System.out.println("Base threads: " + (Thread.activeCount()));
+                for (int i = 0; i<20; i++) {
+                    player.startTrack(current.makeClone(), false);
+                    Thread.sleep(2000);
+                    System.out.println("Made track-clone #" + i + " (T: " + (Thread.activeCount()) + ")");
+                }
+            } catch (Exception e) {
+
+            }
             nextTrack = current.makeClone();
             nextTrack.setUserData(current.getUserData());
         } if (!queue.isEmpty()) {

@@ -33,7 +33,7 @@ public class EventListener extends ListenerAdapter {
         commands.put("volume", new Volume());
         commands.put("donators", new Donators());
         commands.put("save", new Save());
-        commands.put("repeat", new Repeat());
+        //commands.put("repeat", new Repeat());
         commands.put("select", new Select());
         commands.put("patreon", new Patreon());
         commands.put("debug", new Debug());
