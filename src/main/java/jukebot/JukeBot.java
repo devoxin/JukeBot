@@ -29,6 +29,7 @@ public class JukeBot {
     static final String defaultPrefix = Database.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
     public static Long BotOwnerID = 0L;
+    public static boolean limitationsEnabled = true;
 
     /* JDA-Related */
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();

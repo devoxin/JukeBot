@@ -176,6 +176,9 @@ public class SongResultHandler implements AudioLoadResultHandler {
         final int trackLength = (int) Math.ceil(track.getDuration() / 1000);
         final int requesterTier = permissions.getTierLevel(requesterID);
 
+        if (!JukeBot.limitationsEnabled)
+            return true;
+
         if (track.getInfo().isStream && requesterTier < 1)
             return false;
 
@@ -195,13 +198,13 @@ public class SongResultHandler implements AudioLoadResultHandler {
     private int getPlaylistLimit(long requesterID) {
         final int requesterTier = permissions.getTierLevel(requesterID);
 
-        if (requesterTier < 1)
+        if (!JukeBot.limitationsEnabled || requesterTier >= 2) // Everything else
+            return -1;
+
+        if (requesterTier == 0) // Tier 0
             return 100;
 
-        if (requesterTier < 2)
-            return 1000;
-
-        return -1;
+        return 1000; // Tier 1
     }
 
 }

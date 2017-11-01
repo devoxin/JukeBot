@@ -107,7 +107,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 channel.sendMessage(new EmbedBuilder()
                         .setColor(JukeBot.EmbedColour)
                         .setTitle("Queue Concluded!")
-                        .setDescription("[Support JukeBot and receive some awesome benefits!](https://www.patreon.com/Devoxin)")
+                        .setDescription("[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
                         .build()
                 ).queue();
             }

@@ -99,8 +99,6 @@ public class EventListener extends ListenerAdapter {
 
         //String command = e.getMessage().getContent().substring(prefix.length()).trim().split(" ")[0].toLowerCase(); // Spaced prefixes, anyone?
         String command = e.getMessage().getContent().substring(prefix.length()).split(" ")[0].toLowerCase();
-        // Fun fact, using substring instead of split is faster; when parsing the query 100,000,000 times, 'split' would be faster by ~300ms
-        // where there were no additional arguments in the message, but performed up to 7 seconds slower when a single argument was present
         final String query = e.getMessage().getContent().substring(prefix.length() + command.length()).trim();
 
         if (aliases.containsKey(command))
@@ -132,8 +130,14 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent e) {
-        if (JukeBot.BotOwnerID == 0L)
-            e.getJDA().asBot().getApplicationInfo().queue(app -> JukeBot.BotOwnerID = app.getOwner().getIdLong());
+        if (JukeBot.BotOwnerID == 0L) {
+            e.getJDA().asBot().getApplicationInfo().queue(app -> {
+                JukeBot.BotOwnerID = app.getOwner().getIdLong();
+
+                if (app.getIdLong() != 249303797371895820L && app.getIdLong() != 314145804807962634L) // JukeBot, JukeBot Patron respectively
+                    JukeBot.limitationsEnabled = false;
+            });
+        }
     }
 
 }
