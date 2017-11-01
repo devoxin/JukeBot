@@ -176,12 +176,6 @@ public class SongResultHandler implements AudioLoadResultHandler {
         final int trackLength = (int) Math.ceil(track.getDuration() / 1000);
         final int requesterTier = permissions.getTierLevel(requesterID);
 
-        if (!JukeBot.limitationsEnabled)
-            return true;
-
-        if (track.getInfo().isStream && requesterTier < 1)
-            return false;
-
         /* 7500 = ~ 2 hours
          * 18500 = ~ 5 hours
          */
@@ -192,7 +186,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
         if (requesterTier >= 2)
             maxTrackDuration = Integer.MAX_VALUE;
 
-        return track.getInfo().isStream || trackLength <= maxTrackDuration;
+        return !JukeBot.limitationsEnabled || (track.getInfo().isStream && requesterTier != 0) || trackLength <= maxTrackDuration;
     }
 
     private int getPlaylistLimit(long requesterID) {
