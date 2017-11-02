@@ -61,45 +61,17 @@ public class EventListener extends ListenerAdapter {
 
         if (!e.getGuild().isAvailable() || e.getAuthor().isBot())
             return;
+        
+        final String guildPrefix = Database.getPrefix(e.getGuild().getIdLong());
+        final boolean mentioned = e.getMessage().getRawContent().startsWith(e.getJDA().getSelfUser().getAsMention());
+        final int triggerLength = mentioned ? e.getJDA().getSelfUser().getAsMention().length() + 1: guildPrefix.length();
 
-        final String prefix = Database.getPrefix(e.getGuild().getIdLong());
-
-        if (!e.getMessage().getContent().startsWith(prefix) && !e.getMessage().isMentioned(e.getJDA().getSelfUser()))
+        if (!e.getMessage().getContent().startsWith(guildPrefix) && !mentioned)
             return;
 
-        if (e.getMessage().isMentioned(e.getJDA().getSelfUser()) && permissions.canPost(e.getChannel())) {
-            if (e.getMessage().getContent().contains("help")) {
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
-                        .setTitle("Mention | Help")
-                        .setDescription("Server Prefix: **" + Database.getPrefix(e.getGuild().getIdLong()) + "**\n\nYou can reset the prefix using `@" + e.getJDA().getSelfUser().getName() + " rp`")
-                        .build()
-                ).queue();
-            }
-
-            if (e.getMessage().getContent().contains("rp") && permissions.canPost(e.getChannel())) {
-                if (!permissions.isElevatedUser(e.getMember(), false)) {
-                    e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(JukeBot.EmbedColour)
-                            .setTitle("Mention | Prefix Reset")
-                            .setDescription("You do not have permission to reset the prefix. (Requires DJ role)")
-                            .build()
-                    ).queue();
-                }
-                final boolean result = Database.setPrefix(e.getGuild().getIdLong(), Database.getPropertyFromConfig("prefix"));
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
-                        .setTitle("Mention | Prefix Reset")
-                        .setDescription(result ? "Server prefix reset to **" + Database.getPropertyFromConfig("prefix") + "**" : "Failed to reset prefix")
-                        .build()
-                ).queue();
-            }
-            return;
-        }
-
-        //String command = e.getMessage().getContent().substring(prefix.length()).trim().split(" ")[0].toLowerCase(); // Spaced prefixes, anyone?
-        String command = e.getMessage().getContent().substring(prefix.length()).split(" ")[0].toLowerCase();
-        final String query = e.getMessage().getContent().substring(prefix.length() + command.length()).trim();
+        final String parsed = e.getMessage().getRawContent().substring(triggerLength);
+        String command = parsed.split(" ")[0].toLowerCase();
+        final String query = parsed.substring(command.length()).trim();
 
         if (aliases.containsKey(command))
             command = aliases.get(command);
@@ -115,9 +87,7 @@ public class EventListener extends ListenerAdapter {
             return;
         }
 
-        final long startTime = System.currentTimeMillis();
         commands.get(command).execute(e, query);
-        JukeBot.LOG.debug("[" + command.toUpperCase() + "] execution time: " + (System.currentTimeMillis() - startTime) + "ms");
 
     }
 
