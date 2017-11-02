@@ -4,14 +4,14 @@ import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
 import jukebot.audioutilities.SongResultHandler;
 import jukebot.utils.Command;
-import jukebot.utils.CommandAlias;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.ConnectionError;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-@CommandAlias(aliases = {"sel"})
+@CommandProperties(aliases = {"sel"})
 public class Select implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {

@@ -2,7 +2,7 @@ package jukebot;
 
 import jukebot.commands.*;
 import jukebot.utils.Command;
-import jukebot.utils.CommandAlias;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
@@ -51,7 +51,7 @@ public class EventListener extends ListenerAdapter {
 
         final String guildPrefix = Database.getPrefix(e.getGuild().getIdLong());
         final boolean mentioned = e.getMessage().getRawContent().startsWith(e.getJDA().getSelfUser().getAsMention());
-        final int triggerLength = mentioned ? e.getJDA().getSelfUser().getAsMention().length() + 1: guildPrefix.length();
+        final int triggerLength = mentioned ? e.getJDA().getSelfUser().getAsMention().length() + 1 : guildPrefix.length();
 
         if (!e.getMessage().getContent().startsWith(guildPrefix) && !mentioned)
             return;
@@ -61,10 +61,10 @@ public class EventListener extends ListenerAdapter {
         final String query = parsed.substring(command.length()).trim();
 
         for (Command cmd : commands.values()) {
-            if (!cmd.getClass().isAnnotationPresent(CommandAlias.class))
+            if (!cmd.getClass().isAnnotationPresent(CommandProperties.class))
                 continue;
 
-            if (Arrays.asList(cmd.getClass().getAnnotation(CommandAlias.class).aliases()).contains(command)) {
+            if (Arrays.asList(cmd.getClass().getAnnotation(CommandProperties.class).aliases()).contains(command)) {
                 command = cmd.getClass().getSimpleName().toLowerCase();
                 break;
             }
