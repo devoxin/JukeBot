@@ -5,12 +5,14 @@ import jukebot.Database;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
+import jukebot.utils.CommandAlias;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.LinkedList;
 
+@CommandAlias(aliases = {"q", "list", "songs"})
 public class Queue implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {

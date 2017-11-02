@@ -2,20 +2,20 @@ package jukebot;
 
 import jukebot.commands.*;
 import jukebot.utils.Command;
+import jukebot.utils.CommandAlias;
 import jukebot.utils.Permissions;
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class EventListener extends ListenerAdapter {
 
     private final Permissions permissions = new Permissions();
     private static HashMap<String, Command> commands = new HashMap<>();
-    private static HashMap<String, String> aliases = new HashMap<>();
 
     public EventListener() {
         commands.put("play", new Play());
@@ -41,19 +41,6 @@ public class EventListener extends ListenerAdapter {
         commands.put("move", new Move());
         commands.put("scsearch", new ScSearch());
         commands.put("posthere", new PostHere());
-
-        aliases.put("p", "play");
-        aliases.put("q", "queue");
-        aliases.put("fs", "forceskip");
-        aliases.put("tp", "togglepause");
-        aliases.put("n", "now");
-        aliases.put("np", "now");
-        aliases.put("vol", "volume");
-        aliases.put("sel", "select");
-        aliases.put("uq", "unqueue");
-        aliases.put("m", "move");
-        aliases.put("sc", "scsearch");
-        aliases.put("ph", "posthere");
     }
 
     @Override
@@ -61,7 +48,7 @@ public class EventListener extends ListenerAdapter {
 
         if (!e.getGuild().isAvailable() || e.getAuthor().isBot())
             return;
-        
+
         final String guildPrefix = Database.getPrefix(e.getGuild().getIdLong());
         final boolean mentioned = e.getMessage().getRawContent().startsWith(e.getJDA().getSelfUser().getAsMention());
         final int triggerLength = mentioned ? e.getJDA().getSelfUser().getAsMention().length() + 1: guildPrefix.length();
@@ -73,8 +60,15 @@ public class EventListener extends ListenerAdapter {
         String command = parsed.split(" ")[0].toLowerCase();
         final String query = parsed.substring(command.length()).trim();
 
-        if (aliases.containsKey(command))
-            command = aliases.get(command);
+        for (Command cmd : commands.values()) {
+            if (!cmd.getClass().isAnnotationPresent(CommandAlias.class))
+                continue;
+
+            if (Arrays.asList(cmd.getClass().getAnnotation(CommandAlias.class).aliases()).contains(command)) {
+                command = cmd.getClass().getSimpleName().toLowerCase();
+                break;
+            }
+        }
 
         if (!commands.containsKey(command))
             return;
