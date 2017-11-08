@@ -3,6 +3,7 @@ package jukebot;
 import jukebot.commands.*;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
+import jukebot.utils.CommandTypes;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
@@ -15,9 +16,9 @@ import java.util.HashMap;
 public class EventListener extends ListenerAdapter {
 
     private final Permissions permissions = new Permissions();
-    private static HashMap<String, Command> commands = new HashMap<>();
+    public static HashMap<String, Command> commands = new HashMap<>();
 
-    public EventListener() {
+    EventListener() {
         commands.put("play", new Play());
         commands.put("skip", new Skip());
         commands.put("queue", new Queue());
@@ -60,26 +61,36 @@ public class EventListener extends ListenerAdapter {
         String command = parsed.split(" ")[0].toLowerCase();
         final String query = parsed.substring(command.length()).trim();
 
-        for (Command cmd : commands.values()) {
-            if (!cmd.getClass().isAnnotationPresent(CommandProperties.class))
-                continue;
+        if (!commands.containsKey(command)) {
+            for (Command cmd : commands.values()) {
+                if (!cmd.getClass().isAnnotationPresent(CommandProperties.class))
+                    continue;
 
-            if (Arrays.asList(cmd.getClass().getAnnotation(CommandProperties.class).aliases()).contains(command)) {
-                command = cmd.getClass().getSimpleName().toLowerCase();
-                break;
+                if (Arrays.asList(cmd.getClass().getAnnotation(CommandProperties.class).aliases()).contains(command)) {
+                    command = cmd.getClass().getSimpleName().toLowerCase();
+                    break;
+                }
             }
         }
 
-        if (!commands.containsKey(command))
+        if (!commands.containsKey(command) || !permissions.canPost(e.getChannel()))
             return;
 
-        if (!permissions.canPost(e.getChannel())) {
-            e.getAuthor().openPrivateChannel().queue(dm ->
-                dm.sendMessage("I cannot send messages/embed links in " + e.getChannel().getAsMention() + "\nSwitch to another channel.")
-                        .queue()
-            );
-            return;
+        /*
+        final Command cmd = commands.get(command);
+        final CommandProperties props = cmd.getClass().isAnnotationPresent(CommandProperties.class) ? cmd.getClass().getAnnotation(CommandProperties.class) : null;
+
+        if (props != null) {
+            boolean isUserDJ = permissions.isElevatedUser(e.getMember(), props.type() == CommandTypes.LONEDJ);
+            boolean isUserOwner = permissions.isBotOwner(e.getAuthor().getIdLong());
+
+            if ((props.type() == CommandTypes.DJ || props.type() == CommandTypes.LONEDJ) && !isUserDJ)
+                return;
+
+            if (props.type() == CommandTypes.OWNER && !isUserOwner)
+                return;
         }
+        */
 
         commands.get(command).execute(e, query);
 

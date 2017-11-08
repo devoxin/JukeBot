@@ -4,11 +4,13 @@ import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
+import jukebot.utils.CommandType;
+import jukebot.utils.CommandTypes;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-@CommandProperties(aliases = {"fs"})
+@CommandProperties(aliases = {"fs"}, type = CommandTypes.DJ)
 public class Forceskip implements Command {
 
     private final Permissions permissions = new Permissions();
