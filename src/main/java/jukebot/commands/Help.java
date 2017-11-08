@@ -3,10 +3,12 @@ package jukebot.commands;
 import jukebot.Database;
 import jukebot.JukeBot;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+@CommandProperties(aliases = {"commands"})
 public class Help implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
