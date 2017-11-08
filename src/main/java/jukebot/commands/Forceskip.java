@@ -4,7 +4,6 @@ import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
-import jukebot.utils.CommandType;
 import jukebot.utils.CommandTypes;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
