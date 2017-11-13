@@ -102,7 +102,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             player.startTrack(nextTrack, false);
         } else {
             resetPlayer();
-            Helpers.DisconnectVoice(channel.getGuild().getAudioManager());
+            Helpers.disconnectVoice(channel.getGuild().getAudioManager());
             if (permissions.canPost(channel)) {
                 channel.sendMessage(new EmbedBuilder()
                         .setColor(JukeBot.EmbedColour)

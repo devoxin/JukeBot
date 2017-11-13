@@ -76,7 +76,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                     if (selected <= 0 || selected > tracks.size()) {
                         m.delete().queue();
                         if (!musicManager.isPlaying())
-                            Helpers.DisconnectVoice(e.getGuild().getAudioManager());
+                            Helpers.disconnectVoice(e.getGuild().getAudioManager());
                         return;
                     }
 
@@ -156,7 +156,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
         ).queue();
 
         if (!musicManager.isPlaying())
-            Helpers.DisconnectVoice(e.getGuild().getAudioManager());
+            Helpers.disconnectVoice(e.getGuild().getAudioManager());
     }
 
     @Override
@@ -169,7 +169,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
         ).queue();
 
         if (!musicManager.isPlaying())
-            Helpers.DisconnectVoice(e.getGuild().getAudioManager());
+            Helpers.disconnectVoice(e.getGuild().getAudioManager());
     }
 
     private boolean canQueueTrack(AudioTrack track, long requesterID) {

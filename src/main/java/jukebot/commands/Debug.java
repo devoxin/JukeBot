@@ -41,7 +41,7 @@ public class Debug implements Command {
                 continue;
             }
             toSend.append(s.jda.getShardInfo().getShardId() == e.getJDA().getShardInfo().getShardId() ? "*[" : " [")
-                    .append(Helpers.PadLeft(" ", Integer.toString(s.jda.getShardInfo().getShardId() + 1), padLength))
+                    .append(Helpers.padLeft(" ", Integer.toString(s.jda.getShardInfo().getShardId() + 1), padLength))
                     .append("] ")
                     .append(s.jda.getStatus().toString())
                     .append(" G: ")

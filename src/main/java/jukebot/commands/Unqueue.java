@@ -39,7 +39,7 @@ public class Unqueue implements Command {
             return;
         }
 
-        final int selected = Helpers.ParseNumber(query, 0);
+        final int selected = Helpers.parseNumber(query, 0);
 
         if (selected < 1 || selected > handler.getQueue().size()) {
             e.getChannel().sendMessage(new EmbedBuilder()

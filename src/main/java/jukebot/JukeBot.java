@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Log4JConfig;
@@ -63,6 +64,9 @@ public class JukeBot {
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
         playerManager.getConfiguration().setOpusEncodingQuality(9);
+        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
+        yt.setPlaylistPageCount(Integer.MAX_VALUE);
+        playerManager.registerSourceManager(yt);
         AudioSourceManagers.registerRemoteSources(playerManager);
 
         try {

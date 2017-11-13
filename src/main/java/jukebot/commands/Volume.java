@@ -46,7 +46,7 @@ public class Volume implements Command {
                 return;
             }
 
-            final int newVolume = Helpers.ParseNumber(query, 100);
+            final int newVolume = Helpers.parseNumber(query, 100);
 
             musicManager.player.setVolume(newVolume);
 

@@ -45,11 +45,12 @@ public class Help implements Command {
                 case "3":
                     e.getChannel().sendMessage(CreateHelpEmbed(
                             "[Additional help can be found on the website here](http://jukebot.xyz/documentation)\n\n"
-                                    + "**`queue   `**: Displays the current queue\n"
-                                    + "**`unqueue `**: Unqueue the track at the given position\n"
-                                    + "**`now     `**: Displays information about the currently playing track\n"
-                                    + "**`save    `**: Direct messages you information about the currently playing track\n"
-                                    + "**`posthere`**: Uses the current channel for now playing messages\n"
+                                    + "**`queue     `**: Displays the current queue\n"
+                                    + "**`unqueue   `**: Unqueue the track at the given position\n"
+                                    + "**`clearqueue`**: Empties the queue of all tracks\n"
+                                    + "**`now       `**: Displays information about the currently playing track\n"
+                                    + "**`save      `**: Direct messages you information about the currently playing track\n"
+                                    + "**`posthere  `**: Uses the current channel for now playing messages\n"
                     )).queue();
                     break;
                 case "4":

@@ -34,7 +34,7 @@ public class Queue implements Command {
         final StringBuilder fQueue = new StringBuilder();
 
         final int maxPages = (int) Math.ceil((double) queue.size() / 10);
-        int page = Helpers.ParseNumber(query, 1);
+        int page = Helpers.parseNumber(query, 1);
 
         if (page < 1)
             page = 1;

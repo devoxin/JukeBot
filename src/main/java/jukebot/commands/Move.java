@@ -39,8 +39,8 @@ public class Move implements Command {
             return;
         }
 
-        final int target = Helpers.ParseNumber(query.split(" ")[0], 0);
-        final int dest = Helpers.ParseNumber(query.split(" ")[1], 0);
+        final int target = Helpers.parseNumber(query.split(" ")[0], 0);
+        final int dest = Helpers.parseNumber(query.split(" ")[1], 0);
 
         if (target < 1 || dest < 1 || target == dest || target > handler.getQueue().size()) {
             e.getChannel().sendMessage(new EmbedBuilder()

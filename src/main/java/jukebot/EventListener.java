@@ -41,6 +41,7 @@ public class EventListener extends ListenerAdapter {
         commands.put("move", new Move());
         commands.put("scsearch", new ScSearch());
         commands.put("posthere", new PostHere());
+        commands.put("clearqueue", new ClearQueue());
     }
 
     @Override

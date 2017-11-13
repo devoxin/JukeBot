@@ -2,6 +2,8 @@ package jukebot.utils;
 
 import net.dv8tion.jda.core.managers.AudioManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,7 +14,7 @@ public class Helpers {
     private static ExecutorService executor = Executors.newSingleThreadExecutor(r -> new Thread(r, "JukeBot-Helper"));
     private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "JukeBot-Timer"));
 
-    public static String PadLeft(String character, String text, int length) {
+    public static String padLeft(String character, String text, int length) {
         if (text.length() == length)
             return text;
 
@@ -24,7 +26,19 @@ public class Helpers {
         return textBuilder.toString();
     }
 
-    public static int ParseNumber(String num, int def) {
+    public static String padNumber(int number, int length) {
+        if (String.valueOf(number).length() == length)
+            return String.valueOf(number);
+
+        StringBuilder textBuilder = new StringBuilder(String.valueOf(number));
+
+        while (textBuilder.length() < length)
+            textBuilder.insert(0, "0");
+
+        return textBuilder.toString();
+    }
+
+    public static int parseNumber(String num, int def) {
         try {
             return Integer.parseInt(num);
         } catch(Exception e) {
@@ -32,30 +46,37 @@ public class Helpers {
         }
     }
 
-    public static void DisconnectVoice(AudioManager manager) {
+    public static void disconnectVoice(AudioManager manager) {
         if (!manager.isConnected() && !manager.isAttemptingToConnect())
             return;
 
         executor.execute(manager::closeAudioConnection);
     }
 
-    public static String fTime(double time) {
-        time = time / 1000;
+    public static String fTime(long time) {
+        int days = (int) TimeUnit.MILLISECONDS.toDays(time);
+        time -= 86400000 * days;
+        int hours = (int) TimeUnit.MILLISECONDS.toHours(time);
+        time -= 3600000 * hours;
+        int minutes = (int) TimeUnit.MILLISECONDS.toMinutes(time);
+        time -= 60000 * minutes;
+        int seconds = (int) TimeUnit.MILLISECONDS.toSeconds(time);
 
-        int days    = (int) Math.floor((time % 31536000) / 86400);
-        int hours   = (int) Math.floor(((time % 31536000) % 86400) / 3600);
-        int minutes = (int) Math.floor((((time % 31536000) % 86400) % 3600) / 60);
-        int seconds = (int) Math.round((((time % 31536000) % 86400) % 3600) % 60);
+        final StringBuilder timeString = new StringBuilder();
 
-        String sdays    = days    > 9 ? "" + days    : "0" + days;
-        String shours   = hours   > 9 ? "" + hours   : "0" + hours;
-        String sminutes = minutes > 9 ? "" + minutes : "0" + minutes;
-        String sseconds = seconds > 9 ? "" + seconds : "0" + seconds;
+        if (days > 0)
+            timeString.append(padNumber(days, 2)).append(":");
 
-        return (days > 0 ? sdays + ":" : "") + ((hours == 0 && days == 0) ? "" : shours + ":") + sminutes + ":" + sseconds;
+        if (hours > 0 || days > 0)
+            timeString.append(padNumber(hours, 2)).append(":");
+
+        timeString.append(padNumber(minutes, 2)).append(":");
+        timeString.append(padNumber(seconds, 2));
+
+        return timeString.toString();
     }
 
-    public static void CreateDelay(Consumer<Runnable> task, int delay, TimeUnit unit) {
+    public static void createDelay(Consumer<Runnable> task, int delay, TimeUnit unit) {
         timer.schedule(() -> task.accept(null), delay, unit);
     }
 

@@ -48,7 +48,7 @@ public class Seek implements Command {
             return;
         }
 
-        int forwardTime = Helpers.ParseNumber(query, 10) * 1000;
+        int forwardTime = Helpers.parseNumber(query, 10) * 1000;
 
         if (currentTrack.getPosition() + forwardTime >= currentTrack.getDuration())
             manager.handler.playNext();
@@ -56,8 +56,8 @@ public class Seek implements Command {
             currentTrack.setPosition(currentTrack.getPosition() + forwardTime);
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.EmbedColour)
-                    .setTitle("Fast-Forward")
-                    .setDescription("The current track has been fastforwarded.")
+                    .setTitle("Track Seeking")
+                    .setDescription("The current track has been moved to **" + Helpers.fTime(currentTrack.getPosition()) + "**")
                     .build()
             ).queue();
         }
