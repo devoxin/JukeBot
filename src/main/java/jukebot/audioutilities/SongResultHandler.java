@@ -75,7 +75,11 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 ).queue(m -> JukeBot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
                     if (selected <= 0 || selected > tracks.size()) {
                         m.delete().queue();
+
                         if (!musicManager.isPlaying())
+                            Helpers.disconnectVoice(e.getGuild().getAudioManager());
+
+                        if (!musicManager.isPlaying() && !selected.toString().toLowerCase().contains("sel"))
                             Helpers.disconnectVoice(e.getGuild().getAudioManager());
                         return;
                     }
