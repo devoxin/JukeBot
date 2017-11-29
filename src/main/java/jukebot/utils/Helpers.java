@@ -2,8 +2,9 @@ package jukebot.utils;
 
 import net.dv8tion.jda.core.managers.AudioManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -78,6 +79,20 @@ public class Helpers {
 
     public static void createDelay(Consumer<Runnable> task, int delay, TimeUnit unit) {
         timer.schedule(() -> task.accept(null), delay, unit);
+    }
+
+    public static String readFile(String path) {
+        final StringBuilder output = new StringBuilder();
+
+        try(final FileReader file = new FileReader(path);
+            final BufferedReader reader = new BufferedReader(file)
+        ) {
+            reader.lines().forEach(line -> output.append(line).append("\n"));
+        } catch (IOException e) {
+            output.append(e.getMessage());
+        }
+
+        return output.toString();
     }
 
 }

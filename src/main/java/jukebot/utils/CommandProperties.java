@@ -11,5 +11,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface CommandProperties {
     String[] aliases() default {};
-    CommandTypes type() default CommandTypes.EVERYONE;
 }

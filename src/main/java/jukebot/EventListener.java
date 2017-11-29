@@ -3,7 +3,6 @@ package jukebot;
 import jukebot.commands.*;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
-import jukebot.utils.CommandTypes;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
@@ -43,6 +42,7 @@ public class EventListener extends ListenerAdapter {
         commands.put("scsearch", new ScSearch());
         commands.put("posthere", new PostHere());
         commands.put("clearqueue", new ClearQueue());
+        commands.put("stats", new Stats());
     }
 
     @Override
@@ -77,21 +77,7 @@ public class EventListener extends ListenerAdapter {
         if (!commands.containsKey(command) || !permissions.canPost(e.getChannel()))
             return;
 
-        /*
-        final Command cmd = commands.get(command);
-        final CommandProperties props = cmd.getClass().isAnnotationPresent(CommandProperties.class) ? cmd.getClass().getAnnotation(CommandProperties.class) : null;
-
-        if (props != null) {
-            boolean isUserDJ = permissions.isElevatedUser(e.getMember(), props.type() == CommandTypes.LONEDJ);
-            boolean isUserOwner = permissions.isBotOwner(e.getAuthor().getIdLong());
-
-            if ((props.type() == CommandTypes.DJ || props.type() == CommandTypes.LONEDJ) && !isUserDJ)
-                return;
-
-            if (props.type() == CommandTypes.OWNER && !isUserOwner)
-                return;
-        }
-        */
+        JukeBot.commandCount++;
 
         commands.get(command).execute(e, query);
 

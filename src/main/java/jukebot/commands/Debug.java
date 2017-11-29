@@ -5,6 +5,7 @@ import jukebot.Shard;
 import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Command;
 import jukebot.utils.Helpers;
+import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -13,8 +14,12 @@ import java.util.Arrays;
 public class Debug implements Command {
 
     private final int padLength = String.valueOf(JukeBot.getShards().length).length();
+    private final Permissions permissions = new Permissions();
 
     public void execute(GuildMessageReceivedEvent e, String query) {
+
+        if (!permissions.isBotOwner(e.getAuthor().getIdLong()))
+            return;
 
         final StringBuilder toSend = new StringBuilder();
         final long streams = JukeBot.getMusicManagers().values().stream().filter(MusicManager::isPlaying).count();

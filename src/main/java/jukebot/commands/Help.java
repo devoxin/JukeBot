@@ -63,6 +63,7 @@ public class Help implements Command {
                                     + "**`invite  `**: Displays the bot's invite URL\n"
                                     + "**`patreon `**: Provides a direct link to the bot's patreon page\n"
                                     + "**`debug   `**: Displays bot statistics\n"
+                                    + "**`stats   `**: Displays summary of bot statistics\n"
                                     + "**`donators`**: Developer command for managing donators statuses"
                     )).queue();
                     break;

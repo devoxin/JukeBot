@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.MusicManager;
+import jukebot.utils.Helpers;
 import jukebot.utils.Log4JConfig;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -17,16 +18,13 @@ import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 
 public class JukeBot {
 
     /* Bot-Related*/
     public static final long startTime = System.currentTimeMillis();
-    private static final String VERSION = "6.1.0-BETA";
+    public static final String VERSION = "6.1.0-BETA";
     static final String defaultPrefix = Database.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
     public static Long BotOwnerID = 0L;
@@ -41,6 +39,7 @@ public class JukeBot {
 
     /* Misc */
     static Logger LOG = LogManager.getLogger("JukeBot");
+    public static int commandCount = 0;
 
 
     /* Functions */
@@ -81,14 +80,7 @@ public class JukeBot {
     }
 
     private static void printBanner() {
-        try (
-                final FileReader file = new FileReader("banner.txt");
-                final BufferedReader reader = new BufferedReader(file)
-        )
-        {
-            reader.lines().forEach(System.out::println);
-        } catch (IOException unused) {}
-
+        System.out.println(Helpers.readFile("banner.txt"));
         System.out.println(
                 "\nJukeBot v" + VERSION +
                 " | JDA " + JDAInfo.VERSION +
