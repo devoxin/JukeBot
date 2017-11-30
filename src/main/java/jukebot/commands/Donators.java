@@ -3,6 +3,7 @@ package jukebot.commands;
 import jukebot.Database;
 import jukebot.JukeBot;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@CommandProperties(developerOnly = true)
 public class Donators implements Command {
 
     private final Permissions permissions = new Permissions();

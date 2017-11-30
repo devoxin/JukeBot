@@ -4,24 +4,26 @@ import jukebot.JukeBot;
 import jukebot.Shard;
 import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
+@CommandProperties(developerOnly = true)
 public class Debug implements Command {
 
     private final int padLength = String.valueOf(JukeBot.getShards().length).length();
-    private final Permissions permissions = new Permissions();
+    private final DecimalFormat dpFormatter = new DecimalFormat("0.00");
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        if (!permissions.isBotOwner(e.getAuthor().getIdLong()))
-            return;
-
         final StringBuilder toSend = new StringBuilder();
+        final long rUsedRaw = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+        final String rPercent = dpFormatter.format((double) rUsedRaw / Runtime.getRuntime().totalMemory() * 100);
         final long streams = JukeBot.getMusicManagers().values().stream().filter(MusicManager::isPlaying).count();
         final long servers = Arrays.stream(JukeBot.getShards())
                 .filter(s ->  s != null && s.jda != null)
@@ -38,7 +40,7 @@ public class Debug implements Command {
                 .append(Helpers.fTime(System.currentTimeMillis() - JukeBot.startTime))
                 .append(" | ")
                 .append((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)
-                .append("MB\n\n");
+                .append("MB (").append(rPercent).append("%)\n\n");
 
         for (Shard s : JukeBot.getShards()) {
             if (s == null || s.jda == null) {
