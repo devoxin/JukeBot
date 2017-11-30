@@ -31,7 +31,7 @@ public class Help implements Command {
                 final StringBuilder controls = new StringBuilder();
 
                 filterCommands(command -> command.properties().category() == CommandProperties.category.CONTROLS).forEach(command ->
-                        controls.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 14)).append(":`** ")
+                        controls.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 11)).append(":`** ")
                                 .append(command.properties().description()).append("\n")
                 );
 
@@ -42,7 +42,7 @@ public class Help implements Command {
                 final StringBuilder media = new StringBuilder();
 
                 filterCommands(command -> command.properties().category() == CommandProperties.category.MEDIA).forEach(command ->
-                        media.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 14)).append(":`** ")
+                        media.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 11)).append(":`** ")
                                 .append(command.properties().description()).append("\n")
                 );
 
@@ -53,7 +53,7 @@ public class Help implements Command {
                 final StringBuilder misc = new StringBuilder();
 
                 filterCommands(command -> command.properties().category() == CommandProperties.category.MISC).forEach(command ->
-                        misc.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 14)).append(":`** ")
+                        misc.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 11)).append(":`** ")
                                 .append(command.properties().description()).append("\n")
                 );
 

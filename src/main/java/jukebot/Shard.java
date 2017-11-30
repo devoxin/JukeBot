@@ -21,7 +21,7 @@ public class Shard {
                     .setReconnectQueue(JukeBot.sesh)
                     .addEventListener(JukeBot.waiter, new EventListener())
                     .setAudioSendFactory(new NativeAudioSendFactory())
-                    .setGame(Game.of(JukeBot.defaultPrefix + "help | jukebot.xyz"))
+                    .setGame(Game.of(Game.GameType.LISTENING, JukeBot.defaultPrefix + "help | jukebot.xyz"))
                     .useSharding(shardId, totalShards)
                     .buildAsync();
         } catch (LoginException | RateLimitedException ignored) {
