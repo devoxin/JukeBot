@@ -51,9 +51,11 @@ public class EventListener extends ListenerAdapter {
         if (!e.getGuild().isAvailable() || e.getAuthor().isBot())
             return;
 
+        System.out.println(e.getGuild().getSelfMember().getAsMention());
+
         final String guildPrefix = Database.getPrefix(e.getGuild().getIdLong());
-        final boolean mentioned = e.getMessage().getRawContent().startsWith(e.getJDA().getSelfUser().getAsMention());
-        final int triggerLength = mentioned ? e.getJDA().getSelfUser().getAsMention().length() + 1 : guildPrefix.length();
+        final boolean mentioned = e.getMessage().getRawContent().startsWith(e.getGuild().getSelfMember().getAsMention());
+        final int triggerLength = mentioned ? e.getGuild().getSelfMember().getAsMention().length() + 1 : guildPrefix.length();
 
         if (!e.getMessage().getContent().startsWith(guildPrefix) && !mentioned)
             return;
