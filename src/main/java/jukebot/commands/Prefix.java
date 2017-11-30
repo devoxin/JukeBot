@@ -7,17 +7,21 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+import javax.xml.crypto.Data;
+
 public class Prefix implements Command {
 
     private final Permissions permissions = new Permissions();
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
+        final String currentPrefix = Database.getPrefix(e.getGuild().getIdLong());
+
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.EmbedColour)
                     .setTitle("Server Prefix")
-                    .setDescription("You must specify a new prefix. E.g. `" + Database.getPrefix(e.getGuild().getIdLong()) + "prefix !`")
+                    .setDescription("Current prefix: [**" + currentPrefix + "**]()\nChange prefix: [**" + currentPrefix  + "prefix !**]()")
                     .build()
             ).queue();
         } else {

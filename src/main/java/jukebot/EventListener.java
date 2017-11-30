@@ -64,22 +64,26 @@ public class EventListener extends ListenerAdapter {
 
         if (!commands.containsKey(command)) {
             for (Command cmd : commands.values()) {
-                if (!cmd.getClass().isAnnotationPresent(CommandProperties.class))
+                if (cmd.properties() == null)
                     continue;
 
-                if (Arrays.asList(cmd.getClass().getAnnotation(CommandProperties.class).aliases()).contains(command)) {
+                if (Arrays.asList(cmd.properties().aliases()).contains(command)) {
                     command = cmd.getClass().getSimpleName().toLowerCase();
                     break;
                 }
             }
         }
 
-        if (!commands.containsKey(command) || !permissions.canPost(e.getChannel()))
+        Command cmd = commands.get(command);
+
+        if (cmd == null || !permissions.canPost(e.getChannel()))
+            return;
+
+        if (cmd.properties() != null && cmd.properties().developerOnly() && !permissions.isBotOwner(e.getAuthor().getIdLong()))
             return;
 
         JukeBot.commandCount++;
-
-        commands.get(command).execute(e, query);
+        cmd.execute(e, query);
 
     }
 

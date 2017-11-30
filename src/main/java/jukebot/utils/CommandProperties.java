@@ -11,4 +11,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface CommandProperties {
     String[] aliases() default {};
+    boolean developerOnly() default false;
+    String description() default "";
+    category category() default category.MISC;
+
+    enum category {
+        CONTROLS, MEDIA, MISC
+    }
+
 }

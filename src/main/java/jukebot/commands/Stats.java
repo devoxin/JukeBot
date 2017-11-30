@@ -2,6 +2,7 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -9,6 +10,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
+@CommandProperties(developerOnly = true, category = CommandProperties.category.MISC)
 public class Stats implements Command {
 
     DecimalFormat dpFormatter = new DecimalFormat("0.00");

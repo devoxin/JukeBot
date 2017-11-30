@@ -14,7 +14,6 @@ public class Now implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-
         final MusicManager manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
         final AudioTrack current = manager.player.getPlayingTrack();
 
