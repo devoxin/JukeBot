@@ -8,7 +8,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-@CommandProperties(aliases = {"tp"})
+@CommandProperties(description = "Pause/Resume the current track", aliases = {"tp"}, category = CommandProperties.category.CONTROLS)
 public class TogglePause implements Command {
 
     private final Permissions permissions = new Permissions();

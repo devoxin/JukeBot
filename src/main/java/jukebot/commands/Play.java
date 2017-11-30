@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-@CommandProperties(aliases = {"p"})
+@CommandProperties(description = "Find a track on YouTube and queue it", aliases = {"p"}, category = CommandProperties.category.CONTROLS)
 public class Play implements Command {
 
     final Permissions permissions = new Permissions();

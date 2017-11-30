@@ -24,7 +24,7 @@ public class JukeBot {
 
     /* Bot-Related*/
     public static final long startTime = System.currentTimeMillis();
-    public static final String VERSION = "6.1.0-BETA";
+    private static final String VERSION = "6.1.1";
     static final String defaultPrefix = Database.getPropertyFromConfig("prefix");
     public static Color EmbedColour = Color.decode("#1E90FF");
     public static Long BotOwnerID = 0L;
@@ -39,7 +39,7 @@ public class JukeBot {
 
     /* Misc */
     static Logger LOG = LogManager.getLogger("JukeBot");
-    public static int commandCount = 0;
+    static int commandCount = 0;
 
 
     /* Functions */

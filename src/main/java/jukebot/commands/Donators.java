@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@CommandProperties(developerOnly = true)
+@CommandProperties(developerOnly = true, description = "Manage and view donators and their tiers", category = CommandProperties.category.MISC)
 public class Donators implements Command {
 
     private final Permissions permissions = new Permissions();

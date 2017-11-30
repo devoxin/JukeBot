@@ -3,12 +3,12 @@ package jukebot.commands;
 import jukebot.Database;
 import jukebot.JukeBot;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-import javax.xml.crypto.Data;
-
+@CommandProperties(description = "Change the current server prefix", category = CommandProperties.category.MISC)
 public class Prefix implements Command {
 
     private final Permissions permissions = new Permissions();

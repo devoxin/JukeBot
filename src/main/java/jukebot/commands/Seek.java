@@ -4,11 +4,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+@CommandProperties(description = "Move to the specified position in the track", category = CommandProperties.category.CONTROLS)
 public class Seek implements Command {
 
     private final Permissions permissions = new Permissions();

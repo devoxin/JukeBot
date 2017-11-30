@@ -12,4 +12,8 @@ public interface Command {
                 : null;
     }
 
+    default String name() {
+        return this.getClass().getSimpleName();
+    }
+
 }

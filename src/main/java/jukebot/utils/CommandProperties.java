@@ -1,7 +1,5 @@
 package jukebot.utils;
 
-import jukebot.JukeBot;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface CommandProperties {
     String[] aliases() default {};
     boolean developerOnly() default false;
-    String description() default "";
+    String description() default "No description available";
     category category() default category.MISC;
 
     enum category {

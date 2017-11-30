@@ -8,7 +8,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-@CommandProperties(aliases = {"ph"})
+@CommandProperties(description = "Uses the current channel for track announcements", aliases = {"ph"}, category = CommandProperties.category.MEDIA)
 public class PostHere implements Command {
 
     private final Permissions permissions = new Permissions();

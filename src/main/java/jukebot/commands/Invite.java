@@ -2,9 +2,11 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+@CommandProperties(description = "Displays the bot's invite URL", category = CommandProperties.category.MISC)
 public class Invite implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {

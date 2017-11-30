@@ -2,9 +2,11 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+@CommandProperties(description = "Provides a link to JukeBot's Patreon", category = CommandProperties.category.MISC)
 public class Patreon implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {

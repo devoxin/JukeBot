@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-@CommandProperties(aliases = {"sc"})
+@CommandProperties(description = "Search SoundCloud and queue the top result", aliases = {"sc"}, category = CommandProperties.category.CONTROLS)
 public class ScSearch implements Command {
 
     final Permissions permissions = new Permissions();

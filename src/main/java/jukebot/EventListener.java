@@ -2,7 +2,6 @@ package jukebot;
 
 import jukebot.commands.*;
 import jukebot.utils.Command;
-import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;

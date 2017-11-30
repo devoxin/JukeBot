@@ -10,7 +10,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-@CommandProperties(aliases = {"uq", "remove", "r"})
+@CommandProperties(description = "Remove a track from the queue", aliases = {"uq", "remove", "r"}, category = CommandProperties.category.MEDIA)
 public class Unqueue implements Command {
 
     final Permissions permissions = new Permissions();

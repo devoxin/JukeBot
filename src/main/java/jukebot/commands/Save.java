@@ -4,9 +4,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
 import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+@CommandProperties(description = "DMs you the currently playing track", category = CommandProperties.category.MEDIA)
 public class Save implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {

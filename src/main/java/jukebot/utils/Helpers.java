@@ -27,6 +27,18 @@ public class Helpers {
         return textBuilder.toString();
     }
 
+    public static String padRight(String character, String text, int length) {
+        if (text.length() == length)
+            return text;
+
+        StringBuilder textBuilder = new StringBuilder(text);
+
+        while (textBuilder.length() < length)
+            textBuilder.append(character);
+
+        return textBuilder.toString();
+    }
+
     public static String padNumber(int number, int length) {
         if (String.valueOf(number).length() == length)
             return String.valueOf(number);

@@ -6,14 +6,13 @@ import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Helpers;
-import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
-@CommandProperties(developerOnly = true)
+@CommandProperties(developerOnly = true, description = "Provides an insight into bot stats", category = CommandProperties.category.MISC)
 public class Debug implements Command {
 
     private final int padLength = String.valueOf(JukeBot.getShards().length).length();

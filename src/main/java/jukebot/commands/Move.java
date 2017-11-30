@@ -10,7 +10,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-@CommandProperties(aliases = {"m"})
+@CommandProperties(description = "Moves a track in the queue", aliases = {"m"}, category = CommandProperties.category.MEDIA)
 public class Move implements Command {
 
     final Permissions permissions = new Permissions();

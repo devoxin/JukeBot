@@ -12,7 +12,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.LinkedList;
 
-@CommandProperties(aliases = {"q", "list", "songs"})
+@CommandProperties(description = "Displays the current queue", aliases = {"q", "list", "songs"}, category = CommandProperties.category.MEDIA)
 public class Queue implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {

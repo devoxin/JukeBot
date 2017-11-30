@@ -8,7 +8,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-@CommandProperties(aliases = {"cq", "c", "clear", "empty"})
+@CommandProperties(description = "Removes all of the tracks from the queue", aliases = {"cq", "c", "clear", "empty"}, category = CommandProperties.category.MEDIA)
 public class ClearQueue implements Command {
 
     private final Permissions permissions = new Permissions();

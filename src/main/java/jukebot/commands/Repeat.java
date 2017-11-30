@@ -4,10 +4,12 @@ import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+@CommandProperties(description = "Loop the queue, track or nothing",category = CommandProperties.category.CONTROLS)
 public class Repeat implements Command {
 
     private final Permissions permissions = new Permissions();

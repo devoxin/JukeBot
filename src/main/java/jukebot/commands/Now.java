@@ -9,7 +9,7 @@ import jukebot.utils.Helpers;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-@CommandProperties(aliases = {"n", "np"})
+@CommandProperties(description = "Displays the currently playing track", aliases = {"n", "np"}, category = CommandProperties.category.MEDIA)
 public class Now implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
