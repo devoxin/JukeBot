@@ -2,7 +2,7 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
-import jukebot.audioutilities.MusicManager;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Helpers;
@@ -14,7 +14,7 @@ public class Now implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final MusicManager manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
         final AudioTrack current = manager.player.getPlayingTrack();
 
 
@@ -35,7 +35,7 @@ public class Now implements Command {
                         "(" + Helpers.fTime(current.getPosition()) + "/" + (current.getInfo().isStream
                         ? "LIVE)"
                         : Helpers.fTime(current.getDuration()) + ") - <@" + current.getUserData() + ">"))
-                .setFooter("Packets Dropped: " + manager.handler.trackPacketLoss + " | Sent: " + manager.handler.trackPackets, null)
+                .setFooter("Packets Dropped: " + manager.trackPacketLoss + " | Sent: " + manager.trackPackets, null)
                 .build()
         ).queue();
 

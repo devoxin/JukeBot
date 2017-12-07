@@ -1,7 +1,7 @@
 package jukebot.commands;
 
 import jukebot.JukeBot;
-import jukebot.audioutilities.MusicManager;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
@@ -15,9 +15,9 @@ public class ClearQueue implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String args) {
 
-        final MusicManager musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
 
-        if (musicManager.handler.getQueue().isEmpty()) {
+        if (musicManager.getQueue().isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.EmbedColour)
                     .setTitle("Queue Already Empty")
@@ -37,7 +37,7 @@ public class ClearQueue implements Command {
             return;
         }
 
-        musicManager.handler.getQueue().clear();
+        musicManager.getQueue().clear();
 
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(JukeBot.EmbedColour)

@@ -1,7 +1,7 @@
 package jukebot.commands;
 
 import jukebot.JukeBot;
-import jukebot.audioutilities.MusicManager;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.SongResultHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
@@ -29,7 +29,7 @@ public class Select implements Command {
         }
 
         final AudioManager manager = e.getGuild().getAudioManager();
-        final MusicManager gmanager = JukeBot.getMusicManager(manager);
+        final AudioHandler gmanager = JukeBot.getMusicManager(manager);
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
@@ -55,7 +55,7 @@ public class Select implements Command {
             }
 
             manager.openAudioConnection(e.getMember().getVoiceState().getChannel());
-            gmanager.handler.setChannel(e.getChannel());
+            gmanager.setChannel(e.getChannel());
         }
 
         JukeBot.playerManager.loadItem("ytsearch:" + query, new SongResultHandler(e, gmanager, true));

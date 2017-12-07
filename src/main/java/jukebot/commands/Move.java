@@ -17,7 +17,7 @@ public class Move implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler handler = JukeBot.getMusicManager(e.getGuild().getAudioManager()).handler;
+        final AudioHandler handler = JukeBot.getMusicManager(e.getGuild().getAudioManager());
 
         if (handler.getQueue().isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()

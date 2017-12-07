@@ -2,7 +2,7 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
-import jukebot.audioutilities.MusicManager;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Helpers;
@@ -17,7 +17,7 @@ public class Seek implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final MusicManager manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
         final AudioTrack currentTrack = manager.player.getPlayingTrack();
 
         if (!manager.isPlaying()) {
@@ -53,7 +53,7 @@ public class Seek implements Command {
         int forwardTime = Helpers.parseNumber(query, 10) * 1000;
 
         if (currentTrack.getPosition() + forwardTime >= currentTrack.getDuration())
-            manager.handler.playNext();
+            manager.playNext();
         else {
             currentTrack.setPosition(currentTrack.getPosition() + forwardTime);
             e.getChannel().sendMessage(new EmbedBuilder()

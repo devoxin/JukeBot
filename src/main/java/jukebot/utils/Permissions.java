@@ -54,7 +54,6 @@ public class Permissions {
 
     public boolean checkVoiceChannel(Member m) {
         final AudioManager manager = m.getGuild().getAudioManager();
-        System.out.println("Connected Channel: " + (manager.getConnectedChannel() != null) + " | Member Channel: " + (m.getVoiceState().getChannel() != null));
 
         return m.getVoiceState().inVoiceChannel() && (!manager.isAttemptingToConnect() && !manager.isConnected() ||
                         manager.getConnectedChannel().getIdLong() ==

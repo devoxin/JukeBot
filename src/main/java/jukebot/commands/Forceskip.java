@@ -1,7 +1,7 @@
 package jukebot.commands;
 
 import jukebot.JukeBot;
-import jukebot.audioutilities.MusicManager;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
@@ -15,7 +15,7 @@ public class Forceskip implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final MusicManager manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
 
         if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
@@ -39,7 +39,7 @@ public class Forceskip implements Command {
             return;
         }
 
-        manager.handler.playNext();
+        manager.playNext();
 
     }
 }

@@ -2,7 +2,6 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
-import jukebot.audioutilities.MusicManager;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
@@ -16,7 +15,7 @@ public class Repeat implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final MusicManager manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
 
         if (!manager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
@@ -52,15 +51,15 @@ public class Repeat implements Command {
             switch (query.toLowerCase()) {
                 case "a":
                 case "all":
-                    manager.handler.setRepeat(AudioHandler.REPEATMODE.ALL);
+                    manager.setRepeat(AudioHandler.REPEATMODE.ALL);
                     break;
                 case "s":
                 case "single":
-                    manager.handler.setRepeat(AudioHandler.REPEATMODE.SINGLE);
+                    manager.setRepeat(AudioHandler.REPEATMODE.SINGLE);
                     break;
                 case "n":
                 case "none":
-                    manager.handler.setRepeat(AudioHandler.REPEATMODE.NONE);
+                    manager.setRepeat(AudioHandler.REPEATMODE.NONE);
                     break;
                 default:
                     e.getChannel().sendMessage(new EmbedBuilder()
@@ -75,7 +74,7 @@ public class Repeat implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.EmbedColour)
                     .setTitle("Repeat Modes")
-                    .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + manager.handler.getStringifiedRepeat())
+                    .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + manager.getStringifiedRepeat())
                     .build()
             ).queue();
             return;
@@ -84,7 +83,7 @@ public class Repeat implements Command {
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(JukeBot.EmbedColour)
                 .setTitle("Repeat")
-                .setDescription("Repeat set to **" + manager.handler.getStringifiedRepeat() + "**")
+                .setDescription("Repeat set to **" + manager.getStringifiedRepeat() + "**")
                 .build()
         ).queue();
 

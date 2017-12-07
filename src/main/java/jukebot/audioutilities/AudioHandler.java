@@ -20,7 +20,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     private final Permissions permissions = new Permissions();
 
-    private AudioPlayer player;
+    public AudioPlayer player;
     private AudioFrame lastFrame;
     private final Random selector = new Random();
 
@@ -36,8 +36,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public int trackPacketLoss = 0;
     public int trackPackets = 0;
 
-    AudioHandler(AudioPlayer player) {
+    public AudioHandler(AudioPlayer player) {
         this.player = player;
+        player.addListener(this);
     }
 
     /*
@@ -53,6 +54,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         }
 
         return false;
+    }
+
+    public boolean isPlaying() {
+        return player.getPlayingTrack() != null;
     }
 
     public LinkedList<AudioTrack> getQueue() {

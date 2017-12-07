@@ -1,7 +1,7 @@
 package jukebot.commands;
 
 import jukebot.JukeBot;
-import jukebot.audioutilities.MusicManager;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
@@ -15,7 +15,7 @@ public class Skip implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final MusicManager musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
 
         if (!musicManager.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
@@ -37,13 +37,13 @@ public class Skip implements Command {
             return;
         }
 
-        final int totalVotes = musicManager.handler.voteSkip(e.getAuthor().getIdLong());
+        final int totalVotes = musicManager.voteSkip(e.getAuthor().getIdLong());
 
         final int neededVotes = (int) Math.ceil(e.getGuild().getAudioManager().getConnectedChannel()
                 .getMembers().stream().filter(u -> !u.getUser().isBot()).count() * 0.5);
 
         if (neededVotes - totalVotes <= 0)
-            musicManager.handler.playNext();
+            musicManager.playNext();
         else
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.EmbedColour)

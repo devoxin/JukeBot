@@ -17,7 +17,7 @@ public class Queue implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler handler = JukeBot.getMusicManager(e.getGuild().getAudioManager()).handler;
+        final AudioHandler handler = JukeBot.getMusicManager(e.getGuild().getAudioManager());
         final LinkedList<AudioTrack> queue = handler.getQueue();
 
         if (queue.isEmpty()) {

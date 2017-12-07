@@ -16,10 +16,10 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     private final Permissions permissions = new Permissions();
     private final GuildMessageReceivedEvent e;
-    private final MusicManager musicManager;
+    private final AudioHandler musicManager;
     private final boolean useSelection;
 
-    public SongResultHandler(GuildMessageReceivedEvent e, MusicManager m, boolean UseSelection) {
+    public SongResultHandler(GuildMessageReceivedEvent e, AudioHandler m, boolean UseSelection) {
         this.e = e;
         this.musicManager = m;
         this.useSelection = UseSelection;
@@ -37,7 +37,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
             return;
         }
 
-        if (musicManager.handler.addToQueue(track, e.getAuthor().getIdLong()))
+        if (musicManager.addToQueue(track, e.getAuthor().getIdLong()))
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.EmbedColour)
                     .setTitle("Track Enqueued")
@@ -103,7 +103,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                             .build()
                     ).queue();
 
-                    musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
+                    musicManager.addToQueue(track, e.getAuthor().getIdLong());
                 }));
 
             } else {
@@ -119,7 +119,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                     return;
                 }
 
-                if (musicManager.handler.addToQueue(track, e.getAuthor().getIdLong()))
+                if (musicManager.addToQueue(track, e.getAuthor().getIdLong()))
                     e.getChannel().sendMessage(new EmbedBuilder()
                             .setColor(JukeBot.EmbedColour)
                             .setTitle("Track Enqueued")
@@ -139,7 +139,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
             for (AudioTrack track : tracks)
                 if (canQueueTrack(track, e.getAuthor().getIdLong()))
-                    musicManager.handler.addToQueue(track, e.getAuthor().getIdLong());
+                    musicManager.addToQueue(track, e.getAuthor().getIdLong());
 
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.EmbedColour)

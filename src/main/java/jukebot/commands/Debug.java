@@ -2,7 +2,7 @@ package jukebot.commands;
 
 import jukebot.JukeBot;
 import jukebot.Shard;
-import jukebot.audioutilities.MusicManager;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Helpers;
@@ -23,7 +23,7 @@ public class Debug implements Command {
         final StringBuilder toSend = new StringBuilder();
         final long rUsedRaw = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
         final String rPercent = dpFormatter.format((double) rUsedRaw / Runtime.getRuntime().totalMemory() * 100);
-        final long streams = JukeBot.getMusicManagers().values().stream().filter(MusicManager::isPlaying).count();
+        final long streams = JukeBot.getMusicManagers().values().stream().filter(AudioHandler::isPlaying).count();
         final long servers = Arrays.stream(JukeBot.getShards())
                 .filter(s ->  s != null && s.jda != null)
                 .map(s -> s.jda.getGuilds().size())

@@ -6,7 +6,7 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
-import jukebot.audioutilities.MusicManager;
+import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Helpers;
 import jukebot.utils.Log4JConfig;
 import net.dv8tion.jda.core.JDAInfo;
@@ -32,7 +32,7 @@ public class JukeBot {
 
     /* JDA-Related */
     public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
-    private static final HashMap<Long, MusicManager> musicManagers = new HashMap<>();
+    private static final HashMap<Long, AudioHandler> musicManagers = new HashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
     static final SessionReconnectQueue sesh = new SessionReconnectQueue();
     private static Shard[] shards = new Shard[Integer.parseInt(Database.getPropertyFromConfig("maxshards"))];
@@ -95,17 +95,17 @@ public class JukeBot {
     public static Shard[] getShards() {
         return shards;
     }
-    public static HashMap<Long, MusicManager> getMusicManagers() {
+    public static HashMap<Long, AudioHandler> getMusicManagers() {
         return musicManagers;
     }
-    public static MusicManager getMusicManager(final AudioManager manager) {
+    public static AudioHandler getMusicManager(final AudioManager manager) {
 
-        MusicManager musicManager = musicManagers.computeIfAbsent(manager.getGuild().getIdLong(), v -> new MusicManager());
+        AudioHandler handler = musicManagers.computeIfAbsent(manager.getGuild().getIdLong(), v -> new AudioHandler(playerManager.createPlayer()));
 
         if (manager.getSendingHandler() == null)
-            manager.setSendingHandler(musicManager.handler);
+            manager.setSendingHandler(handler);
 
-        return musicManager;
+        return handler;
 
     }
 
