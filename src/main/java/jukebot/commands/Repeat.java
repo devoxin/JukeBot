@@ -15,11 +15,11 @@ public class Repeat implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
 
-        if (!manager.isPlaying()) {
+        if (!player.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -29,7 +29,7 @@ public class Repeat implements Command {
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                         .setTitle("No Mutual VoiceChannel")
                         .setDescription("Join my VoiceChannel to use this command.")
                     .build()
@@ -39,7 +39,7 @@ public class Repeat implements Command {
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the DJ role.")
                     .build()
@@ -51,19 +51,19 @@ public class Repeat implements Command {
             switch (query.toLowerCase()) {
                 case "a":
                 case "all":
-                    manager.setRepeat(AudioHandler.REPEATMODE.ALL);
+                    player.setRepeat(AudioHandler.REPEATMODE.ALL);
                     break;
                 case "s":
                 case "single":
-                    manager.setRepeat(AudioHandler.REPEATMODE.SINGLE);
+                    player.setRepeat(AudioHandler.REPEATMODE.SINGLE);
                     break;
                 case "n":
                 case "none":
-                    manager.setRepeat(AudioHandler.REPEATMODE.NONE);
+                    player.setRepeat(AudioHandler.REPEATMODE.NONE);
                     break;
                 default:
                     e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(JukeBot.EmbedColour)
+                            .setColor(JukeBot.embedColour)
                             .setTitle("Repeat Modes")
                             .setDescription("(**S**)ingle | (**A**)ll | (**N**)one")
                             .build()
@@ -72,18 +72,18 @@ public class Repeat implements Command {
             }
         } else {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Repeat Modes")
-                    .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + manager.getStringifiedRepeat())
+                    .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + player.getStringifiedRepeat())
                     .build()
             ).queue();
             return;
         }
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.EmbedColour)
+                .setColor(JukeBot.embedColour)
                 .setTitle("Repeat")
-                .setDescription("Repeat set to **" + manager.getStringifiedRepeat() + "**")
+                .setDescription("Repeat set to **" + player.getStringifiedRepeat() + "**")
                 .build()
         ).queue();
 

@@ -20,7 +20,7 @@ public class Play implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Specify something")
                     .setDescription("YouTube: Search Term/URL\nSoundCloud: URL")
                     .build()
@@ -29,11 +29,11 @@ public class Play implements Command {
         }
 
         final AudioManager manager = e.getGuild().getAudioManager();
-        final AudioHandler gmanager = JukeBot.getMusicManager(manager);
+        final AudioHandler player = JukeBot.getPlayer(manager);
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No Mutual VoiceChannel")
                     .setDescription("Join my VoiceChannel to use this command.")
                     .build()
@@ -46,7 +46,7 @@ public class Play implements Command {
 
             if (null != connectionStatus) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle(connectionStatus.title)
                         .setDescription(connectionStatus.description)
                         .build()
@@ -55,15 +55,15 @@ public class Play implements Command {
             }
 
             manager.openAudioConnection(e.getMember().getVoiceState().getChannel());
-            gmanager.setChannel(e.getChannel());
+            player.setChannel(e.getChannel());
         }
 
         final String userQuery = query.replaceAll("[<>]", "");
 
         if (userQuery.startsWith("http"))
-            JukeBot.playerManager.loadItem(userQuery, new SongResultHandler(e, gmanager, false));
+            JukeBot.playerManager.loadItem(userQuery, new SongResultHandler(e, player, false));
         else
-            JukeBot.playerManager.loadItem( "ytsearch:" + userQuery, new SongResultHandler(e, gmanager, false));
+            JukeBot.playerManager.loadItem( "ytsearch:" + userQuery, new SongResultHandler(e, player, false));
 
     }
 }

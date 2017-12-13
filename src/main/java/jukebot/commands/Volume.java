@@ -16,11 +16,11 @@ public class Volume implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
 
-        if (!musicManager.isPlaying()) {
+        if (!player.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -30,15 +30,15 @@ public class Volume implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Volume")
-                    .setDescription("\uD83D\uDD08 " + musicManager.player.getVolume() + "%")
+                    .setDescription("\uD83D\uDD08 " + player.player.getVolume() + "%")
                     .build()
             ).queue();
         } else {
             if (!permissions.isElevatedUser(e.getMember(), false)) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle("Permission Error")
                         .setDescription("You need to have the DJ role.")
                         .build()
@@ -48,12 +48,12 @@ public class Volume implements Command {
 
             final int newVolume = Helpers.parseNumber(query, 100);
 
-            musicManager.player.setVolume(newVolume);
+            player.player.setVolume(newVolume);
 
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Volume")
-                    .setDescription("\uD83D\uDD08 " + musicManager.player.getVolume() + "%")
+                    .setDescription("\uD83D\uDD08 " + player.player.getVolume() + "%")
                     .build()
             ).queue();
         }

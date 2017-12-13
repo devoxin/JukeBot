@@ -13,12 +13,12 @@ public class Save implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
-        final AudioTrack currentTrack = manager.player.getPlayingTrack();
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
+        final AudioTrack currentTrack = player.player.getPlayingTrack();
 
-        if (!manager.isPlaying()) {
+        if (!player.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -28,9 +28,9 @@ public class Save implements Command {
 
         if (query.length() > 0 && "all".equalsIgnoreCase(query)) {
 
-            if (manager.getQueue().isEmpty()) {
+            if (player.getQueue().isEmpty()) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle("No songs queued")
                         .setDescription("There are no songs in the queue.")
                         .build()
@@ -40,7 +40,7 @@ public class Save implements Command {
 
             StringBuilder sb = new StringBuilder();
 
-            for (AudioTrack track : manager.getQueue())
+            for (AudioTrack track : player.getQueue())
                 sb.append(track.getInfo().title)
                         .append(" - ")
                         .append(track.getInfo().uri)
@@ -51,7 +51,7 @@ public class Save implements Command {
                             sb.toString().getBytes(), "queue.txt", null
                     ).queue(null, error ->
                             e.getChannel().sendMessage(new EmbedBuilder()
-                                    .setColor(JukeBot.EmbedColour)
+                                    .setColor(JukeBot.embedColour)
                                     .setTitle("Unable to DM")
                                     .setDescription("I was unable to DM you.\nEnsure I'm not blocked and your DMs are enabled.")
                                     .build()
@@ -62,12 +62,12 @@ public class Save implements Command {
             e.getAuthor().openPrivateChannel().queue(dm ->
                     dm.sendMessage(
                             new EmbedBuilder()
-                            .setColor(JukeBot.EmbedColour)
+                            .setColor(JukeBot.embedColour)
                             .setTitle(currentTrack.getInfo().title, currentTrack.getInfo().uri)
                             .build()
                     ).queue(null, error ->
                             e.getChannel().sendMessage(new EmbedBuilder()
-                                    .setColor(JukeBot.EmbedColour)
+                                    .setColor(JukeBot.embedColour)
                                     .setTitle("Unable to DM")
                                     .setDescription("I was unable to DM you.\nEnsure I'm not blocked and your DMs are enabled.")
                                     .build()

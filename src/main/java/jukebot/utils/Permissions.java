@@ -12,7 +12,7 @@ import net.dv8tion.jda.core.managers.AudioManager;
 public class Permissions {
 
     public boolean isBotOwner(long userID) {
-        return userID == JukeBot.BotOwnerID;
+        return userID == JukeBot.botOwnerId;
     }
 
     private boolean isDJ(Member m) {

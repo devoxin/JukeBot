@@ -18,47 +18,39 @@ import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final long startTime = System.currentTimeMillis();
     private static final String VERSION = "6.1.1";
-    static final String defaultPrefix = Database.getPropertyFromConfig("prefix");
-    public static Color EmbedColour = Color.decode("#1E90FF");
-    public static Long BotOwnerID = 0L;
+    public static final long startTime = System.currentTimeMillis();
+    static Logger LOG;
+
+    static String defaultPrefix;
+    public static Color embedColour;
+    public static Long botOwnerId = 0L;
     public static boolean limitationsEnabled = true;
-
-    /* JDA-Related */
-    public static final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
-    private static final HashMap<Long, AudioHandler> musicManagers = new HashMap<>();
-    public static final ActionWaiter waiter = new ActionWaiter();
-    static final SessionReconnectQueue sesh = new SessionReconnectQueue();
-    private static Shard[] shards = new Shard[Integer.parseInt(Database.getPropertyFromConfig("maxshards"))];
-
-    /* Misc */
-    static Logger LOG = LogManager.getLogger("JukeBot");
     static int commandCount = 0;
 
+    /* JDA-Related */
+    public static AudioPlayerManager playerManager;
+    private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
+    public static final ActionWaiter waiter = new ActionWaiter();
+    static final SessionReconnectQueue session = new SessionReconnectQueue();
+    private static Shard[] shards;
 
-    /* Functions */
+
     public static void main(final String[] args) throws Exception {
-        ConfigurationFactory.setConfigurationFactory(new Log4JConfig());
-        setupJukeBot();
-
-        for (int i = 0; i < shards.length; i++) {
-            shards[i] = new Shard(i, shards.length);
-            Thread.sleep(5500);
-        }
-    }
-
-    /* Self-Configuration Functions */
-    /**
-     * Delegating tasks to the below function allows the above code to look cleaner lol
-     */
-    private static void setupJukeBot() {
         Thread.currentThread().setName("JukeBot-Main");
+
+        ConfigurationFactory.setConfigurationFactory(new Log4JConfig());
+        LOG = LogManager.getLogger("JukeBot");
+
+        playerManager = new DefaultAudioPlayerManager();
+        defaultPrefix = Database.getPropertyFromConfig("prefix");
+        embedColour = Color.decode(Database.getPropertyFromConfig("color"));
+        shards = new Shard[Integer.parseInt(Database.getPropertyFromConfig("maxshards"))];
 
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
@@ -68,16 +60,14 @@ public class JukeBot {
         playerManager.registerSourceManager(yt);
         AudioSourceManagers.registerRemoteSources(playerManager);
 
-        try {
-            final String color = Database.getPropertyFromConfig("color");
-            if (!"".equals(color))
-                EmbedColour = Color.decode(color);
-        } catch (Exception e) {
-            LOG.warn("Failed to decode color. Ensure you specified a hex (0xFFF, #FFF)");
-        }
-
         printBanner();
+
+        for (int i = 0; i < shards.length; i++) {
+            shards[i] = new Shard(i, shards.length);
+            Thread.sleep(5500);
+        }
     }
+
 
     private static void printBanner() {
         System.out.println(Helpers.readFile("banner.txt"));
@@ -90,17 +80,17 @@ public class JukeBot {
         );
     }
 
-    /* Retrieval Functions */
-
     public static Shard[] getShards() {
         return shards;
     }
-    public static HashMap<Long, AudioHandler> getMusicManagers() {
-        return musicManagers;
-    }
-    public static AudioHandler getMusicManager(final AudioManager manager) {
 
-        AudioHandler handler = musicManagers.computeIfAbsent(manager.getGuild().getIdLong(), v -> new AudioHandler(playerManager.createPlayer()));
+    public static ConcurrentHashMap<Long, AudioHandler> getPlayers() {
+        return players;
+    }
+
+    public static AudioHandler getPlayer(final AudioManager manager) {
+
+        AudioHandler handler = players.computeIfAbsent(manager.getGuild().getIdLong(), v -> new AudioHandler(playerManager.createPlayer()));
 
         if (manager.getSendingHandler() == null)
             manager.setSendingHandler(handler);

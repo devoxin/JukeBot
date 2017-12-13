@@ -19,7 +19,7 @@ public class Prefix implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Server Prefix")
                     .setDescription("Current prefix: [**" + currentPrefix + "**]()\nChange prefix: [**" + currentPrefix  + "prefix !**]()")
                     .build()
@@ -27,7 +27,7 @@ public class Prefix implements Command {
         } else {
             if (!permissions.isElevatedUser(e.getMember(), false)) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle("Permission Error")
                         .setDescription("You need to have the DJ role.")
                         .build()
@@ -38,7 +38,7 @@ public class Prefix implements Command {
             final String prefix = query.split(" ")[0].trim();
             final boolean updatedPrefix = Database.setPrefix(e.getGuild().getIdLong(), prefix);
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Server Prefix")
                     .setDescription(updatedPrefix ? "Prefix updated to " + prefix : "Prefix update failed")
                     .build()

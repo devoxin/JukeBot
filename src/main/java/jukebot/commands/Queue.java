@@ -17,12 +17,12 @@ public class Queue implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler handler = JukeBot.getMusicManager(e.getGuild().getAudioManager());
-        final LinkedList<AudioTrack> queue = handler.getQueue();
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
+        final LinkedList<AudioTrack> queue = player.getQueue();
 
         if (queue.isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No songs queued")
                     .setDescription("Use `" + Database.getPrefix(e.getGuild().getIdLong()) + "now` to view the current track.")
                     .build()
@@ -59,11 +59,11 @@ public class Queue implements Command {
         }
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.EmbedColour)
+                .setColor(JukeBot.embedColour)
                 .setTitle("Queue (" + queue.size() + " songs, " + queueDuration + ")")
                 .setDescription(fQueue.toString().trim())
-                .addField("\u200B", "**Repeat:** " + handler.getStringifiedRepeat() +
-                        " **/ Shuffle:** " + (handler.isShuffleEnabled() ? "On" : "Off"), true)
+                .addField("\u200B", "**Repeat:** " + player.getStringifiedRepeat() +
+                        " **/ Shuffle:** " + (player.isShuffleEnabled() ? "On" : "Off"), true)
                 .setFooter("Viewing page " + (page) + "/" + (maxPages), null)
                 .build()
         ).queue();

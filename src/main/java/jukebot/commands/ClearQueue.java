@@ -15,11 +15,11 @@ public class ClearQueue implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String args) {
 
-        final AudioHandler musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
 
-        if (musicManager.getQueue().isEmpty()) {
+        if (player.getQueue().isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Queue Already Empty")
                     .setDescription("The queue cannot be cleared as there is nothing queued.")
                     .build()
@@ -29,7 +29,7 @@ public class ClearQueue implements Command {
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the DJ role.")
                     .build()
@@ -37,10 +37,10 @@ public class ClearQueue implements Command {
             return;
         }
 
-        musicManager.getQueue().clear();
+        player.getQueue().clear();
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.EmbedColour)
+                .setColor(JukeBot.embedColour)
                 .setTitle("Queue Cleared")
                 .setDescription("The queue is now empty.")
                 .build()

@@ -15,11 +15,11 @@ public class TogglePause implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
 
-        if (!musicManager.isPlaying()) {
+        if (!player.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -29,7 +29,7 @@ public class TogglePause implements Command {
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No Mutual VoiceChannel")
                     .setDescription("Join my VoiceChannel to use this command.")
                     .build()
@@ -39,7 +39,7 @@ public class TogglePause implements Command {
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the DJ role!")
                     .build()
@@ -47,7 +47,7 @@ public class TogglePause implements Command {
             return;
         }
 
-        musicManager.player.setPaused(!musicManager.player.isPaused());
+        player.player.setPaused(!player.player.isPaused());
 
     }
 

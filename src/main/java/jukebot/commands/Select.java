@@ -20,7 +20,7 @@ public class Select implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No Search Query Specified")
                     .setDescription("Specify a term to search YouTube for")
                     .build()
@@ -29,11 +29,11 @@ public class Select implements Command {
         }
 
         final AudioManager manager = e.getGuild().getAudioManager();
-        final AudioHandler gmanager = JukeBot.getMusicManager(manager);
+        final AudioHandler player = JukeBot.getPlayer(manager);
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No Mutual VoiceChannel")
                     .setDescription("Join my VoiceChannel to use this command.")
                     .build()
@@ -46,7 +46,7 @@ public class Select implements Command {
 
             if (null != connectionStatus) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle(connectionStatus.title)
                         .setDescription(connectionStatus.description)
                         .build()
@@ -55,9 +55,9 @@ public class Select implements Command {
             }
 
             manager.openAudioConnection(e.getMember().getVoiceState().getChannel());
-            gmanager.setChannel(e.getChannel());
+            player.setChannel(e.getChannel());
         }
 
-        JukeBot.playerManager.loadItem("ytsearch:" + query, new SongResultHandler(e, gmanager, true));
+        JukeBot.playerManager.loadItem("ytsearch:" + query, new SongResultHandler(e, player, true));
     }
 }

@@ -14,13 +14,13 @@ public class Now implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
-        final AudioTrack current = manager.player.getPlayingTrack();
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
+        final AudioTrack current = player.player.getPlayingTrack();
 
 
-        if (!manager.isPlaying()) {
+        if (!player.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -29,13 +29,13 @@ public class Now implements Command {
         }
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.EmbedColour)
+                .setColor(JukeBot.embedColour)
                 .setTitle("Now Playing")
                 .setDescription("**[" + current.getInfo().title + "](" + current.getInfo().uri + ")**\n" +
                         "(" + Helpers.fTime(current.getPosition()) + "/" + (current.getInfo().isStream
                         ? "LIVE)"
                         : Helpers.fTime(current.getDuration()) + ") - <@" + current.getUserData() + ">"))
-                .setFooter("Packets Dropped: " + manager.trackPacketLoss + " | Sent: " + manager.trackPackets, null)
+                .setFooter("Packets Dropped: " + player.trackPacketLoss + " | Sent: " + player.trackPackets, null)
                 .build()
         ).queue();
 

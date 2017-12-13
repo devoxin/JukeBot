@@ -9,7 +9,7 @@ public class Database {
 
     private final static HikariDataSource pool = new HikariDataSource();
 
-    private static Connection SetupDatabase() throws SQLException {
+    private static Connection getConnection() throws SQLException {
         if (pool.getJdbcUrl() == null)
             pool.setJdbcUrl("jdbc:sqlite:jukebot.db");
 
@@ -18,7 +18,7 @@ public class Database {
 
     public static String getPrefix(final long id) {
 
-        try (Connection connection = pool.getConnection()) {
+        try (Connection connection = getConnection()) {
 
             PreparedStatement state = connection.prepareStatement("SELECT * FROM prefixes WHERE id = ?");
             state.setLong(1, id);
@@ -35,7 +35,7 @@ public class Database {
 
     public static boolean setPrefix(final long id, final String newPrefix) {
 
-        try (Connection connection = pool.getConnection()) {
+        try (Connection connection = getConnection()) {
 
             PreparedStatement state = connection.prepareStatement("SELECT * FROM prefixes WHERE id = ?");
             state.setLong(1, id);
@@ -62,7 +62,7 @@ public class Database {
 
     public static boolean setTier(final long id, final int newTier) {
 
-        try (Connection connection = pool.getConnection()) {
+        try (Connection connection = getConnection()) {
 
             PreparedStatement state = connection.prepareStatement("SELECT * FROM donators WHERE id = ?");
             state.setLong(1, id);
@@ -98,7 +98,7 @@ public class Database {
 
     public static int getTier(long id) {
 
-        try (Connection connection = pool.getConnection()) {
+        try (Connection connection = getConnection()) {
 
             PreparedStatement state = connection.prepareStatement("SELECT * FROM donators WHERE id = ?");
             state.setLong(1, id);
@@ -117,7 +117,7 @@ public class Database {
 
         HashMap<Long, Integer> donators = new HashMap<>();
 
-        try (Connection connection = pool.getConnection()) {
+        try (Connection connection = getConnection()) {
 
             Statement state = connection.createStatement();
             ResultSet results = state.executeQuery("SELECT * FROM donators");
@@ -133,7 +133,7 @@ public class Database {
 
     static String getPropertyFromConfig(String prop) {
 
-        try (Connection connection = SetupDatabase()) {//pool.getConnection()) {
+        try (Connection connection = getConnection()) {
 
             PreparedStatement state = connection.prepareStatement("SELECT * FROM config WHERE prop = ?");
             state.setString(1, prop);

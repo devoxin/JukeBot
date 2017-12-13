@@ -18,7 +18,7 @@ public class Shard {
         try {
             this.jda = new JDABuilder(AccountType.BOT)
                     .setToken(Database.getPropertyFromConfig("token"))
-                    .setReconnectQueue(JukeBot.sesh)
+                    .setReconnectQueue(JukeBot.session)
                     .addEventListener(JukeBot.waiter, new EventListener())
                     .setAudioSendFactory(new NativeAudioSendFactory())
                     .setGame(Game.of(Game.GameType.LISTENING, JukeBot.defaultPrefix + "help | jukebot.xyz"))

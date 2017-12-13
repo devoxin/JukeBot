@@ -62,7 +62,7 @@ public class Help implements Command {
 
             default:
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle("Help Categories")
                         .setDescription("`1.` Getting Started\n`2.` Controls\n`3.` Media\n`4.` Miscellaneous\n\nUse `" + Database.getPrefix(e.getGuild().getIdLong()) + "help <number>` to select a category")
                         .build()
@@ -79,7 +79,7 @@ public class Help implements Command {
 
     private MessageEmbed CreateHelpEmbed(String description) {
         return new EmbedBuilder()
-                .setColor(JukeBot.EmbedColour)
+                .setColor(JukeBot.embedColour)
                 .setDescription("[View more information here](http://jukebot.xyz/documentation)\n" + description)
                 .build();
     }

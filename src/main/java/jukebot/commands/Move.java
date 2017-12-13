@@ -17,11 +17,11 @@ public class Move implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler handler = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
 
-        if (handler.getQueue().isEmpty()) {
+        if (player.getQueue().isEmpty()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Queue is empty")
                     .setDescription("There is nothing to move.")
                     .build()
@@ -31,7 +31,7 @@ public class Move implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Specify song position")
                     .setDescription("You need to specify the position of the song in the queue.")
                     .build()
@@ -42,9 +42,9 @@ public class Move implements Command {
         final int target = Helpers.parseNumber(query.split(" ")[0], 0);
         final int dest = Helpers.parseNumber(query.split(" ")[1], 0);
 
-        if (target < 1 || dest < 1 || target == dest || target > handler.getQueue().size()) {
+        if (target < 1 || dest < 1 || target == dest || target > player.getQueue().size()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Invalid position(s) specified")
                     .setDescription("You need to specify a valid target track, and a valid target position.")
                     .build()
@@ -52,11 +52,11 @@ public class Move implements Command {
             return;
         }
 
-        final AudioTrack selectedTrack = handler.getQueue().get(target - 1);
+        final AudioTrack selectedTrack = player.getQueue().get(target - 1);
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Cannot move track")
                     .setDescription("You need the DJ role to move other users' tracks.")
                     .build()
@@ -64,11 +64,11 @@ public class Move implements Command {
             return;
         }
 
-        handler.getQueue().remove(target - 1);
-        handler.getQueue().add(dest - 1, selectedTrack);
+        player.getQueue().remove(target - 1);
+        player.getQueue().add(dest - 1, selectedTrack);
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.EmbedColour)
+                .setColor(JukeBot.embedColour)
                 .setTitle("Track Moved")
                 .setDescription("Moved **" + selectedTrack.getInfo().title + "**")
                 .build()

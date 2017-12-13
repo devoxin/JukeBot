@@ -23,7 +23,7 @@ public class Donators implements Command {
 
         if (!permissions.isBotOwner(e.getAuthor().getIdLong())) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Donators")
                     .setDescription("Command reserved for bot developer.")
                     .build()
@@ -35,7 +35,7 @@ public class Donators implements Command {
 
         if (args.length == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Donators")
                     .setDescription("<getall|get|set> [id] [tier]")
                     .build()
@@ -48,7 +48,7 @@ public class Donators implements Command {
                 final HashMap<Long, Integer> donatorsMap = Database.getAllDonators();
                 if (donatorsMap.isEmpty()) {
                     e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(JukeBot.EmbedColour)
+                            .setColor(JukeBot.embedColour)
                             .setTitle("Donators")
                             .setDescription("No donators returned.")
                             .build()
@@ -103,7 +103,7 @@ public class Donators implements Command {
                         }
                     }
                     m.editMessage(new EmbedBuilder()
-                            .setColor(JukeBot.EmbedColour)
+                            .setColor(JukeBot.embedColour)
                             .addField("Tier 1", t1.toString(), true)
                             .addField("Tier 2", t2.toString(), true)
                             .addField("Tier 3", t3.toString(), true)
@@ -113,14 +113,14 @@ public class Donators implements Command {
             } else if ("get".equalsIgnoreCase(args[0])){
                 final int userTier = Database.getTier(Long.parseLong(args[1]));
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle("Donator Status")
                         .setDescription("User **" + args[1] + "** has Tier **" + userTier + "**")
                         .build()
                 ).queue();
             } else {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle("Donators")
                         .setDescription("<getall|get|set> [id] [tier]")
                         .build()
@@ -130,7 +130,7 @@ public class Donators implements Command {
             if ("set".equalsIgnoreCase(args[0])) {
                 final boolean result = Database.setTier(Long.parseLong(args[1]), Integer.parseInt(args[2]));
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle("Donator Tier")
                         .setDescription("The user's tier was " + (result ? "updated" : "unchanged"))
                         .build()

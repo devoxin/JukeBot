@@ -57,14 +57,11 @@ public class EventListener extends ListenerAdapter {
             return;
 
         final String parsed = e.getMessage().getRawContent().substring(triggerLength);
-        String command = parsed.split(" ")[0].toLowerCase();
+        String command = parsed.split(" +")[0].toLowerCase();
         final String query = parsed.substring(command.length()).trim();
 
         if (!commands.containsKey(command)) {
             for (Command cmd : commands.values()) {
-                if (cmd.properties() == null)
-                    continue;
-
                 if (Arrays.asList(cmd.properties().aliases()).contains(command)) {
                     command = cmd.getClass().getSimpleName().toLowerCase();
                     break;
@@ -77,7 +74,7 @@ public class EventListener extends ListenerAdapter {
         if (cmd == null || !permissions.canPost(e.getChannel()))
             return;
 
-        if (cmd.properties() != null && cmd.properties().developerOnly() && !permissions.isBotOwner(e.getAuthor().getIdLong()))
+        if (cmd.properties().developerOnly() && !permissions.isBotOwner(e.getAuthor().getIdLong()))
             return;
 
         JukeBot.commandCount++;
@@ -94,9 +91,9 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onReady(ReadyEvent e) {
-        if (JukeBot.BotOwnerID == 0L) {
+        if (JukeBot.botOwnerId == 0L) {
             e.getJDA().asBot().getApplicationInfo().queue(app -> {
-                JukeBot.BotOwnerID = app.getOwner().getIdLong();
+                JukeBot.botOwnerId = app.getOwner().getIdLong();
 
                 if (app.getIdLong() != 249303797371895820L && app.getIdLong() != 314145804807962634L) // JukeBot, JukeBot Patron respectively
                     JukeBot.limitationsEnabled = false;

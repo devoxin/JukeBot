@@ -20,7 +20,7 @@ public class ScSearch implements Command {
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No Search Query Specified")
                     .setDescription("Specify a term to search SoundCloud for")
                     .build()
@@ -29,11 +29,11 @@ public class ScSearch implements Command {
         }
 
         final AudioManager manager = e.getGuild().getAudioManager();
-        final AudioHandler gmanager = JukeBot.getMusicManager(manager);
+        final AudioHandler player = JukeBot.getPlayer(manager);
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No Mutual VoiceChannel")
                     .setDescription("Join my VoiceChannel to use this command.")
                     .build()
@@ -46,7 +46,7 @@ public class ScSearch implements Command {
 
             if (null != connectionStatus) {
                 e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle(connectionStatus.title)
                         .setDescription(connectionStatus.description)
                         .build()
@@ -55,10 +55,10 @@ public class ScSearch implements Command {
             }
 
             manager.openAudioConnection(e.getMember().getVoiceState().getChannel());
-            gmanager.setChannel(e.getChannel());
+            player.setChannel(e.getChannel());
         }
 
-        JukeBot.playerManager.loadItem("scsearch:" + query, new SongResultHandler(e, gmanager, false));
+        JukeBot.playerManager.loadItem("scsearch:" + query, new SongResultHandler(e, player, false));
 
     }
 }

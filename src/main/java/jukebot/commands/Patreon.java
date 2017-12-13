@@ -12,7 +12,7 @@ public class Patreon implements Command {
     public void execute(GuildMessageReceivedEvent e, String query) {
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.EmbedColour)
+                .setColor(JukeBot.embedColour)
                 .setTitle("Become a Patron!", "https://patreon.com/Devoxin")
                 .setDescription("By becoming a patron, you'll have access to extra features within JukeBot!")
                 .addField("Tier 1 ($1)", "-> Donator Role in [JukeBot's Server](https://discord.gg/xvtH2Yn)\n" +

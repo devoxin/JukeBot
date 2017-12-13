@@ -15,11 +15,11 @@ public class PostHere implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
 
-        if (!musicManager.isPlaying()) {
+        if (!player.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -29,7 +29,7 @@ public class PostHere implements Command {
 
         if (!permissions.isElevatedUser(e.getMember(), false)) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to have the DJ role.")
                     .build()
@@ -37,10 +37,10 @@ public class PostHere implements Command {
             return;
         }
 
-        musicManager.setChannel(e.getChannel());
+        player.setChannel(e.getChannel());
 
         e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.EmbedColour)
+                .setColor(JukeBot.embedColour)
                 .setTitle("Output Channel Set")
                 .setDescription("Now Playing messages will now be posted here.")
                 .build()

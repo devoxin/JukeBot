@@ -17,12 +17,12 @@ public class Seek implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler manager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
-        final AudioTrack currentTrack = manager.player.getPlayingTrack();
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
+        final AudioTrack currentTrack = player.player.getPlayingTrack();
 
-        if (!manager.isPlaying()) {
+        if (!player.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -32,7 +32,7 @@ public class Seek implements Command {
 
         if (!permissions.isElevatedUser(e.getMember(), true)) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Permission Error")
                     .setDescription("You need to be a DJ")
                     .build()
@@ -42,7 +42,7 @@ public class Seek implements Command {
 
         if (!currentTrack.isSeekable()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Unable to Seek")
                     .setDescription("The currently playing track doesn't support seeking.")
                     .build()
@@ -52,17 +52,18 @@ public class Seek implements Command {
 
         int forwardTime = Helpers.parseNumber(query, 10) * 1000;
 
-        if (currentTrack.getPosition() + forwardTime >= currentTrack.getDuration())
-            manager.playNext();
-        else {
-            currentTrack.setPosition(currentTrack.getPosition() + forwardTime);
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
-                    .setTitle("Track Seeking")
-                    .setDescription("The current track has been moved to **" + Helpers.fTime(currentTrack.getPosition()) + "**")
-                    .build()
-            ).queue();
+        if (currentTrack.getPosition() + forwardTime >= currentTrack.getDuration()) {
+            player.playNext();
+            return;
         }
+
+        currentTrack.setPosition(currentTrack.getPosition() + forwardTime);
+        e.getChannel().sendMessage(new EmbedBuilder()
+                .setColor(JukeBot.embedColour)
+                .setTitle("Track Seeking")
+                .setDescription("The current track has been moved to **" + Helpers.fTime(currentTrack.getPosition()) + "**")
+                .build()
+        ).queue();
 
     }
 }

@@ -15,11 +15,11 @@ public class Skip implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        final AudioHandler musicManager = JukeBot.getMusicManager(e.getGuild().getAudioManager());
+        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
 
-        if (!musicManager.isPlaying()) {
+        if (!player.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No playback activity")
                     .setDescription("There's nothing playing.")
                     .build()
@@ -29,7 +29,7 @@ public class Skip implements Command {
 
         if (!permissions.checkVoiceChannel(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("No Mutual VoiceChannel")
                     .setDescription("Join my VoiceChannel to use this command.")
                     .build()
@@ -37,16 +37,16 @@ public class Skip implements Command {
             return;
         }
 
-        final int totalVotes = musicManager.voteSkip(e.getAuthor().getIdLong());
+        final int totalVotes = player.voteSkip(e.getAuthor().getIdLong());
 
         final int neededVotes = (int) Math.ceil(e.getGuild().getAudioManager().getConnectedChannel()
                 .getMembers().stream().filter(u -> !u.getUser().isBot()).count() * 0.5);
 
         if (neededVotes - totalVotes <= 0)
-            musicManager.playNext();
+            player.playNext();
         else
             e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Vote Acknowledged")
                     .setDescription((neededVotes - totalVotes) + " votes needed to skip.")
                     .build()

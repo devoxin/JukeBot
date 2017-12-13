@@ -110,7 +110,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             Helpers.disconnectVoice(channel.getGuild().getAudioManager());
             if (permissions.canPost(channel)) {
                 channel.sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.EmbedColour)
+                        .setColor(JukeBot.embedColour)
                         .setTitle("Queue Concluded!")
                         .setDescription("[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
                         .build()
@@ -153,7 +153,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
             current = track;
             channel.sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Now Playing")
                     .setDescription(track.getInfo().title)
                     .build()
@@ -168,7 +168,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
         if (permissions.canPost(channel)) {
             channel.sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Track Playback Failed")
                     .setDescription(exception.getLocalizedMessage())
                     .build()
@@ -184,7 +184,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
         if (permissions.canPost(channel)) {
             channel.sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.EmbedColour)
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Track Stuck")
                     .setDescription("JukeBot has automatically detected a stuck track and will now play the next song in the queue.")
                     .build()
