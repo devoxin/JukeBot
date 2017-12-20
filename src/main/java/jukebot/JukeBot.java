@@ -10,14 +10,11 @@ import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Helpers;
 import jukebot.utils.Log4JConfig;
-import net.dv8tion.jda.bot.sharding.DefaultShardManager;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.managers.AudioManager;
-import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
@@ -29,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JukeBot {
 
     /* Bot-Related*/
-    private static final String VERSION = "6.1.1";
+    private static final String VERSION = "6.1.2";
     public static final long startTime = System.currentTimeMillis();
     private static Logger LOG;
 

@@ -16,7 +16,7 @@ public class ActionWaiter extends ListenerAdapter {
     public void waitForSelection(long userID, Consumer<Integer> selection) {
         if (!selectionMenus.containsKey(userID)) {
             selectionMenus.put(userID, selection);
-            Helpers.createDelay(t -> {
+            Helpers.schedule(t -> {
                 if (selectionMenus.containsKey(userID)) {
                     selectionMenus.remove(userID);
                     selection.accept(0);

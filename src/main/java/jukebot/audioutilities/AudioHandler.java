@@ -15,6 +15,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {
 
@@ -107,7 +108,8 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             player.startTrack(nextTrack, false);
         } else {
             resetPlayer();
-            Helpers.disconnectVoice(channel.getGuild().getAudioManager());
+            Helpers.schedule(ignored -> channel.getGuild().getAudioManager().closeAudioConnection(), 1, TimeUnit.SECONDS);
+
             if (permissions.canPost(channel)) {
                 channel.sendMessage(new EmbedBuilder()
                         .setColor(JukeBot.embedColour)

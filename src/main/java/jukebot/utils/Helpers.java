@@ -1,7 +1,5 @@
 package jukebot.utils;
 
-import net.dv8tion.jda.core.managers.AudioManager;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -59,13 +57,6 @@ public class Helpers {
         }
     }
 
-    public static void disconnectVoice(AudioManager manager) {
-        if (!manager.isConnected() && !manager.isAttemptingToConnect())
-            return;
-
-        executor.execute(manager::closeAudioConnection);
-    }
-
     public static String fTime(long time) {
         int days = (int) TimeUnit.MILLISECONDS.toDays(time);
         time -= 86400000 * days;
@@ -89,7 +80,7 @@ public class Helpers {
         return timeString.toString();
     }
 
-    public static void createDelay(Consumer<Runnable> task, int delay, TimeUnit unit) {
+    public static void schedule(Consumer<Runnable> task, int delay, TimeUnit unit) {
         timer.schedule(() -> task.accept(null), delay, unit);
     }
 

@@ -9,6 +9,7 @@ import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.managers.AudioManager;
 
 import java.util.List;
 
@@ -76,11 +77,11 @@ public class SongResultHandler implements AudioLoadResultHandler {
                     if (selected <= 0 || selected > tracks.size()) {
                         m.delete().queue();
 
-                        if (!musicManager.isPlaying())
-                            Helpers.disconnectVoice(e.getGuild().getAudioManager());
+                        AudioManager manager = e.getGuild().getAudioManager();
 
                         if (!musicManager.isPlaying() && !selected.toString().toLowerCase().contains("sel"))
-                            Helpers.disconnectVoice(e.getGuild().getAudioManager());
+                            manager.closeAudioConnection();
+
                         return;
                     }
 
@@ -160,7 +161,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
         ).queue();
 
         if (!musicManager.isPlaying())
-            Helpers.disconnectVoice(e.getGuild().getAudioManager());
+            e.getGuild().getAudioManager().closeAudioConnection();
     }
 
     @Override
@@ -173,7 +174,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
         ).queue();
 
         if (!musicManager.isPlaying())
-            Helpers.disconnectVoice(e.getGuild().getAudioManager());
+            e.getGuild().getAudioManager().closeAudioConnection();
     }
 
     private boolean canQueueTrack(AudioTrack track, long requesterID) {
