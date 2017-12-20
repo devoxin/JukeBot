@@ -77,7 +77,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                     int s = Helpers.parseNumber(selected, 0);
 
                     if (s <= 0 || s > tracks.size()) {
-                        m.delete().queue(null, e -> System.out.println("Failed to delete selection menu"));
+                        m.delete().queue();
 
                         AudioManager manager = e.getGuild().getAudioManager();
 
