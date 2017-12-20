@@ -11,15 +11,15 @@ import java.util.function.Consumer;
 
 public class ActionWaiter extends ListenerAdapter {
 
-    private HashMap<Long, Consumer<Integer>> selectionMenus = new HashMap<>();
+    private HashMap<Long, Consumer<String>> selectionMenus = new HashMap<>();
 
-    public void waitForSelection(long userID, Consumer<Integer> selection) {
+    public void waitForSelection(long userID, Consumer<String> selection) {
         if (!selectionMenus.containsKey(userID)) {
             selectionMenus.put(userID, selection);
             Helpers.schedule(t -> {
-                if (selectionMenus.containsKey(userID)) {
+                if (selectionMenus.containsValue(selection)) {
                     selectionMenus.remove(userID);
-                    selection.accept(0);
+                    selection.accept("");
                 }
             }, 10, TimeUnit.SECONDS);
         }
@@ -35,7 +35,7 @@ public class ActionWaiter extends ListenerAdapter {
 
         selectionMenus
                 .remove(e.getAuthor().getIdLong())
-                .accept(Helpers.parseNumber(e.getMessage().getContentDisplay(), 0));
+                .accept(e.getMessage().getContentDisplay());
     }
 
 }

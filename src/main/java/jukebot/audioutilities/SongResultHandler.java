@@ -74,18 +74,20 @@ public class SongResultHandler implements AudioLoadResultHandler {
                         .setDescription(selector.toString().trim())
                         .build()
                 ).queue(m -> JukeBot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
-                    if (selected <= 0 || selected > tracks.size()) {
-                        m.delete().queue();
+                    int s = Helpers.parseNumber(selected, 0);
+
+                    if (s <= 0 || s > tracks.size()) {
+                        m.delete().queue(null, e -> System.out.println("Failed to delete selection menu"));
 
                         AudioManager manager = e.getGuild().getAudioManager();
 
-                        if (!musicManager.isPlaying() && !selected.toString().toLowerCase().contains("sel"))
+                        if (!musicManager.isPlaying() && !selected.toLowerCase().contains("sel"))
                             manager.closeAudioConnection();
 
                         return;
                     }
 
-                    AudioTrack track = tracks.get(selected - 1);
+                    AudioTrack track = tracks.get(s - 1);
 
                     if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
                         m.editMessage(new EmbedBuilder()
