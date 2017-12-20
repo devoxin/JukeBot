@@ -35,7 +35,7 @@ public class ActionWaiter extends ListenerAdapter {
 
         selectionMenus
                 .remove(e.getAuthor().getIdLong())
-                .accept(Helpers.parseNumber(e.getMessage().getContent(), 0));
+                .accept(Helpers.parseNumber(e.getMessage().getContentDisplay(), 0));
     }
 
 }

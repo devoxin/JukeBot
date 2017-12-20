@@ -1,5 +1,6 @@
 package jukebot;
 
+import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -9,7 +10,12 @@ import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Helpers;
 import jukebot.utils.Log4JConfig;
+import net.dv8tion.jda.bot.sharding.DefaultShardManager;
+import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.bot.sharding.ShardManager;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDAInfo;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +31,7 @@ public class JukeBot {
     /* Bot-Related*/
     private static final String VERSION = "6.1.1";
     public static final long startTime = System.currentTimeMillis();
-    static Logger LOG;
+    private static Logger LOG;
 
     static String defaultPrefix;
     public static Color embedColour;
@@ -37,8 +43,7 @@ public class JukeBot {
     public static AudioPlayerManager playerManager;
     private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
-    static final SessionReconnectQueue session = new SessionReconnectQueue();
-    private static Shard[] shards;
+    public static ShardManager shardManager;
 
 
     public static void main(final String[] args) throws Exception {
@@ -50,7 +55,6 @@ public class JukeBot {
         playerManager = new DefaultAudioPlayerManager();
         defaultPrefix = Database.getPropertyFromConfig("prefix");
         embedColour = Color.decode(Database.getPropertyFromConfig("color"));
-        shards = new Shard[Integer.parseInt(Database.getPropertyFromConfig("maxshards"))];
 
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
@@ -62,10 +66,13 @@ public class JukeBot {
 
         printBanner();
 
-        for (int i = 0; i < shards.length; i++) {
-            shards[i] = new Shard(i, shards.length);
-            Thread.sleep(5500);
-        }
+        shardManager = new DefaultShardManagerBuilder()
+                .setToken(Database.getPropertyFromConfig("token"))
+                .setShardsTotal(Integer.parseInt(Database.getPropertyFromConfig("maxshards")))
+                .addEventListeners(new EventListener(), waiter)
+                .setAudioSendFactory(new NativeAudioSendFactory())
+                .setGame(Game.of(Game.GameType.LISTENING, defaultPrefix + "help | jukebot.xyz"))
+                .build();
     }
 
 
@@ -78,10 +85,6 @@ public class JukeBot {
                 " | SQLite " + SQLiteJDBCLoader.getVersion() +
                 " | " + System.getProperty("sun.arch.data.model") + "-bit JVM\n"
         );
-    }
-
-    public static Shard[] getShards() {
-        return shards;
     }
 
     public static ConcurrentHashMap<Long, AudioHandler> getPlayers() {

@@ -50,13 +50,13 @@ public class EventListener extends ListenerAdapter {
             return;
 
         final String guildPrefix = Database.getPrefix(e.getGuild().getIdLong());
-        final boolean mentioned = e.getMessage().getRawContent().startsWith(e.getGuild().getSelfMember().getAsMention());
+        final boolean mentioned = e.getMessage().getContentRaw().startsWith(e.getGuild().getSelfMember().getAsMention());
         final int triggerLength = mentioned ? e.getGuild().getSelfMember().getAsMention().length() + 1 : guildPrefix.length();
 
-        if (!e.getMessage().getContent().startsWith(guildPrefix) && !mentioned)
+        if (!e.getMessage().getContentDisplay().startsWith(guildPrefix) && !mentioned)
             return;
 
-        final String parsed = e.getMessage().getRawContent().substring(triggerLength);
+        final String parsed = e.getMessage().getContentRaw().substring(triggerLength);
         String command = parsed.split(" +")[0].toLowerCase();
         final String query = parsed.substring(command.length()).trim();
 
