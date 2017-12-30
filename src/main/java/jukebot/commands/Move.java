@@ -29,7 +29,7 @@ public class Move implements Command {
             return;
         }
 
-        if (query.length() == 0) {
+        if (query.length() < 2) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Specify song position")
@@ -42,7 +42,7 @@ public class Move implements Command {
         final int target = Helpers.parseNumber(query.split(" ")[0], 0);
         final int dest = Helpers.parseNumber(query.split(" ")[1], 0);
 
-        if (target < 1 || dest < 1 || target == dest || target > player.getQueue().size()) {
+        if (target < 1 || dest < 1 || target == dest || target > player.getQueue().size() || dest > player.getQueue().size()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Invalid position(s) specified")
