@@ -9,6 +9,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.text.DecimalFormat;
+import java.util.Collections;
 
 @CommandProperties(developerOnly = true, description = "Provides an insight into bot stats", category = CommandProperties.category.MISC)
 public class Debug implements Command {
@@ -38,7 +39,8 @@ public class Debug implements Command {
                 .append((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)
                 .append("MB (").append(rPercent).append("%)\n\n");
 
-        for (JDA s : JukeBot.shardManager.getShards()) {
+        for (int i = 0; i < JukeBot.shardManager.getShardsTotal(); i++) {
+            final JDA s = JukeBot.shardManager.getShardById(i);
             toSend.append(s.getShardInfo().getShardId() == e.getJDA().getShardInfo().getShardId() ? "*[" : " [")
                     .append(Helpers.padLeft(" ", Integer.toString(s.getShardInfo().getShardId() + 1), 2))
                     .append("] ")
