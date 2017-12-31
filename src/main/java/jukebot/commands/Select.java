@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-@CommandProperties(description = "Search YouTube and select from up to 5 tracks", aliases = {"sel"}, category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Search YouTube and select from up to 5 tracks", aliases = {"sel", "s"}, category = CommandProperties.category.CONTROLS)
 public class Select implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {

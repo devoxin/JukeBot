@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:3.4.0_317'
+    compile 'net.dv8tion:JDA:3.4.0_319'
     compile 'com.sedmelluq:lavaplayer:1.2.45'
     compile 'com.sedmelluq:jda-nas:1.0.6'
     compile 'org.xerial:sqlite-jdbc:3.21.0.1'
