@@ -28,7 +28,7 @@ public class JukeBot {
     /* Bot-Related*/
     private static final String VERSION = "6.1.2";
     public static final long startTime = System.currentTimeMillis();
-    private static Logger LOG;
+    public static Logger LOG;
 
     static String defaultPrefix;
     public static Color embedColour;
@@ -51,7 +51,14 @@ public class JukeBot {
 
         playerManager = new DefaultAudioPlayerManager();
         defaultPrefix = Database.getPropertyFromConfig("prefix");
-        embedColour = Color.decode(Database.getPropertyFromConfig("color"));
+
+        String colour = Database.getPropertyFromConfig("color");
+        if (colour.equalsIgnoreCase("")) {
+            LOG.error("Missing property 'color' in the database.");
+            return;
+        }
+
+        embedColour = Color.decode(colour);
 
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
@@ -65,7 +72,7 @@ public class JukeBot {
 
         shardManager = new DefaultShardManagerBuilder()
                 .setToken(Database.getPropertyFromConfig("token"))
-                .setShardsTotal(Integer.parseInt(Database.getPropertyFromConfig("maxshards")))
+                .setShardsTotal(-1)
                 .addEventListeners(new EventListener(), waiter)
                 .setAudioSendFactory(new NativeAudioSendFactory())
                 .setGame(Game.of(Game.GameType.LISTENING, defaultPrefix + "help | jukebot.xyz"))
