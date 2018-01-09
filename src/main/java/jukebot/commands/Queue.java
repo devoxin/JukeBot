@@ -62,8 +62,6 @@ public class Queue implements Command {
                 .setColor(JukeBot.embedColour)
                 .setTitle("Queue (" + queue.size() + " songs, " + queueDuration + ")")
                 .setDescription(fQueue.toString().trim())
-                .addField("\u200B", "**Repeat:** " + player.getStringifiedRepeat() +
-                        " **/ Shuffle:** " + (player.isShuffleEnabled() ? "On" : "Off"), true)
                 .setFooter("Viewing page " + (page) + "/" + (maxPages), null)
                 .build()
         ).queue();

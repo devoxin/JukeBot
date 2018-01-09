@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import java.text.DecimalFormat;
 import java.util.Collections;
 
-@CommandProperties(developerOnly = true, description = "Provides an insight into bot stats", category = CommandProperties.category.MISC)
+@CommandProperties(description = "Provides an insight into bot stats", category = CommandProperties.category.MISC)
 public class Debug implements Command {
 
     private final DecimalFormat dpFormatter = new DecimalFormat("0.00");
