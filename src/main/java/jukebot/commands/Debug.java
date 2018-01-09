@@ -21,34 +21,33 @@ public class Debug implements Command {
         final StringBuilder toSend = new StringBuilder();
         final long rUsedRaw = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
         final String rPercent = dpFormatter.format((double) rUsedRaw / Runtime.getRuntime().totalMemory() * 100);
-        final long streams = JukeBot.getPlayers().values().stream().filter(AudioHandler::isPlaying).count();
-        final long servers = JukeBot.shardManager.getShards()
-                .stream()
-                .map(s -> s.getGuilds().size())
-                .reduce(0, (a, b) -> a + b);
 
-        toSend.append("S: ")
-                .append(servers)
-                .append(" | V: ")
-                .append(streams)
-                .append(" | T: ")
+        final long players = JukeBot.getPlayers().values().stream().filter(AudioHandler::isPlaying).count();
+        final long servers = JukeBot.shardManager.getShards().stream().mapToInt(s -> s.getGuilds().size()).sum();
+        final long users = JukeBot.shardManager.getShards().stream().mapToInt(s -> s.getUsers().size()).sum();
+
+        toSend.append("Threads: ")
                 .append(Thread.activeCount()) // muh special thread leaks
                 .append(" | ")
                 .append(Helpers.fTime(System.currentTimeMillis() - JukeBot.startTime))
                 .append(" | ")
                 .append((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)
-                .append("MB (").append(rPercent).append("%)\n\n");
+                .append("MB (")
+                .append(rPercent)
+                .append("%)\n\nServers: ")
+                .append(servers)
+                .append("\nUsers  : ")
+                .append(users)
+                .append("\nPlayers: ")
+                .append(players)
+                .append("\n\n");
 
         for (int i = 0; i < JukeBot.shardManager.getShardsTotal(); i++) {
             final JDA s = JukeBot.shardManager.getShardById(i);
-            toSend.append(s.getShardInfo().getShardId() == e.getJDA().getShardInfo().getShardId() ? "*[" : " [")
+            toSend.append(s.getShardInfo().getShardId() == e.getJDA().getShardInfo().getShardId() ? "•[" : " [")
                     .append(Helpers.padLeft(" ", Integer.toString(s.getShardInfo().getShardId() + 1), 2))
                     .append("] ")
                     .append(s.getStatus().toString())
-                    .append(" G: ")
-                    .append(s.getGuilds().size())
-                    .append(" U: ")
-                    .append(s.getUsers().size())
                     .append(" L: ")
                     .append(s.getPing())
                     .append("ms\n");
