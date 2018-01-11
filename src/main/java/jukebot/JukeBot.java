@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JukeBot {
 
     /* Bot-Related*/
-    private static final String VERSION = "6.1.2";
+    private static final String VERSION = "6.1.3";
     public static final long startTime = System.currentTimeMillis();
     static Logger LOG;
 
