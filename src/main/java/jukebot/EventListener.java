@@ -26,7 +26,7 @@ public class EventListener extends ListenerAdapter {
 
         for (Class klass : discoveredCommands) {
             try {
-                Command cmd = (Command) klass.newInstance();
+                final Command cmd = (Command) klass.newInstance();
 
                 if (!cmd.properties().enabled())
                     continue;
@@ -65,7 +65,6 @@ public class EventListener extends ListenerAdapter {
                 }
             }
         }
-
 
         if (cmd == null || cmd.properties().developerOnly() && !permissions.isBotOwner(e.getAuthor().getIdLong()))
             return;
