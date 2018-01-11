@@ -65,12 +65,11 @@ public class EventListener extends ListenerAdapter {
         if (cmd == null) {
             for (Command c : commands.values()) {
                 if (Arrays.asList(c.properties().aliases()).contains(command)) {
-                    cmd = commands.get(c.getClass().getSimpleName().toLowerCase());
+                    cmd = commands.get(c.name().toLowerCase());
                     break;
                 }
             }
         }
-
 
         if (cmd == null || cmd.properties().developerOnly() && !permissions.isBotOwner(e.getAuthor().getIdLong()))
             return;

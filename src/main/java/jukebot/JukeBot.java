@@ -28,13 +28,13 @@ public class JukeBot {
     /* Bot-Related*/
     private static final String VERSION = "6.1.2";
     public static final long startTime = System.currentTimeMillis();
-    public static Logger LOG;
+    private static Logger LOG;
 
     static String defaultPrefix;
     public static Color embedColour;
     public static Long botOwnerId = 0L;
     public static boolean limitationsEnabled = true;
-    static int commandCount = 0;
+    public static int commandCount = 0;
 
     /* JDA-Related */
     public static AudioPlayerManager playerManager;

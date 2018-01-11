@@ -25,19 +25,20 @@ public class Debug implements Command {
         final long servers = JukeBot.shardManager.getShards().stream().mapToInt(s -> s.getGuilds().size()).sum();
         final long users = JukeBot.shardManager.getShards().stream().mapToInt(s -> s.getUsers().size()).sum();
 
-        toSend.append("Threads: ")
-                .append(Thread.activeCount()) // muh special thread leaks
-                .append(" | ")
-                .append(Helpers.fTime(System.currentTimeMillis() - JukeBot.startTime))
+        toSend.append(Helpers.fTime(System.currentTimeMillis() - JukeBot.startTime))
                 .append(" | ")
                 .append((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)
                 .append("MB (")
                 .append(rPercent)
-                .append("%)\n\nServers: ")
+                .append("%)\n\nThreads : ")
+                .append(Thread.activeCount())
+                .append("\nCommands: ")
+                .append(JukeBot.commandCount)
+                .append("\nServers : ")
                 .append(servers)
-                .append("\nUsers  : ")
+                .append("\nUsers   : ")
                 .append(users)
-                .append("\nPlayers: ")
+                .append("\nPlayers : ")
                 .append(players)
                 .append("\n\n");
 
