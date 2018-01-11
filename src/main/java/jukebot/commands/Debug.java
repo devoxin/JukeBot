@@ -9,7 +9,6 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.text.DecimalFormat;
-import java.util.Collections;
 
 @CommandProperties(description = "Provides an insight into bot stats", category = CommandProperties.category.MISC)
 public class Debug implements Command {

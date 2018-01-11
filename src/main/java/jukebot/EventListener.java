@@ -10,8 +10,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 public class EventListener extends ListenerAdapter {
 
