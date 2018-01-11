@@ -1,15 +1,17 @@
 package jukebot;
 
-import jukebot.commands.*;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.reflections.Reflections;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 
 public class EventListener extends ListenerAdapter {
 
@@ -17,30 +19,23 @@ public class EventListener extends ListenerAdapter {
     public static HashMap<String, Command> commands = new HashMap<>();
 
     EventListener() {
-        commands.put("play", new Play());
-        commands.put("skip", new Skip());
-        commands.put("queue", new Queue());
-        commands.put("forceskip", new Forceskip());
-        commands.put("invite", new Invite());
-        commands.put("help", new Help());
-        commands.put("togglepause", new TogglePause());
-        commands.put("stop", new Stop());
-        commands.put("shuffle", new Shuffle());
-        commands.put("now", new Now());
-        commands.put("seek", new Seek());
-        commands.put("prefix", new Prefix());
-        commands.put("volume", new Volume());
-        commands.put("donators", new Donators());
-        commands.put("save", new Save());
-        //commands.put("repeat", new Repeat());
-        commands.put("select", new Select());
-        commands.put("patreon", new Patreon());
-        commands.put("debug", new Debug());
-        commands.put("unqueue", new Unqueue());
-        commands.put("move", new Move());
-        commands.put("scsearch", new ScSearch());
-        commands.put("posthere", new PostHere());
-        commands.put("clearqueue", new ClearQueue());
+        final Reflections loader = new Reflections("jukebot.commands");
+
+        Set<Class<?>> discoveredCommands = loader.getTypesAnnotatedWith(CommandProperties.class);
+        JukeBot.LOG.info("Discovered " + discoveredCommands.size() + " commands");
+
+        for (Class klass : discoveredCommands) {
+            try {
+                Command cmd = (Command) klass.newInstance();
+
+                if (!cmd.properties().enabled())
+                    continue;
+
+                commands.put(cmd.name().toLowerCase(), cmd);
+            } catch (InstantiationException | IllegalAccessException e) {
+                JukeBot.LOG.error("An error occurred while creating a new instance of command '" + klass.getName() + "'");
+            }
+        }
     }
 
     @Override
@@ -70,6 +65,7 @@ public class EventListener extends ListenerAdapter {
                 }
             }
         }
+
 
         if (cmd == null || cmd.properties().developerOnly() && !permissions.isBotOwner(e.getAuthor().getIdLong()))
             return;

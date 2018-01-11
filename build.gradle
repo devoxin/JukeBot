@@ -18,4 +18,5 @@ dependencies {
     compile 'com.zaxxer:HikariCP:2.7.4'
     compile 'org.apache.logging.log4j:log4j-core:2.10.0'
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.10.0'
+    compile 'org.reflections:reflections:0.9.11'
 }

@@ -9,9 +9,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface CommandProperties {
     String[] aliases() default {};
-    boolean developerOnly() default false;
     String description() default "No description available";
     category category() default category.MISC;
+    boolean developerOnly() default false;
+    boolean enabled() default true;
 
     enum category {
         CONTROLS, MEDIA, MISC

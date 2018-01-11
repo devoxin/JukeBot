@@ -28,7 +28,7 @@ public class JukeBot {
     /* Bot-Related*/
     private static final String VERSION = "6.1.2";
     public static final long startTime = System.currentTimeMillis();
-    private static Logger LOG;
+    static Logger LOG;
 
     static String defaultPrefix;
     public static Color embedColour;
