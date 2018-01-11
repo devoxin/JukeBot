@@ -10,6 +10,8 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class EventListener extends ListenerAdapter {
 
@@ -46,7 +48,7 @@ public class EventListener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
 
-        if (!e.getGuild().isAvailable() || e.getAuthor().isBot())
+        if (!e.getGuild().isAvailable() || e.getAuthor().isBot() || !permissions.canPost(e.getChannel()))
             return;
 
         final String guildPrefix = Database.getPrefix(e.getGuild().getIdLong());
@@ -57,24 +59,22 @@ public class EventListener extends ListenerAdapter {
             return;
 
         final String parsed = e.getMessage().getContentRaw().substring(triggerLength);
-        String command = parsed.split(" +")[0].toLowerCase();
+        final String command = parsed.split(" +")[0].toLowerCase();
         final String query = parsed.substring(command.length()).trim();
 
-        if (!commands.containsKey(command)) {
-            for (Command cmd : commands.values()) {
-                if (Arrays.asList(cmd.properties().aliases()).contains(command)) {
-                    command = cmd.getClass().getSimpleName().toLowerCase();
+        Command cmd = commands.get(command);
+
+        if (cmd == null) {
+            for (Command c : commands.values()) {
+                if (Arrays.asList(c.properties().aliases()).contains(command)) {
+                    cmd = commands.get(c.getClass().getSimpleName().toLowerCase());
                     break;
                 }
             }
         }
 
-        Command cmd = commands.get(command);
 
-        if (cmd == null || !permissions.canPost(e.getChannel()))
-            return;
-
-        if (cmd.properties().developerOnly() && !permissions.isBotOwner(e.getAuthor().getIdLong()))
+        if (cmd == null || cmd.properties().developerOnly() && !permissions.isBotOwner(e.getAuthor().getIdLong()))
             return;
 
         JukeBot.commandCount++;
