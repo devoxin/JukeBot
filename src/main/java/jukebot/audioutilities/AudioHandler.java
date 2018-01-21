@@ -202,10 +202,13 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public boolean canProvide() {
         lastFrame = player.provide();
-        if (lastFrame == null)
-            trackPacketLoss++;
-        else
-            trackPackets++;
+
+        if (!player.isPaused()) {
+            if (lastFrame == null || lastFrame.data.length == 0)
+                trackPacketLoss++;
+            else
+                trackPackets++;
+        }
 
         return lastFrame != null;
     }
