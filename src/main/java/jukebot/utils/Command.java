@@ -7,9 +7,7 @@ public interface Command {
     void execute(final GuildMessageReceivedEvent e, final String query);
 
     default CommandProperties properties() {
-        return this.getClass().isAnnotationPresent(CommandProperties.class)
-                ? this.getClass().getAnnotation(CommandProperties.class)
-                : null;
+        return this.getClass().getAnnotation(CommandProperties.class);
     }
 
     default String name() {
