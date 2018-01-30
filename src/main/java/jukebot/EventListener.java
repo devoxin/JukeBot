@@ -2,6 +2,7 @@ package jukebot;
 
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
+import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
@@ -12,6 +13,7 @@ import org.reflections.Reflections;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class EventListener extends ListenerAdapter {
 
@@ -69,7 +71,6 @@ public class EventListener extends ListenerAdapter {
         if (cmd == null || cmd.properties().developerOnly() && !permissions.isBotOwner(e.getAuthor().getIdLong()))
             return;
 
-        JukeBot.commandCount++;
         cmd.execute(e, query);
 
     }
@@ -88,7 +89,9 @@ public class EventListener extends ListenerAdapter {
                 JukeBot.botOwnerId = app.getOwner().getIdLong();
 
                 if (app.getIdLong() != 249303797371895820L && app.getIdLong() != 314145804807962634L) // JukeBot, JukeBot Patron respectively
-                    JukeBot.limitationsEnabled = false;
+                    JukeBot.isSelfHosted = true;
+                else
+                    Helpers.monitorThread.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS);
             });
         }
     }

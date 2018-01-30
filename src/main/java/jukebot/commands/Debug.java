@@ -32,8 +32,6 @@ public class Debug implements Command {
                 .append(rPercent)
                 .append("%)\n\nThreads : ")
                 .append(Thread.activeCount())
-                .append("\nCommands: ")
-                .append(JukeBot.commandCount)
                 .append("\nServers : ")
                 .append(servers)
                 .append("\nUsers   : ")

@@ -1,17 +1,25 @@
 package jukebot.utils;
 
+
+import com.patreon.resources.Pledge;
+import jukebot.Database;
+import jukebot.JukeBot;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class Helpers {
     private static ExecutorService executor = Executors.newSingleThreadExecutor(r -> new Thread(r, "JukeBot-Helper"));
     private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "JukeBot-Timer"));
+    public static ScheduledExecutorService monitorThread = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "JukeBot-Pledge-Monitor"));
 
     public static String padLeft(String character, String text, int length) {
         if (text.length() == length)
@@ -85,17 +93,39 @@ public class Helpers {
     }
 
     public static String readFile(String path) {
-        final StringBuilder output = new StringBuilder();
-
         try(final FileReader file = new FileReader(path);
             final BufferedReader reader = new BufferedReader(file)
         ) {
-            reader.lines().forEach(line -> output.append(line).append("\n"));
+            return reader.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
-            output.append(e.getMessage());
+            e.printStackTrace();
+            return "Unable to read banner.txt!";
         }
+    }
 
-        return output.toString();
+    public static void getPatreonPledges(Consumer<List<Pledge>> callback) {
+        executor.execute(() -> {
+            try {
+                callback.accept(JukeBot.patreon.fetchAllPledges("750822"));
+            } catch (IOException e) {
+                callback.accept(null);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public static void monitorPledges() {
+        JukeBot.LOG.info("Checking pledges...");
+        getPatreonPledges(pledges -> {
+            if (pledges == null)
+                return;
+
+            Database.getDonatorIDs().forEach(id -> {
+                if (pledges.stream().noneMatch(p -> p.getPatron().getSocialConnections().getDiscord() != null
+                        && Long.parseLong(p.getPatron().getSocialConnections().getDiscord().getUser_id()) == id))
+                    Database.setTier(id, 0);
+            });
+        });
     }
 
 }

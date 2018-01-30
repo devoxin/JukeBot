@@ -22,10 +22,9 @@ public class Patreon implements Command {
                 .addField("Tier 2 ($2)", "-> Donator Role in [JukeBot's Server](https://discord.gg/xvtH2Yn)\n" +
                         "-> Removed song duration limit\n" +
                         "-> Removed playlist importing limit", false)
-                .addField("Tier 3 ($3)", "-> All the benefits of Tier 2 plus...\n" +
-                        "-> Coming soon", false)
+                //.addField("Tier 3 ($3)", "-> All the benefits of Tier 2 plus...\n" +
+                //        "-> Coming soon", false)
                 .build()
         ).queue();
-
     }
 }

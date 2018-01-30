@@ -1,5 +1,6 @@
 package jukebot;
 
+import com.patreon.PatreonAPI;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -26,20 +27,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JukeBot {
 
     /* Bot-Related*/
-    private static final String VERSION = "6.1.3";
+    private static final String VERSION = "6.1.4";
     public static final long startTime = System.currentTimeMillis();
-    static Logger LOG;
+    public static Logger LOG;
 
     static String defaultPrefix;
     public static Color embedColour;
     public static Long botOwnerId = 0L;
-    public static boolean limitationsEnabled = true;
-    public static int commandCount = 0;
+    public static boolean isSelfHosted = false;
 
-    /* JDA-Related */
-    public static AudioPlayerManager playerManager;
+    /* Operation-Related */
+    public static PatreonAPI patreon;
     private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
+    public static AudioPlayerManager playerManager;
     public static ShardManager shardManager;
 
 
@@ -51,6 +52,7 @@ public class JukeBot {
 
         playerManager = new DefaultAudioPlayerManager();
         defaultPrefix = Database.getPropertyFromConfig("prefix");
+        patreon = new PatreonAPI(Database.getPropertyFromConfig("patreon"));
 
         String colour = Database.getPropertyFromConfig("color");
         if (colour.equalsIgnoreCase("")) {

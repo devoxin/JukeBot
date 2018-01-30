@@ -17,10 +17,11 @@ public class ActionWaiter extends ListenerAdapter {
         if (!selectionMenus.containsKey(userID)) {
             selectionMenus.put(userID, selection);
             Helpers.schedule(t -> {
-                if (selectionMenus.containsValue(selection)) {
-                    selectionMenus.remove(userID);
-                    selection.accept("");
-                }
+                if (selectionMenus.containsValue(selection))
+                    selectionMenus
+                            .remove(userID)
+                            .accept("");
+
             }, 10, TimeUnit.SECONDS);
         }
     }

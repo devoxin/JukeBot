@@ -3,6 +3,7 @@ package jukebot;
 import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Database {
@@ -124,6 +125,24 @@ public class Database {
 
             while (results.next())
                 donators.put(results.getLong(1), results.getInt(2));
+
+        } catch (SQLException unused) {}
+
+        return donators;
+
+    }
+
+    public static ArrayList<Long> getDonatorIDs() {
+
+        ArrayList<Long> donators = new ArrayList<>();
+
+        try (Connection connection = getConnection()) {
+
+            Statement state = connection.createStatement();
+            ResultSet results = state.executeQuery("SELECT * FROM donators");
+
+            while (results.next())
+                donators.add(results.getLong(1));
 
         } catch (SQLException unused) {}
 
