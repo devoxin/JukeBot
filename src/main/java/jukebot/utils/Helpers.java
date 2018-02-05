@@ -122,8 +122,10 @@ public class Helpers {
 
             Database.getDonatorIDs().forEach(id -> {
                 if (pledges.stream().noneMatch(p -> p.getPatron().getSocialConnections().getDiscord() != null
-                        && Long.parseLong(p.getPatron().getSocialConnections().getDiscord().getUser_id()) == id))
+                        && Long.parseLong(p.getPatron().getSocialConnections().getDiscord().getUser_id()) == id)) {
                     Database.setTier(id, 0);
+                    JukeBot.LOG.info("Removed " + id + " from donators");
+                }
             });
         });
     }
