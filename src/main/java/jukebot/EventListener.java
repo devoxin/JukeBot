@@ -1,5 +1,6 @@
 package jukebot;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Helpers;
@@ -88,10 +89,16 @@ public class EventListener extends ListenerAdapter {
             e.getJDA().asBot().getApplicationInfo().queue(app -> {
                 JukeBot.botOwnerId = app.getOwner().getIdLong();
 
-                if (app.getIdLong() != 249303797371895820L && app.getIdLong() != 314145804807962634L) // JukeBot, JukeBot Patron respectively
+                if (app.getIdLong() != 249303797371895820L && app.getIdLong() != 314145804807962634L) { // JukeBot, JukeBot Patron respectively
                     JukeBot.isSelfHosted = true;
-                else
+                    commands.remove("patreon");
+                } else {
                     Helpers.monitorThread.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS);
+                }
+
+                if (app.getIdLong() == 314145804807962634L || JukeBot.isSelfHosted) {
+                    JukeBot.playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
+                }
             });
         }
     }
