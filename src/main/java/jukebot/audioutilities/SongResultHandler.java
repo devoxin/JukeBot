@@ -12,8 +12,12 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SongResultHandler implements AudioLoadResultHandler {
+
+    private final Pattern command = Pattern.compile("(p|play|sel|select)\\s.+");
 
     private final Permissions permissions = new Permissions();
     private final GuildMessageReceivedEvent e;
@@ -81,7 +85,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                         AudioManager manager = e.getGuild().getAudioManager();
 
-                        if (!musicManager.isPlaying() && !selected.toLowerCase().contains("sel"))
+                        if (!musicManager.isPlaying() && !command.matcher(selected.toLowerCase()).find())
                             manager.closeAudioConnection();
 
                         return;
