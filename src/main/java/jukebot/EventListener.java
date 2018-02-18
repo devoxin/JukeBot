@@ -55,7 +55,7 @@ public class EventListener extends ListenerAdapter {
             return;
 
         final String parsed = e.getMessage().getContentRaw().substring(triggerLength);
-        final String command = parsed.split(" +")[0].toLowerCase();
+        final String command = parsed.split("\\s+")[0].toLowerCase();
         final String query = parsed.substring(command.length()).trim();
 
         Command cmd = commands.get(command);
