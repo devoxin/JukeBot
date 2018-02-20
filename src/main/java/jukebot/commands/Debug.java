@@ -22,8 +22,8 @@ public class Debug implements Command {
         final String rPercent = dpFormatter.format((double) rUsedRaw / Runtime.getRuntime().totalMemory() * 100);
 
         final long players = JukeBot.getPlayers().values().stream().filter(AudioHandler::isPlaying).count();
-        final long servers = JukeBot.shardManager.getShards().stream().mapToInt(s -> s.getGuilds().size()).sum();
-        final long users = JukeBot.shardManager.getShards().stream().mapToInt(s -> s.getUsers().size()).sum();
+        final long servers = JukeBot.shardManager.getGuildCache().size();
+        final long users = JukeBot.shardManager.getUserCache().size()
 
         toSend.append(Helpers.fTime(System.currentTimeMillis() - JukeBot.startTime))
                 .append(" | ")
