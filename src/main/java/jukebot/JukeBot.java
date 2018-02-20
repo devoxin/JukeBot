@@ -10,15 +10,13 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Helpers;
-import jukebot.utils.Log4JConfig;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.managers.AudioManager;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
@@ -27,9 +25,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.1.4";
+    public static final String VERSION = "6.1.5";
     public static final long startTime = System.currentTimeMillis();
-    public static Logger LOG;
+    public static Logger LOG = LoggerFactory.getLogger("JukeBot");;
 
     static String defaultPrefix;
     public static Color embedColour;
@@ -47,20 +45,11 @@ public class JukeBot {
     public static void main(final String[] args) throws Exception {
         Thread.currentThread().setName("JukeBot-Main");
 
-        ConfigurationFactory.setConfigurationFactory(new Log4JConfig());
-        LOG = LogManager.getLogger("JukeBot");
-
         playerManager = new DefaultAudioPlayerManager();
         defaultPrefix = Database.getPropertyFromConfig("prefix");
         patreon = new PatreonAPI(Database.getPropertyFromConfig("patreon"));
 
-        String colour = Database.getPropertyFromConfig("color");
-        if (colour.equalsIgnoreCase("")) {
-            LOG.error("Missing property 'color' in the database.");
-            return;
-        }
-
-        embedColour = Color.decode(colour);
+        embedColour = Color.decode(Database.getPropertyFromConfig("color", "0x1E90FF"));
 
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);

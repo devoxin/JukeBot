@@ -151,6 +151,10 @@ public class Database {
     }
 
     static String getPropertyFromConfig(String prop) {
+        return getPropertyFromConfig(prop, null);
+    }
+
+    static String getPropertyFromConfig(String prop, String def) {
 
         try (Connection connection = getConnection()) {
 
@@ -159,10 +163,10 @@ public class Database {
 
             ResultSet property = state.executeQuery();
 
-            return property.next() ? property.getString("content") : "";
+            return property.next() ? property.getString("content") : def;
 
         } catch (SQLException e) {
-            return "";
+            return def;
         }
 
     }

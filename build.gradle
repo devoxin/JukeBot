@@ -1,9 +1,23 @@
 group 'Testing'
 version '1.0-SNAPSHOT'
 
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+    }
+}
+
 apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = 1.8
+mainClassName = 'jukebot.JukeBot'
 
 repositories {
     mavenCentral()
@@ -16,8 +30,9 @@ dependencies {
     compile 'com.sedmelluq:jda-nas:1.0.6'
     compile 'org.xerial:sqlite-jdbc:3.21.0.1'
     compile 'com.zaxxer:HikariCP:2.7.7'
-    compile 'org.apache.logging.log4j:log4j-core:2.10.0'
-    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.10.0'
     compile 'org.reflections:reflections:0.9.11'
     compile 'com.patreon:patreon:0.2.1'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'ch.qos.logback:logback-core:1.2.3'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
 }
