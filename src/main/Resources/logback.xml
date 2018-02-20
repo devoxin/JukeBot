@@ -24,4 +24,6 @@
 
     <logger name="org.reflections" level="error"/>
     <logger name="ch.qos" level="warn"/>
+    <logger name="net.dv8tion" level="info"/>
+    <logger name="com.zaxxer" level="info"/>
 </configuration>
