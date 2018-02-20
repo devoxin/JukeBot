@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 public class Help implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
-
         switch (query) {
             case "1":
                 e.getChannel().sendMessage(CreateHelpEmbed(

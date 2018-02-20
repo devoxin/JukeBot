@@ -24,26 +24,21 @@ public class EventListener extends ListenerAdapter {
     EventListener() {
         final Reflections loader = new Reflections("jukebot.commands");
 
-        Set<Class<?>> discoveredCommands = loader.getTypesAnnotatedWith(CommandProperties.class);
-        JukeBot.LOG.info("Discovered " + discoveredCommands.size() + " commands");
-
-        for (Class klass : discoveredCommands) {
+        loader.getTypesAnnotatedWith(CommandProperties.class).forEach(command -> {
             try {
-                final Command cmd = (Command) klass.newInstance();
+                final Command cmd = (Command) command.newInstance();
 
-                if (!cmd.properties().enabled())
-                    continue;
+                if (cmd.properties().enabled())
+                    commands.put(cmd.name().toLowerCase(), cmd);
 
-                commands.put(cmd.name().toLowerCase(), cmd);
             } catch (InstantiationException | IllegalAccessException e) {
-                JukeBot.LOG.error("An error occurred while creating a new instance of command '" + klass.getName() + "'");
+                JukeBot.LOG.error("An error occurred while creating a new instance of command '" + command.getName() + "'");
             }
-        }
+        });
     }
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-
         if (!e.getGuild().isAvailable() || e.getAuthor().isBot() || !permissions.canPost(e.getChannel()))
             return;
 
@@ -60,20 +55,16 @@ public class EventListener extends ListenerAdapter {
 
         Command cmd = commands.get(command);
 
-        if (cmd == null) {
-            for (Command c : commands.values()) {
-                if (Arrays.asList(c.properties().aliases()).contains(command)) {
-                    cmd = commands.get(c.name().toLowerCase());
-                    break;
-                }
-            }
-        }
+        if (cmd == null)
+            cmd = commands.values().stream()
+                    .filter(c -> Arrays.asList(c.properties().aliases()).contains(command))
+                    .findFirst()
+                    .orElse(null);
 
         if (cmd == null || cmd.properties().developerOnly() && !permissions.isBotOwner(e.getAuthor().getIdLong()))
             return;
 
         cmd.execute(e, query);
-
     }
 
     @Override
@@ -96,9 +87,8 @@ public class EventListener extends ListenerAdapter {
                     Helpers.monitorThread.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS);
                 }
 
-                if (app.getIdLong() == 314145804807962634L || JukeBot.isSelfHosted) {
+                if (app.getIdLong() == 314145804807962634L || JukeBot.isSelfHosted)
                     JukeBot.playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
-                }
             });
         }
     }

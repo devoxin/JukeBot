@@ -46,9 +46,9 @@ public class JukeBot {
         Thread.currentThread().setName("JukeBot-Main");
 
         playerManager = new DefaultAudioPlayerManager();
-        defaultPrefix = Database.getPropertyFromConfig("prefix");
         patreon = new PatreonAPI(Database.getPropertyFromConfig("patreon"));
 
+        defaultPrefix = Database.getPropertyFromConfig("prefix");
         embedColour = Color.decode(Database.getPropertyFromConfig("color", "0x1E90FF"));
 
         playerManager.setPlayerCleanupThreshold(30000);

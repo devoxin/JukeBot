@@ -18,10 +18,7 @@ public class ActionWaiter extends ListenerAdapter {
             selectionMenus.put(userID, selection);
             Helpers.schedule(t -> {
                 if (selectionMenus.containsValue(selection))
-                    selectionMenus
-                            .remove(userID)
-                            .accept("");
-
+                    selectionMenus.remove(userID).accept("");
             }, 10, TimeUnit.SECONDS);
         }
     }
