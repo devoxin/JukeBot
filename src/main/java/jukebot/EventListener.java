@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.reflections.Reflections;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class EventListener extends ListenerAdapter {
 
     private final Permissions permissions = new Permissions();
-    public static HashMap<String, Command> commands = new HashMap<>();
+    public static ArrayList<Command> commands = new ArrayList<>();
 
     EventListener() {
         final Reflections loader = new Reflections("jukebot.commands");
@@ -29,7 +30,7 @@ public class EventListener extends ListenerAdapter {
                 final Command cmd = (Command) command.newInstance();
 
                 if (cmd.properties().enabled())
-                    commands.put(cmd.name().toLowerCase(), cmd);
+                    commands.add(cmd);
 
             } catch (InstantiationException | IllegalAccessException e) {
                 JukeBot.LOG.error("An error occurred while creating a new instance of command '" + command.getName() + "'");
@@ -53,11 +54,8 @@ public class EventListener extends ListenerAdapter {
         final String command = parsed.split("\\s+")[0].toLowerCase();
         final String query = parsed.substring(command.length()).trim();
 
-        Command cmd = commands.get(command);
-
-        if (cmd == null)
-            cmd = commands.values().stream()
-                    .filter(c -> Arrays.asList(c.properties().aliases()).contains(command))
+        final Command cmd = commands.stream()
+                    .filter(c -> c.name().equalsIgnoreCase(command) || Arrays.asList(c.properties().aliases()).contains(command))
                     .findFirst()
                     .orElse(null);
 

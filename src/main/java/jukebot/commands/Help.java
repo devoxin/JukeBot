@@ -70,8 +70,7 @@ public class Help implements Command {
     }
 
     private Stream<Command> filterCommands(Predicate<Command> filter) {
-        return EventListener.commands.values()
-                .stream()
+        return EventListener.commands.stream()
                 .filter(filter)
                 .sorted(Comparator.comparing(Command::name));
     }
