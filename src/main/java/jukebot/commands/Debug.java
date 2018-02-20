@@ -23,7 +23,7 @@ public class Debug implements Command {
 
         final long players = JukeBot.getPlayers().values().stream().filter(AudioHandler::isPlaying).count();
         final long servers = JukeBot.shardManager.getGuildCache().size();
-        final long users = JukeBot.shardManager.getUserCache().size()
+        final long users = JukeBot.shardManager.getUserCache().size();
 
         toSend.append(Helpers.fTime(System.currentTimeMillis() - JukeBot.startTime))
                 .append(" | ")
