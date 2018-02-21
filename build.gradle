@@ -35,3 +35,9 @@ dependencies {
     compile 'org.apache.logging.log4j:log4j-core:2.10.0'
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.10.0'
 }
+
+shadowJar {
+    from("src/main/Resources") {
+        include "log4j2.xml"
+    }
+}
