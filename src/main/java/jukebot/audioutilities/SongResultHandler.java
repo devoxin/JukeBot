@@ -113,6 +113,11 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 }));
 
             } else {
+                if (playlist.getTracks().isEmpty()) {
+                    noMatches();
+                    return;
+                } // patch soundcloud searches not calling noMatches
+
                 AudioTrack track = playlist.getTracks().get(0);
 
                 if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
