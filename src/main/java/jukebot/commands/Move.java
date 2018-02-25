@@ -29,7 +29,9 @@ public class Move implements Command {
             return;
         }
 
-        if (query.length() < 2) {
+        final String[] args = query.split("\\s+");
+
+        if (args.length < 2) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Specify song position")
@@ -39,8 +41,8 @@ public class Move implements Command {
             return;
         }
 
-        final int target = Helpers.parseNumber(query.split("\\s+")[0], 0);
-        final int dest = Helpers.parseNumber(query.split("\\s+")[1], 0);
+        final int target = Helpers.parseNumber(args[0], 0);
+        final int dest = Helpers.parseNumber(args[1], 0);
 
         if (target < 1 || dest < 1 || target == dest || target > player.getQueue().size() || dest > player.getQueue().size()) {
             e.getChannel().sendMessage(new EmbedBuilder()
