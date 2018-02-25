@@ -8,9 +8,12 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+import java.util.regex.Pattern;
+
 @CommandProperties(description = "Change the current server prefix", category = CommandProperties.category.MISC)
 public class Prefix implements Command {
 
+    private final Pattern mentionRegex = Pattern.compile("<@!?\\d{17,20}>");
     private final Permissions permissions = new Permissions();
 
     public void execute(GuildMessageReceivedEvent e, String query) {
@@ -35,7 +38,18 @@ public class Prefix implements Command {
                 return;
             }
 
-            final String prefix = query.split(" ")[0].trim();
+            final String prefix = query.split("\\s+")[0].trim();
+
+            if (mentionRegex.matcher(prefix).matches()) {
+                e.getChannel().sendMessage(new EmbedBuilder()
+                        .setColor(JukeBot.embedColour)
+                        .setTitle("Invalid Prefix")
+                        .setDescription("You cannot set a mention as the prefix.")
+                        .build()
+                ).queue();
+                return;
+            }
+
             final boolean updatedPrefix = Database.setPrefix(e.getGuild().getIdLong(), prefix);
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)

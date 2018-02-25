@@ -48,6 +48,9 @@ public class EventListener extends ListenerAdapter {
         if (!e.getMessage().getContentDisplay().startsWith(guildPrefix) && !mentioned)
             return;
 
+        if (mentioned && !e.getMessage().getContentRaw().contains(" "))
+            return;
+
         final String parsed = e.getMessage().getContentRaw().substring(triggerLength);
         final String command = parsed.trim().split("\\s+")[0].toLowerCase();
         final String query = parsed.substring(command.length()).trim();
