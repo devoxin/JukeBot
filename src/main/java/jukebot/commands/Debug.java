@@ -9,6 +9,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.text.DecimalFormat;
+import java.util.Optional;
 
 @CommandProperties(description = "Provides an insight into bot stats", category = CommandProperties.category.MISC)
 public class Debug implements Command {
@@ -20,38 +21,31 @@ public class Debug implements Command {
         final StringBuilder toSend = new StringBuilder();
         final long rUsedRaw = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
         final String rPercent = dpFormatter.format((double) rUsedRaw / Runtime.getRuntime().totalMemory() * 100);
+        final String usedMB = dpFormatter.format((double) rUsedRaw / 1048576);
 
         final long players = JukeBot.getPlayers().values().stream().filter(AudioHandler::isPlaying).count();
         final long servers = JukeBot.shardManager.getGuildCache().size();
         final long users = JukeBot.shardManager.getUserCache().size();
 
-        toSend.append(Helpers.fTime(System.currentTimeMillis() - JukeBot.startTime))
-                .append(" | ")
-                .append((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1048576)
-                .append("MB (")
-                .append(rPercent)
-                .append("%)\n\nThreads : ")
-                .append(Thread.activeCount())
-                .append("\nServers : ")
-                .append(servers)
-                .append("\nUsers   : ")
-                .append(users)
-                .append("\nPlayers : ")
-                .append(players)
-                .append("\n\n");
+        final int shards = JukeBot.shardManager.getShardsTotal();
+        final long shardsOnline = JukeBot.shardManager.getShards().stream().filter(s -> s.getStatus() == JDA.Status.CONNECTED).count();
+        final long averageShardLatency = JukeBot.shardManager.getShards()
+                .stream()
+                .map(JDA::getPing)
+                .reduce((a, b) -> a + b).get() / shards;
 
-        for (int i = 0; i < JukeBot.shardManager.getShardsTotal(); i++) {
-            final JDA s = JukeBot.shardManager.getShardById(i);
-            toSend.append(s.getShardInfo().getShardId() == e.getJDA().getShardInfo().getShardId() ? "•[" : " [")
-                    .append(Helpers.padLeft(" ", Integer.toString(s.getShardInfo().getShardId() + 1), 2))
-                    .append("] ")
-                    .append(s.getStatus().toString())
-                    .append(" L: ")
-                    .append(s.getPing())
-                    .append("ms\n");
-        }
+        toSend.append("```prolog\n")
+                .append("Uptime            : ").append(Helpers.fTime(System.currentTimeMillis() - JukeBot.startTime)).append("\n")
+                .append("RAM Usage         : ").append(usedMB).append("MB (").append(rPercent).append("%)\n")
+                .append("Threads           : ").append(Thread.activeCount()).append("\n\n")
+                .append("Guilds            : ").append(servers).append("\n")
+                .append("Users             : ").append(users).append("\n")
+                .append("Players           : ").append(players).append("\n\n")
+                .append("Shards Online     : ").append(shardsOnline).append("/").append(shards).append("\n")
+                .append("Avg. Shard Latency: ").append(averageShardLatency).append("ms\n")
+                .append("```");
 
-        e.getChannel().sendMessage("```prolog\n" + toSend.toString().trim() + "\n```").queue();
+        e.getChannel().sendMessage(toSend.toString()).queue();
 
     }
 
