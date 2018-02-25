@@ -40,7 +40,10 @@ public class Skip implements Command {
         final int totalVotes = player.voteSkip(e.getAuthor().getIdLong());
 
         final int neededVotes = (int) Math.ceil(e.getGuild().getAudioManager().getConnectedChannel()
-                .getMembers().stream().filter(u -> !u.getUser().isBot()).count() * 0.5);
+                .getMembers()
+                .stream()
+                .filter(u -> !u.getUser().isBot())
+                .count() * 0.5);
 
         if (neededVotes - totalVotes <= 0)
             player.playNext();
