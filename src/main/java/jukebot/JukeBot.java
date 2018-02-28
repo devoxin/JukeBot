@@ -61,7 +61,6 @@ public class JukeBot {
         playerManager.registerSourceManager(yt);
         AudioSourceManagers.registerRemoteSources(playerManager);
 
-
         printBanner();
 
         shardManager = new DefaultShardManagerBuilder()
