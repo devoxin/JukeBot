@@ -63,6 +63,10 @@ public class Play implements Command {
         if (userQuery.startsWith("http")) {
             if (userQuery.toLowerCase().contains("pornhub") && !e.getChannel().isNSFW()) {
                 e.getChannel().sendMessage("Pornhub tracks can only be loaded from NSFW channels").queue();
+
+                if (!player.isPlaying())
+                    e.getGuild().getAudioManager().closeAudioConnection();
+                
                 return;
             }
             JukeBot.playerManager.loadItem(userQuery, new SongResultHandler(e, player, false));
