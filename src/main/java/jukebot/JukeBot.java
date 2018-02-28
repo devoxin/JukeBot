@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.AudioHandler;
+import jukebot.audioutilities.PornHubAudioSourceManager;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -54,10 +55,12 @@ public class JukeBot {
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
         playerManager.getConfiguration().setOpusEncodingQuality(9);
+        playerManager.registerSourceManager(new PornHubAudioSourceManager());
         YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
         yt.setPlaylistPageCount(Integer.MAX_VALUE);
         playerManager.registerSourceManager(yt);
         AudioSourceManagers.registerRemoteSources(playerManager);
+
 
         printBanner();
 
