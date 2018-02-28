@@ -60,10 +60,15 @@ public class Play implements Command {
 
         final String userQuery = query.replaceAll("[<>]", "");
 
-        if (userQuery.startsWith("http"))
+        if (userQuery.startsWith("http")) {
+            if (userQuery.toLowerCase().contains("pornhub")) {
+                e.getChannel().sendMessage("Pornhub tracks can only be loaded from NSFW channels").queue();
+                return;
+            }
             JukeBot.playerManager.loadItem(userQuery, new SongResultHandler(e, player, false));
-        else
-            JukeBot.playerManager.loadItem( "ytsearch:" + userQuery, new SongResultHandler(e, player, false));
+        } else {
+            JukeBot.playerManager.loadItem("ytsearch:" + userQuery, new SongResultHandler(e, player, false));
+        }
 
     }
 }
