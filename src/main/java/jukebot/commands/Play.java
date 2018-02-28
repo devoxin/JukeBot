@@ -61,7 +61,7 @@ public class Play implements Command {
         final String userQuery = query.replaceAll("[<>]", "");
 
         if (userQuery.startsWith("http")) {
-            if (userQuery.toLowerCase().contains("pornhub")) {
+            if (userQuery.toLowerCase().contains("pornhub") && !e.getChannel().isNSFW()) {
                 e.getChannel().sendMessage("Pornhub tracks can only be loaded from NSFW channels").queue();
                 return;
             }
