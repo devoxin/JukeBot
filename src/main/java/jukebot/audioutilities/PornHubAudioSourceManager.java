@@ -33,7 +33,7 @@ import static com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.
 public class PornHubAudioSourceManager implements AudioSourceManager, HttpConfigurable {
 
     static final String CHARSET = "UTF-8";
-    private static final String VIDEO_REGEX = "^https?://www.pornhub.com/view_video.php\\?viewkey=ph[a-zA-Z0-9]{13}$";
+    private static final String VIDEO_REGEX = "^https?://www.pornhub.com/view_video.php\\?viewkey=[a-zA-Z0-9]{10,15}$";
     private static final Pattern VIDEO_INFO_REGEX = Pattern.compile("var flashvars_\\d{8,9} = (\\{.+})");
     private final HttpInterfaceManager httpInterfaceManager;
 

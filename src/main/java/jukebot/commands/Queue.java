@@ -62,7 +62,7 @@ public class Queue implements Command {
                 .setColor(JukeBot.embedColour)
                 .setTitle("Queue (" + queue.size() + " songs, " + queueDuration + ")")
                 .setDescription(fQueue.toString().trim())
-                .setFooter("Viewing page " + (page) + "/" + (maxPages), null)
+                .setFooter("Page " + (page) + "/" + (maxPages), null)
                 .build()
         ).queue();
 

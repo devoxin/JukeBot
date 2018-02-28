@@ -28,6 +28,8 @@ public class Now implements Command {
             return;
         }
 
+        String playbackSettings = "Shuffle: " + (player.isShuffleEnabled() ? "On" : "Off") + " | Repeat: Off";
+
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(JukeBot.embedColour)
                 .setTitle("Now Playing")
@@ -35,8 +37,7 @@ public class Now implements Command {
                         "(" + Helpers.fTime(current.getPosition()) + "/" + (current.getInfo().isStream
                         ? "LIVE)"
                         : Helpers.fTime(current.getDuration()) + ") - <@" + current.getUserData() + ">"))
-                .addField("Shuffle | Repeat","`" + (player.isShuffleEnabled() ? "On" : "Off") + " | Off`", true)
-                .setFooter("Packets Dropped: " + player.trackPacketLoss + " | Sent: " + player.trackPackets, null)
+                .setFooter("Packets D: " + player.trackPacketLoss + " S: " + player.trackPackets + " | " + playbackSettings, null)
                 .build()
         ).queue();
 
