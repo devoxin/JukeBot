@@ -88,6 +88,10 @@ public class JukeBot {
         return players;
     }
 
+    public static boolean hasPlayer(final long guildId) {
+        return players.containsKey(guildId);
+    }
+
     public static AudioHandler getPlayer(final AudioManager manager) {
 
         AudioHandler handler = players.computeIfAbsent(manager.getGuild().getIdLong(), v -> new AudioHandler(playerManager.createPlayer()));

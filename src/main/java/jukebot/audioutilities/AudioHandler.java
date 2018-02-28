@@ -12,6 +12,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.managers.AudioManager;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -29,7 +30,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private final LinkedList<Long> skipVotes = new LinkedList<>();
     private TextChannel channel;
 
-    private REPEATMODE repeat = REPEATMODE.NONE;
+    private repeatMode repeat = repeatMode.NONE;
     private boolean shuffle = false;
 
     private AudioTrack current = null;
@@ -57,6 +58,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         return false;
     }
 
+    public void stop() {
+        queue.clear();
+        playNext();
+    }
+
     public boolean isPlaying() {
         return player.getPlayingTrack() != null;
     }
@@ -77,7 +83,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         return shuffle = !shuffle;
     }
 
-    public void setRepeat(REPEATMODE mode) {
+    public void setRepeat(repeatMode mode) {
         repeat = mode;
     }
 
@@ -94,39 +100,40 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public void playNext() {
         AudioTrack nextTrack = null;
 
-        if (repeat == REPEATMODE.SINGLE && current != null) {
+        if (repeat == repeatMode.SINGLE && current != null) {
             nextTrack = current.makeClone();
             nextTrack.setUserData(current.getUserData());
         } if (!queue.isEmpty()) {
-            if (shuffle)
-                nextTrack = queue.remove(selector.nextInt(queue.size()));
-            else
-                nextTrack = queue.poll();
+            nextTrack = shuffle ? queue.remove(selector.nextInt(queue.size())) : queue.poll();
         }
 
         if (nextTrack != null) {
             player.startTrack(nextTrack, false);
         } else {
             resetPlayer();
-            Helpers.schedule(ignored -> channel.getGuild().getAudioManager().closeAudioConnection(), 1, TimeUnit.SECONDS);
 
-            if (permissions.canPost(channel)) {
-                channel.sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.embedColour)
-                        .setTitle("Queue Concluded!")
-                        .setDescription("[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
-                        .build()
-                ).queue();
+            final AudioManager audioManager = channel.getGuild().getAudioManager();
+
+            if (audioManager.isConnected() || audioManager.isAttemptingToConnect()) {
+                Helpers.schedule(() -> channel.getGuild().getAudioManager().closeAudioConnection(), 1, TimeUnit.SECONDS);
+
+                if (permissions.canSendTo(channel)) {
+                    channel.sendMessage(new EmbedBuilder()
+                            .setColor(JukeBot.embedColour)
+                            .setTitle("Queue Concluded!")
+                            .setDescription("[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
+                            .build()
+                    ).queue();
+                }
             }
         }
     }
 
     private void resetPlayer() {
-        repeat = REPEATMODE.NONE;
+        repeat = repeatMode.NONE;
         shuffle = false;
         current = null;
         player.stopTrack();
-        player.setVolume(100);
     }
 
     /*
@@ -139,7 +146,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         trackPacketLoss = 0;
         trackPackets = 0;
 
-        if (repeat == REPEATMODE.ALL)
+        if (repeat == repeatMode.ALL)
             addToQueue(track.makeClone(), (long) track.getUserData());
 
         if (endReason.mayStartNext)
@@ -149,7 +156,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         player.setPaused(false);
-        if (permissions.canPost(channel)) {
+        if (permissions.canSendTo(channel)) {
             if (current != null && current.getIdentifier().equals(track.getIdentifier()))
                 return;
 
@@ -165,10 +172,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
-        if (repeat != REPEATMODE.NONE)
-            repeat = REPEATMODE.NONE;
+        if (repeat != repeatMode.NONE)
+            repeat = repeatMode.NONE;
 
-        if (permissions.canPost(channel)) {
+        if (permissions.canSendTo(channel)) {
             channel.sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Track Playback Failed")
@@ -181,10 +188,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
-        if (repeat != REPEATMODE.NONE)
-            repeat = REPEATMODE.NONE;
+        if (repeat != repeatMode.NONE)
+            repeat = repeatMode.NONE;
 
-        if (permissions.canPost(channel)) {
+        if (permissions.canSendTo(channel)) {
             channel.sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Track Stuck")
@@ -223,7 +230,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         return true;
     }
 
-    public enum REPEATMODE {
+    public enum repeatMode {
         SINGLE, ALL, NONE
     }
 

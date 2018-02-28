@@ -58,6 +58,9 @@ public class Helpers {
     }
 
     public static int parseNumber(String num, int def) {
+        if (num == null)
+            return def;
+
         try {
             return Integer.parseInt(num);
         } catch(Exception e) {
@@ -88,8 +91,8 @@ public class Helpers {
         return timeString.toString();
     }
 
-    public static void schedule(Consumer<Runnable> task, int delay, TimeUnit unit) {
-        timer.schedule(() -> task.accept(null), delay, unit);
+    public static void schedule(Runnable task, int delay, TimeUnit unit) {
+        timer.schedule(task, delay, unit);
     }
 
     public static String readFile(String path) {

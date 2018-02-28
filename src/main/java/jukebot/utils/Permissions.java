@@ -19,30 +19,30 @@ public class Permissions {
         return m.getRoles().stream().anyMatch(r -> "dj".equalsIgnoreCase(r.getName()));
     }
 
-    public boolean isElevatedUser(Member m, boolean AllowLone) {
-        if (AllowLone)
-            return isALoner(m) || m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
-
-        return m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
+    private boolean isAlone(Member m) {
+        return (m.getVoiceState().inVoiceChannel() && m.getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count() == 1);
     }
 
-    private boolean isALoner(Member m) {
-        return (m.getVoiceState().inVoiceChannel() && m.getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count() == 1);
+    public boolean isElevatedUser(Member m, boolean allowLone) {
+        if (allowLone)
+            return isAlone(m) || m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
+
+        return m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
     }
 
     public boolean isTrackRequester(AudioTrack track, long requester) {
         return (long) track.getUserData() == requester;
     }
 
-    public int getTierLevel(long userID) {
+    public int getTier(long userID) {
         return isBotOwner(userID) ? 3 : Database.getTier(userID);
     }
 
-    public boolean canPost(TextChannel channel) {
+    public boolean canSendTo(TextChannel channel) {
         return channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS);
     }
 
-    public ConnectionError canConnect(VoiceChannel channel) {
+    public ConnectionError canConnectTo(VoiceChannel channel) {
         if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK))
             return new ConnectionError("Invalid Channel Permissions", "Your VoiceChannel doesn't allow me to Connect/Speak\n\nPlease grant me the 'Connect' and 'Speak' permissions or move to another channel.");
 
@@ -52,13 +52,21 @@ public class Permissions {
         return null;
     }
 
-    public boolean checkVoiceChannel(Member m) {
+    public boolean ensureMutualVoiceChannel(Member m) {
+        final AudioManager manager = m.getGuild().getAudioManager();
+
+        return m.getVoiceState().getChannel() != null
+                && manager.getConnectedChannel() != null
+                && manager.getConnectedChannel().getIdLong() == m.getVoiceState().getChannel().getIdLong();
+    }
+
+    public boolean checkVoiceConnection(Member m) {
         final AudioManager manager = m.getGuild().getAudioManager();
 
         return m.getVoiceState().getChannel() != null &&
                 (manager.getConnectedChannel() == null ||
                         manager.getConnectedChannel().getIdLong() == m.getVoiceState().getChannel().getIdLong());
-
     }
 
 }
+

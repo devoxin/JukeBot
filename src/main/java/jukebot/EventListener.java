@@ -7,6 +7,7 @@ import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.reflections.Reflections;
@@ -38,7 +39,7 @@ public class EventListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        if (!e.getGuild().isAvailable() || e.getAuthor().isBot() || !permissions.canPost(e.getChannel()))
+        if (!e.getGuild().isAvailable() || e.getAuthor().isBot() || !permissions.canSendTo(e.getChannel()))
             return;
 
         final String guildPrefix = Database.getPrefix(e.getGuild().getIdLong());
@@ -81,7 +82,7 @@ public class EventListener extends ListenerAdapter {
 
                 if (app.getIdLong() != 249303797371895820L && app.getIdLong() != 314145804807962634L) { // JukeBot, JukeBot Patron respectively
                     JukeBot.isSelfHosted = true;
-                    commands.remove("patreon");
+                    //commands.remove("patreon");
                 } else {
                     Helpers.monitorThread.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS);
                 }
@@ -92,4 +93,12 @@ public class EventListener extends ListenerAdapter {
         }
     }
 
+    @Override
+    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {
+        if (event.getMember().getUser().getIdLong() == event.getJDA().getSelfUser().getIdLong()) {
+            if (JukeBot.hasPlayer(event.getGuild().getIdLong())) {
+                JukeBot.getPlayer(event.getGuild().getAudioManager()).stop();
+            }
+        }
+    }
 }

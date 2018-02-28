@@ -27,7 +27,7 @@ public class Skip implements Command {
             return;
         }
 
-        if (!permissions.checkVoiceChannel(e.getMember())) {
+        if (!permissions.ensureMutualVoiceChannel(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("No Mutual VoiceChannel")

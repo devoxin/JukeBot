@@ -16,9 +16,9 @@ public class ActionWaiter extends ListenerAdapter {
     public void waitForSelection(long userID, Consumer<String> selection) {
         if (!selectionMenus.containsKey(userID)) {
             selectionMenus.put(userID, selection);
-            Helpers.schedule(t -> {
+            Helpers.schedule(() -> {
                 if (selectionMenus.containsValue(selection))
-                    selectionMenus.remove(userID).accept("");
+                    selectionMenus.remove(userID).accept(null);
             }, 10, TimeUnit.SECONDS);
         }
     }

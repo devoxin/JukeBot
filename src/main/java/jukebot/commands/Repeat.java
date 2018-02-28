@@ -27,7 +27,7 @@ public class Repeat implements Command {
             return;
         }
 
-        if (!permissions.checkVoiceChannel(e.getMember())) {
+        if (!permissions.ensureMutualVoiceChannel(e.getMember())) {
                 e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                         .setTitle("No Mutual VoiceChannel")
@@ -51,15 +51,15 @@ public class Repeat implements Command {
             switch (query.toLowerCase()) {
                 case "a":
                 case "all":
-                    player.setRepeat(AudioHandler.REPEATMODE.ALL);
+                    player.setRepeat(AudioHandler.repeatMode.ALL);
                     break;
                 case "s":
                 case "single":
-                    player.setRepeat(AudioHandler.REPEATMODE.SINGLE);
+                    player.setRepeat(AudioHandler.repeatMode.SINGLE);
                     break;
                 case "n":
                 case "none":
-                    player.setRepeat(AudioHandler.REPEATMODE.NONE);
+                    player.setRepeat(AudioHandler.repeatMode.NONE);
                     break;
                 default:
                     e.getChannel().sendMessage(new EmbedBuilder()

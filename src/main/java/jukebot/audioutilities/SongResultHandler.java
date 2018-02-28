@@ -84,7 +84,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                         AudioManager manager = e.getGuild().getAudioManager();
 
-                        if (!musicManager.isPlaying() && !command.matcher(selected.toLowerCase()).find())
+                        if (!musicManager.isPlaying() && (selected == null || !command.matcher(selected.toLowerCase()).find()))
                             manager.closeAudioConnection();
 
                         return;
@@ -189,7 +189,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     private boolean canQueueTrack(AudioTrack track, long requesterID) {
         final int trackLength = (int) Math.ceil(track.getDuration() / 1000);
-        final int requesterTier = permissions.getTierLevel(requesterID);
+        final int requesterTier = permissions.getTier(requesterID);
 
         /* 7500 = ~ 2 hours
          * 18500 = ~ 5 hours
@@ -205,7 +205,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
     }
 
     private int getPlaylistLimit(long requesterID) {
-        final int requesterTier = permissions.getTierLevel(requesterID);
+        final int requesterTier = permissions.getTier(requesterID);
 
         if (JukeBot.isSelfHosted || requesterTier >= 2) // Everything else
             return -1;

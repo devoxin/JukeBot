@@ -31,7 +31,7 @@ public class Play implements Command {
         final AudioManager manager = e.getGuild().getAudioManager();
         final AudioHandler player = JukeBot.getPlayer(manager);
 
-        if (!permissions.checkVoiceChannel(e.getMember())) {
+        if (!permissions.checkVoiceConnection(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("No Mutual VoiceChannel")
@@ -42,7 +42,7 @@ public class Play implements Command {
         }
 
         if (!manager.isAttemptingToConnect() && !manager.isConnected()) {
-            ConnectionError connectionStatus = permissions.canConnect(e.getMember().getVoiceState().getChannel());
+            ConnectionError connectionStatus = permissions.canConnectTo(e.getMember().getVoiceState().getChannel());
 
             if (null != connectionStatus) {
                 e.getChannel().sendMessage(new EmbedBuilder()
@@ -66,7 +66,7 @@ public class Play implements Command {
 
                 if (!player.isPlaying())
                     e.getGuild().getAudioManager().closeAudioConnection();
-                
+
                 return;
             }
             JukeBot.playerManager.loadItem(userQuery, new SongResultHandler(e, player, false));

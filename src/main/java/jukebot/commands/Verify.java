@@ -44,7 +44,7 @@ public class Verify implements Command {
             else if (pledgeAmount > 0 && pledgeAmount >= 2)
                 tier = 2;
 
-            e.getChannel().sendMessage("Thanks for donating! **Your pledge: $" + pledgeAmount + "**\n" +
+            e.getChannel().sendMessage("Thanks for donating! **Your pledge: $" + String.format("%1$,.2f", pledgeAmount) + "**\n" +
                     "It looks like you qualify for **Tier " + tier + "**!\n\n" +
                     "Your reward has been applied. If for some reason you encounter issues, please join https://discord.gg/xvtH2Yn").queue();
 
