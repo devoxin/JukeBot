@@ -34,7 +34,7 @@ public class PornHubAudioSourceManager implements AudioSourceManager, HttpConfig
 
     static final String CHARSET = "UTF-8";
     private static final String VIDEO_REGEX = "^https?://www.pornhub.com/view_video.php\\?viewkey=[a-zA-Z0-9]{10,15}$";
-    private static final Pattern VIDEO_INFO_REGEX = Pattern.compile("var flashvars_\\d{8,9} = (\\{.+})");
+    private static final Pattern VIDEO_INFO_REGEX = Pattern.compile("var flashvars_\\d{7,9} = (\\{.+})");
     private final HttpInterfaceManager httpInterfaceManager;
 
     private static final Pattern videoUrlPattern = Pattern.compile(VIDEO_REGEX);
@@ -54,6 +54,8 @@ public class PornHubAudioSourceManager implements AudioSourceManager, HttpConfig
 
     @Override
     public AudioItem loadItem(DefaultAudioPlayerManager manager, AudioReference reference) {
+        System.out.println(reference.identifier);
+        System.out.println(videoUrlPattern.matcher(reference.identifier).matches());
         if (!videoUrlPattern.matcher(reference.identifier).matches())
             return null;
 
