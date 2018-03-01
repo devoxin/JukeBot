@@ -23,12 +23,14 @@ class PornHubAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: Po
 
     @Throws(Exception::class)
     override fun process(localExecutor: LocalAudioTrackExecutor) {
-        sourceManager.httpInterface.use { httpInterface -> processStatic(localExecutor, httpInterface) }
+        sourceManager.httpInterface.use { httpInterface ->
+            processStatic(localExecutor, httpInterface)
+        }
     }
 
     @Throws(Exception::class)
     private fun processStatic(localExecutor: LocalAudioTrackExecutor, httpInterface: HttpInterface) {
-        PersistentHttpStream(httpInterface, URI(trackInfo.identifier), java.lang.Long.MAX_VALUE).use { stream ->
+        PersistentHttpStream(httpInterface, URI(trackInfo.identifier), Long.MAX_VALUE).use { stream ->
             processDelegate(MpegAudioTrack(trackInfo, stream), localExecutor)
         }
     }
