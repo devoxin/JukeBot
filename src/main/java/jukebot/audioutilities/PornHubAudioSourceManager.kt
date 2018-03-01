@@ -86,6 +86,9 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
             httpInterface.use { httpInterface ->
                 val info = getVideoInfo(httpInterface, reference.identifier) ?: return AudioReference.NO_TRACK
 
+                if (info.get("video_unavailable").text() == "true")
+                    return AudioReference.NO_TRACK
+
                 val playbackURL = info.get("mediaDefinitions").values().stream()
                         .filter { format -> format.get("videoUrl").text().isNotEmpty() }
                         .findFirst()
@@ -106,9 +109,9 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
     private fun getVideoInfo(httpInterface: HttpInterface, videoURL: String): JsonBrowser? {
         httpInterface.execute(HttpGet(videoURL)).use { response ->
             val statusCode = response.statusLine.statusCode
-            if (statusCode != 200) {
+
+            if (statusCode != 200)
                 throw IOException("Invalid status code for video page response: " + statusCode)
-            }
 
             val html = IOUtils.toString(response.entity.content, Charset.forName(CHARSET))
             val match = VIDEO_INFO_REGEX.matcher(html)
