@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.ExceptionTools
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.FAULT
 import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpConfigurable
@@ -24,8 +25,6 @@ import java.nio.charset.Charset
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.regex.Pattern
-
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.FAULT
 
 
 class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
