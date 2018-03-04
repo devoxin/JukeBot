@@ -103,4 +103,8 @@ public class JukeBot {
 
     }
 
+    public static void recreatePatreonApi(String key) {
+        patreon = new PatreonAPI(key);
+    }
+
 }

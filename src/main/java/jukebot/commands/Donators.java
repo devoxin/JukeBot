@@ -37,9 +37,15 @@ public class Donators implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Donators")
-                    .setDescription("<getall|get|set> [id] [tier]")
+                    .setDescription("<getall|get|set|reload> [id] [tier]")
                     .build()
             ).queue();
+            return;
+        }
+
+        if (args[0].equalsIgnoreCase("reload")) {
+            JukeBot.recreatePatreonApi(args[1]);
+            e.getChannel().sendMessage("Done").queue();
             return;
         }
 
