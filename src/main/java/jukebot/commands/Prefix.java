@@ -60,8 +60,4 @@ public class Prefix implements Command {
         }
 
     }
-
-    private String escapeText(String text) {
-        return text.replace("`", "`");
-    }
 }
