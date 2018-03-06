@@ -55,12 +55,21 @@ public class Play implements Command {
             }
 
             manager.openAudioConnection(e.getMember().getVoiceState().getChannel());
-            player.setChannel(e.getChannel());
+            player.setChannel(e.getChannel().getIdLong());
         }
 
         final String userQuery = query.replaceAll("[<>]", "");
 
         if (userQuery.startsWith("http")) {
+            if (userQuery.toLowerCase().contains("/you/likes")) {
+                e.getChannel().sendMessage(new EmbedBuilder()
+                        .setColor(JukeBot.embedColour)
+                        .setTitle("Cannot load likes from SoundCloud")
+                        .setDescription("JukeBot doesn't implement oauth and as a result\ncannot access your liked tracks when referenced as `you`")
+                        .build()
+                ).queue();
+                return;
+            }
             if (userQuery.toLowerCase().contains("pornhub") && !e.getChannel().isNSFW()) {
                 e.getChannel().sendMessage("Pornhub tracks can only be loaded from NSFW channels").queue();
 

@@ -37,7 +37,7 @@ public class PostHere implements Command {
             return;
         }
 
-        player.setChannel(e.getChannel());
+        player.setChannel(e.getChannel().getIdLong());
 
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(JukeBot.embedColour)

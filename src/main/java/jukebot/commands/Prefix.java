@@ -38,7 +38,7 @@ public class Prefix implements Command {
                 return;
             }
 
-            final String prefix = query.split("\\s+")[0].trim();
+            final String prefix = query.trim(); //query.split("\\s+")[0].trim();
 
             if (mentionRegex.matcher(prefix).matches()) {
                 e.getChannel().sendMessage(new EmbedBuilder()
@@ -54,10 +54,14 @@ public class Prefix implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Server Prefix")
-                    .setDescription(updatedPrefix ? "Prefix updated to " + prefix : "Prefix update failed")
+                    .setDescription(updatedPrefix ? "Prefix updated to `" + prefix + "`": "Prefix update failed")
                     .build()
             ).queue();
         }
 
+    }
+
+    private String escapeText(String text) {
+        return text.replace("`", "`");
     }
 }

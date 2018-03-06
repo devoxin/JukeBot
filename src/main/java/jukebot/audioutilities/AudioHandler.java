@@ -28,7 +28,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     private final LinkedList<AudioTrack> queue = new LinkedList<>();
     private final LinkedList<Long> skipVotes = new LinkedList<>();
-    private TextChannel channel;
+    private Long channelId;
 
     private repeatMode repeat = repeatMode.NONE;
     private boolean shuffle = false;
@@ -93,8 +93,8 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         return skipVotes.size();
     }
 
-    public void setChannel(TextChannel channel) {
-        this.channel = channel;
+    public void setChannel(Long channelId) {
+        this.channelId = channelId;
     }
 
     public void playNext() {
@@ -112,10 +112,13 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         } else {
             resetPlayer();
 
+            final TextChannel channel = JukeBot.shardManager.getTextChannelById(channelId);
+            if (channel == null) return;
+
             final AudioManager audioManager = channel.getGuild().getAudioManager();
 
             if (audioManager.isConnected() || audioManager.isAttemptingToConnect()) {
-                Helpers.schedule(() -> channel.getGuild().getAudioManager().closeAudioConnection(), 1, TimeUnit.SECONDS);
+                Helpers.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS);
 
                 if (permissions.canSendTo(channel)) {
                     channel.sendMessage(new EmbedBuilder()
@@ -156,7 +159,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         player.setPaused(false);
-        if (permissions.canSendTo(channel)) {
+
+        final TextChannel channel = JukeBot.shardManager.getTextChannelById(channelId);
+
+        if (channel != null && permissions.canSendTo(channel)) {
             if (current != null && current.getIdentifier().equals(track.getIdentifier()))
                 return;
 
@@ -175,7 +181,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         if (repeat != repeatMode.NONE)
             repeat = repeatMode.NONE;
 
-        if (permissions.canSendTo(channel)) {
+        final TextChannel channel = JukeBot.shardManager.getTextChannelById(channelId);
+
+        if (channel != null && permissions.canSendTo(channel)) {
             channel.sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Track Playback Failed")
@@ -191,7 +199,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         if (repeat != repeatMode.NONE)
             repeat = repeatMode.NONE;
 
-        if (permissions.canSendTo(channel)) {
+        final TextChannel channel = JukeBot.shardManager.getTextChannelById(channelId);
+
+        if (channel != null && permissions.canSendTo(channel)) {
             channel.sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Track Stuck")

@@ -28,8 +28,8 @@ public class ActionWaiter extends ListenerAdapter {
         if (!selectionMenus.containsKey(e.getAuthor().getIdLong()))
             return;
 
-        if (e.getGuild().getSelfMember().hasPermission(e.getChannel(), Permission.MESSAGE_MANAGE))
-            e.getMessage().delete().queue();
+        // if (e.getGuild().getSelfMember().hasPermission(e.getChannel(), Permission.MESSAGE_MANAGE))
+        //     e.getMessage().delete().queue();
 
         selectionMenus
                 .remove(e.getAuthor().getIdLong())

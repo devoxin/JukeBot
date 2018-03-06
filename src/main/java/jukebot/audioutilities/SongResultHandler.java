@@ -57,6 +57,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
             if (useSelection) {
 
                 StringBuilder selector = new StringBuilder();
+
                 final List<AudioTrack> tracks = playlist.getTracks()
                         .subList(0, (playlist.getTracks().size() > 5 ? 5 : playlist.getTracks().size()));
 
@@ -145,7 +146,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
             List<AudioTrack> tracks = playlist.getTracks();
 
-            if (importLimit != -1 && playlist.getTracks().size() > importLimit)
+            if (importLimit != -1 && tracks.size() > importLimit)
                 tracks = tracks.subList(0, importLimit);
 
             for (AudioTrack track : tracks)
@@ -154,7 +155,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
-                    .setTitle("Enqueued Playlist")
+                    .setTitle("Playlist Enqueued")
                     .setDescription(playlist.getName() + " - " + tracks.size() + " tracks.")
                     .build()
             ).queue();
@@ -166,7 +167,8 @@ public class SongResultHandler implements AudioLoadResultHandler {
     public void noMatches() {
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(JukeBot.embedColour)
-                .setTitle("No results found")
+                .setTitle("No Results")
+                .setDescription("Nothing found matching your query.")
                 .build()
         ).queue();
 
@@ -178,7 +180,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
     public void loadFailed(FriendlyException ex) {
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(JukeBot.embedColour)
-                .setTitle("Failed to load track")
+                .setTitle("Track Unavailable")
                 .setDescription(ex.getMessage())
                 .build()
         ).queue();

@@ -55,7 +55,7 @@ public class ScSearch implements Command {
             }
 
             manager.openAudioConnection(e.getMember().getVoiceState().getChannel());
-            player.setChannel(e.getChannel());
+            player.setChannel(e.getChannel().getIdLong());
         }
 
         JukeBot.playerManager.loadItem("scsearch:" + query, new SongResultHandler(e, player, false));

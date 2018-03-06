@@ -55,7 +55,7 @@ public class Select implements Command {
             }
 
             manager.openAudioConnection(e.getMember().getVoiceState().getChannel());
-            player.setChannel(e.getChannel());
+            player.setChannel(e.getChannel().getIdLong());
         }
 
         JukeBot.playerManager.loadItem("ytsearch:" + query, new SongResultHandler(e, player, true));
