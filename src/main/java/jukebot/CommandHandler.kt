@@ -54,7 +54,7 @@ class CommandHandler : ListenerAdapter() {
                 .filter({ c -> c.key == command || c.value.properties().aliases.contains(command) })
                 .values
                 .firstOrNull()
-        
+
         if (foundCommand == null || foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong)
             return
 
