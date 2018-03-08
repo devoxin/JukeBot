@@ -36,7 +36,7 @@ class CommandHandler : ListenerAdapter() {
         if (!e.guild.isAvailable || e.author.isBot || e.author.isFake || !permissions.canSendTo(e.channel))
             return
 
-        val guildPrefix = Database.getPrefix(e.author.idLong)
+        val guildPrefix = Database.getPrefix(e.guild.idLong)
         val wasMentioned = e.message.contentRaw.startsWith(e.guild.selfMember.asMention)
         val triggerLength = if (wasMentioned) e.guild.selfMember.asMention.length + 1 else guildPrefix.length
 
@@ -47,14 +47,14 @@ class CommandHandler : ListenerAdapter() {
             return
 
         val content = e.message.contentRaw.substring(triggerLength).trim()
-        val command = content.split("\\s+")[0].toLowerCase()
+        val command = content.split("\\s+".toRegex())[0].toLowerCase()
         val args = content.substring(command.length).trim()
 
         val foundCommand = commands
                 .filter({ c -> c.key == command || c.value.properties().aliases.contains(command) })
                 .values
                 .firstOrNull()
-
+        
         if (foundCommand == null || foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong)
             return
 
