@@ -55,7 +55,7 @@ class CommandHandler : ListenerAdapter() {
                 .values
                 .firstOrNull()
 
-        if (foundCommand == null || foundCommand.properties().developerOnly && !permissions.isBotOwner(e.author.idLong))
+        if (foundCommand == null || foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong)
             return
 
         foundCommand.execute(e, args)

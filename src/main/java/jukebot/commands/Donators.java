@@ -21,17 +21,7 @@ public class Donators implements Command {
 
     public void execute(GuildMessageReceivedEvent e, String query) {
 
-        if (!permissions.isBotOwner(e.getAuthor().getIdLong())) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Donators")
-                    .setDescription("Command reserved for bot developer.")
-                    .build()
-            ).queue();
-            return;
-        }
-
-        String[] args = query.split(" ");
+        String[] args = query.split("\\s+");
 
         if (args.length == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()

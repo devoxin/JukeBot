@@ -11,10 +11,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 
 public class Permissions {
 
-    public boolean isBotOwner(long userID) {
-        return userID == JukeBot.botOwnerId;
-    }
-
     private boolean isDJ(Member m) {
         return m.getRoles().stream().anyMatch(r -> "dj".equalsIgnoreCase(r.getName()));
     }
@@ -25,9 +21,9 @@ public class Permissions {
 
     public boolean isElevatedUser(Member m, boolean allowLone) {
         if (allowLone)
-            return isAlone(m) || m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
+            return isAlone(m) || m.isOwner() || JukeBot.botOwnerId == m.getUser().getIdLong() || isDJ(m);
 
-        return m.isOwner() || isBotOwner(m.getUser().getIdLong()) || isDJ(m);
+        return m.isOwner() || JukeBot.botOwnerId == m.getUser().getIdLong() || isDJ(m);
     }
 
     public boolean isTrackRequester(AudioTrack track, long requester) {
@@ -35,7 +31,7 @@ public class Permissions {
     }
 
     public int getTier(long userID) {
-        return isBotOwner(userID) ? 3 : Database.getTier(userID);
+        return JukeBot.botOwnerId == userID ? 3 : Database.getTier(userID);
     }
 
     public boolean canSendTo(TextChannel channel) {
