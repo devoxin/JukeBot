@@ -109,7 +109,7 @@ public class Helpers {
     public static void getPatreonPledges(Consumer<List<Pledge>> callback) {
         executor.execute(() -> {
             try {
-                callback.accept(JukeBot.patreon.fetchAllPledges("750822"));
+                callback.accept(JukeBot.patreonApi.fetchAllPledges("750822"));
             } catch (IOException e) {
                 callback.accept(null);
                 e.printStackTrace();

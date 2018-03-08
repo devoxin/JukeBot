@@ -27,30 +27,25 @@ public class JukeBot {
 
     /* Bot-Related*/
     public static final String VERSION = "6.1.8";
-    public static final long startTime = System.currentTimeMillis();
+    public static final Long startTime = System.currentTimeMillis();
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
+    public static boolean hasFinishedLoading = false;
 
-    static String defaultPrefix;
-    public static Color embedColour;
+    static String defaultPrefix = Database.getPropertyFromConfig("prefix");
+    public static Color embedColour = Color.decode(Database.getPropertyFromConfig("color", "0x1E90FF"));
     public static Long botOwnerId = 0L;
     public static boolean isSelfHosted = false;
 
     /* Operation-Related */
-    public static PatreonAPI patreon;
+    public static PatreonAPI patreonApi = new PatreonAPI(Database.getPropertyFromConfig("patreon"));
     private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
-    public static AudioPlayerManager playerManager;
+    public static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     public static ShardManager shardManager;
 
 
     public static void main(final String[] args) throws Exception {
         Thread.currentThread().setName("JukeBot-Main");
-
-        playerManager = new DefaultAudioPlayerManager();
-        patreon = new PatreonAPI(Database.getPropertyFromConfig("patreon"));
-
-        defaultPrefix = Database.getPropertyFromConfig("prefix");
-        embedColour = Color.decode(Database.getPropertyFromConfig("color", "0x1E90FF"));
 
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
@@ -66,7 +61,7 @@ public class JukeBot {
         shardManager = new DefaultShardManagerBuilder()
                 .setToken(Database.getPropertyFromConfig("token"))
                 .setShardsTotal(-1)
-                .addEventListeners(new EventListener(), waiter)
+                .addEventListeners(new CommandHandler(), waiter)
                 .setAudioSendFactory(new NativeAudioSendFactory())
                 .setGame(Game.of(Game.GameType.LISTENING, defaultPrefix + "help | jukebot.xyz"))
                 .build();
@@ -74,8 +69,8 @@ public class JukeBot {
 
 
     private static void printBanner() {
-        System.out.println(Helpers.readFile("banner.txt"));
-        System.out.println(
+        LOG.info(Helpers.readFile("banner.txt"));
+        LOG.info(
                 "\nJukeBot v" + VERSION +
                 " | JDA " + JDAInfo.VERSION +
                 " | Lavaplayer " + PlayerLibrary.VERSION +
@@ -104,7 +99,7 @@ public class JukeBot {
     }
 
     public static void recreatePatreonApi(String key) {
-        patreon = new PatreonAPI(key);
+        patreonApi = new PatreonAPI(key);
     }
 
 }
