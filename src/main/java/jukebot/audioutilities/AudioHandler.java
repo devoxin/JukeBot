@@ -59,8 +59,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public void stop() {
-        queue.clear();
-        playNext();
+        if (isPlaying()) {
+            queue.clear();
+            playNext();
+        }
     }
 
     public boolean isPlaying() {
@@ -71,8 +73,8 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         return queue;
     }
 
-    public String getStringifiedRepeat() {
-        return String.valueOf(repeat).toLowerCase();
+    public String getRepeatMode() {
+        return repeat.toString().toLowerCase();
     }
 
     public boolean isShuffleEnabled() {
@@ -110,7 +112,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         if (nextTrack != null) {
             player.startTrack(nextTrack, false);
         } else {
-            resetPlayer();
+            repeat = repeatMode.NONE;
+            shuffle = false;
+            current = null;
 
             final TextChannel channel = JukeBot.shardManager.getTextChannelById(channelId);
             if (channel == null) return;
@@ -130,13 +134,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 }
             }
         }
-    }
-
-    private void resetPlayer() {
-        repeat = repeatMode.NONE;
-        shuffle = false;
-        current = null;
-        player.stopTrack();
     }
 
     /*
@@ -162,9 +159,8 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
         final TextChannel channel = JukeBot.shardManager.getTextChannelById(channelId);
 
-        if (channel != null && permissions.canSendTo(channel)) {
-            if (current != null && current.getIdentifier().equals(track.getIdentifier()))
-                return;
+        if (channel != null && permissions.canSendTo(channel) &&
+                (current == null || !current.getIdentifier().equals(track.getIdentifier()))) {
 
             current = track;
             channel.sendMessage(new EmbedBuilder()
@@ -191,7 +187,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                     .build()
             ).queue();
         }
-        playNext();
     }
 
     @Override
@@ -221,7 +216,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         lastFrame = player.provide();
 
         if (!player.isPaused()) {
-            if (lastFrame == null || lastFrame.data.length == 0)
+            if (lastFrame == null)
                 trackPacketLoss++;
             else
                 trackPackets++;

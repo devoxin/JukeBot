@@ -68,6 +68,9 @@ public class Play implements Command {
                         .setDescription("JukeBot doesn't implement oauth and as a result\ncannot access your liked tracks when referenced as `you`")
                         .build()
                 ).queue();
+
+                if (!player.isPlaying())
+                    e.getGuild().getAudioManager().closeAudioConnection();
                 return;
             }
             if (userQuery.toLowerCase().contains("pornhub") && !e.getChannel().isNSFW()) {

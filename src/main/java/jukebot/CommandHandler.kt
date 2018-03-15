@@ -73,10 +73,13 @@ class CommandHandler : ListenerAdapter() {
                 JukeBot.botOwnerId = info.owner.idLong
                 JukeBot.isSelfHosted = info.idLong != 249303797371895820L && info.idLong != 314145804807962634L
 
-                if (JukeBot.isSelfHosted)
+                if (JukeBot.isSelfHosted) {
                     commands.remove("patreon")
-                else
+                    commands.remove("verify")
+                    commands.remove("donators")
+                } else {
                     Helpers.monitorThread.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS)
+                }
 
                 if (info.idLong == 314145804807962634L || JukeBot.isSelfHosted)
                     JukeBot.playerManager.configuration.resamplingQuality = AudioConfiguration.ResamplingQuality.HIGH
@@ -87,12 +90,8 @@ class CommandHandler : ListenerAdapter() {
     }
 
     override fun onGuildVoiceLeave(e: GuildVoiceLeaveEvent) {
-        if (e.member.user.idLong == e.jda.selfUser.idLong) {
-
-            if (JukeBot.hasPlayer(e.guild.idLong))
-                JukeBot.getPlayer(e.guild.audioManager).stop()
-
-        }
+        if (e.member.user.idLong == e.jda.selfUser.idLong && JukeBot.hasPlayer(e.guild.idLong))
+            JukeBot.getPlayer(e.guild.audioManager).stop()
     }
 
 }

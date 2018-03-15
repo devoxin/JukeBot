@@ -1,7 +1,6 @@
 package jukebot;
 
 import jukebot.utils.Helpers;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -25,15 +24,8 @@ public class ActionWaiter extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        if (!selectionMenus.containsKey(e.getAuthor().getIdLong()))
-            return;
-
-        // if (e.getGuild().getSelfMember().hasPermission(e.getChannel(), Permission.MESSAGE_MANAGE))
-        //     e.getMessage().delete().queue();
-
-        selectionMenus
-                .remove(e.getAuthor().getIdLong())
-                .accept(e.getMessage().getContentDisplay());
+        if (selectionMenus.containsKey(e.getAuthor().getIdLong()))
+            selectionMenus.remove(e.getAuthor().getIdLong()).accept(e.getMessage().getContentDisplay());
     }
 
 }

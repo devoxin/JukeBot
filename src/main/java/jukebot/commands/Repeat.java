@@ -74,7 +74,7 @@ public class Repeat implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Repeat Modes")
-                    .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + player.getStringifiedRepeat())
+                    .setDescription("(**S**)ingle | (**A**)ll | (**N**)one\n\nCurrent: " + player.getRepeatMode())
                     .build()
             ).queue();
             return;
@@ -83,7 +83,7 @@ public class Repeat implements Command {
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(JukeBot.embedColour)
                 .setTitle("Repeat")
-                .setDescription("Repeat set to **" + player.getStringifiedRepeat() + "**")
+                .setDescription("Repeat set to **" + player.getRepeatMode() + "**")
                 .build()
         ).queue();
 
