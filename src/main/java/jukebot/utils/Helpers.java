@@ -101,8 +101,7 @@ public class Helpers {
         ) {
             return reader.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
-            e.printStackTrace();
-            return "Unable to read banner.txt!";
+            return null;
         }
     }
 

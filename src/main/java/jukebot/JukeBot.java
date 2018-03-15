@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JukeBot {
@@ -58,24 +59,39 @@ public class JukeBot {
 
         printBanner();
 
-        shardManager = new DefaultShardManagerBuilder()
+        DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
                 .setToken(Database.getPropertyFromConfig("token"))
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), waiter)
-                .setAudioSendFactory(new NativeAudioSendFactory())
-                .setGame(Game.of(Game.GameType.LISTENING, defaultPrefix + "help | jukebot.xyz"))
-                .build();
+                .setGame(Game.of(Game.GameType.LISTENING, defaultPrefix + "help | jukebot.xyz"));
+
+        String os = System.getProperty("os.name").toLowerCase();
+        String arch = System.getProperty("os.arch");
+
+        if ((os.contains("windows") || os.contains("linux")) && !arch.equalsIgnoreCase("arm") && !arch.equalsIgnoreCase("arm-linux")) {
+            LOG.info("System supports NAS, enabling...");
+            shardManagerBuilder.setAudioSendFactory(new NativeAudioSendFactory());
+        }
+
+        shardManager = shardManagerBuilder.build();
     }
 
 
     private static void printBanner() {
-        LOG.info(Helpers.readFile("banner.txt"));
+        String os = System.getProperty("os.name");
+        String arch = System.getProperty("os.arch");
+        String banner = Helpers.readFile("banner.txt");
+
+        if (banner != null)
+            LOG.info("\n" + banner);
+
         LOG.info(
                 "\nJukeBot v" + VERSION +
                 " | JDA " + JDAInfo.VERSION +
                 " | Lavaplayer " + PlayerLibrary.VERSION +
                 " | SQLite " + SQLiteJDBCLoader.getVersion() +
-                " | " + System.getProperty("sun.arch.data.model") + "-bit JVM\n"
+                " | " + System.getProperty("sun.arch.data.model") + "-bit JVM" +
+                " | " + os + " " + arch + "\n"
         );
     }
 
