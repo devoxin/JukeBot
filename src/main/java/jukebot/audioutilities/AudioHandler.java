@@ -121,6 +121,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             repeat = repeatMode.NONE;
             shuffle = false;
             current = null;
+            player.stopTrack();
 
             final TextChannel channel = JukeBot.shardManager.getTextChannelById(channelId);
             if (channel == null) return;
