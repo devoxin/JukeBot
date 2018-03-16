@@ -47,7 +47,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
      * Custom Events
      */
 
-    boolean addToQueue(AudioTrack track, long userID) { // boolean: shouldAnnounce
+    boolean addToQueue(AudioTrack track, Long userID) { // boolean: shouldAnnounce
         track.setUserData(userID);
 
         if (!player.startTrack(track, true)) {
@@ -89,7 +89,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         repeat = mode;
     }
 
-    public int voteSkip(long userID) {
+    public int voteSkip(Long userID) {
         if (!skipVotes.contains(userID))
             skipVotes.add(userID);
         return skipVotes.size();
@@ -102,10 +102,16 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public void playNext() {
         AudioTrack nextTrack = null;
 
+        if (repeat == repeatMode.ALL && current != null) {
+            AudioTrack r = current.makeClone();
+            r.setUserData(current.getUserData());
+            queue.offer(r);
+        }
+
         if (repeat == repeatMode.SINGLE && current != null) {
             nextTrack = current.makeClone();
             nextTrack.setUserData(current.getUserData());
-        } if (!queue.isEmpty()) {
+        } else if (!queue.isEmpty()) {
             nextTrack = shuffle ? queue.remove(selector.nextInt(queue.size())) : queue.poll();
         }
 
@@ -145,9 +151,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         skipVotes.clear();
         trackPacketLoss = 0;
         trackPackets = 0;
-
-        if (repeat == repeatMode.ALL)
-            addToQueue(track.makeClone(), (long) track.getUserData());
 
         if (endReason.mayStartNext)
             playNext();
