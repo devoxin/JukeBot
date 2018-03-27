@@ -28,8 +28,8 @@ repositories {
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:3.5.1_351'
-    compile 'com.sedmelluq:lavaplayer:1.2.56'
+    compile 'net.dv8tion:JDA:3.5.1_353'
+    compile 'com.sedmelluq:lavaplayer:1.2.58'
     compile 'com.sedmelluq:jda-nas:1.0.6'
     compile 'org.xerial:sqlite-jdbc:3.21.0.1'
     compile 'com.zaxxer:HikariCP:2.7.8'
