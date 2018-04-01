@@ -124,6 +124,8 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             repeat = repeatMode.NONE;
             shuffle = false;
             current = null;
+            equalizer.setGain(0, 0F); // Reset any bass boosts
+            equalizer.setGain(0, 0F);
             player.stopTrack();
 
             final TextChannel channel = JukeBot.shardManager.getTextChannelById(channelId);

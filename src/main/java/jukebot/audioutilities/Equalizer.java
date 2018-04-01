@@ -84,7 +84,7 @@ public class Equalizer implements PcmFilterFactory {
         private final ChannelProcessor channels[];
         private final FloatPcmAudioFilter next;
 
-        public EqualizerFilter(int channelCount, FloatPcmAudioFilter next, float[] bandMultipliers) {
+        EqualizerFilter(int channelCount, FloatPcmAudioFilter next, float[] bandMultipliers) {
             this.channels = createProcessors(channelCount, bandMultipliers);
             this.next = next;
         }
@@ -100,8 +100,8 @@ public class Equalizer implements PcmFilterFactory {
 
         @Override
         public void seekPerformed(long requestedTime, long providedTime) {
-            for (int channelIndex = 0; channelIndex < channels.length; channelIndex++) {
-                channels[channelIndex].reset();
+            for (ChannelProcessor channel : channels) {
+                channel.reset();
             }
         }
 

@@ -28,16 +28,6 @@ public class BassBoost implements Command {
             return;
         }
 
-        if (!permissions.isElevatedUser(e.getMember(), true)) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Permission Error")
-                    .setDescription("You need to be a DJ")
-                    .build()
-            ).queue();
-            return;
-        }
-
         if (!permissions.ensureMutualVoiceChannel(e.getMember())) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
@@ -48,11 +38,31 @@ public class BassBoost implements Command {
             return;
         }
 
+        if (!permissions.isElevatedUser(e.getMember(), true)) {
+            e.getChannel().sendMessage(new EmbedBuilder()
+                    .setColor(JukeBot.embedColour)
+                    .setTitle("Permission Error")
+                    .setDescription("You need to be a DJ")
+                    .build()
+            ).queue();
+            return;
+        }
+
+        if (permissions.getTier(e.getAuthor().getIdLong()) < 2) {
+            e.getChannel().sendMessage(new EmbedBuilder()
+                    .setColor(JukeBot.embedColour)
+                    .setTitle("Donator-only command")
+                    .setDescription("This command requires **Tier 2** or higher.\n[Click here to donate](https://www.patreon.com/Devoxin)")
+                    .build()
+            ).queue();
+            return;
+        }
+
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Bass Boost Presets")
-                    .setDescription("Off\nLow\nMedium\nHigh")
+                    .setDescription("Off\nLow\nMedium\nHigh\nInsane")
                     .setFooter("Higher presets may cause distortion and damage hearing during prolonged listening periods", null)
                     .build()
             ).queue();
@@ -71,6 +81,9 @@ public class BassBoost implements Command {
         } else if (query.equalsIgnoreCase("high")) {
             handler.equalizer.setGain(0, 0.75F);
             handler.equalizer.setGain(1, 0.50F);
+        } else if (query.equalsIgnoreCase("insane")) {
+            handler.equalizer.setGain(0, 1F);
+            handler.equalizer.setGain(1, 0.75F);
         }
 
         e.getChannel().sendMessage(new EmbedBuilder()
