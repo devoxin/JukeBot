@@ -23,6 +23,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private final Permissions permissions = new Permissions();
 
     public AudioPlayer player;
+    public Equalizer equalizer;
     private AudioFrame lastFrame;
     private final Random selector = new Random();
 
@@ -38,9 +39,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public int trackPacketLoss = 0;
     public int trackPackets = 0;
 
-    public AudioHandler(AudioPlayer player) {
+    public AudioHandler(AudioPlayer player, Equalizer equalizer) {
         this.player = player;
+        this.equalizer = equalizer;
         player.addListener(this);
+        player.setFilterFactory(equalizer);
     }
 
     /*

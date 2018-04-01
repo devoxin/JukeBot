@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.AudioHandler;
+import jukebot.audioutilities.Equalizer;
 import jukebot.audioutilities.PornHubAudioSourceManager;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
@@ -105,7 +106,8 @@ public class JukeBot {
 
     public static AudioHandler getPlayer(final AudioManager manager) {
 
-        AudioHandler handler = players.computeIfAbsent(manager.getGuild().getIdLong(), v -> new AudioHandler(playerManager.createPlayer()));
+        AudioHandler handler = players.computeIfAbsent(manager.getGuild().getIdLong(),
+                v -> new AudioHandler(playerManager.createPlayer(), new Equalizer()));
 
         if (manager.getSendingHandler() == null)
             manager.setSendingHandler(handler);
