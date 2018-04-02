@@ -8,7 +8,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-@CommandProperties(aliases = {"bb", "bassboostmedaddy", "needsmorebass", "hnnng"}, description = "Bass boosts the audio")
+@CommandProperties(aliases = {"bb"}, description = "Bass boosts the audio")
 public class BassBoost implements Command {
 
     private final Permissions permissions = new Permissions();
