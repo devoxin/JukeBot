@@ -84,6 +84,13 @@ public class BassBoost implements Command {
         } else if (query.equalsIgnoreCase("insane")) {
             handler.equalizer.setGain(0, 1F);
             handler.equalizer.setGain(1, 0.75F);
+        } else {
+            e.getChannel().sendMessage(new EmbedBuilder()
+                    .setTitle("Bass Boost")
+                    .setDescription(query + " is not a recognised preset")
+                    .build()
+            ).queue();
+            return;
         }
 
         e.getChannel().sendMessage(new EmbedBuilder()
