@@ -86,6 +86,7 @@ public class BassBoost implements Command {
             handler.equalizer.setGain(1, 0.75F);
         } else {
             e.getChannel().sendMessage(new EmbedBuilder()
+                    .setColor(JukeBot.embedColour)
                     .setTitle("Bass Boost")
                     .setDescription(query + " is not a recognised preset")
                     .build()
