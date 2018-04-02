@@ -1,5 +1,6 @@
 package jukebot.audioutilities;
 
+import com.sedmelluq.discord.lavaplayer.filter.equalizer.EqualizerFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -23,7 +24,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private final Permissions permissions = new Permissions();
 
     public AudioPlayer player;
-    public Equalizer equalizer;
+    public EqualizerFactory equalizer;
     private AudioFrame lastFrame;
     private final Random selector = new Random();
 
@@ -39,7 +40,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public int trackPacketLoss = 0;
     public int trackPackets = 0;
 
-    public AudioHandler(AudioPlayer player, Equalizer equalizer) {
+    public AudioHandler(AudioPlayer player, EqualizerFactory equalizer) {
         this.player = player;
         this.equalizer = equalizer;
         player.addListener(this);

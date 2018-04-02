@@ -126,7 +126,8 @@ public class Database {
             while (results.next())
                 donators.put(results.getLong(1), results.getInt(2));
 
-        } catch (SQLException unused) {}
+        } catch (SQLException unused) {
+        }
 
         return donators;
 
@@ -144,7 +145,8 @@ public class Database {
             while (results.next())
                 donators.add(results.getLong(1));
 
-        } catch (SQLException unused) {}
+        } catch (SQLException unused) {
+        }
 
         return donators;
 

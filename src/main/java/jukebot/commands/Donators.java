@@ -106,7 +106,7 @@ public class Donators implements Command {
                             .build()
                     ).queue();
                 });
-            } else if ("get".equalsIgnoreCase(args[0])){
+            } else if ("get".equalsIgnoreCase(args[0])) {
                 final int userTier = Database.getTier(Long.parseLong(args[1]));
                 e.getChannel().sendMessage(new EmbedBuilder()
                         .setColor(JukeBot.embedColour)

@@ -1,7 +1,7 @@
 package jukebot.commands;
 
-import jukebot.utils.CommandProperties;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -47,7 +47,8 @@ public class PermCheck implements Command {
 
 
         e.getAuthor().openPrivateChannel().queue(channel ->
-            channel.sendMessage(sb.toString().trim()).queue(null, err -> {})
+                channel.sendMessage(sb.toString().trim()).queue(null, err -> {
+                })
         );
     }
 

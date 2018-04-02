@@ -28,7 +28,7 @@ public class Helpers {
         StringBuilder textBuilder = new StringBuilder(text);
 
         while (textBuilder.length() < length)
-                textBuilder.insert(0, character);
+            textBuilder.insert(0, character);
 
         return textBuilder.toString();
     }
@@ -63,7 +63,7 @@ public class Helpers {
 
         try {
             return Integer.parseInt(num);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return def;
         }
     }
@@ -96,8 +96,8 @@ public class Helpers {
     }
 
     public static String readFile(String path) {
-        try(final FileReader file = new FileReader(path);
-            final BufferedReader reader = new BufferedReader(file)
+        try (final FileReader file = new FileReader(path);
+             final BufferedReader reader = new BufferedReader(file)
         ) {
             return reader.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {

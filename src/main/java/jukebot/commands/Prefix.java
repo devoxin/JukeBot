@@ -24,7 +24,7 @@ public class Prefix implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Server Prefix")
-                    .setDescription("Current prefix: [**" + currentPrefix + "**]()\nChange prefix: [**" + currentPrefix  + "prefix !**]()")
+                    .setDescription("Current prefix: [**" + currentPrefix + "**]()\nChange prefix: [**" + currentPrefix + "prefix !**]()")
                     .build()
             ).queue();
         } else {
@@ -54,7 +54,7 @@ public class Prefix implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Server Prefix")
-                    .setDescription(updatedPrefix ? "Prefix updated to `" + prefix + "`": "Prefix update failed")
+                    .setDescription(updatedPrefix ? "Prefix updated to `" + prefix + "`" : "Prefix update failed")
                     .build()
             ).queue();
         }

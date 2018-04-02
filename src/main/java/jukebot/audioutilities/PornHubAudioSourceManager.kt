@@ -76,7 +76,8 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
     override fun shutdown() {
         try {
             httpInterface.close()
-        } catch (ignored: IOException) {}
+        } catch (ignored: IOException) {
+        }
     }
 
     override fun configureRequests(configurator: Function<RequestConfig, RequestConfig>) {

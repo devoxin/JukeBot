@@ -9,9 +9,6 @@ import jukebot.utils.Helpers
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
-
-import java.util.Comparator
-import java.util.function.Predicate
 import java.util.stream.Stream
 
 @CommandProperties(description = "Displays all commands", aliases = arrayOf("commands"), category = CommandProperties.category.MISC)

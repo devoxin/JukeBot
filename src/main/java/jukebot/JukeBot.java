@@ -1,6 +1,7 @@
 package jukebot;
 
 import com.patreon.PatreonAPI;
+import com.sedmelluq.discord.lavaplayer.filter.equalizer.EqualizerFactory;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -9,7 +10,6 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.AudioHandler;
-import jukebot.audioutilities.Equalizer;
 import jukebot.audioutilities.PornHubAudioSourceManager;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JukeBot {
@@ -88,11 +87,11 @@ public class JukeBot {
 
         LOG.info(
                 "\nJukeBot v" + VERSION +
-                " | JDA " + JDAInfo.VERSION +
-                " | Lavaplayer " + PlayerLibrary.VERSION +
-                " | SQLite " + SQLiteJDBCLoader.getVersion() +
-                " | " + System.getProperty("sun.arch.data.model") + "-bit JVM" +
-                " | " + os + " " + arch + "\n"
+                        " | JDA " + JDAInfo.VERSION +
+                        " | Lavaplayer " + PlayerLibrary.VERSION +
+                        " | SQLite " + SQLiteJDBCLoader.getVersion() +
+                        " | " + System.getProperty("sun.arch.data.model") + "-bit JVM" +
+                        " | " + os + " " + arch + "\n"
         );
     }
 
@@ -107,7 +106,7 @@ public class JukeBot {
     public static AudioHandler getPlayer(final AudioManager manager) {
 
         AudioHandler handler = players.computeIfAbsent(manager.getGuild().getIdLong(),
-                v -> new AudioHandler(playerManager.createPlayer(), new Equalizer()));
+                v -> new AudioHandler(playerManager.createPlayer(), new EqualizerFactory()));
 
         if (manager.getSendingHandler() == null)
             manager.setSendingHandler(handler);

@@ -62,9 +62,9 @@ public class Save implements Command {
             e.getAuthor().openPrivateChannel().queue(dm ->
                     dm.sendMessage(
                             new EmbedBuilder()
-                            .setColor(JukeBot.embedColour)
-                            .setTitle(currentTrack.getInfo().title, currentTrack.getInfo().uri)
-                            .build()
+                                    .setColor(JukeBot.embedColour)
+                                    .setTitle(currentTrack.getInfo().title, currentTrack.getInfo().uri)
+                                    .build()
                     ).queue(null, error ->
                             e.getChannel().sendMessage(new EmbedBuilder()
                                     .setColor(JukeBot.embedColour)

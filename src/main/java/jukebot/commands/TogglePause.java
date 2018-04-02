@@ -28,7 +28,7 @@ public class TogglePause implements Command {
         }
 
         if (!permissions.ensureMutualVoiceChannel(e.getMember())) {
-                e.getChannel().sendMessage(new EmbedBuilder()
+            e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("No Mutual VoiceChannel")
                     .setDescription("Join my VoiceChannel to use this command.")
