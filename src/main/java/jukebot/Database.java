@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Database {
 

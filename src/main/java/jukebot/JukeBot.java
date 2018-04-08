@@ -1,7 +1,6 @@
 package jukebot;
 
 import com.patreon.PatreonAPI;
-import com.sedmelluq.discord.lavaplayer.filter.equalizer.EqualizerFactory;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -106,13 +105,19 @@ public class JukeBot {
     public static AudioHandler getPlayer(final AudioManager manager) {
 
         AudioHandler handler = players.computeIfAbsent(manager.getGuild().getIdLong(),
-                v -> new AudioHandler(playerManager.createPlayer(), new EqualizerFactory()));
+                v -> new AudioHandler(manager.getGuild().getIdLong(), playerManager.createPlayer()));
 
         if (manager.getSendingHandler() == null)
             manager.setSendingHandler(handler);
 
         return handler;
 
+    }
+
+    public static void removePlayer(final long guildId) {
+        if (JukeBot.hasPlayer(guildId)) {
+            players.remove(guildId).cleanup();
+        }
     }
 
     public static void recreatePatreonApi(String key) {

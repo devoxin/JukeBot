@@ -7,6 +7,7 @@ import jukebot.utils.Helpers
 import jukebot.utils.Permissions
 import net.dv8tion.jda.core.events.ReadyEvent
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
@@ -65,6 +66,10 @@ class CommandHandler : ListenerAdapter() {
         val bots = e.guild.members.filter({ member -> member.user.isBot }).size
         if (bots / e.guild.members.size > 0.6)
             e.guild.leave().queue()
+    }
+
+    override fun onGuildLeave(event: GuildLeaveEvent) {
+        JukeBot.removePlayer(event.guild.idLong)
     }
 
     override fun onReady(e: ReadyEvent) {

@@ -12,6 +12,7 @@ import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 
@@ -31,6 +32,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private final LinkedList<AudioTrack> queue = new LinkedList<>();
     private final LinkedList<Long> skipVotes = new LinkedList<>();
     private Long channelId;
+    private Long guildId;
     private boolean shouldAnnounce = true;
 
     private repeatMode repeat = repeatMode.NONE;
@@ -41,11 +43,12 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public int trackPacketLoss = 0;
     public int trackPackets = 0;
 
-    public AudioHandler(AudioPlayer player, EqualizerFactory equalizer) {
+    public AudioHandler(Long guildId, AudioPlayer player) {
+        this.guildId = guildId;
         this.player = player;
-        this.equalizer = equalizer;
+        this.equalizer = new EqualizerFactory();
         player.addListener(this);
-        player.setFilterFactory(equalizer);
+        player.setFilterFactory(this.equalizer);
     }
 
     /*
@@ -134,10 +137,14 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             equalizer.setGain(0, 0F);
             player.stopTrack();
 
-            final TextChannel channel = JukeBot.shardManager.getTextChannelById(channelId);
-            if (channel == null) return;
+            final Guild guild = JukeBot.shardManager.getGuildById(guildId);
 
-            final AudioManager audioManager = channel.getGuild().getAudioManager();
+            if (guild == null) { // Bot was kicked or something
+                JukeBot.removePlayer(guildId);
+                return;
+            }
+
+            final AudioManager audioManager = guild.getAudioManager();
 
             if (audioManager.isConnected() || audioManager.isAttemptingToConnect()) {
                 Helpers.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS);
@@ -164,6 +171,13 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 .setDescription(description)
                 .build()
         ).queue();
+    }
+
+    public void cleanup() {
+        System.out.println("Cleanup was called for Player " + guildId);
+        queue.clear();
+        skipVotes.clear();
+        player.destroy();
     }
 
     /*
