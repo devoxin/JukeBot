@@ -18,7 +18,7 @@ public class Dev implements Command {
                 e.getChannel().sendMessage("Command unavailable").queue();
                 return;
             }
-            if (args.length < 3) {
+            if (args.length < 2) {
                 e.getChannel().sendMessage("Missing arg `key`").queue();
             } else {
                 JukeBot.recreatePatreonApi(args[1]);
