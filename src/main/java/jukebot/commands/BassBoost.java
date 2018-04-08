@@ -8,7 +8,7 @@ import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-@CommandProperties(aliases = {"bb"}, description = "Bass boosts the audio")
+@CommandProperties(aliases = {"bb"}, description = "Bass boosts the audio", category = CommandProperties.category.MEDIA)
 public class BassBoost implements Command {
 
     private final Permissions permissions = new Permissions();
@@ -62,7 +62,7 @@ public class BassBoost implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Bass Boost Presets")
-                    .setDescription("Off\nLow\nMedium\nHigh\nInsane")
+                    .setDescription("`->` Off\n`->` Low\n`->` Medium\n`->` High\n`->` Insane")
                     .setFooter("Higher presets may cause distortion and damage hearing during prolonged listening periods", null)
                     .build()
             ).queue();
