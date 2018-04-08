@@ -3,12 +3,14 @@ package jukebot.commands;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.text.DecimalFormat;
 
+@CommandProperties(description = "Bot statistics")
 public class Stats implements Command {
 
     private final DecimalFormat dpFormatter = new DecimalFormat("0.00");
