@@ -11,7 +11,7 @@ public class Database {
     private final static HikariDataSource pool = new HikariDataSource();
 
     private static Connection getConnection() throws SQLException {
-        if (pool.getJdbcUrl() == null)
+        if (!pool.isRunning())
             pool.setJdbcUrl("jdbc:sqlite:jukebot.db");
 
         return pool.getConnection();
@@ -114,25 +114,6 @@ public class Database {
 
     }
 
-    public static HashMap<Long, Integer> getAllDonators() {
-
-        HashMap<Long, Integer> donators = new HashMap<>();
-
-        try (Connection connection = getConnection()) {
-
-            Statement state = connection.createStatement();
-            ResultSet results = state.executeQuery("SELECT * FROM donators");
-
-            while (results.next())
-                donators.put(results.getLong(1), results.getInt(2));
-
-        } catch (SQLException unused) {
-        }
-
-        return donators;
-
-    }
-
     public static ArrayList<Long> getDonatorIDs() {
 
         ArrayList<Long> donators = new ArrayList<>();
@@ -150,10 +131,6 @@ public class Database {
 
         return donators;
 
-    }
-
-    static String getPropertyFromConfig(String prop) {
-        return getPropertyFromConfig(prop, null);
     }
 
     static String getPropertyFromConfig(String prop, String def) {

@@ -31,7 +31,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private final LinkedList<AudioTrack> queue = new LinkedList<>();
     private final LinkedList<Long> skipVotes = new LinkedList<>();
     private Long channelId;
-    private boolean shouldAnnounce = false;
+    private boolean shouldAnnounce = true;
 
     private repeatMode repeat = repeatMode.NONE;
     private boolean shuffle = false;

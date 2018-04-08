@@ -32,13 +32,13 @@ public class JukeBot {
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
     public static boolean hasFinishedLoading = false;
 
-    static String defaultPrefix = Database.getPropertyFromConfig("prefix");
+    static String defaultPrefix = Database.getPropertyFromConfig("prefix", "$");
     public static Color embedColour = Color.decode(Database.getPropertyFromConfig("color", "0x1E90FF"));
     public static Long botOwnerId = 0L;
     public static boolean isSelfHosted = false;
 
     /* Operation-Related */
-    public static PatreonAPI patreonApi = new PatreonAPI(Database.getPropertyFromConfig("patreon"));
+    public static PatreonAPI patreonApi = new PatreonAPI(Database.getPropertyFromConfig("patreon", null));
     private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
     public static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
@@ -60,7 +60,7 @@ public class JukeBot {
         printBanner();
 
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
-                .setToken(Database.getPropertyFromConfig("token"))
+                .setToken(Database.getPropertyFromConfig("token", null))
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), waiter)
                 .setGame(Game.of(Game.GameType.LISTENING, defaultPrefix + "help | jukebot.xyz"));
