@@ -25,9 +25,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private final Permissions permissions = new Permissions();
 
     public AudioPlayer player;
-    public EqualizerFactory equalizer;
+    public EqualizerFactory equalizer = new EqualizerFactory();
     private AudioFrame lastFrame;
     private final Random selector = new Random();
+    private boolean equalizerEnabled = false;
 
     private final LinkedList<AudioTrack> queue = new LinkedList<>();
     private final LinkedList<Long> skipVotes = new LinkedList<>();
@@ -46,9 +47,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public AudioHandler(Long guildId, AudioPlayer player) {
         this.guildId = guildId;
         this.player = player;
-        this.equalizer = new EqualizerFactory();
         player.addListener(this);
-        player.setFilterFactory(this.equalizer);
     }
 
     /*
@@ -133,8 +132,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             repeat = repeatMode.NONE;
             shuffle = false;
             current = null;
-            equalizer.setGain(0, 0F); // Reset any bass boosts
-            equalizer.setGain(0, 0F);
+            disableEqualizer();
             player.stopTrack();
 
             final Guild guild = JukeBot.shardManager.getGuildById(guildId);
@@ -177,6 +175,20 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         queue.clear();
         skipVotes.clear();
         player.destroy();
+    }
+
+    public void disableEqualizer() {
+        equalizer.setGain(0, 0F); // Reset any bass boosts
+        equalizer.setGain(1, 0F);
+        player.setFilterFactory(null);
+    }
+
+    public void bassBoost(float band0, float band1) {
+        equalizer.setGain(0, band0);
+        equalizer.setGain(1, band1);
+
+        if (!equalizerEnabled)
+            player.setFilterFactory(equalizer);
     }
 
     /*

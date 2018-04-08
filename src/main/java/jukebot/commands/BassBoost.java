@@ -70,20 +70,15 @@ public class BassBoost implements Command {
         }
 
         if (query.equalsIgnoreCase("off")) {
-            handler.equalizer.setGain(0, 0F);
-            handler.equalizer.setGain(1, 0F);
+            handler.disableEqualizer();
         } else if (query.equalsIgnoreCase("low")) {
-            handler.equalizer.setGain(0, 0.25F);
-            handler.equalizer.setGain(1, 0.15F);
+            handler.bassBoost(0.25F, 0.15F);
         } else if (query.equalsIgnoreCase("medium")) {
-            handler.equalizer.setGain(0, 0.50F);
-            handler.equalizer.setGain(1, 0.25F);
+            handler.bassBoost(0.50F, 0.25F);
         } else if (query.equalsIgnoreCase("high")) {
-            handler.equalizer.setGain(0, 0.75F);
-            handler.equalizer.setGain(1, 0.50F);
+            handler.bassBoost(0.75F, 0.50F);
         } else if (query.equalsIgnoreCase("insane")) {
-            handler.equalizer.setGain(0, 1F);
-            handler.equalizer.setGain(1, 0.75F);
+            handler.bassBoost(1F, 0.75F);
         } else {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)

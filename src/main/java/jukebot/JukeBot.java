@@ -50,6 +50,7 @@ public class JukeBot {
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
         playerManager.getConfiguration().setOpusEncodingQuality(9);
+        playerManager.getConfiguration().setFilterHotSwapEnabled(true);
         playerManager.registerSourceManager(new PornHubAudioSourceManager());
         YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
         yt.setPlaylistPageCount(Integer.MAX_VALUE);
