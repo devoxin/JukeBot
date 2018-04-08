@@ -178,7 +178,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public void disableEqualizer() {
-        if (!equalizerEnabled) {
+        if (equalizerEnabled) {
             equalizer.setGain(0, 0F); // Reset any bass boosts
             equalizer.setGain(1, 0F);
             player.setFilterFactory(null);
