@@ -174,7 +174,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public void cleanup() {
-        System.out.println("Cleanup was called for Player " + guildId);
         queue.clear();
         skipVotes.clear();
         player.destroy();
