@@ -4,7 +4,6 @@ import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
-import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 

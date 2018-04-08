@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import jukebot.JukeBot;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;

@@ -73,7 +73,7 @@ class CommandHandler : ListenerAdapter() {
                 JukeBot.botOwnerId = info.owner.idLong
                 JukeBot.isSelfHosted = info.idLong != 249303797371895820L && info.idLong != 314145804807962634L
 
-                if (!JukeBot.isSelfHosted) {
+                if (JukeBot.isSelfHosted) {
                     commands.remove("patreon")
                     commands.remove("verify")
                     commands.remove("donators")
