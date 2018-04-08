@@ -68,25 +68,22 @@ public class Helpers {
         }
     }
 
-    public static String fTime(long time) {
-        int days = (int) TimeUnit.MILLISECONDS.toDays(time);
-        time -= 86400000 * days;
-        int hours = (int) TimeUnit.MILLISECONDS.toHours(time);
-        time -= 3600000 * hours;
-        int minutes = (int) TimeUnit.MILLISECONDS.toMinutes(time);
-        time -= 60000 * minutes;
-        int seconds = (int) TimeUnit.MILLISECONDS.toSeconds(time);
+    public static String fTime(long milliseconds) {
+        long seconds = (milliseconds / 1000) % 60;
+        long minutes = (milliseconds / (1000 * 60)) % 60;
+        long hours = (milliseconds / (1000 * 60 * 60)) % 24;
+        long days = (milliseconds / (1000 * 60 * 60 * 24));
 
         final StringBuilder timeString = new StringBuilder();
 
         if (days > 0)
-            timeString.append(padNumber(days, 2)).append(":");
+            timeString.append(padNumber((int) days, 2)).append(":");
 
         if (hours > 0 || days > 0)
-            timeString.append(padNumber(hours, 2)).append(":");
+            timeString.append(padNumber((int) hours, 2)).append(":");
 
-        timeString.append(padNumber(minutes, 2)).append(":");
-        timeString.append(padNumber(seconds, 2));
+        timeString.append(padNumber((int) minutes, 2)).append(":");
+        timeString.append(padNumber((int) seconds, 2));
 
         return timeString.toString();
     }

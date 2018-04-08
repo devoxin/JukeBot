@@ -26,7 +26,6 @@ public class Announce implements Command {
                     .build()
             ).queue();
         } else if (args[0].equalsIgnoreCase("off")) {
-            player.setChannel(null);
             player.setShouldAnnounce(false);
 
             e.getChannel().sendMessage(new EmbedBuilder()
