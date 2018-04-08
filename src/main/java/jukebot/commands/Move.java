@@ -72,7 +72,7 @@ public class Move implements Command {
         e.getChannel().sendMessage(new EmbedBuilder()
                 .setColor(JukeBot.embedColour)
                 .setTitle("Track Moved")
-                .setDescription("Moved **" + selectedTrack.getInfo().title + "**")
+                .setDescription("**" + selectedTrack.getInfo().title + "** is now at position **" + dest + "** in the queue")
                 .build()
         ).queue();
 
