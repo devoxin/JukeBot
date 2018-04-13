@@ -17,7 +17,6 @@ public class BassBoost implements Command {
     public void execute(GuildMessageReceivedEvent e, String query) {
         AudioHandler handler = JukeBot.getPlayer(e.getGuild().getAudioManager());
 
-
         if (!handler.isPlaying()) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
