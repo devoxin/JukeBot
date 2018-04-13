@@ -63,7 +63,7 @@ public class Helpers {
 
         try {
             return Integer.parseInt(num);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return def;
         }
     }

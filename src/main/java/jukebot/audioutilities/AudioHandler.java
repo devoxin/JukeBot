@@ -25,10 +25,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private final Permissions permissions = new Permissions();
 
     public AudioPlayer player;
-    public EqualizerFactory equalizer = new EqualizerFactory();
+    private EqualizerFactory equalizer = new EqualizerFactory();
+
     private AudioFrame lastFrame;
     private final Random selector = new Random();
-    private boolean equalizerEnabled = false;
+    private bassBoost bassBoostMode = AudioHandler.bassBoost.OFF;
 
     private final LinkedList<AudioTrack> queue = new LinkedList<>();
     private final LinkedList<Long> skipVotes = new LinkedList<>();
@@ -84,6 +85,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         return repeat.toString().toLowerCase();
     }
 
+    public String getBassBoostSetting() {
+        return bassBoostMode.toString().toLowerCase();
+    }
+
     public boolean isShuffleEnabled() {
         return shuffle;
     }
@@ -132,8 +137,8 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             repeat = repeatMode.NONE;
             shuffle = false;
             current = null;
-            disableEqualizer();
             player.stopTrack();
+            bassBoost(bassBoost.OFF);
 
             final Guild guild = JukeBot.shardManager.getGuildById(guildId);
 
@@ -168,7 +173,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                 .setTitle(title)
                 .setDescription(description)
                 .build()
-        ).queue();
+        ).queue(null, err -> JukeBot.LOG.error("Encountered an error while posting track announcement", err));
     }
 
     public void cleanup() {
@@ -177,23 +182,16 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         player.destroy();
     }
 
-    public void disableEqualizer() {
-        if (equalizerEnabled) {
-            equalizer.setGain(0, 0F); // Reset any bass boosts
-            equalizer.setGain(1, 0F);
-            player.setFilterFactory(null);
-            equalizerEnabled = false;
-        }
-    }
-
-    public void bassBoost(float band0, float band1) {
-        equalizer.setGain(0, band0);
-        equalizer.setGain(1, band1);
-
-        if (!equalizerEnabled) {
+    public void bassBoost(bassBoost preset) {
+        if (preset != bassBoost.OFF && bassBoostMode == bassBoost.OFF) {
             player.setFilterFactory(equalizer);
-            equalizerEnabled = true;
+        } else if (preset == bassBoost.OFF && bassBoostMode != bassBoost.OFF) {
+            player.setFilterFactory(null);
         }
+
+        bassBoostMode = preset;
+        equalizer.setGain(0, preset.getBand0());
+        equalizer.setGain(1, preset.getBand1());
     }
 
     /*
@@ -267,6 +265,30 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     public enum repeatMode {
         SINGLE, ALL, NONE
+    }
+
+    public enum bassBoost {
+        OFF(0F, 0F),
+        LOW(0.25F, 0.15F),
+        MEDIUM(0.50F, 0.25F),
+        HIGH(0.75F, 0.50F),
+        INSANE(1F, 0.75F);
+
+        private final float band0;
+        private final float band1;
+
+        bassBoost(float b0, float b1) {
+            this.band0 = b0;
+            this.band1 = b1;
+        }
+
+        public float getBand0() {
+            return band0;
+        }
+
+        public float getBand1() {
+            return band1;
+        }
     }
 
 }

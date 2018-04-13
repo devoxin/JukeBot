@@ -48,7 +48,7 @@ public class BassBoost implements Command {
             return;
         }
 
-        if (permissions.getTier(e.getAuthor().getIdLong()) < 2) {
+        if (!JukeBot.isSelfHosted && permissions.getTier(e.getAuthor().getIdLong()) < 2) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Donator-only command")
@@ -62,7 +62,7 @@ public class BassBoost implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Bass Boost Presets")
-                    .setDescription("`->` Off\n`->` Low\n`->` Medium\n`->` High\n`->` Insane")
+                    .setDescription("Current Setting: `" + handler.getBassBoostSetting() + "`\n\nValid presets: `Off`, `Low`, `Medium`, `High`, `Insane`")
                     .setFooter("Higher presets may cause distortion and damage hearing during prolonged listening periods", null)
                     .build()
             ).queue();
@@ -70,15 +70,15 @@ public class BassBoost implements Command {
         }
 
         if (query.equalsIgnoreCase("off")) {
-            handler.disableEqualizer();
+            handler.bassBoost(AudioHandler.bassBoost.OFF);
         } else if (query.equalsIgnoreCase("low")) {
-            handler.bassBoost(0.25F, 0.15F);
+            handler.bassBoost(AudioHandler.bassBoost.LOW);
         } else if (query.equalsIgnoreCase("medium")) {
-            handler.bassBoost(0.50F, 0.25F);
+            handler.bassBoost(AudioHandler.bassBoost.MEDIUM);
         } else if (query.equalsIgnoreCase("high")) {
-            handler.bassBoost(0.75F, 0.50F);
+            handler.bassBoost(AudioHandler.bassBoost.HIGH);
         } else if (query.equalsIgnoreCase("insane")) {
-            handler.bassBoost(1F, 0.75F);
+            handler.bassBoost(AudioHandler.bassBoost.INSANE);
         } else {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
