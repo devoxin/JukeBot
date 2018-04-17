@@ -68,9 +68,6 @@ public class Volume implements Command {
         final float percent = (float) volume / 150;
         final int blocks = (int) Math.floor(maxBricks * percent);
 
-        System.out.println(percent);
-        System.out.println(blocks);
-
         final StringBuilder sb = new StringBuilder("[");
 
         for (int i = 0; i < maxBricks; i++) {
