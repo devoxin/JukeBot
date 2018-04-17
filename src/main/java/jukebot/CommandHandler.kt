@@ -5,6 +5,7 @@ import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Helpers
 import jukebot.utils.Permissions
+import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.events.ReadyEvent
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
@@ -34,32 +35,48 @@ class CommandHandler : ListenerAdapter() {
     }
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
-        if (!e.guild.isAvailable || e.author.isBot || e.author.isFake || !permissions.canSendTo(e.channel))
-            return
+        try {
+            if (!e.guild.isAvailable || e.author.isBot || e.author.isFake || !permissions.canSendTo(e.channel))
+                return
 
-        val guildPrefix = Database.getPrefix(e.guild.idLong)
-        val wasMentioned = e.message.contentRaw.startsWith(e.guild.selfMember.asMention)
-        val triggerLength = if (wasMentioned) e.guild.selfMember.asMention.length + 1 else guildPrefix.length
+            val guildPrefix = Database.getPrefix(e.guild.idLong)
+            val wasMentioned = e.message.contentRaw.startsWith(e.guild.selfMember.asMention)
+            val triggerLength = if (wasMentioned) e.guild.selfMember.asMention.length + 1 else guildPrefix.length
 
-        if (!e.message.contentDisplay.startsWith(guildPrefix) && !wasMentioned)
-            return
+            if (!e.message.contentRaw.startsWith(guildPrefix) && !wasMentioned)
+                return
 
-        if (wasMentioned && !e.message.contentRaw.contains(" "))
-            return
+            if (wasMentioned && !e.message.contentRaw.contains(" "))
+                return
 
-        val content = e.message.contentRaw.substring(triggerLength).trim()
-        val command = content.split("\\s+".toRegex())[0].toLowerCase()
-        val args = content.substring(command.length).trim()
+            val content = e.message.contentRaw.substring(triggerLength).trim()
+            val command = content.split("\\s+".toRegex())[0].toLowerCase()
+            val args = content.substring(command.length).trim()
 
-        val foundCommand = commands
-                .filter({ c -> c.key == command || c.value.properties().aliases.contains(command) })
-                .values
-                .firstOrNull()
+            val foundCommand = commands
+                    .filter({ c -> c.key == command || c.value.properties().aliases.contains(command) })
+                    .values
+                    .firstOrNull()
 
-        if (foundCommand == null || foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong)
-            return
+            if (foundCommand == null || foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong)
+                return
 
-        foundCommand.execute(e, args)
+            foundCommand.execute(e, args)
+        } catch (err: Exception) {
+            val formatted = "An error occurred in the CommandHandler!\n```\n\tMessage: ${e.message}\n\tBot/Webhook: ${e.isWebhookMessage || e.author.isBot}\n\tStack: ${err.message}\n```"
+
+            if (!JukeBot.isSelfHosted)
+                JukeBot.shardManager.getTextChannelById(435761621265022976L).sendMessage(formatted).queue()
+            else
+                JukeBot.LOG.error(formatted)
+
+            e.channel.sendMessage(EmbedBuilder()
+                    .setColor(JukeBot.embedColour)
+                    .setTitle("An unknown error occurred!")
+                    .setDescription("The error has been logged, we're sorry for any inconvenience caused!")
+                    .build()
+            ).queue()
+        }
     }
 
     override fun onGuildJoin(e: GuildJoinEvent) {
