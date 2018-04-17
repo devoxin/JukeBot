@@ -36,7 +36,7 @@ public class Volume implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Volume")
-                    .setDescription(calculateBricks(vol) + " `" + vol + "%`")
+                    .setDescription(calculateBricks(vol) + " `" + vol + "`")
                     .build()
             ).queue();
         } else {
@@ -57,7 +57,7 @@ public class Volume implements Command {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Volume")
-                    .setDescription(calculateBricks(vol) + " `" + vol + "%`")
+                    .setDescription(calculateBricks(vol) + " `" + vol + "`")
                     .build()
             ).queue();
         }
