@@ -78,7 +78,7 @@ public class Volume implements Command {
             sb.append(brick);
         }
 
-        if (blocks == 10) {
+        if (blocks == maxBricks) {
             sb.append("](http://jukebot.xyz)");
         }
 
