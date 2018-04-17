@@ -14,6 +14,9 @@ public class Volume implements Command {
 
     private final Permissions permissions = new Permissions();
 
+    private final String brick = "\u25AC";
+    private final int maxBricks = 10;
+
     public void execute(GuildMessageReceivedEvent e, String query) {
 
         final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
@@ -29,10 +32,11 @@ public class Volume implements Command {
         }
 
         if (query.length() == 0) {
+            final int vol = player.player.getVolume();
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Volume")
-                    .setDescription("\uD83D\uDD08 " + player.player.getVolume() + "%")
+                    .setDescription(calculateBricks(vol) + " `" + vol + "%`")
                     .build()
             ).queue();
         } else {
@@ -46,17 +50,41 @@ public class Volume implements Command {
                 return;
             }
 
-            final int newVolume = Helpers.parseNumber(query, 100);
+            player.player.setVolume(Helpers.parseNumber(query, 100));
 
-            player.player.setVolume(newVolume);
+            final int vol = player.player.getVolume();
 
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Volume")
-                    .setDescription("\uD83D\uDD08 " + player.player.getVolume() + "%")
+                    .setDescription(calculateBricks(vol) + " `" + vol + "%`")
                     .build()
             ).queue();
         }
 
+    }
+
+    private String calculateBricks(int volume) {
+        final float percent = (float) volume / 150;
+        final int blocks = (int) Math.floor(maxBricks * percent);
+
+        System.out.println(percent);
+        System.out.println(blocks);
+
+        final StringBuilder sb = new StringBuilder("[");
+
+        for (int i = 0; i < maxBricks; i++) {
+            if (i == blocks) {
+                sb.append("](http://jukebot.xyz)");
+            }
+
+            sb.append(brick);
+        }
+
+        if (blocks == 10) {
+            sb.append("](http://jukebot.xyz)");
+        }
+
+        return sb.toString();
     }
 }
