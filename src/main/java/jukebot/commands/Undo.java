@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-@CommandProperties(description = "Removes the last song queued by you", category = CommandProperties.category.MEDIA)
+@CommandProperties(aliases = {"z"}, description = "Removes the last song queued by you", category = CommandProperties.category.MEDIA)
 public class Undo implements Command {
 
     @Override
