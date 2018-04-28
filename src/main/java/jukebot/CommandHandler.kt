@@ -36,7 +36,7 @@ class CommandHandler : ListenerAdapter() {
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
         try {
-            if (!e.guild.isAvailable || e.author.isBot || e.author.isFake || !permissions.canSendTo(e.channel))
+            if (!e.guild.isAvailable || e.author.isBot || e.author.isFake || Database.isBlocked(e.author.idLong) || !permissions.canSendTo(e.channel))
                 return
 
             val guildPrefix = Database.getPrefix(e.guild.idLong)

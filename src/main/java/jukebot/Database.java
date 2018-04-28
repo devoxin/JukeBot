@@ -132,6 +132,36 @@ public class Database {
 
     }
 
+    public static void blockUser(long id) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO blocked VALUES (?);");
+            statement.setLong(1, id);
+            statement.execute();
+        } catch (SQLException unused) {
+        }
+    }
+
+    public static void unblockUser(long id) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM blocked WHERE id = ?");
+            statement.setLong(1, id);
+            statement.execute();
+        } catch (SQLException unused) {
+        }
+    }
+
+    public static boolean isBlocked(long id) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM blocked WHERE id = ?");
+            statement.setLong(1, id);
+            ResultSet results = statement.executeQuery();
+
+            return results.next();
+        } catch (SQLException unused) {
+            return false;
+        }
+    }
+
     static String getPropertyFromConfig(String prop, String def) {
 
         try (Connection connection = getConnection()) {
