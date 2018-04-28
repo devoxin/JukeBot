@@ -7,12 +7,14 @@ import java.util.ArrayList;
 
 public class Database {
 
+    public static int calls = 0;
     private final static HikariDataSource pool = new HikariDataSource();
 
     private static Connection getConnection() throws SQLException {
         if (!pool.isRunning())
             pool.setJdbcUrl("jdbc:sqlite:jukebot.db");
 
+        calls++;
         return pool.getConnection();
     }
 

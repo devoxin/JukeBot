@@ -1,5 +1,6 @@
 package jukebot.commands;
 
+import jukebot.Database;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
@@ -40,6 +41,7 @@ public class Stats implements Command {
                 .append("Guilds            : ").append(servers).append("\n")
                 .append("Users             : ").append(users).append("\n")
                 .append("Players           : ").append(players).append("\n\n")
+                .append("Database Calls    : ").append(Database.calls).append("\n")
                 .append("Shards Online     : ").append(shardsOnline).append("/").append(shards).append("\n")
                 .append("Avg. Shard Latency: ").append(averageShardLatency).append("ms\n")
                 .append("```");
