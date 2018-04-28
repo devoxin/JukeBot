@@ -7,8 +7,6 @@ import jukebot.utils.CommandProperties;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-import javax.xml.crypto.Data;
-
 @CommandProperties(description = "Developer menu", category = CommandProperties.category.MISC, developerOnly = true)
 public class Dev implements Command {
 
