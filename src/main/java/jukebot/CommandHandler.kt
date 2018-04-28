@@ -51,7 +51,7 @@ class CommandHandler : ListenerAdapter() {
 
             val content = e.message.contentRaw.substring(triggerLength).trim()
             val command = content.split("\\s+".toRegex())[0].toLowerCase()
-            val args = content.substring(command.length).trim()
+            val args = if (content.length >= command.length) content.substring(command.length).trim() else ""
 
             val foundCommand = commands
                     .filter({ c -> c.key == command || c.value.properties().aliases.contains(command) })
@@ -63,7 +63,7 @@ class CommandHandler : ListenerAdapter() {
 
             foundCommand.execute(e, args)
         } catch (err: Exception) {
-            val formatted = "An error occurred in the CommandHandler!\n```\n\tMessage: ${e.message}\n\tBot/Webhook: ${e.isWebhookMessage || e.author.isBot}\n\tStack: ${err.message}\n```"
+            val formatted = "An error occurred in the CommandHandler!\n```\n\tMessage: ${e.message}\n\tBot/Webhook: ${e.author.isBot || e.isWebhookMessage}\n\tStack: ${err.message}\n```"
 
             if (!JukeBot.isSelfHosted)
                 JukeBot.shardManager.getTextChannelById(435761621265022976L).sendMessage(formatted).queue()
