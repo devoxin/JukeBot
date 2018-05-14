@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 public class SongResultHandler implements AudioLoadResultHandler {
 
-    private final Pattern command = Pattern.compile("(p|play|sel|select)\\s.+");
+    private final Pattern command = Pattern.compile("(?:p(?:lay)?|s(?:el(?:ect)?)?|sc(?:search)?)\\s.+");
 
     private final Permissions permissions = new Permissions();
     private final GuildMessageReceivedEvent e;

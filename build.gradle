@@ -28,13 +28,13 @@ repositories {
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:3.6.0_362'
+    compile 'net.dv8tion:JDA:3.6.0_365'
     compile 'com.sedmelluq:lavaplayer:1.2.63'
     compile 'com.sedmelluq:jda-nas:1.0.6'
     compile 'org.xerial:sqlite-jdbc:3.21.0.1'
     compile 'com.zaxxer:HikariCP:3.1.0'
     compile 'org.reflections:reflections:0.9.11'
-    compile 'com.patreon:patreon:0.3.0'
+    compile 'com.patreon:patreon:0.4.0'
     compile 'org.apache.logging.log4j:log4j-core:2.11.0'
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

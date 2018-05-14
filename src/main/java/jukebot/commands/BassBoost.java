@@ -47,15 +47,18 @@ public class BassBoost implements Command {
             return;
         }
 
+        /*
         if (!JukeBot.isSelfHosted && permissions.getTier(e.getAuthor().getIdLong()) < 2) {
             e.getChannel().sendMessage(new EmbedBuilder()
                     .setColor(JukeBot.embedColour)
-                    .setTitle("Donator-only command")
-                    .setDescription("This command requires **Tier 2** or higher.\n[Click here to donate](https://www.patreon.com/Devoxin)")
+                    .setTitle("Upvote-locked command") // eww
+                    .setDescription("Upvote [here] to unlock this command!") // TODO check upvotes
+                    .setFooter("", null)
                     .build()
             ).queue();
             return;
         }
+        */
 
         if (query.length() == 0) {
             e.getChannel().sendMessage(new EmbedBuilder()
