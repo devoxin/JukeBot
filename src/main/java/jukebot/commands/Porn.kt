@@ -19,8 +19,8 @@ class Porn : Command {
         if (query.isEmpty()) {
             e.channel.sendMessage(EmbedBuilder()
                     .setColor(JukeBot.embedColour)
-                    .setTitle("Specify something")
-                    .setDescription("YouTube: Search Term/URL\nSoundCloud: URL")
+                    .setTitle("Search PornHub")
+                    .setDescription("Provide a query to search PornHub for")
                     .build()
             ).queue()
             return
