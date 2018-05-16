@@ -120,7 +120,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
                 val document: Document = Jsoup.parse(it.entity.content, StandardCharsets.UTF_8.name(), "https://pornhub.com")
                 val videos = document.getElementsByClass("wrap")
-                        .filter({ !it.select("div.thumbnail-info-wrapper span.title a").first().attr("href").contains("playlist") })
+                        .filter { !it.select("div.thumbnail-info-wrapper span.title a").first().attr("href").contains("playlist") }
 
                 if (videos.isEmpty())
                     return AudioReference.NO_TRACK

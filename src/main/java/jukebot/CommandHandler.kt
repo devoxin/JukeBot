@@ -54,7 +54,7 @@ class CommandHandler : ListenerAdapter() {
             val args = if (content.length >= command.length) content.substring(command.length).trim() else ""
 
             val foundCommand = commands
-                    .filter({ c -> c.key == command || c.value.properties().aliases.contains(command) })
+                    .filter { c -> c.key == command || c.value.properties().aliases.contains(command) }
                     .values
                     .firstOrNull()
 
@@ -80,7 +80,7 @@ class CommandHandler : ListenerAdapter() {
     }
 
     override fun onGuildJoin(e: GuildJoinEvent) {
-        val bots = e.guild.members.filter({ member -> member.user.isBot }).size
+        val bots = e.guild.members.filter { member -> member.user.isBot }.size
         if (bots / e.guild.members.size > 0.6)
             e.guild.leave().queue()
     }
