@@ -11,55 +11,37 @@ import net.dv8tion.jda.core.entities.MessageEmbed
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import java.util.stream.Stream
 
-@CommandProperties(description = "Displays all commands", aliases = arrayOf("commands"), category = CommandProperties.category.MISC)
+@CommandProperties(description = "Displays all commands", aliases = ["commands"], category = CommandProperties.category.MISC)
 class Help : Command {
 
     override fun execute(e: GuildMessageReceivedEvent, query: String) {
-        when (query) {
-            "1" -> e.channel.sendMessage(createHelpEmbed(
+        if ("1" == query) {
+            return e.channel.sendMessage(createHelpEmbed(
                     "You can use the **play** command to make JukeBot join your channel, search for the specified song and begin playing.\n`"
                             + "${Database.getPrefix(e.guild.idLong)} play <URL/Search Query>`")).queue()
+        }
 
-            "2" -> {
-                val controls = StringBuilder()
+        val menu = Helpers.parseNumber(query, 0)
 
-                filterCommands({ command -> command.properties().category == CommandProperties.category.CONTROLS }).forEach { command ->
-                    controls.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 11)).append(":`** ")
-                            .append(command.properties().description).append("\n")
-                }
-
-                e.channel.sendMessage(createHelpEmbed(controls.toString())).queue()
-            }
-
-            "3" -> {
-                val media = StringBuilder()
-
-                filterCommands({ command -> command.properties().category == CommandProperties.category.MEDIA }).forEach { command ->
-                    media.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 11)).append(":`** ")
-                            .append(command.properties().description).append("\n")
-                }
-
-                e.channel.sendMessage(createHelpEmbed(media.toString())).queue()
-            }
-
-            "4" -> {
-                val misc = StringBuilder()
-
-                filterCommands({ command -> command.properties().category == CommandProperties.category.MISC }).forEach { command ->
-                    misc.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 11)).append(":`** ")
-                            .append(command.properties().description).append("\n")
-                }
-
-                e.channel.sendMessage(createHelpEmbed(misc.toString())).queue()
-            }
-
-            else -> e.channel.sendMessage(EmbedBuilder()
+        if (menu <= 0 || menu > CommandProperties.category.values().size) {
+            e.channel.sendMessage(EmbedBuilder()
                     .setColor(JukeBot.embedColour)
                     .setTitle("Help Categories")
                     .setDescription("`1.` Getting Started\n`2.` Controls\n`3.` Media\n`4.` Miscellaneous\n\nUse `${Database.getPrefix(e.guild.idLong)}help <number>` to select a category")
                     .build()
             ).queue()
+        } else {
+            val category = CommandProperties.category.values()[menu - 2]
+            val builder = StringBuilder()
+
+            filterCommands({ command -> command.properties().category == category }).forEach { command ->
+                builder.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 11)).append(":`** ")
+                        .append(command.properties().description).append("\n")
+            }
+
+            e.channel.sendMessage(createHelpEmbed(builder.toString())).queue()
         }
+
     }
 
     private fun filterCommands(filter: (Command) -> Boolean): Stream<Command> {

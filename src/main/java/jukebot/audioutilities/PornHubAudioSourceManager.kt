@@ -96,15 +96,11 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 if (info.get("video_unavailable").text() == "true")
                     return AudioReference.NO_TRACK
 
-                val playbackURL = info.get("mediaDefinitions").values().stream()
-                        .filter { format -> format.get("videoUrl").text().isNotEmpty() }
-                        .findFirst()
-                        .orElse(null)!!.get("videoUrl").text() ?: return AudioReference.NO_TRACK
-
                 val videoTitle = info.get("video_title").text()
                 val videoDuration = Integer.parseInt(info.get("video_duration").text()) * 1000 // PH returns seconds
 
-                return buildTrackObject(reference.identifier, playbackURL, videoTitle, "Unknown Uploader", false, videoDuration.toLong())
+                // todo: one of these should be the video id, the other should be the complete URL
+                return buildTrackObject(reference.identifier, reference.identifier, videoTitle, "Unknown Uploader", false, videoDuration.toLong())
             }
         } catch (e: Exception) {
             throw ExceptionTools.wrapUnfriendlyExceptions("Loading information for a PornHub track failed.", FAULT, e)
@@ -122,8 +118,9 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                     throw IOException("Invalid status code for search response: $statusCode")
                 }
 
-                val document: Document = Jsoup.parse(it.entity.content, StandardCharsets.UTF_8.name(), "")
+                val document: Document = Jsoup.parse(it.entity.content, StandardCharsets.UTF_8.name(), "https://pornhub.com")
                 val videos = document.getElementsByClass("wrap")
+                        .filter({ !it.select("div.thumbnail-info-wrapper span.title a").first().attr("href").contains("playlist") })
 
                 if (videos.isEmpty())
                     return AudioReference.NO_TRACK
@@ -134,7 +131,9 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                     val anchor = e.select("div.thumbnail-info-wrapper span.title a").first()
                     val title = anchor.text()
                     val url = anchor.absUrl("href")
-                    //audioTracks.add(buildTrackObject(url, ))
+
+                    // todo: one of these should be the video id, the other should be the complete URL
+                    tracks.add(buildTrackObject(url, url, title, "Unknown Uploader", false, Long.MAX_VALUE))
                 }
 
                 return BasicAudioPlaylist("Search results for: $query", tracks, null, true)
