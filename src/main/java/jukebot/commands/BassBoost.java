@@ -1,49 +1,33 @@
 package jukebot.commands;
 
-import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
+import jukebot.utils.Context;
 import jukebot.utils.Permissions;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-@CommandProperties(aliases = {"bb"}, description = "Bass boosts the audio", category = CommandProperties.category.MEDIA)
+@CommandProperties(aliases = {"bb"}, description = "Bass boosts the audio", category = CommandProperties.category.CONTROLS)
 public class BassBoost implements Command {
 
     private final Permissions permissions = new Permissions();
 
     @Override
-    public void execute(GuildMessageReceivedEvent e, String query) {
-        AudioHandler handler = JukeBot.getPlayer(e.getGuild().getAudioManager());
+    public void execute(final Context context) {
+        final AudioHandler handler = context.getAudioPlayer();
+        final String[] args = context.getArgs();
 
         if (!handler.isPlaying()) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("No playback activity")
-                    .setDescription("There's nothing playing.")
-                    .build()
-            ).queue();
+            context.sendEmbed("Not Playing", "Nothing is currently playing.");
             return;
         }
 
-        if (!permissions.ensureMutualVoiceChannel(e.getMember())) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("No Mutual VoiceChannel")
-                    .setDescription("Join my VoiceChannel to use this command.")
-                    .build()
-            ).queue();
+        if (!permissions.ensureMutualVoiceChannel(context.getMember())) {
+            context.sendEmbed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.");
             return;
         }
 
-        if (!permissions.isElevatedUser(e.getMember(), true)) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Permission Error")
-                    .setDescription("You need to be a DJ")
-                    .build()
-            ).queue();
+        if (!context.isDJ(true)) {
+            context.sendEmbed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.xyz/faq)");
             return;
         }
 
@@ -60,42 +44,39 @@ public class BassBoost implements Command {
         }
         */
 
-        if (query.length() == 0) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Bass Boost Presets")
-                    .setDescription("Current Setting: `" + handler.getBassBoostSetting() + "`\n\nValid presets: `Off`, `Low`, `Medium`, `High`, `Insane`")
-                    .setFooter("Higher presets may cause distortion and damage hearing during prolonged listening periods", null)
-                    .build()
-            ).queue();
+        if (context.getArgString().isEmpty()) {
+            context.sendEmbed("BassBoost Presets",
+                    "Current Setting: `" + handler.getBassBoostSetting() + "`\n\nValid presets: `Off`, `Low`, `Medium`, `High`, `Insane`",
+                    "Distortion may occur on higher presets and damage hearing during prolonged listening periods");
             return;
         }
 
-        if (query.equalsIgnoreCase("off")) {
-            handler.bassBoost(AudioHandler.bassBoost.OFF);
-        } else if (query.equalsIgnoreCase("low")) {
-            handler.bassBoost(AudioHandler.bassBoost.LOW);
-        } else if (query.equalsIgnoreCase("medium")) {
-            handler.bassBoost(AudioHandler.bassBoost.MEDIUM);
-        } else if (query.equalsIgnoreCase("high")) {
-            handler.bassBoost(AudioHandler.bassBoost.HIGH);
-        } else if (query.equalsIgnoreCase("insane")) {
-            handler.bassBoost(AudioHandler.bassBoost.INSANE);
-        } else {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Bass Boost")
-                    .setDescription(query + " is not a recognised preset")
-                    .build()
-            ).queue();
-            return;
+        switch (args[0]) {
+            case "o":
+            case "off":
+                handler.bassBoost(AudioHandler.bassBoost.OFF);
+                break;
+            case "l":
+            case "low":
+                handler.bassBoost(AudioHandler.bassBoost.LOW);
+                break;
+            case "m":
+            case "medium":
+                handler.bassBoost(AudioHandler.bassBoost.MEDIUM);
+                break;
+            case "h":
+            case "high":
+                handler.bassBoost(AudioHandler.bassBoost.HIGH);
+                break;
+            case "i":
+            case "insane":
+                handler.bassBoost(AudioHandler.bassBoost.INSANE);
+                break;
+            default:
+                context.sendEmbed("BassBoost", args[0] + " is not a recognised preset");
+                return;
         }
 
-        e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.embedColour)
-                .setTitle("Bass Boost")
-                .setDescription("Set bass boost to `" + query.toLowerCase() + "`")
-                .build()
-        ).queue();
+        context.sendEmbed("BassBoost", "Set bass boost to `" + handler.getBassBoostSetting() + "`");
     }
 }

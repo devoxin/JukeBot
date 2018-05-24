@@ -4,9 +4,8 @@ import jukebot.JukeBot
 import jukebot.audioutilities.SongResultHandler
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
+import jukebot.utils.Context
 import jukebot.utils.Permissions
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 
 
 @CommandProperties(description = "Find a track on YouTube and queue it", aliases = ["p"], category = CommandProperties.category.CONTROLS)
@@ -14,58 +13,35 @@ class Porn : Command {
 
     internal val permissions = Permissions()
 
-    override fun execute(e: GuildMessageReceivedEvent, query: String) {
+    override fun execute(context: Context) {
 
-        if (query.isEmpty()) {
-            e.channel.sendMessage(EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Search PornHub")
-                    .setDescription("Provide a query to search PornHub for")
-                    .build()
-            ).queue()
-            return
+        if (context.argString.isEmpty()) {
+            return context.sendEmbed("PornHub Search", "Provide a query to search PornHub for")
         }
 
-        val manager = e.guild.audioManager
+        if (!context.channel.isNSFW) {
+            return context.sendEmbed("PornHub Search", "Searches can only be performed from NSFW channels")
+        }
+
+        val manager = context.guild.audioManager
         val player = JukeBot.getPlayer(manager)
 
-        if (!permissions.checkVoiceConnection(e.member)) {
-            e.channel.sendMessage(EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("No Mutual VoiceChannel")
-                    .setDescription("Join my VoiceChannel to use this command.")
-                    .build()
-            ).queue()
-            return
+        if (!permissions.checkVoiceConnection(context.member)) {
+            return context.sendEmbed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.")
         }
 
         if (!manager.isAttemptingToConnect && !manager.isConnected) {
-            val connectionStatus = permissions.canConnectTo(e.member.voiceState.channel)
+            val connectionStatus = permissions.canConnectTo(context.member.voiceState.channel)
 
             if (null != connectionStatus) {
-                e.channel.sendMessage(EmbedBuilder()
-                        .setColor(JukeBot.embedColour)
-                        .setTitle(connectionStatus.title)
-                        .setDescription(connectionStatus.description)
-                        .build()
-                ).queue()
-                return
+                return context.sendEmbed(connectionStatus.title, connectionStatus.description)
             }
 
-            manager.openAudioConnection(e.member.voiceState.channel)
-            player.setChannel(e.channel.idLong)
+            manager.openAudioConnection(context.member.voiceState.channel)
+            player.setChannel(context.channel.idLong)
         }
 
-        if (!e.channel.isNSFW) {
-            e.channel.sendMessage("Pornhub searches can only be loaded in NSFW channels").queue()
-
-            if (!player.isPlaying)
-                e.guild.audioManager.closeAudioConnection()
-
-            return
-        }
-
-        JukeBot.playerManager.loadItem("phsearch:$query", SongResultHandler(e, player, true))
+        JukeBot.playerManager.loadItem("phsearch:${context.argString}", SongResultHandler(context, player, true))
 
     }
 }

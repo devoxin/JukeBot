@@ -3,87 +3,64 @@ package jukebot.commands;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.SongResultHandler;
-import jukebot.utils.Command;
-import jukebot.utils.CommandProperties;
-import jukebot.utils.ConnectionError;
-import jukebot.utils.Permissions;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import jukebot.utils.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-@CommandProperties(description = "Find a track on YouTube and queue it", aliases = {"p"}, category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Queues the track if a URL is provided, otherwise searches YouTube", aliases = {"p"}, category = CommandProperties.category.CONTROLS)
 public class Play implements Command {
 
     final Permissions permissions = new Permissions();
 
-    public void execute(GuildMessageReceivedEvent e, String query) {
+    public void execute(final Context context) {
 
-        if (query.length() == 0) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Specify something")
-                    .setDescription("YouTube: Search Term/URL\nSoundCloud: URL")
-                    .build()
-            ).queue();
+        if (context.getArgString().isEmpty()) {
+            context.sendEmbed("Play", "Specify a URL or a search term");
             return;
         }
 
-        final AudioManager manager = e.getGuild().getAudioManager();
-        final AudioHandler player = JukeBot.getPlayer(manager);
+        final AudioManager manager = context.getGuild().getAudioManager();
+        final AudioHandler player = context.getAudioPlayer();
 
-        if (!permissions.checkVoiceConnection(e.getMember())) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("No Mutual VoiceChannel")
-                    .setDescription("Join my VoiceChannel to use this command.")
-                    .build()
-            ).queue();
+        if (!permissions.checkVoiceConnection(context.getMember())) {
+            context.sendEmbed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.");
             return;
         }
 
         if (!manager.isAttemptingToConnect() && !manager.isConnected()) {
-            ConnectionError connectionStatus = permissions.canConnectTo(e.getMember().getVoiceState().getChannel());
+            ConnectionError connectionStatus = permissions.canConnectTo(context.getMember().getVoiceState().getChannel());
 
             if (null != connectionStatus) {
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.embedColour)
-                        .setTitle(connectionStatus.title)
-                        .setDescription(connectionStatus.description)
-                        .build()
-                ).queue();
+                context.sendEmbed(connectionStatus.title, connectionStatus.description);
                 return;
             }
 
-            manager.openAudioConnection(e.getMember().getVoiceState().getChannel());
-            player.setChannel(e.getChannel().getIdLong());
+            manager.openAudioConnection(context.getMember().getVoiceState().getChannel());
+            player.setChannel(context.getChannel().getIdLong());
         }
 
-        final String userQuery = query.replaceAll("[<>]", "");
+        final String userQuery = context.getArgString().replaceAll("[<>]", "");
 
         if (userQuery.startsWith("http")) {
             if (userQuery.toLowerCase().contains("/you/likes")) {
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.embedColour)
-                        .setTitle("Cannot load likes from SoundCloud")
-                        .setDescription("JukeBot doesn't implement oauth and as a result\ncannot access your liked tracks when referenced as `you`")
-                        .build()
-                ).queue();
+                context.sendEmbed("SoundCloud Liked Tracks", "JukeBot doesn't implement oauth and as a result\ncannot access your liked tracks when referenced as `you`");
 
-                if (!player.isPlaying())
-                    e.getGuild().getAudioManager().closeAudioConnection();
+                if (!player.isPlaying()) {
+                    manager.closeAudioConnection();
+                }
                 return;
             }
-            if (userQuery.toLowerCase().contains("pornhub") && !e.getChannel().isNSFW()) {
-                e.getChannel().sendMessage("Pornhub tracks can only be loaded from NSFW channels").queue();
+            if (userQuery.toLowerCase().contains("pornhub") && !context.getChannel().isNSFW()) {
+                context.sendEmbed("PornHub Tracks", "PornHub tracks can only be loaded from NSFW channels!");
 
-                if (!player.isPlaying())
-                    e.getGuild().getAudioManager().closeAudioConnection();
+                if (!player.isPlaying()) {
+                    manager.closeAudioConnection();
+                }
 
                 return;
             }
-            JukeBot.playerManager.loadItem(userQuery, new SongResultHandler(e, player, false));
+            JukeBot.playerManager.loadItem(userQuery, new SongResultHandler(context, player, false));
         } else {
-            JukeBot.playerManager.loadItem("ytsearch:" + userQuery, new SongResultHandler(e, player, false));
+            JukeBot.playerManager.loadItem("ytsearch:" + userQuery, new SongResultHandler(context, player, false));
         }
 
     }

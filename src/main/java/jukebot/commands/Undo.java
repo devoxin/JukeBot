@@ -1,12 +1,10 @@
 package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import jukebot.utils.Context;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -15,16 +13,12 @@ import java.util.LinkedList;
 public class Undo implements Command {
 
     @Override
-    public void execute(GuildMessageReceivedEvent e, String query) {
-        AudioHandler handler = JukeBot.getPlayer(e.getGuild().getAudioManager());
+    public void execute(final Context context) {
+
+        AudioHandler handler = context.getAudioPlayer();
 
         if (handler.getQueue().isEmpty()) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Nothing to unqueue")
-                    .setDescription("The queue is empty.")
-                    .build()
-            ).queue();
+            context.sendEmbed("Nothing to Remove", "The queue is empty!");
             return;
         }
 
@@ -35,25 +29,15 @@ public class Undo implements Command {
             AudioTrack t = (AudioTrack) i.next();
             Long requester = (long) t.getUserData();
 
-            if (requester == e.getAuthor().getIdLong()) {
+            if (requester == context.getAuthor().getIdLong()) {
                 i.remove();
 
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.embedColour)
-                        .setTitle("Track Removed")
-                        .setDescription("**" + t.getInfo().title + "** removed from the queue.")
-                        .build()
-                ).queue();
-
+                context.sendEmbed("Track Removed", "**" + t.getInfo().title + "** removed from the queue.");
                 return;
             }
         }
 
-        e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.embedColour)
-                .setTitle("No Tracks Found")
-                .setDescription("No tracks queued by you were found.")
-                .build()
-        ).queue();
+        context.sendEmbed("No Tracks Found", "No tracks queued by you were found.");
+
     }
 }

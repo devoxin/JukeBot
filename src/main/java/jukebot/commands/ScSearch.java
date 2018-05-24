@@ -3,12 +3,7 @@ package jukebot.commands;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.SongResultHandler;
-import jukebot.utils.Command;
-import jukebot.utils.CommandProperties;
-import jukebot.utils.ConnectionError;
-import jukebot.utils.Permissions;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import jukebot.utils.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 
 @CommandProperties(description = "Search SoundCloud and queue the top result", aliases = {"sc"}, category = CommandProperties.category.CONTROLS)
@@ -16,49 +11,34 @@ public class ScSearch implements Command {
 
     final Permissions permissions = new Permissions();
 
-    public void execute(GuildMessageReceivedEvent e, String query) {
+    public void execute(final Context context) {
 
-        if (query.length() == 0) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("No Search Query Specified")
-                    .setDescription("Specify a term to search SoundCloud for")
-                    .build()
-            ).queue();
+        if (context.getArgString().isEmpty()) {
+            context.sendEmbed("SoundCloud Search", "Specify what to search for.");
             return;
         }
 
-        final AudioManager manager = e.getGuild().getAudioManager();
-        final AudioHandler player = JukeBot.getPlayer(manager);
+        final AudioManager manager = context.getGuild().getAudioManager();
+        final AudioHandler player = context.getAudioPlayer();
 
-        if (!permissions.checkVoiceConnection(e.getMember())) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("No Mutual VoiceChannel")
-                    .setDescription("Join my VoiceChannel to use this command.")
-                    .build()
-            ).queue();
+        if (!permissions.checkVoiceConnection(context.getMember())) {
+            context.sendEmbed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.");
             return;
         }
 
         if (!manager.isAttemptingToConnect() && !manager.isConnected()) {
-            ConnectionError connectionStatus = permissions.canConnectTo(e.getMember().getVoiceState().getChannel());
+            ConnectionError connectionStatus = permissions.canConnectTo(context.getMember().getVoiceState().getChannel());
 
             if (null != connectionStatus) {
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.embedColour)
-                        .setTitle(connectionStatus.title)
-                        .setDescription(connectionStatus.description)
-                        .build()
-                ).queue();
+                context.sendEmbed(connectionStatus.title, connectionStatus.description);
                 return;
             }
 
-            manager.openAudioConnection(e.getMember().getVoiceState().getChannel());
-            player.setChannel(e.getChannel().getIdLong());
+            manager.openAudioConnection(context.getMember().getVoiceState().getChannel());
+            player.setChannel(context.getChannel().getIdLong());
         }
 
-        JukeBot.playerManager.loadItem("scsearch:" + query, new SongResultHandler(e, player, false));
+        JukeBot.playerManager.loadItem("scsearch:" + context.getArgString(), new SongResultHandler(context, player, false));
 
     }
 }

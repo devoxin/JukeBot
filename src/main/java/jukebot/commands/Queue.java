@@ -1,32 +1,24 @@
 package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import jukebot.Database;
-import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
+import jukebot.utils.Context;
 import jukebot.utils.Helpers;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.LinkedList;
 
 @CommandProperties(description = "Displays the current queue", aliases = {"q", "list", "songs"}, category = CommandProperties.category.MEDIA)
 public class Queue implements Command {
 
-    public void execute(GuildMessageReceivedEvent e, String query) {
+    public void execute(final Context context) {
 
-        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
+        final AudioHandler player = context.getAudioPlayer();
         final LinkedList<AudioTrack> queue = player.getQueue();
 
         if (queue.isEmpty()) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("No songs queued")
-                    .setDescription("Use `" + Database.getPrefix(e.getGuild().getIdLong()) + "now` to view the current track.")
-                    .build()
-            ).queue();
+            context.sendEmbed("Queue is empty", "There are no tracks to display.\nUse `" + context.getPrefix() + "now` to view current track.");
             return;
         }
 
@@ -34,7 +26,7 @@ public class Queue implements Command {
         final StringBuilder fQueue = new StringBuilder();
 
         final int maxPages = (int) Math.ceil((double) queue.size() / 10);
-        int page = Helpers.parseNumber(query, 1);
+        int page = Helpers.parseNumber(context.getArgString(), 1);
 
         if (page < 1)
             page = 1;
@@ -58,13 +50,9 @@ public class Queue implements Command {
                     .append(">\n");
         }
 
-        e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.embedColour)
-                .setTitle("Queue (" + queue.size() + " songs, " + queueDuration + ")")
-                .setDescription(fQueue.toString().trim())
-                .setFooter("Page " + (page) + "/" + (maxPages), null)
-                .build()
-        ).queue();
+        context.sendEmbed("Queue (" + queue.size() + " songs, " + queueDuration + ")",
+                fQueue.toString().trim(),
+                "Page " + page + "/" + maxPages);
 
     }
 }

@@ -117,7 +117,7 @@ public class Database {
 
     public static ArrayList<Long> getDonatorIDs() {
 
-        ArrayList<Long> donators = new ArrayList<>();
+        ArrayList<Long> donors = new ArrayList<>();
 
         try (Connection connection = getConnection()) {
 
@@ -125,12 +125,12 @@ public class Database {
             ResultSet results = state.executeQuery("SELECT * FROM donators");
 
             while (results.next())
-                donators.add(results.getLong(1));
+                donors.add(results.getLong(1));
 
         } catch (SQLException unused) {
         }
 
-        return donators;
+        return donors;
 
     }
 

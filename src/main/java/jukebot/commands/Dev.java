@@ -4,49 +4,60 @@ import jukebot.Database;
 import jukebot.JukeBot;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import jukebot.utils.Context;
+
+import java.util.Random;
 
 @CommandProperties(description = "Developer menu", category = CommandProperties.category.MISC, developerOnly = true)
 public class Dev implements Command {
 
-    public void execute(GuildMessageReceivedEvent e, String query) {
+    private Random r = new Random();
+    private String[] quotes = {
+            "Master gave dobby a sock",
+            "Needs more jellybeans",
+            "what's this do?",
+            "dev commands op plz nerf",
+            "insert floppy disk into drive A:",
+            "OOOOOOH SHINY",
+            "java wouldn't be a real language if it werent for minecraft"
+    };
 
-        String[] args = query.split("\\s+");
+    public void execute(final Context context) {
+
+        final String[] args = context.getArgs();
 
         if (args[0].equalsIgnoreCase("preload")) {
             if (JukeBot.isSelfHosted) {
-                e.getChannel().sendMessage("Command unavailable").queue();
+                context.sendEmbed("Command Unavailable", "This command is unavailable on self-hosted JukeBot.");
                 return;
             }
             if (args.length < 2) {
-                e.getChannel().sendMessage("Missing arg `key`").queue();
+                context.sendEmbed("Missing Required Arg", "You need to specify `key`");
             } else {
                 JukeBot.recreatePatreonApi(args[1]);
-                e.getMessage().addReaction("\uD83D\uDC4C").queue();
+                context.getMessage().addReaction("\uD83D\uDC4C").queue();
             }
         } else if (args[0].equalsIgnoreCase("block")) {
             if (args.length < 2) {
-                e.getChannel().sendMessage("Missing arg `userId`").queue();
+                context.sendEmbed("Missing Required Arg", "You need to specify `userId`");
             } else {
                 Database.blockUser(Long.parseLong(args[1]));
-                e.getChannel().sendMessage("User blocked.").queue();
+                context.sendEmbed("User Blocked", args[1] + " is now blocked from using JukeBot.");
             }
         } else if (args[0].equalsIgnoreCase("unblock")) {
             if (args.length < 2) {
-                e.getChannel().sendMessage("Missing arg `userId`").queue();
+                context.sendEmbed("Missing Required Arg", "You need to specify `userId`");
             } else {
                 Database.unblockUser(Long.parseLong(args[1]));
-                e.getChannel().sendMessage("User unblocked.").queue();
+                context.sendEmbed("User Blocked", args[1] + " can now use JukeBot.");
             }
         } else {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Debug Subcommands")
-                    .setDescription("`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>")
-                    .build()
-            ).queue();
+            context.sendEmbed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>", randomQuote());
         }
+    }
+
+    private String randomQuote() {
+        return quotes[r.nextInt(quotes.length)];
     }
 
 }

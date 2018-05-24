@@ -4,27 +4,29 @@ import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.JukeBot;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
-import net.dv8tion.jda.core.EmbedBuilder;
+import jukebot.utils.Context;
 import net.dv8tion.jda.core.JDAInfo;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.User;
 import org.sqlite.SQLiteJDBCLoader;
 
 @CommandProperties(aliases = {"info"}, description = "Displays some information about the bot")
 public class About implements Command {
 
     @Override
-    public void execute(GuildMessageReceivedEvent e, String query) {
+    public void execute(final Context context) {
         final String dependencies = "**JDA**: " + JDAInfo.VERSION +
                 "\n**Lavaplayer**: " + PlayerLibrary.VERSION +
                 "\n**SQLite**: " + SQLiteJDBCLoader.getVersion();
 
-        e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.embedColour)
-                .setTitle("About JukeBot " + JukeBot.VERSION + "!")
-                .setDescription("Developer: **Kromatic#0420**")
-                .addField("Dependencies", dependencies, true)
-                .addField("Links", "[GitHub](https://github.com/Devoxin/JukeBot)\n[Website](http://jukebot.xyz)", true)
-                .build()
-        ).queue();
+        final User dev = context.getJda().getUserById(180093157554388993L);
+        final MessageEmbed.Field[] fields = {
+                new MessageEmbed.Field("Dependencies", dependencies, true),
+                new MessageEmbed.Field("Links", "[GitHub](https://github.com/Devoxin/JukeBot)\n[Website](https://jukebot.xyz)", true)
+        };
+
+        context.sendEmbed("About JukeBot " + JukeBot.VERSION,
+                "Developer: **" + dev.getName() + "#" + dev.getDiscriminator() + "**",
+                fields);
     }
 }

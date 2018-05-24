@@ -11,21 +11,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 
 public class Permissions {
 
-    private boolean isDJ(Member m) {
-        return m.getRoles().stream().anyMatch(r -> "dj".equalsIgnoreCase(r.getName()));
-    }
-
-    private boolean isAlone(Member m) {
-        return (m.getVoiceState().inVoiceChannel() && m.getVoiceState().getChannel().getMembers().stream().filter(u -> !u.getUser().isBot()).count() == 1);
-    }
-
-    public boolean isElevatedUser(Member m, boolean allowLone) {
-        if (allowLone)
-            return isAlone(m) || m.isOwner() || JukeBot.botOwnerId == m.getUser().getIdLong() || isDJ(m);
-
-        return m.isOwner() || JukeBot.botOwnerId == m.getUser().getIdLong() || isDJ(m);
-    }
-
     public boolean isTrackRequester(AudioTrack track, long requester) {
         return (long) track.getUserData() == requester;
     }

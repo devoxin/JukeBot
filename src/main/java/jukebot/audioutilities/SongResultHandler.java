@@ -5,10 +5,10 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
+import jukebot.utils.Context;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.AudioManager;
 
 import java.util.List;
@@ -19,11 +19,11 @@ public class SongResultHandler implements AudioLoadResultHandler {
     private final Pattern command = Pattern.compile("(?:p(?:lay)?|s(?:el(?:ect)?)?|sc(?:search)?)\\s.+");
 
     private final Permissions permissions = new Permissions();
-    private final GuildMessageReceivedEvent e;
+    private final Context e;
     private final AudioHandler musicManager;
     private final boolean useSelection;
 
-    public SongResultHandler(GuildMessageReceivedEvent e, AudioHandler m, boolean UseSelection) {
+    public SongResultHandler(Context e, AudioHandler m, boolean UseSelection) {
         this.e = e;
         this.musicManager = m;
         this.useSelection = UseSelection;

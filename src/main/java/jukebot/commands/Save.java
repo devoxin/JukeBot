@@ -5,36 +5,26 @@ import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
+import jukebot.utils.Context;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 @CommandProperties(description = "DMs you the currently playing track", category = CommandProperties.category.MEDIA)
 public class Save implements Command {
 
-    public void execute(GuildMessageReceivedEvent e, String query) {
+    public void execute(final Context context) {
 
-        final AudioHandler player = JukeBot.getPlayer(e.getGuild().getAudioManager());
+        final AudioHandler player = context.getAudioPlayer();
         final AudioTrack currentTrack = player.player.getPlayingTrack();
 
         if (!player.isPlaying()) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("No playback activity")
-                    .setDescription("There's nothing playing.")
-                    .build()
-            ).queue();
+            context.sendEmbed("Not Playing", "Nothing is currently playing.");
             return;
         }
 
-        if (query.length() > 0 && "all".equalsIgnoreCase(query)) {
+        if ("all".equalsIgnoreCase(context.getArgString())) {
 
             if (player.getQueue().isEmpty()) {
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.embedColour)
-                        .setTitle("No songs queued")
-                        .setDescription("There are no songs in the queue.")
-                        .build()
-                ).queue();
+                context.sendEmbed("Queue is empty", "There are no tracks to save.");
                 return;
             }
 
@@ -46,32 +36,22 @@ public class Save implements Command {
                         .append(track.getInfo().uri)
                         .append("\r\n");
 
-            e.getAuthor().openPrivateChannel().queue(dm ->
+            context.getAuthor().openPrivateChannel().queue(dm ->
                     dm.sendFile(
                             sb.toString().getBytes(), "queue.txt", null
                     ).queue(null, error ->
-                            e.getChannel().sendMessage(new EmbedBuilder()
-                                    .setColor(JukeBot.embedColour)
-                                    .setTitle("Unable to DM")
-                                    .setDescription("I was unable to DM you.\nEnsure I'm not blocked and your DMs are enabled.")
-                                    .build()
-                            ).queue()
+                            context.sendEmbed("Unable to DM", "Ensure your DMs are enabled.")
                     )
             );
         } else {
-            e.getAuthor().openPrivateChannel().queue(dm ->
+            context.getAuthor().openPrivateChannel().queue(dm ->
                     dm.sendMessage(
                             new EmbedBuilder()
                                     .setColor(JukeBot.embedColour)
                                     .setTitle(currentTrack.getInfo().title, currentTrack.getInfo().uri)
                                     .build()
                     ).queue(null, error ->
-                            e.getChannel().sendMessage(new EmbedBuilder()
-                                    .setColor(JukeBot.embedColour)
-                                    .setTitle("Unable to DM")
-                                    .setDescription("I was unable to DM you.\nEnsure I'm not blocked and your DMs are enabled.")
-                                    .build()
-                            ).queue()
+                            context.sendEmbed("Unable to DM", "Ensure your DMs are enabled.")
                     )
             );
         }

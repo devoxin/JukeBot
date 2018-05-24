@@ -1,12 +1,9 @@
 package jukebot.commands;
 
 import jukebot.Database;
-import jukebot.JukeBot;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
-import jukebot.utils.Permissions;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import jukebot.utils.Context;
 
 import java.util.regex.Pattern;
 
@@ -14,50 +11,31 @@ import java.util.regex.Pattern;
 public class Prefix implements Command {
 
     private final Pattern mentionRegex = Pattern.compile("<@!?\\d{17,20}>");
-    private final Permissions permissions = new Permissions();
 
-    public void execute(GuildMessageReceivedEvent e, String query) {
+    public void execute(final Context context) {
 
-        final String currentPrefix = Database.getPrefix(e.getGuild().getIdLong());
+        final String currentPrefix = context.getPrefix();
+        final String newPrefix = context.getArgString();
 
-        if (query.length() == 0) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Server Prefix")
-                    .setDescription("Current prefix: [**" + currentPrefix + "**]()\nChange prefix: [**" + currentPrefix + "prefix !**]()")
-                    .build()
-            ).queue();
-        } else {
-            if (!permissions.isElevatedUser(e.getMember(), false)) {
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.embedColour)
-                        .setTitle("Permission Error")
-                        .setDescription("You need to have the DJ role.")
-                        .build()
-                ).queue();
-                return;
-            }
-
-            final String prefix = query.trim(); //query.split("\\s+")[0].trim();
-
-            if (mentionRegex.matcher(prefix).matches()) {
-                e.getChannel().sendMessage(new EmbedBuilder()
-                        .setColor(JukeBot.embedColour)
-                        .setTitle("Invalid Prefix")
-                        .setDescription("You cannot set a mention as the prefix.")
-                        .build()
-                ).queue();
-                return;
-            }
-
-            final boolean updatedPrefix = Database.setPrefix(e.getGuild().getIdLong(), prefix);
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Server Prefix")
-                    .setDescription(updatedPrefix ? "Prefix updated to `" + prefix + "`" : "Prefix update failed")
-                    .build()
-            ).queue();
+        if (newPrefix.isEmpty()) {
+            context.sendEmbed("Server Prefix", "Current prefix: **" + currentPrefix + "**\nChange prefix: **" + currentPrefix + "prefix !**");
+            return;
         }
+
+        if (!context.isDJ(false)) {
+            context.sendEmbed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.xyz/faq)");
+            return;
+        }
+
+        if (mentionRegex.matcher(newPrefix).matches()) {
+            context.sendEmbed("Invalid Prefix", "Mentions cannot be used as prefixes.");
+            return;
+        }
+
+        final Boolean updatedPrefix = Database.setPrefix(context.getGuild().getIdLong(), newPrefix);
+        final String resp = updatedPrefix ? "Prefix updated to `" + newPrefix + "`" : "Failed to update prefix!";
+
+        context.sendEmbed("Server Prefix", resp);
 
     }
 }

@@ -1,10 +1,7 @@
 package jukebot
 
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Helpers
-import jukebot.utils.Permissions
+import jukebot.utils.*
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.events.ReadyEvent
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
@@ -61,14 +58,11 @@ class CommandHandler : ListenerAdapter() {
             if (foundCommand == null || foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong)
                 return
 
-            foundCommand.execute(e, args)
+            foundCommand.execute(Context(e, args, guildPrefix))
         } catch (err: Exception) {
             val formatted = "An error occurred in the CommandHandler!\n```\n\tMessage: ${e.message.contentStripped}\n\tBot/Webhook: ${e.author.isBot || e.isWebhookMessage}\n\tStack: ${err.message}\n```"
 
-            if (!JukeBot.isSelfHosted)
-                JukeBot.shardManager.getTextChannelById(435761621265022976L).sendMessage(formatted).queue()
-            else
-                JukeBot.LOG.error(formatted)
+            JukeBot.LOG.error(formatted)
 
             e.channel.sendMessage(EmbedBuilder()
                     .setColor(JukeBot.embedColour)
@@ -91,7 +85,7 @@ class CommandHandler : ListenerAdapter() {
 
     override fun onReady(e: ReadyEvent) {
         if (!JukeBot.hasFinishedLoading) {
-            e.jda.asBot().applicationInfo.queue({ info ->
+            e.jda.asBot().applicationInfo.queue { info ->
                 JukeBot.botOwnerId = info.owner.idLong
                 JukeBot.isSelfHosted = info.idLong != 249303797371895820L && info.idLong != 314145804807962634L
 
@@ -107,7 +101,7 @@ class CommandHandler : ListenerAdapter() {
                     JukeBot.playerManager.configuration.resamplingQuality = AudioConfiguration.ResamplingQuality.HIGH
 
                 JukeBot.hasFinishedLoading = true
-            })
+            }
         }
     }
 
