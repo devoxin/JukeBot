@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
+import javax.annotation.Nullable
 
 class Context constructor(val event: GuildMessageReceivedEvent, val argString: String, val prefix: String) {
 
@@ -38,18 +39,18 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
     }
 
     fun sendEmbed(title: String, description: String) {
-        sendEmbed(title, description, emptyArray(), "")
+        sendEmbed(title, description, emptyArray(), null)
     }
 
     fun sendEmbed(title: String, description: String, fields: Array<MessageEmbed.Field>) {
-        sendEmbed(title, description, fields, "")
+        sendEmbed(title, description, fields, null)
     }
 
     fun sendEmbed(title: String, description: String, footer: String) {
         sendEmbed(title, description, emptyArray(), footer)
     }
 
-    fun sendEmbed(title: String, description: String, fields: Array<MessageEmbed.Field>, footer: String) {
+    fun sendEmbed(title: String?, description: String?, fields: Array<MessageEmbed.Field>, footer: String?) {
         val builder: EmbedBuilder = EmbedBuilder()
                 .setColor(JukeBot.embedColour)
                 .setTitle(title)
