@@ -60,7 +60,10 @@ class CommandHandler : ListenerAdapter() {
 
             foundCommand.execute(Context(e, args, guildPrefix))
         } catch (err: Exception) {
-            val formatted = "An error occurred in the CommandHandler!\n```\n\tMessage: ${e.message.contentStripped}\n\tBot/Webhook: ${e.author.isBot || e.isWebhookMessage}\n\tStack: ${err.message}\n```"
+            val formatted = "An error occurred in the CommandHandler!\n" +
+                    "\tMessage: ${e.message.contentStripped}\n" +
+                    "\tBot/Webhook: ${e.author.isBot || e.isWebhookMessage}\n" +
+                    "\tStack: ${err.stackTrace.joinToString("\n")}"
 
             JukeBot.LOG.error(formatted)
 

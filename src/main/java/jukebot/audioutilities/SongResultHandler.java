@@ -32,22 +32,13 @@ public class SongResultHandler implements AudioLoadResultHandler {
     @Override
     public void trackLoaded(AudioTrack track) {
         if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Track Unavailable")
-                    .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
-                    .build()
-            ).queue();
+            e.sendEmbed("Track Unavailable", "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)");
             return;
         }
 
-        if (musicManager.addToQueue(track, e.getAuthor().getIdLong()))
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Track Enqueued")
-                    .setDescription(track.getInfo().title)
-                    .build()
-            ).queue();
+        if (musicManager.addToQueue(track, e.getAuthor().getIdLong())) {
+            e.sendEmbed("Track Enqueued", track.getInfo().title);
+        }
     }
 
     @Override
@@ -119,25 +110,16 @@ public class SongResultHandler implements AudioLoadResultHandler {
                     return;
                 } // patch soundcloud searches not calling noMatches
 
-                AudioTrack track = playlist.getTracks().get(0);
+                final AudioTrack track = playlist.getTracks().get(0);
 
                 if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
-                    e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(JukeBot.embedColour)
-                            .setTitle("Track Unavailable")
-                            .setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
-                            .build()
-                    ).queue();
+                    e.sendEmbed("Track Unavailable", "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)");
                     return;
                 }
 
-                if (musicManager.addToQueue(track, e.getAuthor().getIdLong()))
-                    e.getChannel().sendMessage(new EmbedBuilder()
-                            .setColor(JukeBot.embedColour)
-                            .setTitle("Track Enqueued")
-                            .setDescription(track.getInfo().title)
-                            .build()
-                    ).queue();
+                if (musicManager.addToQueue(track, e.getAuthor().getIdLong())) {
+                    e.sendEmbed("Track Enqueued", track.getInfo().title);
+                }
             }
 
         } else {
@@ -149,44 +131,32 @@ public class SongResultHandler implements AudioLoadResultHandler {
             if (importLimit != -1 && tracks.size() > importLimit)
                 tracks = tracks.subList(0, importLimit);
 
-            for (AudioTrack track : tracks)
-                if (canQueueTrack(track, e.getAuthor().getIdLong()))
+            for (AudioTrack track : tracks) {
+                if (canQueueTrack(track, e.getAuthor().getIdLong())) {
                     musicManager.addToQueue(track, e.getAuthor().getIdLong());
+                }
+            }
 
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Playlist Enqueued")
-                    .setDescription(playlist.getName() + " - " + tracks.size() + " tracks.")
-                    .build()
-            ).queue();
-
+            e.sendEmbed("Playlist Enqueued", playlist.getName() + " - " + tracks.size() + " tracks");
         }
     }
 
     @Override
     public void noMatches() {
-        e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.embedColour)
-                .setTitle("No Results")
-                .setDescription("Nothing found matching your query.")
-                .build()
-        ).queue();
+        e.sendEmbed("No Results", "Nothing found related to the query.");
 
-        if (!musicManager.isPlaying())
+        if (!musicManager.isPlaying()) {
             e.getGuild().getAudioManager().closeAudioConnection();
+        }
     }
 
     @Override
     public void loadFailed(FriendlyException ex) {
-        e.getChannel().sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.embedColour)
-                .setTitle("Track Unavailable")
-                .setDescription(ex.getMessage())
-                .build()
-        ).queue();
+        e.sendEmbed("Track Unavailable", ex.getMessage());
 
-        if (!musicManager.isPlaying())
+        if (!musicManager.isPlaying()) {
             e.getGuild().getAudioManager().closeAudioConnection();
+        }
     }
 
     private boolean canQueueTrack(AudioTrack track, long requesterID) {

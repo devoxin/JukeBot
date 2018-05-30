@@ -223,7 +223,8 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         if (repeat != repeatMode.NONE)
             repeat = repeatMode.NONE;
 
-        announce("Track Playback Failed", exception.getLocalizedMessage());
+        announce("Playback Error", "Playback of **" + track.getInfo().title + "** encountered an error!\n" +
+                exception.getLocalizedMessage());
     }
 
     @Override
