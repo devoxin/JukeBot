@@ -8,7 +8,7 @@ import jukebot.utils.Context
 import jukebot.utils.Permissions
 
 
-@CommandProperties(description = "Find a track on YouTube and queue it", aliases = ["p"], category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Searches for a track on PornHub and queues it", category = CommandProperties.category.CONTROLS)
 class Porn : Command {
 
     internal val permissions = Permissions()
