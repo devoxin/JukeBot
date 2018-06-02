@@ -119,7 +119,7 @@ public class Helpers {
             if (pledges == null)
                 return;
 
-            Database.getDonatorIDs().forEach(id -> {
+            Database.getDonorIds().forEach(id -> {
                 if (pledges.stream().noneMatch(p -> p.getPatron().getSocialConnections().getDiscord() != null
                         && Long.parseLong(p.getPatron().getSocialConnections().getDiscord().getUser_id()) == id)) {
                     Database.setTier(id, 0);

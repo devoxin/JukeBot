@@ -115,7 +115,7 @@ public class Database {
 
     }
 
-    public static ArrayList<Long> getDonatorIDs() {
+    public static ArrayList<Long> getDonorIds() {
 
         ArrayList<Long> donors = new ArrayList<>();
 
@@ -165,7 +165,6 @@ public class Database {
     }
 
     static String getPropertyFromConfig(String prop, String def) {
-
         try (Connection connection = getConnection()) {
 
             PreparedStatement state = connection.prepareStatement("SELECT * FROM config WHERE prop = ?");
@@ -178,6 +177,15 @@ public class Database {
         } catch (SQLException e) {
             return def;
         }
+    }
 
+    public static void updatePropertyInConfig(String prop, String val) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement state = connection.prepareStatement("UPDATE config SET content = ? WHERE prop = ?");
+            state.setString(1, val);
+            state.setString(2, prop);
+            state.execute();
+        } catch (SQLException e) {
+        }
     }
 }
