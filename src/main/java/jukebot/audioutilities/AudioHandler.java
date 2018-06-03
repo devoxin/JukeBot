@@ -15,6 +15,7 @@ import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
+import tomp2p.opuswrapper.Opus;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -245,10 +246,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         lastFrame = player.provide();
 
         if (!player.isPaused()) {
-            if (lastFrame == null)
+            if (lastFrame == null) {
                 trackPacketLoss++;
-            else
+            } else {
                 trackPackets++;
+            }
         }
 
         return lastFrame != null;
@@ -256,7 +258,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public byte[] provide20MsAudio() {
-        return lastFrame.data;
+        return lastFrame.getData();
     }
 
     @Override
