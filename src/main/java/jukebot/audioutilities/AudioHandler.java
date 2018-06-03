@@ -138,8 +138,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         if (nextTrack != null) {
             player.startTrack(nextTrack, false);
         } else {
-            repeat = repeatMode.NONE;
-            shuffle = false;
             current = null;
             player.stopTrack();
             bassBoost(bassBoost.OFF);
