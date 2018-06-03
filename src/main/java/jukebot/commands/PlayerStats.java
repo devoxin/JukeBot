@@ -5,7 +5,7 @@ import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;
 
-@CommandProperties(description = "Displays player statistics", aliases = {"ps"})
+@CommandProperties(description = "Displays player statistics", aliases = {"ps"}, developerOnly = true)
 public class PlayerStats implements Command {
 
     @Override
