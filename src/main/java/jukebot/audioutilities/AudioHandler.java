@@ -15,7 +15,6 @@ import net.dv8tion.jda.core.audio.AudioSendHandler;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
-import tomp2p.opuswrapper.Opus;
 
 import java.util.LinkedList;
 import java.util.Random;
