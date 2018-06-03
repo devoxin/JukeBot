@@ -37,15 +37,18 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
+import java.io.FileReader;
+import java.io.Reader;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.2.1";
+    public static final String VERSION = "6.2.2";
     public static final Long startTime = System.currentTimeMillis();
+    public static boolean isReady = false;
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
-    public static boolean hasFinishedLoading = false;
 
     static String defaultPrefix = Database.getPropertyFromConfig("prefix", "$");
     public static Color embedColour = Color.decode(Database.getPropertyFromConfig("color", "0x1E90FF"));
@@ -62,6 +65,7 @@ public class JukeBot {
 
     public static void main(final String[] args) throws Exception {
         Thread.currentThread().setName("JukeBot-Main");
+        printBanner();
 
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
@@ -73,13 +77,11 @@ public class JukeBot {
         playerManager.registerSourceManager(yt);
         AudioSourceManagers.registerRemoteSources(playerManager);
 
-        printBanner();
-
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
                 .setToken(Database.getPropertyFromConfig("token", null))
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), waiter)
-                .setGame(Game.of(Game.GameType.LISTENING, defaultPrefix + "help | jukebot.xyz"));
+                .setGame(Game.listening(defaultPrefix + "help | jukebot.xyz"));
 
         final String os = System.getProperty("os.name").toLowerCase();
         final String arch = System.getProperty("os.arch");
@@ -98,17 +100,17 @@ public class JukeBot {
         String arch = System.getProperty("os.arch");
         String banner = Helpers.readFile("banner.txt");
 
-        if (banner != null)
-            LOG.info("\n" + banner);
+        if (banner == null) {
+            banner = "";
+        }
 
-        LOG.info(
-                "\nJukeBot v" + VERSION +
-                        " | JDA " + JDAInfo.VERSION +
-                        " | Lavaplayer " + PlayerLibrary.VERSION +
-                        " | SQLite " + SQLiteJDBCLoader.getVersion() +
-                        " | " + System.getProperty("sun.arch.data.model") + "-bit JVM" +
-                        " | " + os + " " + arch + "\n"
-        );
+        LOG.info("\n" + banner + "\n" +
+                "JukeBot v" + VERSION +
+                " | JDA " + JDAInfo.VERSION +
+                " | Lavaplayer " + PlayerLibrary.VERSION +
+                " | SQLite " + SQLiteJDBCLoader.getVersion() +
+                " | " + System.getProperty("sun.arch.data.model") + "-bit JVM" +
+                " | " + os + " " + arch + "\n");
     }
 
     public static ConcurrentHashMap<Long, AudioHandler> getPlayers() {

@@ -21,18 +21,6 @@ public class Helpers {
     private static ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "JukeBot-Timer"));
     public static ScheduledExecutorService monitorThread = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "JukeBot-Pledge-Monitor"));
 
-    public static String padLeft(String character, String text, int length) {
-        if (text.length() == length)
-            return text;
-
-        StringBuilder textBuilder = new StringBuilder(text);
-
-        while (textBuilder.length() < length)
-            textBuilder.insert(0, character);
-
-        return textBuilder.toString();
-    }
-
     public static String padRight(String character, String text, int length) {
         if (text.length() == length)
             return text;
@@ -123,7 +111,7 @@ public class Helpers {
                 if (pledges.stream().noneMatch(p -> p.getPatron().getSocialConnections().getDiscord() != null
                         && Long.parseLong(p.getPatron().getSocialConnections().getDiscord().getUser_id()) == id)) {
                     Database.setTier(id, 0);
-                    JukeBot.LOG.info("Removed " + id + " from donators");
+                    JukeBot.LOG.info("Removed " + id + " from donors");
                 }
             });
         });

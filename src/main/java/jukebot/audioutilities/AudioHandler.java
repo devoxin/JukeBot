@@ -77,6 +77,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         return player.getPlayingTrack() != null;
     }
 
+    public boolean isBassBoosted() {
+        return bassBoostMode != bassBoost.OFF;
+    }
+
     public LinkedList<AudioTrack> getQueue() {
         return queue;
     }

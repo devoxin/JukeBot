@@ -18,8 +18,7 @@ public class Dev implements Command {
             "what's this do?",
             "dev commands op plz nerf",
             "insert floppy disk into drive A:",
-            "OOOOOOH SHINY",
-            "java wouldn't be a real language if it werent for minecraft"
+            "OOOOOOH SHINY"
     };
 
     public void execute(final Context context) {

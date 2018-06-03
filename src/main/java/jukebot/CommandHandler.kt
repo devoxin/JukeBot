@@ -63,7 +63,8 @@ class CommandHandler : ListenerAdapter() {
             val formatted = "An error occurred in the CommandHandler!\n" +
                     "\tMessage: ${e.message.contentStripped}\n" +
                     "\tBot/Webhook: ${e.author.isBot || e.isWebhookMessage}\n" +
-                    "\tStack: ${err.stackTrace.joinToString("\n")}"
+                    "\tCause: $err\n" +
+                    "\tStack: ${err.stackTrace.joinToString("\n\t\t")}"
 
             JukeBot.LOG.error(formatted)
 
@@ -87,7 +88,7 @@ class CommandHandler : ListenerAdapter() {
     }
 
     override fun onReady(e: ReadyEvent) {
-        if (!JukeBot.hasFinishedLoading) {
+        if (!JukeBot.isReady) {
             e.jda.asBot().applicationInfo.queue { info ->
                 JukeBot.botOwnerId = info.owner.idLong
                 JukeBot.isSelfHosted = info.idLong != 249303797371895820L && info.idLong != 314145804807962634L
@@ -102,7 +103,7 @@ class CommandHandler : ListenerAdapter() {
                 if (info.idLong == 314145804807962634L || JukeBot.isSelfHosted)
                     JukeBot.playerManager.configuration.resamplingQuality = AudioConfiguration.ResamplingQuality.HIGH
 
-                JukeBot.hasFinishedLoading = true
+                JukeBot.isReady = true
             }
         }
     }
