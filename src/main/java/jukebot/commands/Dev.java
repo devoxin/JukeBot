@@ -49,7 +49,7 @@ public class Dev implements Command {
                 context.sendEmbed("Missing Required Arg", "You need to specify `userId`");
             } else {
                 Database.unblockUser(Long.parseLong(args[1]));
-                context.sendEmbed("User Blocked", args[1] + " can now use JukeBot.");
+                context.sendEmbed("User Unblocked", args[1] + " can now use JukeBot.");
             }
         } else {
             context.sendEmbed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>", randomQuote());
