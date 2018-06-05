@@ -16,8 +16,10 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.managers.AudioManager;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {
@@ -32,7 +34,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     private bassBoost bassBoostMode = AudioHandler.bassBoost.OFF;
 
     private final LinkedList<AudioTrack> queue = new LinkedList<>();
-    private final LinkedList<Long> skipVotes = new LinkedList<>();
+    private final HashSet<Long> skips = new HashSet<>();
     private Long channelId;
     private Long guildId;
     private boolean shouldAnnounce = true;
@@ -106,9 +108,8 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public int voteSkip(Long userID) {
-        if (!skipVotes.contains(userID))
-            skipVotes.add(userID);
-        return skipVotes.size();
+        skips.add(userID);
+        return skips.size();
     }
 
     public void setChannel(Long channelId) {
@@ -180,7 +181,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     public void cleanup() {
         queue.clear();
-        skipVotes.clear();
+        skips.clear();
         player.destroy();
     }
 
@@ -202,7 +203,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-        skipVotes.clear();
+        skips.clear();
         trackPacketLoss = 0;
         trackPackets = 0;
 
