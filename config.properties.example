@@ -3,3 +3,4 @@ prefix=!
 color=0x1E90FF
 spotify_client=empty
 spotify_secret=empty
+nsfw=true

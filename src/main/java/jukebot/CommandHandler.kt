@@ -26,6 +26,10 @@ class CommandHandler : ListenerAdapter() {
         loader.getTypesAnnotatedWith(CommandProperties::class.java).forEach({ command ->
             val cmd = command.newInstance() as Command
 
+            if (cmd.properties().nsfw && !JukeBot.isNSFWEnabled()) {
+                return@forEach
+            }
+
             if (cmd.properties().enabled)
                 commands[cmd.name().toLowerCase()] = cmd
         })

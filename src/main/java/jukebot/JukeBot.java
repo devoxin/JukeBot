@@ -67,20 +67,24 @@ public class JukeBot {
         Thread.currentThread().setName("JukeBot-Main");
         printBanner();
 
-        playerManager.setPlayerCleanupThreshold(30000);
-        playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
-        playerManager.getConfiguration().setOpusEncodingQuality(9);
-        playerManager.getConfiguration().setFilterHotSwapEnabled(true);
-        playerManager.registerSourceManager(new PornHubAudioSourceManager());
-        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
-        yt.setPlaylistPageCount(Integer.MAX_VALUE);
-        playerManager.registerSourceManager(yt);
-        AudioSourceManagers.registerRemoteSources(playerManager);
-
         config = Helpers.readConfig();
         embedColour = Color.decode(config.getProperty("color", "0x1E90FF"));
         spotifyApi = new SpotifyAudioSource(config.getProperty("spotify_client", ""), config.getProperty("spotify_secret", ""));
         createPatreonApi(config.getProperty("patreon"));
+
+        if (isNSFWEnabled()) {
+            playerManager.registerSourceManager(new PornHubAudioSourceManager());
+        }
+
+        playerManager.setPlayerCleanupThreshold(30000);
+        playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
+        playerManager.getConfiguration().setOpusEncodingQuality(9);
+        playerManager.getConfiguration().setFilterHotSwapEnabled(true);
+
+        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
+        yt.setPlaylistPageCount(Integer.MAX_VALUE);
+        playerManager.registerSourceManager(yt);
+        AudioSourceManagers.registerRemoteSources(playerManager);
 
         Database.setupDatabase();
 
@@ -152,6 +156,10 @@ public class JukeBot {
 
     public static String getDefaultPrefix() {
         return config.getProperty("prefix");
+    }
+
+    public static Boolean isNSFWEnabled() {
+        return config.getProperty("nsfw", "true").equalsIgnoreCase("true");
     }
 
 }
