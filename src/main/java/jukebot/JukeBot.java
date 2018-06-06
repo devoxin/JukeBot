@@ -26,6 +26,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.PornHubAudioSourceManager;
+import jukebot.audioutilities.SpotifyAudioSource;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JukeBot {
@@ -46,14 +48,15 @@ public class JukeBot {
     public static final Long startTime = System.currentTimeMillis();
     public static boolean isReady = false;
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
+    public static Properties config;
 
-    static String defaultPrefix = Database.getPropertyFromConfig("prefix", "$");
-    public static Color embedColour = Color.decode(Database.getPropertyFromConfig("color", "0x1E90FF"));
+    public static Color embedColour;
     public static Long botOwnerId = 0L;
     public static boolean isSelfHosted = false;
 
     /* Operation-Related */
-    public static PatreonAPI patreonApi = new PatreonAPI(Database.getPropertyFromConfig("patreon", null));
+    public static PatreonAPI patreonApi;
+    public static SpotifyAudioSource spotifyApi;
     private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
     public static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
@@ -74,11 +77,18 @@ public class JukeBot {
         playerManager.registerSourceManager(yt);
         AudioSourceManagers.registerRemoteSources(playerManager);
 
+        config = Helpers.readConfig();
+        embedColour = Color.decode(config.getProperty("color", "0x1E90FF"));
+        spotifyApi = new SpotifyAudioSource(config.getProperty("spotify_client", ""), config.getProperty("spotify_secret", ""));
+        createPatreonApi(config.getProperty("patreon"));
+
+        Database.setupDatabase();
+
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
-                .setToken(Database.getPropertyFromConfig("token", null))
+                .setToken(config.getProperty("token"))
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), waiter)
-                .setGame(Game.listening(defaultPrefix + "help | jukebot.xyz"));
+                .setGame(Game.listening(getDefaultPrefix() + "help | jukebot.xyz"));
 
         final String os = System.getProperty("os.name").toLowerCase();
         final String arch = System.getProperty("os.arch");
@@ -136,8 +146,12 @@ public class JukeBot {
         }
     }
 
-    public static void recreatePatreonApi(String key) {
+    public static void createPatreonApi(String key) {
         patreonApi = new PatreonAPI(key);
+    }
+
+    public static String getDefaultPrefix() {
+        return config.getProperty("prefix");
     }
 
 }

@@ -15,5 +15,6 @@ gradle-app.setting
 
 jukebot.db
 jukebot.log
+config.properties
 out/
 .idea/

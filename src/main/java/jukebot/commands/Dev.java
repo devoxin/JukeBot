@@ -33,8 +33,7 @@ public class Dev implements Command {
             if (args.length < 2) {
                 context.sendEmbed("Missing Required Arg", "You need to specify `key`");
             } else {
-                Database.updatePropertyInConfig("patreon", args[1]);
-                JukeBot.recreatePatreonApi(args[1]);
+                JukeBot.createPatreonApi(args[1]);
                 context.getMessage().addReaction("\uD83D\uDC4C").queue();
             }
         } else if (args[0].equalsIgnoreCase("block")) {

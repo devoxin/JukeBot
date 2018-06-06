@@ -1,5 +1,6 @@
 package jukebot.utils
 
+import jukebot.Database
 import jukebot.JukeBot
 import jukebot.audioutilities.AudioHandler
 import net.dv8tion.jda.core.EmbedBuilder
@@ -8,6 +9,8 @@ import net.dv8tion.jda.core.entities.*
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 
 class Context constructor(val event: GuildMessageReceivedEvent, val argString: String, val prefix: String) {
+
+    private val permissions = Permissions()
 
     val args: Array<String> = argString.split("\\s+".toRegex()).toTypedArray()
 
@@ -22,6 +25,8 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
     val guild: Guild = event.guild
 
     val jda: JDA = event.jda
+
+    val donorTier: Int = permissions.getTier(author.idLong)
 
     fun getAudioPlayer(): AudioHandler {
         return JukeBot.getPlayer(event.guild.audioManager)
@@ -50,6 +55,10 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
     }
 
     fun sendEmbed(title: String?, description: String?, fields: Array<MessageEmbed.Field>, footer: String?) {
+        if (!permissions.canSendTo(channel)) {
+            return
+        }
+
         val builder: EmbedBuilder = EmbedBuilder()
                 .setColor(JukeBot.embedColour)
                 .setTitle(title)

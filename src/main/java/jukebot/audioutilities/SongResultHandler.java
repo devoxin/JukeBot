@@ -18,7 +18,6 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     private final Pattern command = Pattern.compile("(?:p(?:lay)?|s(?:el(?:ect)?)?|sc(?:search)?)\\s.+");
 
-    private final Permissions permissions = new Permissions();
     private final Context e;
     private final AudioHandler musicManager;
     private final boolean useSelection;
@@ -31,7 +30,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
     @Override
     public void trackLoaded(AudioTrack track) {
-        if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
+        if (!canQueueTrack(track)) {
             e.sendEmbed("Track Unavailable", "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)");
             return;
         }
@@ -49,8 +48,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                 StringBuilder selector = new StringBuilder();
 
-                final List<AudioTrack> tracks = playlist.getTracks()
-                        .subList(0, (playlist.getTracks().size() > 5 ? 5 : playlist.getTracks().size()));
+                final List<AudioTrack> tracks = playlist.getTracks().subList(0, Math.min(playlist.getTracks().size(), 5));
 
                 for (int i = 0; i < tracks.size(); i++) {
                     final AudioTrack track = tracks.get(i);
@@ -84,7 +82,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
                     AudioTrack track = tracks.get(s - 1);
 
-                    if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
+                    if (!canQueueTrack(track)) {
                         m.editMessage(new EmbedBuilder()
                                 .setColor(JukeBot.embedColour)
                                 .setTitle("Track Unavailable")
@@ -108,11 +106,11 @@ public class SongResultHandler implements AudioLoadResultHandler {
                 if (playlist.getTracks().isEmpty()) {
                     noMatches();
                     return;
-                } // patch soundcloud searches not calling noMatches
+                }
 
                 final AudioTrack track = playlist.getTracks().get(0);
 
-                if (!canQueueTrack(track, e.getAuthor().getIdLong())) {
+                if (!canQueueTrack(track)) {
                     e.sendEmbed("Track Unavailable", "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)");
                     return;
                 }
@@ -124,15 +122,10 @@ public class SongResultHandler implements AudioLoadResultHandler {
 
         } else {
 
-            final int importLimit = getPlaylistLimit(e.getAuthor().getIdLong());
-
-            List<AudioTrack> tracks = playlist.getTracks();
-
-            if (importLimit != -1 && tracks.size() > importLimit)
-                tracks = tracks.subList(0, importLimit);
+            final List<AudioTrack> tracks = playlist.getTracks().subList(0, Math.min(playlist.getTracks().size(), getPlaylistLimit()));
 
             for (AudioTrack track : tracks) {
-                if (canQueueTrack(track, e.getAuthor().getIdLong())) {
+                if (canQueueTrack(track)) {
                     musicManager.addToQueue(track, e.getAuthor().getIdLong());
                 }
             }
@@ -159,30 +152,28 @@ public class SongResultHandler implements AudioLoadResultHandler {
         }
     }
 
-    private boolean canQueueTrack(AudioTrack track, long requesterID) {
+    private boolean canQueueTrack(AudioTrack track) {
         final int trackLength = (int) Math.ceil(track.getDuration() / 1000);
-        final int requesterTier = permissions.getTier(requesterID);
+        int maxTrackDuration = 7500;
 
         /* 7500 = ~ 2 hours
          * 18500 = ~ 5 hours
          */
 
-        int maxTrackDuration = 7500;
-        if (requesterTier == 1)
+        if (e.getDonorTier() == 1) {
             maxTrackDuration = 18500;
-        if (requesterTier >= 2)
+        } else if (e.getDonorTier() >= 2) {
             maxTrackDuration = Integer.MAX_VALUE;
+        }
 
-        return JukeBot.isSelfHosted || (track.getInfo().isStream && requesterTier != 0) || trackLength <= maxTrackDuration;
+        return JukeBot.isSelfHosted || (track.getInfo().isStream && e.getDonorTier() != 0) || trackLength <= maxTrackDuration;
     }
 
-    private int getPlaylistLimit(long requesterID) {
-        final int requesterTier = permissions.getTier(requesterID);
+    private int getPlaylistLimit() {
+        if (JukeBot.isSelfHosted || e.getDonorTier() >= 2) // Everything else
+            return Integer.MAX_VALUE;
 
-        if (JukeBot.isSelfHosted || requesterTier >= 2) // Everything else
-            return -1;
-
-        if (requesterTier == 0) // Tier 0
+        if (e.getDonorTier() == 0) // Tier 0
             return 100;
 
         return 1000; // Tier 1

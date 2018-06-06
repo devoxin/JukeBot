@@ -6,9 +6,11 @@ import jukebot.Database;
 import jukebot.JukeBot;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -78,6 +80,14 @@ public class Helpers {
 
     public static void schedule(Runnable task, int delay, TimeUnit unit) {
         timer.schedule(task, delay, unit);
+    }
+
+    public static Properties readConfig() throws IOException  {
+        try(FileReader fr = new FileReader("config.properties")) {
+            final Properties p = new Properties();
+            p.load(fr);
+            return p;
+        }
     }
 
     public static String readFile(String path) {

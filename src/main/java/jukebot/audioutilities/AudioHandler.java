@@ -183,6 +183,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         queue.clear();
         skips.clear();
         player.destroy();
+
+        final Guild g = JukeBot.shardManager.getGuildById(guildId);
+        if (g != null) {
+            g.getAudioManager().setSendingHandler(null);
+        }
     }
 
     public void bassBoost(bassBoost preset) {

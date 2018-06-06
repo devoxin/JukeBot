@@ -18,6 +18,20 @@ public class Database {
         return pool.getConnection();
     }
 
+    public static void setupDatabase() {
+        try (Connection connection = getConnection()) {
+
+            Statement statement = connection.createStatement();
+            statement.addBatch("CREATE TABLE IF NOT EXISTS blocked (id INTEGER PRIMARY KEY)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS donators (id INTEGER PRIMARY KEY, tier TEXT NOT NULL)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS prefixes (id INTEGER PRIMARY KEY, prefix TEXT NOT NULL)");
+            statement.executeBatch();
+
+        } catch (SQLException e) {
+            JukeBot.LOG.error("There was an error setting up the SQL database!", e);
+        }
+    }
+
     public static String getPrefix(final long id) {
 
         try (Connection connection = getConnection()) {
@@ -27,10 +41,10 @@ public class Database {
 
             ResultSet prefix = state.executeQuery();
 
-            return prefix.next() ? prefix.getString("prefix") : JukeBot.defaultPrefix;
+            return prefix.next() ? prefix.getString("prefix") : JukeBot.getDefaultPrefix();
 
         } catch (SQLException e) {
-            return JukeBot.defaultPrefix;
+            return JukeBot.getDefaultPrefix();
         }
 
     }
@@ -161,31 +175,6 @@ public class Database {
             return results.next();
         } catch (SQLException unused) {
             return false;
-        }
-    }
-
-    static String getPropertyFromConfig(String prop, String def) {
-        try (Connection connection = getConnection()) {
-
-            PreparedStatement state = connection.prepareStatement("SELECT * FROM config WHERE prop = ?");
-            state.setString(1, prop);
-
-            ResultSet property = state.executeQuery();
-
-            return property.next() ? property.getString("content") : def;
-
-        } catch (SQLException e) {
-            return def;
-        }
-    }
-
-    public static void updatePropertyInConfig(String prop, String val) {
-        try (Connection connection = getConnection()) {
-            PreparedStatement state = connection.prepareStatement("UPDATE config SET content = ? WHERE prop = ?");
-            state.setString(1, val);
-            state.setString(2, prop);
-            state.execute();
-        } catch (SQLException e) {
         }
     }
 }
