@@ -19,7 +19,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class AudioHandler extends AudioEventAdapter implements AudioSendHandler {

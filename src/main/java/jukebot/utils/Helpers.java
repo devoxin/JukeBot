@@ -6,7 +6,6 @@ import jukebot.Database;
 import jukebot.JukeBot;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -82,8 +81,8 @@ public class Helpers {
         timer.schedule(task, delay, unit);
     }
 
-    public static Properties readConfig() throws IOException  {
-        try(FileReader fr = new FileReader("config.properties")) {
+    public static Properties readConfig() throws IOException {
+        try (FileReader fr = new FileReader("config.properties")) {
             final Properties p = new Properties();
             p.load(fr);
             return p;

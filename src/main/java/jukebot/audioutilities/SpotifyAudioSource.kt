@@ -32,7 +32,7 @@ class SpotifyAudioSource(private val clientId: String, private val clientSecret:
                 .post(body)
                 .build()
 
-        httpClient.newCall(request).enqueue(object: Callback {
+        httpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 JukeBot.LOG.error("[SpotifyAudioSource] Unable to update Spotify access token!", e)
                 Helpers.schedule({ refreshAccessToken() }, 5, TimeUnit.MINUTES)
@@ -69,7 +69,7 @@ class SpotifyAudioSource(private val clientId: String, private val clientSecret:
                 .addHeader("Authorization", "Bearer $accessToken")
                 .build()
 
-        httpClient.newCall(request).enqueue(object: Callback {
+        httpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 callback(emptyList())
             }

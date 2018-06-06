@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
 import jukebot.utils.Context;
 import jukebot.utils.Helpers;
-import jukebot.utils.Permissions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.managers.AudioManager;
 

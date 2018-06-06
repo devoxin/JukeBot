@@ -3,8 +3,7 @@ package jukebot
 import jukebot.utils.Helpers
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
-
-import java.util.HashMap
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 

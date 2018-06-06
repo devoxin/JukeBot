@@ -1,6 +1,5 @@
 package jukebot.utils
 
-import jukebot.Database
 import jukebot.JukeBot
 import jukebot.audioutilities.AudioHandler
 import net.dv8tion.jda.core.EmbedBuilder
