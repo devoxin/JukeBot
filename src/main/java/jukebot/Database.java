@@ -25,6 +25,7 @@ public class Database {
             statement.addBatch("CREATE TABLE IF NOT EXISTS blocked (id INTEGER PRIMARY KEY)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS donators (id INTEGER PRIMARY KEY, tier TEXT NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS prefixes (id INTEGER PRIMARY KEY, prefix TEXT NOT NULL)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS djroles (guildid INTEGER PRIMARY KEY, roleid INTEGER NOT NULL)");
             statement.executeBatch();
 
         } catch (SQLException e) {
@@ -127,6 +128,52 @@ public class Database {
             return 0;
         }
 
+    }
+
+    public static boolean setDjRole(final long guildId, final Long roleId) {
+        try (Connection connection = getConnection()) {
+
+            PreparedStatement state = connection.prepareStatement("SELECT * FROM djroles WHERE guildid = ?");
+            state.setLong(1, guildId);
+
+            final boolean entryExists = state.executeQuery().next();
+
+            PreparedStatement update;
+
+            if (entryExists) {
+                if (roleId == null) {
+                    update = connection.prepareStatement("DELETE FROM djroles WHERE guildid = ?");
+                    update.setLong(1, guildId);
+                } else {
+                    update = connection.prepareStatement("UPDATE djroles SET roleid = ? WHERE guildid = ?");
+                    update.setLong(1, roleId);
+                    update.setLong(2, guildId);
+                }
+            } else {
+                update = connection.prepareStatement("INSERT INTO djroles VALUES (?, ?);");
+                update.setLong(1, guildId);
+                update.setLong(2, guildId);
+            }
+
+            return update.executeUpdate() == 1;
+
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static Long getDjRole(final long guildId) {
+        try (Connection connection = getConnection()) {
+
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM djroles WHERE guildid = ?");
+            statement.setLong(1, guildId);
+            ResultSet result = statement.executeQuery();
+
+            return result.next() ? result.getLong("roleid") : null;
+
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     public static ArrayList<Long> getDonorIds() {

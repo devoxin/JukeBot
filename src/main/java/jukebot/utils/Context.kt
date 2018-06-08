@@ -1,5 +1,6 @@
 package jukebot.utils
 
+import jukebot.Database
 import jukebot.JukeBot
 import jukebot.audioutilities.AudioHandler
 import net.dv8tion.jda.core.EmbedBuilder
@@ -27,12 +28,23 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
 
     val donorTier: Int = permissions.getTier(author.idLong)
 
+    fun getArg(index: Int): String {
+        return args.getOrNull(index) ?: ""
+    }
+
     fun getAudioPlayer(): AudioHandler {
         return JukeBot.getPlayer(event.guild.audioManager)
     }
 
     fun isDJ(allowLoneVC: Boolean): Boolean {
-        val isElevated: Boolean = member.isOwner || JukeBot.botOwnerId == author.idLong || member.roles.any { "dj" == it.name.toLowerCase() }
+        val customDjRole: Long? = Database.getDjRole(guild.idLong)
+        val roleMatch: Boolean = if (customDjRole != null) {
+            member.roles.any { it.idLong == customDjRole }
+        } else {
+            member.roles.any { it.name.equals("dj", true) }
+        }
+
+        val isElevated: Boolean = member.isOwner || JukeBot.botOwnerId == author.idLong || roleMatch
 
         if (allowLoneVC && !isElevated) {
             return member.voiceState.channel != null && member.voiceState.channel.members.filter { !it.user.isBot }.size == 1
@@ -45,7 +57,7 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
         sendEmbed(title, description, emptyArray(), null)
     }
 
-    fun sendEmbed(title: String, description: String, fields: Array<MessageEmbed.Field>) {
+    fun sendEmbed(title: String?, description: String?, fields: Array<MessageEmbed.Field>) {
         sendEmbed(title, description, fields, null)
     }
 
