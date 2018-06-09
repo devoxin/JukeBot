@@ -6,8 +6,6 @@ import jukebot.utils.*;
 @CommandProperties(aliases = {"vol"}, description = "Adjust the player volume", category = CommandProperties.category.CONTROLS)
 public class Volume implements Command {
 
-    private final Permissions permissions = new Permissions();
-
     private final String brick = "\u25AC";
     private final int maxBricks = 10;
 

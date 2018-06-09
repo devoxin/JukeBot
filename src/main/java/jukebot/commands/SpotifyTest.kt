@@ -1,6 +1,9 @@
 package jukebot.commands
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.JukeBot
+import jukebot.audioutilities.AudioHandler
+import jukebot.audioutilities.SpotifyPlaylistLookup
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
@@ -17,7 +20,18 @@ class SpotifyTest : Command {
             return context.sendEmbed("Spotify Disabled", "Spotify API access is not available on this JukeBot instance.")
         }
 
-        val match: Matcher = playlistRegex.matcher(context.argString)
+        if (context.donorTier < 1) {
+            return context.sendEmbed("Feature Unavailable", "Spotify resolving is only available for donors of tier 1+!")
+        }
+
+        val connected: Boolean = context.ensureVoice()
+
+        if (!connected) {
+            return
+        }
+
+        val player: AudioHandler = context.getAudioPlayer()
+        val match: Matcher = playlistRegex.matcher(context.argString.replace("<", "").replace(">", ""))
 
         if (!match.find()) {
             return context.sendEmbed("Invalid Link", "You need to pass a valid Spotify playlist link!")
@@ -30,8 +44,15 @@ class SpotifyTest : Command {
                 return@getTracksFromPlaylist context.sendEmbed("No Tracks Found", "No tracks returned by the API.\nCheck that the playlist is public and there are songs in the list")
             }
 
-            val shortList = tracks.subList(0, Math.min(tracks.size, 10))
-            context.sendEmbed("The first 10 tracks...", shortList.joinToString("\n") { "${it.artist} - ${it.name}" })
+            System.out.println("Found ${tracks.size} tracks")
+
+            val audioTracks: List<AudioTrack> = SpotifyPlaylistLookup(tracks).resolveTracks().filterNotNull()
+
+            for (track in audioTracks) {
+                player.addToQueue(track, context.author.idLong)
+            }
+
+            context.sendEmbed("Spotify Playlist Enqueued", "${audioTracks.size} tracks were added to the queue!")
         })
     }
 }

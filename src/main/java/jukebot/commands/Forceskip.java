@@ -9,8 +9,6 @@ import jukebot.utils.Permissions;
 @CommandProperties(description = "Skip the track without voting", aliases = {"fs"}, category = CommandProperties.category.CONTROLS)
 public class Forceskip implements Command {
 
-    private final Permissions permissions = new Permissions();
-
     public void execute(final Context context) {
 
         final AudioHandler player = context.getAudioPlayer();

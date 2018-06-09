@@ -57,6 +57,7 @@ public class JukeBot {
     /* Operation-Related */
     public static PatreonAPI patreonApi;
     public static SpotifyAudioSource spotifyApi;
+    public static YouTubeAPI youTubeApi = new YouTubeAPI("");
     private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
     public static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();

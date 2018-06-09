@@ -56,7 +56,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
      * Custom Events
      */
 
-    boolean addToQueue(AudioTrack track, Long userID) { // boolean: shouldAnnounce
+    public boolean addToQueue(AudioTrack track, Long userID) { // boolean: shouldAnnounce
         track.setUserData(userID);
 
         if (!player.startTrack(track, true)) {

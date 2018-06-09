@@ -6,6 +6,7 @@ import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
 import java.util.Base64
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
@@ -79,6 +80,7 @@ class SpotifyAudioSource(private val clientId: String, private val clientSecret:
 
                 val list: MutableList<SparseSpotifyAudioTrack> = ArrayList()
                 val json = JSONObject(resBody.string())
+                JukeBot.LOG.info(json.toString(4))
 
                 if (!json.has("items")) {
                     return callback(emptyList())
@@ -86,8 +88,8 @@ class SpotifyAudioSource(private val clientId: String, private val clientSecret:
 
                 val tracks = json.getJSONArray("items")
 
-                for (i in 0..json.length()) {
-                    val t = tracks.getJSONObject(i).getJSONObject("track")
+                tracks.forEach {
+                    val t = (it as JSONObject).getJSONObject("track")
                     val artist = t.getJSONArray("artists").getJSONObject(0).getString("name")
                     val trackName = t.getString("name")
                     list.add(SparseSpotifyAudioTrack(trackName, artist))

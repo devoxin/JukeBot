@@ -9,8 +9,6 @@ import jukebot.utils.Permissions;
 @CommandProperties(description = "Ends the queue and current track", category = CommandProperties.category.CONTROLS)
 public class Stop implements Command {
 
-    private final Permissions permissions = new Permissions();
-
     public void execute(final Context context) {
 
         final AudioHandler player = context.getAudioPlayer();

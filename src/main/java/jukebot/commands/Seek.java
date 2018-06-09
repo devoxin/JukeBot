@@ -7,8 +7,6 @@ import jukebot.utils.*;
 @CommandProperties(description = "Move to the specified position in the track", category = CommandProperties.category.CONTROLS)
 public class Seek implements Command {
 
-    private final Permissions permissions = new Permissions();
-
     public void execute(final Context context) {
 
         final AudioHandler player = context.getAudioPlayer();
