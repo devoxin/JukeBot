@@ -21,7 +21,7 @@ public class Forceskip implements Command {
         }
 
         if (!context.isDJ(true)
-                && !permissions.isTrackRequester(player.player.getPlayingTrack(), context.getAuthor().getIdLong())) {
+                && (long) player.player.getPlayingTrack().getUserData() != context.getAuthor().getIdLong()) {
 
             context.sendEmbed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.xyz/faq)");
             return;

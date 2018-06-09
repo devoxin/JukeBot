@@ -6,10 +6,8 @@ import jukebot.audioutilities.SongResultHandler;
 import jukebot.utils.*;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-@CommandProperties(description = "Search YouTube and select from up to 5 tracks", aliases = {"sel", "s"}, category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Search YouTube and select from up to 5 tracks", aliases = {"search", "sel", "s"}, category = CommandProperties.category.CONTROLS)
 public class Select implements Command {
-
-    final Permissions permissions = new Permissions();
 
     public void execute(final Context context) {
 
@@ -18,23 +16,14 @@ public class Select implements Command {
             return;
         }
 
-        final AudioManager manager = context.getGuild().getAudioManager();
         final AudioHandler player = context.getAudioPlayer();
+        final Boolean voiceConnected = context.ensureVoice();
 
-        if (!permissions.checkVoiceConnection(context.getMember())) {
-            context.sendEmbed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.");
+        if (!voiceConnected) {
             return;
         }
 
-        if (!manager.isAttemptingToConnect() && !manager.isConnected()) {
-            ConnectionError connectionStatus = permissions.canConnectTo(context.getMember().getVoiceState().getChannel());
-
-            if (null != connectionStatus) {
-                context.sendEmbed(connectionStatus.title, connectionStatus.description);
-                return;
-            }
-
-            manager.openAudioConnection(context.getMember().getVoiceState().getChannel());
+        if (!player.isPlaying()) {
             player.setChannel(context.getChannel().getIdLong());
         }
 

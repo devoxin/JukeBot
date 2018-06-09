@@ -9,8 +9,6 @@ import net.dv8tion.jda.core.managers.AudioManager;
 @CommandProperties(description = "Queues the track if a URL is provided, otherwise searches YouTube", aliases = {"p"}, category = CommandProperties.category.CONTROLS)
 public class Play implements Command {
 
-    final Permissions permissions = new Permissions();
-
     public void execute(final Context context) {
 
         if (context.getArgString().isEmpty()) {
@@ -21,20 +19,13 @@ public class Play implements Command {
         final AudioManager manager = context.getGuild().getAudioManager();
         final AudioHandler player = context.getAudioPlayer();
 
-        if (!permissions.checkVoiceConnection(context.getMember())) {
-            context.sendEmbed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.");
+        final Boolean voiceConnected = context.ensureVoice();
+
+        if (!voiceConnected) {
             return;
         }
 
-        if (!manager.isAttemptingToConnect() && !manager.isConnected()) {
-            ConnectionError connectionStatus = permissions.canConnectTo(context.getMember().getVoiceState().getChannel());
-
-            if (null != connectionStatus) {
-                context.sendEmbed(connectionStatus.title, connectionStatus.description);
-                return;
-            }
-
-            manager.openAudioConnection(context.getMember().getVoiceState().getChannel());
+        if (!player.isPlaying()) {
             player.setChannel(context.getChannel().getIdLong());
         }
 

@@ -11,8 +11,6 @@ import jukebot.utils.Permissions
 @CommandProperties(description = "Searches for a track on PornHub and queues it", nsfw = true, category = CommandProperties.category.CONTROLS)
 class Porn : Command {
 
-    internal val permissions = Permissions()
-
     override fun execute(context: Context) {
 
         if (context.argString.isEmpty()) {
@@ -23,21 +21,14 @@ class Porn : Command {
             return context.sendEmbed("PornHub Search", "Searches can only be performed from NSFW channels")
         }
 
-        val manager = context.guild.audioManager
-        val player = JukeBot.getPlayer(manager)
+        val player = context.getAudioPlayer()
+        val voiceConnected = context.ensureVoice()
 
-        if (!permissions.checkVoiceConnection(context.member)) {
-            return context.sendEmbed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.")
+        if (!voiceConnected) {
+            return
         }
 
-        if (!manager.isAttemptingToConnect && !manager.isConnected) {
-            val connectionStatus = permissions.canConnectTo(context.member.voiceState.channel)
-
-            if (null != connectionStatus) {
-                return context.sendEmbed(connectionStatus.title, connectionStatus.description)
-            }
-
-            manager.openAudioConnection(context.member.voiceState.channel)
+        if (!player.isPlaying) {
             player.setChannel(context.channel.idLong)
         }
 
