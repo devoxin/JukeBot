@@ -80,7 +80,6 @@ class SpotifyAudioSource(private val clientId: String, private val clientSecret:
 
                 val list: MutableList<SparseSpotifyAudioTrack> = ArrayList()
                 val json = JSONObject(resBody.string())
-                JukeBot.LOG.info(json.toString(4))
 
                 if (!json.has("items")) {
                     return callback(emptyList())

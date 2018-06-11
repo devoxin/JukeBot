@@ -28,6 +28,8 @@ class SpotifyPlaylistLookup(val tracks: List<SparseSpotifyAudioTrack>) {
                     override fun playlistLoaded(playlist: AudioPlaylist) {
                         if (!playlist.tracks.isEmpty()) {
                             resolved.add(playlist.tracks[0])
+                        } else {
+                            resolved.add(null)
                         }
 
                         checkPromise()

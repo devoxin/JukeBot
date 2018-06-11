@@ -24,13 +24,17 @@ class SpotifyTest : Command {
             return context.sendEmbed("Feature Unavailable", "Spotify resolving is only available for donors of tier 1+!")
         }
 
+        val player: AudioHandler = context.getAudioPlayer()
         val connected: Boolean = context.ensureVoice()
 
         if (!connected) {
             return
         }
 
-        val player: AudioHandler = context.getAudioPlayer()
+        if (!player.isPlaying) {
+            player.setChannel(context.channel.idLong)
+        }
+
         val match: Matcher = playlistRegex.matcher(context.argString.replace("<", "").replace(">", ""))
 
         if (!match.find()) {
