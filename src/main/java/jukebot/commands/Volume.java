@@ -29,7 +29,7 @@ public class Volume implements Command {
             return;
         }
 
-        player.player.setVolume(Helpers.parseNumber(context.getArgString(), 100));
+        player.player.setVolume(Math.min(Helpers.parseNumber(context.getArgString(), 100), 200));
 
         final int vol = player.player.getVolume();
         context.sendEmbed("Player Volume", calculateBricks(vol) + " `" + vol + "`");
@@ -37,7 +37,7 @@ public class Volume implements Command {
     }
 
     private String calculateBricks(int volume) {
-        final float percent = (float) volume / 150;
+        final float percent = (float) volume / 200;
         final int blocks = (int) Math.floor(maxBricks * percent);
 
         final StringBuilder sb = new StringBuilder("[");
