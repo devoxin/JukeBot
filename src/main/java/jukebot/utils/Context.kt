@@ -113,11 +113,11 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
             builder.addField(field)
         }
 
-        event.channel.sendMessage(builder.build()).queue(null, {
+        event.channel.sendMessage(builder.build()).queue(null) {
             JukeBot.LOG.error("Failed to send message from context!\n" +
                     "\tMessage: ${event.message.contentRaw}\n" +
                     "\tStack: ${it.stackTrace.joinToString("\n")}")
-        })
+        }
     }
 
 }
