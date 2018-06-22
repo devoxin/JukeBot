@@ -115,6 +115,9 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 val statusCode: Int = it.statusLine.statusCode
 
                 if (statusCode != 200) {
+                    if (statusCode == 404) {
+                        return AudioReference.NO_TRACK
+                    }
                     throw IOException("Invalid status code for search response: $statusCode")
                 }
 
@@ -146,8 +149,12 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
         httpInterface.execute(HttpGet(videoURL)).use { response ->
             val statusCode = response.statusLine.statusCode
 
-            if (statusCode != 200)
+            if (statusCode != 200) {
+                if (statusCode == 404) {
+                    return null
+                }
                 throw IOException("Invalid status code for video page response: $statusCode")
+            }
 
             val html = IOUtils.toString(response.entity.content, Charset.forName(CHARSET))
             val match = VIDEO_INFO_REGEX.matcher(html)
