@@ -41,7 +41,7 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
                         val videoId: String = result.getJSONObject("id").getString("videoId")
                         val title: String = result.getJSONObject("snippet").getString("title")
                         val uploader: String = result.getJSONObject("snippet").getString("channelTitle")
-                        val isStream: Boolean = result.getJSONObject("snippet").getString("liveBroadcastContent") == "none"
+                        val isStream: Boolean = result.getJSONObject("snippet").getString("liveBroadcastContent") != "none"
                         val duration: Long = if (isStream) Long.MAX_VALUE else Long.MIN_VALUE // TODO: Stuffs
                         callback(toYouTubeAudioTrack(videoId, title, uploader, isStream, duration))
                     }
