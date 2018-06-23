@@ -82,7 +82,7 @@ class SpotifyAudioSourceManager(private val sApi: SpotifyAPI) : AudioSourceManag
     }
 
     companion object {
-        private val PLAYLIST_PATTERN = Pattern.compile("^https?://.*\\.spotify\\.com/user/([a-zA-Z0-9]+)/playlist/([a-zA-Z0-9]+)")
+        private val PLAYLIST_PATTERN = Pattern.compile("^https?://.*\\.spotify\\.com/user/([a-zA-Z0-9]+)/playlist/([a-zA-Z0-9]+).*")
     }
 
 }

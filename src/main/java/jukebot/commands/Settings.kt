@@ -24,7 +24,7 @@ class Settings : Command {
             )
 
             return context.sendEmbed(null,
-                    "Configure these options with `${context.prefix}settings <setting> <property>`\n" +
+                    "Configure these options with `${context.prefix}settings <setting> <value>`\n" +
                             "So for prefix, it'd be `${context.prefix}settings prefix <new prefix>`",
                     fields)
         }
