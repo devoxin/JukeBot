@@ -13,9 +13,9 @@ import org.sqlite.SQLiteJDBCLoader
 class About : Command {
 
     override fun execute(context: Context) {
-        val dependencies = "**JDA**: ${JDAInfo.VERSION}"
-        "\n**Lavaplayer**: ${PlayerLibrary.VERSION}"
-        "\n**SQLite**: ${SQLiteJDBCLoader.getVersion()}"
+        val dependencies = "**JDA**: ${JDAInfo.VERSION}" +
+                "\n**Lavaplayer**: ${PlayerLibrary.VERSION}" +
+                "\n**SQLite**: ${SQLiteJDBCLoader.getVersion()}"
 
         val fields = arrayOf(
                 MessageEmbed.Field("Dependencies", dependencies, true),
