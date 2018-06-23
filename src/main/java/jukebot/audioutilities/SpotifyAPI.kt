@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
-class SpotifyAudioSource(private val clientId: String, private val clientSecret: String) {
+class SpotifyAPI(private val clientId: String, private val clientSecret: String) {
 
     private val httpClient: OkHttpClient = OkHttpClient()
     private var accessToken: String = ""
@@ -19,8 +19,12 @@ class SpotifyAudioSource(private val clientId: String, private val clientSecret:
         refreshAccessToken()
     }
 
+    fun credentialsProvided(): Boolean {
+        return clientId.isNotBlank() && clientSecret.isNotBlank()
+    }
+
     fun isEnabled(): Boolean {
-        return clientId.isNotBlank() && clientSecret.isNotBlank() && accessToken.isNotBlank()
+        return credentialsProvided() && accessToken.isNotBlank()
     }
 
     private fun refreshAccessToken() {
@@ -64,7 +68,7 @@ class SpotifyAudioSource(private val clientId: String, private val clientSecret:
         })
     }
 
-    fun getTracksFromPlaylist(userId: String, playlistId: String, callback: (List<SparseSpotifyAudioTrack>) -> Unit) {
+    fun getTracksFromPlaylist(userId: String, playlistId: String, callback: (SpotifyPlaylist?) -> Unit) {
         val request = Request.Builder()
                 .url("https://api.spotify.com/v1/users/$userId/playlists/$playlistId/tracks")
                 .addHeader("Authorization", "Bearer $accessToken")
@@ -72,17 +76,17 @@ class SpotifyAudioSource(private val clientId: String, private val clientSecret:
 
         httpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                callback(emptyList())
+                callback(null)
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val resBody = response.body() ?: return callback(emptyList())
+                val resBody = response.body() ?: return callback(null)
 
-                val list: MutableList<SparseSpotifyAudioTrack> = ArrayList()
                 val json = JSONObject(resBody.string())
+                val playlist = SpotifyPlaylist()
 
                 if (!json.has("items")) {
-                    return callback(emptyList())
+                    return callback(null)
                 }
 
                 val tracks = json.getJSONArray("items")
@@ -91,12 +95,34 @@ class SpotifyAudioSource(private val clientId: String, private val clientSecret:
                     val t = (it as JSONObject).getJSONObject("track")
                     val artist = t.getJSONArray("artists").getJSONObject(0).getString("name")
                     val trackName = t.getString("name")
-                    list.add(SparseSpotifyAudioTrack(trackName, artist))
+                    playlist.addTrack(artist, trackName)
                 }
 
-                callback(list)
+                callback(playlist)
             }
         })
     }
 
+    fun getTracksFromPlaylistBlocking(userId: String, playlistId: String): SpotifyPlaylist? {
+        val promise = CompletableFuture<SpotifyPlaylist?>()
+
+        getTracksFromPlaylist(userId, playlistId) {
+            promise.complete(it)
+        }
+
+        return promise.get(30, TimeUnit.SECONDS)
+    }
+
 }
+
+class SpotifyPlaylist(val name: String = "Spotify Playlist") {
+
+    public val tracks: MutableList<SpotifyAudioTrack> = ArrayList()
+
+    public fun addTrack(artist: String, title: String) {
+        tracks.add(SpotifyAudioTrack(artist, title))
+    }
+
+}
+
+class SpotifyAudioTrack(val artist: String, val title: String)

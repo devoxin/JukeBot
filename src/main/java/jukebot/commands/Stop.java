@@ -4,7 +4,6 @@ import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;
-import jukebot.utils.Permissions;
 
 @CommandProperties(description = "Ends the queue and current track", category = CommandProperties.category.CONTROLS)
 public class Stop implements Command {

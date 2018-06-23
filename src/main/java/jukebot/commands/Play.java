@@ -3,7 +3,9 @@ package jukebot.commands;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.SongResultHandler;
-import jukebot.utils.*;
+import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
+import jukebot.utils.Context;
 import net.dv8tion.jda.core.managers.AudioManager;
 
 @CommandProperties(description = "Queues the track if a URL is provided, otherwise searches YouTube", aliases = {"p"}, category = CommandProperties.category.CONTROLS)

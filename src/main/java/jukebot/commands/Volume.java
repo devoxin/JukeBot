@@ -1,7 +1,10 @@
 package jukebot.commands;
 
 import jukebot.audioutilities.AudioHandler;
-import jukebot.utils.*;
+import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
+import jukebot.utils.Context;
+import jukebot.utils.Helpers;
 
 @CommandProperties(aliases = {"vol"}, description = "Adjust the player volume", category = CommandProperties.category.CONTROLS)
 public class Volume implements Command {

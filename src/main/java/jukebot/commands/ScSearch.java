@@ -3,8 +3,9 @@ package jukebot.commands;
 import jukebot.JukeBot;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.audioutilities.SongResultHandler;
-import jukebot.utils.*;
-import net.dv8tion.jda.core.managers.AudioManager;
+import jukebot.utils.Command;
+import jukebot.utils.CommandProperties;
+import jukebot.utils.Context;
 
 @CommandProperties(description = "Search SoundCloud and queue the top result", aliases = {"sc"}, category = CommandProperties.category.CONTROLS)
 public class ScSearch implements Command {

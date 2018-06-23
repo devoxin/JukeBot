@@ -1,6 +1,5 @@
 package jukebot.utils;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.Database;
 import jukebot.JukeBot;
 import net.dv8tion.jda.core.Permission;

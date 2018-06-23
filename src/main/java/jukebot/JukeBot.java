@@ -24,9 +24,7 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
-import jukebot.audioutilities.AudioHandler;
-import jukebot.audioutilities.PornHubAudioSourceManager;
-import jukebot.audioutilities.SpotifyAudioSource;
+import jukebot.audioutilities.*;
 import jukebot.utils.Helpers;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
@@ -56,7 +54,7 @@ public class JukeBot {
 
     /* Operation-Related */
     public static PatreonAPI patreonApi;
-    public static SpotifyAudioSource spotifyApi;
+    public static SpotifyAPI spotifyApi;
     public static YouTubeAPI youTubeApi;
     private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
@@ -69,13 +67,21 @@ public class JukeBot {
         printBanner();
 
         config = Helpers.readConfig();
+
+        final YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
+        yt.setPlaylistPageCount(Integer.MAX_VALUE);
+
         embedColour = Color.decode(config.getProperty("color", "0x1E90FF"));
-        spotifyApi = new SpotifyAudioSource(config.getProperty("spotify_client", ""), config.getProperty("spotify_secret", ""));
-        youTubeApi = new YouTubeAPI(config.getProperty("youtube", ""));
+        spotifyApi = new SpotifyAPI(config.getProperty("spotify_client", ""), config.getProperty("spotify_secret", ""));
+        youTubeApi = new YouTubeAPI(config.getProperty("youtube", ""), yt);
         createPatreonApi(config.getProperty("patreon"));
 
         if (isNSFWEnabled()) {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
+        }
+
+        if (spotifyApi.credentialsProvided()) {
+            playerManager.registerSourceManager(new SpotifyAudioSourceManager(spotifyApi));
         }
 
         playerManager.setPlayerCleanupThreshold(30000);
@@ -83,8 +89,6 @@ public class JukeBot {
         playerManager.getConfiguration().setOpusEncodingQuality(9);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
 
-        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
-        yt.setPlaylistPageCount(Integer.MAX_VALUE);
         playerManager.registerSourceManager(yt);
         AudioSourceManagers.registerRemoteSources(playerManager);
 
