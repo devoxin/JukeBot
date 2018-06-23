@@ -25,7 +25,6 @@ class SpotifyAudioSourceManager(private val sApi: SpotifyAPI) : AudioSourceManag
 
     override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
         val match = PLAYLIST_PATTERN.matcher(reference.identifier)
-        System.out.println(match)
 
         if (!match.matches()) {
             return null
