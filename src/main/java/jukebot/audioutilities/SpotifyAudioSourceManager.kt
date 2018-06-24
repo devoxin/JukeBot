@@ -11,13 +11,14 @@ import java.io.DataOutput
 import java.lang.UnsupportedOperationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 import java.util.regex.Pattern
 
 
-class SpotifyAudioSourceManager(private val sApi: SpotifyAPI) : AudioSourceManager {
+class SpotifyAudioSourceManager(private val sApi: SpotifyAPI, private val poolSize: Int) : AudioSourceManager {
 
-    var loaderPool = Executors.newFixedThreadPool(2)!!
+    private var loaderPool = Executors.newFixedThreadPool(poolSize)!!
 
     override fun getSourceName(): String {
         return "spotify"
@@ -59,7 +60,7 @@ class SpotifyAudioSourceManager(private val sApi: SpotifyAPI) : AudioSourceManag
     }
 
     override fun shutdown() {
-
+        loaderPool.shutdown()
     }
 
     private fun loadItemOnce(spotifyUser: String, listId: String): AudioItem {
@@ -73,7 +74,7 @@ class SpotifyAudioSourceManager(private val sApi: SpotifyAPI) : AudioSourceManag
         }
 
         trackTasks.forEach {
-            val track = it.get() ?: return@forEach
+            val track = it.get(5, TimeUnit.SECONDS) ?: return@forEach
             resolvedTracks.add(track)
         }
 

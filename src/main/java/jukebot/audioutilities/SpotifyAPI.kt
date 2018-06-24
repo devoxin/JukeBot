@@ -2,6 +2,7 @@ package jukebot.audioutilities
 
 import jukebot.JukeBot
 import jukebot.utils.Helpers
+import jukebot.utils.json
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
@@ -44,14 +45,7 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val resBody = response.body()
-
-                if (resBody == null) {
-                    JukeBot.LOG.error("[SpotifyAudioSource] Response body was null!")
-                    return
-                }
-
-                val json = JSONObject(resBody.string())
+                val json = response.json() ?: return JukeBot.LOG.error("[SpotifyAudioSource] Response body was null!")
 
                 if (json.has("error") && json.getString("error").startsWith("invalid_")) {
                     JukeBot.LOG.error("[SpotifyAudioSource] Spotify API access disabled (${json.getString("error")})")
@@ -80,9 +74,8 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val resBody = response.body() ?: return callback(null)
+                val json = response.json() ?: return callback(null)
 
-                val json = JSONObject(resBody.string())
                 val playlist = SpotifyPlaylist()
 
                 if (!json.has("items")) {
@@ -117,9 +110,9 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
 
 class SpotifyPlaylist(val name: String = "Spotify Playlist") {
 
-    public val tracks: MutableList<SpotifyAudioTrack> = ArrayList()
+    val tracks: MutableList<SpotifyAudioTrack> = ArrayList()
 
-    public fun addTrack(artist: String, title: String) {
+    fun addTrack(artist: String, title: String) {
         tracks.add(SpotifyAudioTrack(artist, title))
     }
 

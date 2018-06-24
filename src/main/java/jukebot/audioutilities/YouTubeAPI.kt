@@ -3,6 +3,7 @@ package jukebot.audioutilities
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import jukebot.utils.json
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
@@ -26,25 +27,20 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val body = response.body()
+                val json = response.json() ?: return callback(null)
 
-                if (body == null) {
+                val results = json.getJSONArray("items")
+
+                if (results.length() == 0) {
                     callback(null)
                 } else {
-                    val json = JSONObject(body.string())
-                    val results = json.getJSONArray("items")
-
-                    if (results.length() == 0) {
-                        callback(null)
-                    } else {
-                        val result: JSONObject = results.getJSONObject(0)
-                        val videoId: String = result.getJSONObject("id").getString("videoId")
-                        val title: String = result.getJSONObject("snippet").getString("title")
-                        val uploader: String = result.getJSONObject("snippet").getString("channelTitle")
-                        val isStream: Boolean = result.getJSONObject("snippet").getString("liveBroadcastContent") != "none"
-                        val duration: Long = if (isStream) Long.MAX_VALUE else Long.MIN_VALUE // TODO: Stuffs
-                        callback(toYouTubeAudioTrack(videoId, title, uploader, isStream, duration))
-                    }
+                    val result: JSONObject = results.getJSONObject(0)
+                    val videoId: String = result.getJSONObject("id").getString("videoId")
+                    val title: String = result.getJSONObject("snippet").getString("title")
+                    val uploader: String = result.getJSONObject("snippet").getString("channelTitle")
+                    val isStream: Boolean = result.getJSONObject("snippet").getString("liveBroadcastContent") != "none"
+                    val duration: Long = if (isStream) Long.MAX_VALUE else Long.MIN_VALUE // TODO: Stuffs
+                    callback(toYouTubeAudioTrack(videoId, title, uploader, isStream, duration))
                 }
             }
         })

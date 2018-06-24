@@ -81,7 +81,7 @@ public class JukeBot {
         }
 
         if (spotifyApi.credentialsProvided()) {
-            playerManager.registerSourceManager(new SpotifyAudioSourceManager(spotifyApi));
+            playerManager.registerSourceManager(new SpotifyAudioSourceManager(spotifyApi, 2));
         }
 
         playerManager.setPlayerCleanupThreshold(30000);
