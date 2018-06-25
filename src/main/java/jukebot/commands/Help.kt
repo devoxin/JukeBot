@@ -5,7 +5,6 @@ import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import jukebot.utils.Helpers
-import java.util.stream.Stream
 
 @CommandProperties(description = "Displays all commands", aliases = ["commands"], category = CommandProperties.category.MISC)
 class Help : Command {
