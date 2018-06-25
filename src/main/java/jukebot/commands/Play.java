@@ -8,7 +8,7 @@ import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;
 import net.dv8tion.jda.core.managers.AudioManager;
 
-@CommandProperties(description = "Queues the track if a URL is provided, otherwise searches YouTube", aliases = {"p"}, category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Finds and plays the provided song query/URL", aliases = {"p"}, category = CommandProperties.category.CONTROLS)
 public class Play implements Command {
 
     public void execute(final Context context) {

@@ -9,30 +9,30 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
-import org.reflections.Reflections
 import java.util.concurrent.TimeUnit
 
 class CommandHandler : ListenerAdapter() {
 
     companion object {
-        public val commands = HashMap<String, Command>()
+        val commands = HashMap<String, Command>()
     }
 
     val permissions = Permissions()
 
     init {
-        val loader = Reflections("jukebot.commands")
+        getClasses("jukebot.commands")
+                .filter { it.isAnnotationPresent(CommandProperties::class.java) }
+                .forEach {
+                    val cmd = it.newInstance() as Command
 
-        loader.getTypesAnnotatedWith(CommandProperties::class.java).forEach({ command ->
-            val cmd = command.newInstance() as Command
+                    if (!cmd.properties().enabled || cmd.properties().nsfw && !JukeBot.isNSFWEnabled()) {
+                        return@forEach
+                    }
 
-            if (cmd.properties().nsfw && !JukeBot.isNSFWEnabled()) {
-                return@forEach
-            }
+                    commands[cmd.name().toLowerCase()] = cmd
+                }
 
-            if (cmd.properties().enabled)
-                commands[cmd.name().toLowerCase()] = cmd
-        })
+        JukeBot.LOG.info("Loaded ${commands.size} commands!")
     }
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {

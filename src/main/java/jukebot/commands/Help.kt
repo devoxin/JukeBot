@@ -34,7 +34,7 @@ class Help : Command {
             val category = CommandProperties.category.values()[menu - 2]
             val builder = StringBuilder()
 
-            filterCommands({ command -> command.properties().category == category }).forEach { command ->
+            filterCommands { command -> command.properties().category == category }.forEach { command ->
                 builder.append("**`").append(Helpers.padRight(" ", command.name().toLowerCase(), 11)).append(":`** ")
                         .append(command.properties().description).append("\n")
             }
@@ -44,11 +44,11 @@ class Help : Command {
 
     }
 
-    private fun filterCommands(filter: (Command) -> Boolean): Stream<Command> {
+    private fun filterCommands(filter: (Command) -> Boolean): List<Command> {
         return CommandHandler.commands
                 .values
                 .filter(filter)
-                .stream()
+                .sortedBy { it.name() }
     }
 
 }
