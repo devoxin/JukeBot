@@ -51,7 +51,7 @@ public class BassBoost implements Command {
             return;
         }
 
-        switch (args[0]) {
+        switch (args[0].toLowerCase()) {
             case "o":
             case "off":
                 handler.bassBoost(AudioHandler.bassBoost.OFF);
