@@ -152,7 +152,7 @@ public class Database {
             } else {
                 update = connection.prepareStatement("INSERT INTO djroles VALUES (?, ?);");
                 update.setLong(1, guildId);
-                update.setLong(2, guildId);
+                update.setLong(2, roleId);
             }
 
             return update.executeUpdate() == 1;
