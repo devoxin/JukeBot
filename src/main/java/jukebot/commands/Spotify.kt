@@ -15,8 +15,7 @@ public class Spotify : Command { // I hate having a separate command for this bu
         }
 
         if (context.argString.isEmpty()) {
-            context.sendEmbed("Spotify", "You need to specify a URL to a playlist")
-            return
+            return context.sendEmbed("Spotify", "You need to specify a URL to a playlist")
         }
 
         val player = context.getAudioPlayer()
