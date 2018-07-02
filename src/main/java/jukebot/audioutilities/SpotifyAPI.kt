@@ -48,8 +48,7 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
                 val json = response.json() ?: return JukeBot.LOG.error("[SpotifyAudioSource] Response body was null!")
 
                 if (json.has("error") && json.getString("error").startsWith("invalid_")) {
-                    JukeBot.LOG.error("[SpotifyAudioSource] Spotify API access disabled (${json.getString("error")})")
-                    return
+                    return JukeBot.LOG.error("[SpotifyAudioSource] Spotify API access disabled (${json.getString("error")})")
                 }
 
                 val refreshIn = json.getInt("expires_in")
