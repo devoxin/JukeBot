@@ -3,6 +3,7 @@ package jukebot.audioutilities
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import jukebot.JukeBot
 import jukebot.utils.json
 import okhttp3.*
 import org.json.JSONObject
@@ -17,7 +18,7 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
     public fun searchVideo(query: String, callback: (AudioTrack?) -> Unit) {
         val request = Request.Builder()
                 .url("https://www.googleapis.com/youtube/v3/search?q=$query&key=$key&type=video&maxResults=3&part=id,snippet")
-                .addHeader("User-Agent", "JukeBot/v6.2 (https://www.jukebot.xyz)")
+                .addHeader("User-Agent", "JukeBot/v${JukeBot.VERSION} (https://www.jukebot.xyz)")
                 .get()
                 .build()
 
