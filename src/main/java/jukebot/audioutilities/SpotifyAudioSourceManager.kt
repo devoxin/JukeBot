@@ -16,7 +16,7 @@ import java.util.function.Supplier
 import java.util.regex.Pattern
 
 
-class SpotifyAudioSourceManager(private val sApi: SpotifyAPI, private val poolSize: Int) : AudioSourceManager {
+class SpotifyAudioSourceManager(private val sApi: SpotifyAPI, poolSize: Int) : AudioSourceManager {
 
     private var loaderPool = Executors.newFixedThreadPool(poolSize)!!
 
@@ -25,7 +25,11 @@ class SpotifyAudioSourceManager(private val sApi: SpotifyAPI, private val poolSi
     }
 
     override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
-        val match = PLAYLIST_PATTERN.matcher(reference.identifier)
+        if (!reference.identifier.startsWith("spotify:")) {
+            return null
+        }
+
+        val match = PLAYLIST_PATTERN.matcher(reference.identifier.substring(8))
 
         if (!match.matches()) {
             return null
