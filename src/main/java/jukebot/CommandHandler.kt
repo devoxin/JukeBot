@@ -9,6 +9,7 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
+import org.reflections.Reflections
 import java.util.concurrent.TimeUnit
 
 class CommandHandler : ListenerAdapter() {
@@ -20,8 +21,9 @@ class CommandHandler : ListenerAdapter() {
     val permissions = Permissions()
 
     init {
-        getClasses("jukebot.commands")
-                .filter { it.isAnnotationPresent(CommandProperties::class.java) }
+        val loader = Reflections("jukebot.commands")
+
+        loader.getTypesAnnotatedWith(CommandProperties::class.java)
                 .forEach {
                     val cmd = it.newInstance() as Command
 
