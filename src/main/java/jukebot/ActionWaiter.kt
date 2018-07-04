@@ -12,11 +12,15 @@ class ActionWaiter : ListenerAdapter() {
     private val selectionMenus = HashMap<Long, Consumer<String?>>()
 
     fun waitForSelection(userID: Long, selection: Consumer<String?>) {
+        waitForSelection(userID, selection, 10, TimeUnit.SECONDS)
+    }
+
+    fun waitForSelection(userID: Long, selection: Consumer<String?>, delay: Int, unit: TimeUnit) {
         if (!selectionMenus.containsKey(userID)) {
             selectionMenus[userID] = selection
             Helpers.schedule({
                 selectionMenus.remove(userID)?.accept(null)
-            }, 10, TimeUnit.SECONDS)
+            }, delay, unit)
         }
     }
 

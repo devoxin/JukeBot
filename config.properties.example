@@ -1,6 +1,7 @@
-token=empty
+token=
 prefix=!
 color=0x1E90FF
-spotify_client=empty
-spotify_secret=empty
+spotify_client=not required
+spotify_secret=not required
+youtube=only fill if using Spotify
 nsfw=true
