@@ -38,7 +38,7 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
 
     fun ensureVoice(): Boolean {
         val audioManager = guild.audioManager
-        val isConnected = audioManager.isConnected || audioManager.isAttemptingToConnect
+        val isConnected = audioManager.connectedChannel != null
         val memberVoice = member.voiceState
 
         if (memberVoice.channel == null) {
