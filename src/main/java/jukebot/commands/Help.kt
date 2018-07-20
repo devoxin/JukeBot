@@ -38,7 +38,7 @@ class Help : Command {
                         .append(command.properties().description).append("\n")
             }
 
-            context.sendEmbed("Help for **$category**", "[View more information here](http://jukebot.xyz/documentation)\n$builder")
+            context.sendEmbed("Help for **$category**", "[View more information here](https://jukebot.xyz/documentation)\n$builder")
         }
 
     }
