@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.JDA
 import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
 
-@CommandProperties(description = "Bot statistics")
+@CommandProperties(description = "Displays JukeBot statistics")
 class Stats : Command {
 
     private val dpFormatter = DecimalFormat("0.00")
