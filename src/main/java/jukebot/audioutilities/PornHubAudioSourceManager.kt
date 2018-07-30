@@ -136,7 +136,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                     val url = anchor.absUrl("href")
 
                     // todo: one of these should be the video id, the other should be the complete URL
-                    tracks.add(buildTrackObject(url, url, title, "Unknown Uploader", false, Long.MAX_VALUE))
+                    tracks.add(buildTrackObject(url, url, title, "Unknown Uploader", false, 0L))
                 }
 
                 return BasicAudioPlaylist("Search results for: $query", tracks, null, true)
