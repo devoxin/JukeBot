@@ -5,7 +5,6 @@ import jukebot.JukeBot;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;
-import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.Random;
 
