@@ -11,16 +11,6 @@ import java.util.Random;
 @CommandProperties(description = "Developer menu", category = CommandProperties.category.MISC, developerOnly = true)
 public class Dev implements Command {
 
-    private Random r = new Random();
-    private String[] quotes = {
-            "Master gave dobby a sock",
-            "Needs more jellybeans",
-            "what's this do?",
-            "dev commands op plz nerf",
-            "insert floppy disk into drive A:",
-            "OOOOOOH SHINY"
-    };
-
     public void execute(final Context context) {
 
         final String[] args = context.getArgs();
@@ -51,12 +41,8 @@ public class Dev implements Command {
                 context.sendEmbed("User Unblocked", args[1] + " can now use JukeBot.");
             }
         } else {
-            context.sendEmbed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>", randomQuote());
+            context.sendEmbed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>");
         }
-    }
-
-    private String randomQuote() {
-        return quotes[r.nextInt(quotes.length)];
     }
 
 }
