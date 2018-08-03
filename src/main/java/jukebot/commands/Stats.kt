@@ -29,7 +29,7 @@ class Stats : Command {
 
         val shards = JukeBot.shardManager.shardsTotal
         val shardsOnline = JukeBot.shardManager.shards.filter { s -> s.status == JDA.Status.CONNECTED }.count()
-        val averageShardLatency = JukeBot.shardManager.averagePing
+        val averageShardLatency = JukeBot.shardManager.averagePing.toInt()
 
         val osBean: OperatingSystemMXBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean::class.java)
         val procCpuUsage = dpFormatter.format(osBean.processCpuLoad * 100)
