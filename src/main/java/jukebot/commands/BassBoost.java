@@ -31,19 +31,6 @@ public class BassBoost implements Command {
             return;
         }
 
-        /*
-        if (!JukeBot.isSelfHosted && permissions.getTier(e.getAuthor().getIdLong()) < 2) {
-            e.getChannel().sendMessage(new EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
-                    .setTitle("Upvote-locked command") // eww
-                    .setDescription("Upvote [here] to unlock this command!") // TODO check upvotes
-                    .setFooter("", null)
-                    .build()
-            ).queue();
-            return;
-        }
-        */
-
         if (context.getArgString().isEmpty()) {
             context.sendEmbed("BassBoost Presets",
                     "Current Setting: `" + handler.getBassBoostSetting() + "`\n\nValid presets: `Off`, `Low`, `Medium`, `High`, `Insane`",
