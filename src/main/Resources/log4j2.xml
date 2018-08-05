@@ -7,11 +7,15 @@
         <File name="File" fileName="jukebot.log" immediateFlush="true" append="false">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n"/>
         </File>
+        <File name="DebugFile" fileName="jukebot-debug.log" immediateFlush="true" append="false" >
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%t] [%-5level] %logger{36} - %msg%n"/>
+        </File>
     </Appenders>
     <Loggers>
-        <Root level="info">
-            <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
+        <Root level="debug">
+            <AppenderRef ref="Console" level="info"/>
+            <AppenderRef ref="File" level="info"/>
+            <AppenderRef ref="DebugFile" level="debug"/>
         </Root>
     </Loggers>
 </Configuration>
