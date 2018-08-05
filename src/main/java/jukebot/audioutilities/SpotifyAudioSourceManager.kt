@@ -39,6 +39,7 @@ class SpotifyAudioSourceManager(private val sApi: SpotifyAPI, poolSize: Int) : A
         val listId: String = match.group(2)
 
         return try {
+            JukeBot.LOG.debug("Loading Spotify playlist with identifier $listId")
             loadItemOnce(userId, listId)
         } catch (exception: FriendlyException) {
             // In case of a connection reset exception, try once more.
