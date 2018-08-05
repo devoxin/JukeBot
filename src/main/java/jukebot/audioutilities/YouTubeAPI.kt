@@ -24,10 +24,13 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
 
         httpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
+                JukeBot.LOG.error("YouTube API request failed!", e)
                 callback(null)
             }
 
             override fun onResponse(call: Call, response: Response) {
+                JukeBot.LOG.debug("YouTube API response:\n\tStatus Code: ${response.code()}\n\tResponse Message: ${response.message()}")
+
                 val json = response.json() ?: return callback(null)
 
                 val results = json.getJSONArray("items")
