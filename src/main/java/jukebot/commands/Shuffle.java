@@ -30,7 +30,7 @@ public class Shuffle implements Command {
             return;
         }
 
-        context.sendEmbed("Player Repeat", "Shuffle is now **" + (player.toggleShuffle() ? "enabled" : "disabled") + "**");
+        context.sendEmbed("Player Shuffle", "Shuffle is now **" + (player.toggleShuffle() ? "enabled" : "disabled") + "**");
 
     }
 }
