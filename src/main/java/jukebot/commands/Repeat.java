@@ -6,7 +6,7 @@ import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;
 import jukebot.utils.Permissions;
 
-@CommandProperties(description = "Loop the queue, track or nothing", category = CommandProperties.category.CONTROLS, enabled = false)
+@CommandProperties(description = "Loop the queue, track or nothing", category = CommandProperties.category.CONTROLS)
 public class Repeat implements Command {
 
     private final Permissions permissions = new Permissions();
