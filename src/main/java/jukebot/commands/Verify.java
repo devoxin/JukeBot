@@ -7,7 +7,7 @@ import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;
 import jukebot.utils.Helpers;
 
-@CommandProperties(description = "Receive your Patron benefits if you've donated")
+@CommandProperties(description = "Receive your donor rewards if you're a patron")
 public class Verify implements Command {
 
     public void execute(final Context context) {
@@ -38,14 +38,14 @@ public class Verify implements Command {
                 return;
             }
 
-            final double pledgeAmount = match.getAmountCents() / 100;
+            final double pledgeAmount = (double) match.getAmountCents() / 100;
             int tier = 0;
 
-            if (pledgeAmount > 0 && pledgeAmount < 2)
+            if (pledgeAmount >= 1 && pledgeAmount < 2) {
                 tier = 1;
-            else if (pledgeAmount > 0 && pledgeAmount >= 2)
+            } else if (pledgeAmount >= 2) {
                 tier = 2;
-
+            }
 
             context.sendEmbed("Pledge Verification", "Thanks for donating! **Your pledge: $" + String.format("%1$,.2f", pledgeAmount) + "**\n" +
                     "It looks like you qualify for **Tier " + tier + "**!\n\nYour reward has been applied. If for some reason you encounter issues, please join https://discord.gg/xvtH2Yn");
