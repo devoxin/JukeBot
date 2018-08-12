@@ -11,10 +11,10 @@ import jukebot.utils.Helpers;
 public class Verify implements Command {
 
     public void execute(final Context context) {
-
+        /*
         context.getChannel().sendTyping().queue();
 
-        Helpers.getPatreonPledges(pledges -> {
+        Helpers.INSTANCE.getPatreonPledges(pledges -> {
             if (pledges == null) {
                 context.sendEmbed("Pledge Verification", "An unknown error occurred during verification!");
                 return;
@@ -52,6 +52,7 @@ public class Verify implements Command {
 
             Database.setTier(context.getAuthor().getIdLong(), tier);
         });
+        */
     }
 
 }

@@ -152,7 +152,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             final AudioManager audioManager = guild.getAudioManager();
 
             if (audioManager.isConnected() || audioManager.isAttemptingToConnect()) {
-                Helpers.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS);
+                Helpers.Companion.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS);
 
                 announce("Queue Concluded!", "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)");
             }

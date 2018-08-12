@@ -25,8 +25,8 @@ public class Move implements Command {
             return;
         }
 
-        final int target = Helpers.parseNumber(args[0], 0);
-        final int dest = Helpers.parseNumber(args[1], 0);
+        final int target = Helpers.Companion.parseNumber(args[0], 0);
+        final int dest = Helpers.Companion.parseNumber(args[1], 0);
 
         if (target < 1 || dest < 1 || target == dest || target > player.getQueue().size() || dest > player.getQueue().size()) {
             context.sendEmbed("Invalid position(s) specified!", "You need to specify a valid target track, and a valid target position.");

@@ -16,7 +16,6 @@
 
 package jukebot;
 
-import com.patreon.PatreonAPI;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -26,6 +25,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.*;
 import jukebot.utils.Helpers;
+import jukebot.utils.PatreonAPI;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDAInfo;
@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -66,7 +68,7 @@ public class JukeBot {
         Thread.currentThread().setName("JukeBot-Main");
         printBanner();
 
-        config = Helpers.readConfig();
+        config = readConfig();
 
         final YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
         yt.setPlaylistPageCount(Integer.MAX_VALUE);
@@ -115,11 +117,7 @@ public class JukeBot {
     private static void printBanner() {
         String os = System.getProperty("os.name");
         String arch = System.getProperty("os.arch");
-        String banner = Helpers.readFile("banner.txt");
-
-        if (banner == null) {
-            banner = "";
-        }
+        String banner = Helpers.Companion.readFile("banner.txt", "");
 
         LOG.info("\n" + banner + "\n" +
                 "JukeBot v" + VERSION +
@@ -128,6 +126,14 @@ public class JukeBot {
                 " | SQLite " + SQLiteJDBCLoader.getVersion() +
                 " | " + System.getProperty("sun.arch.data.model") + "-bit JVM" +
                 " | " + os + " " + arch + "\n");
+    }
+
+    private static Properties readConfig() throws IOException {
+        try (FileReader fr = new FileReader("config.properties")) {
+            final Properties p = new Properties();
+            p.load(fr);
+            return p;
+        }
     }
 
     public static ConcurrentHashMap<Long, AudioHandler> getPlayers() {

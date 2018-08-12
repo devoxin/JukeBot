@@ -23,7 +23,7 @@ public class Unqueue implements Command {
             return;
         }
 
-        final int selected = Helpers.parseNumber(context.getArgString(), 0);
+        final int selected = Helpers.Companion.parseNumber(context.getArgString(), 0);
 
         if (selected < 1 || selected > player.getQueue().size()) {
             context.sendEmbed("Invalid position specified!", "You need to specify a valid target track.");

@@ -18,9 +18,7 @@ class ActionWaiter : ListenerAdapter() {
     fun waitForSelection(userID: Long, selection: Consumer<String?>, delay: Int, unit: TimeUnit) {
         if (!selectionMenus.containsKey(userID)) {
             selectionMenus[userID] = selection
-            Helpers.schedule({
-                selectionMenus.remove(userID)?.accept(null)
-            }, delay, unit)
+            Helpers.schedule({ selectionMenus.remove(userID)?.accept(null) }, delay, unit)
         }
     }
 

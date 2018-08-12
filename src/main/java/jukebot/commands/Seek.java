@@ -30,7 +30,7 @@ public class Seek implements Command {
             return;
         }
 
-        int forwardTime = Helpers.parseNumber(context.getArgString(), 10) * 1000;
+        int forwardTime = Helpers.Companion.parseNumber(context.getArgString(), 10) * 1000;
 
         if (currentTrack.getPosition() + forwardTime >= currentTrack.getDuration()) {
             player.playNext();
@@ -39,7 +39,7 @@ public class Seek implements Command {
 
         currentTrack.setPosition(currentTrack.getPosition() + forwardTime);
 
-        context.sendEmbed("Track Seeking", "The current track has been moved to **" + Helpers.fTime(currentTrack.getPosition()) + "**");
+        context.sendEmbed("Track Seeking", "The current track has been moved to **" + Helpers.Companion.fTime(currentTrack.getPosition()) + "**");
 
     }
 }

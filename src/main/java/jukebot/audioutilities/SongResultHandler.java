@@ -56,7 +56,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                             .append(".` ")
                             .append(track.getInfo().title)
                             .append(" `")
-                            .append(Helpers.fTime(track.getDuration()))
+                            .append(Helpers.Companion.fTime(track.getDuration()))
                             .append("`\n");
                 }
 
@@ -66,7 +66,7 @@ public class SongResultHandler implements AudioLoadResultHandler {
                         .setDescription(selector.toString().trim())
                         .build()
                 ).queue(m -> JukeBot.waiter.waitForSelection(e.getAuthor().getIdLong(), selected -> {
-                    int s = Helpers.parseNumber(selected, 0);
+                    int s = Helpers.Companion.parseNumber(selected, 0);
 
                     if (s <= 0 || s > tracks.size()) {
                         m.delete().queue();

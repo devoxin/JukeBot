@@ -22,11 +22,11 @@ public class Queue implements Command {
             return;
         }
 
-        final String queueDuration = Helpers.fTime(queue.stream().map(AudioTrack::getDuration).reduce(0L, (a, b) -> a + b));
+        final String queueDuration = Helpers.Companion.fTime(queue.stream().map(AudioTrack::getDuration).reduce(0L, (a, b) -> a + b));
         final StringBuilder fQueue = new StringBuilder();
 
         final int maxPages = (int) Math.ceil((double) queue.size() / 10);
-        int page = Helpers.parseNumber(context.getArgString(), 1);
+        int page = Helpers.Companion.parseNumber(context.getArgString(), 1);
 
         if (page < 1)
             page = 1;

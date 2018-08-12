@@ -6,8 +6,6 @@ import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;
 
-import java.util.Random;
-
 @CommandProperties(description = "Developer menu", category = CommandProperties.category.MISC, developerOnly = true)
 public class Dev implements Command {
 

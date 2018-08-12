@@ -32,7 +32,7 @@ public class Volume implements Command {
             return;
         }
 
-        player.player.setVolume(Math.min(Helpers.parseNumber(context.getArgString(), 100), 200));
+        player.player.setVolume(Math.min(Helpers.Companion.parseNumber(context.getArgString(), 100), 200));
 
         final int vol = player.player.getVolume();
         context.sendEmbed("Player Volume", calculateBricks(vol) + " `" + vol + "`");

@@ -103,7 +103,7 @@ class CommandHandler : ListenerAdapter() {
                     commands.remove("patreon")
                     commands.remove("verify")
                 } else {
-                    Helpers.monitorThread.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS)
+                    Helpers.monitor.scheduleAtFixedRate({ Helpers.monitorPledges() }, 0, 1, TimeUnit.DAYS)
                 }
 
                 if (info.idLong == 314145804807962634L || JukeBot.isSelfHosted)
