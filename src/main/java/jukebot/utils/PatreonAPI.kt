@@ -11,7 +11,6 @@ import java.nio.charset.Charset
 import java.util.concurrent.CompletableFuture
 
 class PatreonAPI(private val accessToken: String) {
-
     private val httpClient = OkHttpClient()
 
     public fun fetchPledgesOfCampaign(campaignId: String, callback: CompletableFuture<List<PatreonUser>>) {
@@ -94,7 +93,6 @@ class PatreonAPI(private val accessToken: String) {
     companion object {
         private const val BASE_URL = "https://www.patreon.com/api/oauth2/api/"
     }
-
 }
 
 
