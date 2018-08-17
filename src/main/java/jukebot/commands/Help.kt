@@ -34,7 +34,7 @@ class Help : Command {
             val builder = StringBuilder()
 
             filterCommands { command -> command.properties().category == category }.forEach { command ->
-                builder.append("**`").append(String.format("%-11s", command.name().toLowerCase()).replace(" ", "﮳")).append(":`** ")
+                builder.append("**`").append(String.format("%-11s", command.name().toLowerCase()).replace(" ", " \u200B")).append(":`** ")
                         .append(command.properties().description).append("\n")
             }
 
