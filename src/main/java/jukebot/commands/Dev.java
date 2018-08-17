@@ -42,7 +42,7 @@ public class Dev implements Command {
             context.getGuild().getAudioManager().closeAudioConnection();
             context.getMessage().addReaction("\uD83D\uDC4C").queue();
         } else {
-            context.sendEmbed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>\n`->` fdc [guildId]");
+            context.sendEmbed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>\n`->` fdc");
         }
     }
 
