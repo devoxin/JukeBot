@@ -38,8 +38,11 @@ public class Dev implements Command {
                 Database.unblockUser(Long.parseLong(args[1]));
                 context.sendEmbed("User Unblocked", args[1] + " can now use JukeBot.");
             }
+        } else if (args[0].equalsIgnoreCase("fdc")) {
+            context.getGuild().getAudioManager().closeAudioConnection();
+            context.getMessage().addReaction("\uD83D\uDC4C").queue();
         } else {
-            context.sendEmbed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>");
+            context.sendEmbed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>\n`->` fdc [guildId]");
         }
     }
 

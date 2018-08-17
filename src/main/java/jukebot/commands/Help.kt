@@ -34,11 +34,13 @@ class Help : Command {
             val builder = StringBuilder()
 
             filterCommands { command -> command.properties().category == category }.forEach { command ->
-                builder.append("**`").append(String.format("%%-11s", command.name().toLowerCase())).append(":`** ")
+                builder.append("**`").append(String.format("%-11s", command.name().toLowerCase()).replace(" ", "﮳")).append(":`** ")
                         .append(command.properties().description).append("\n")
             }
 
-            context.sendEmbed("Help for **$category**", "[View more information here](https://jukebot.xyz/documentation)\n$builder")
+            context.sendEmbed("Help for **$category**",
+                    "[View more information here](https://jukebot.xyz/documentation)\n$builder",
+                    "You can use ${context.prefix}help <command> to view additional command information")
         }
 
     }
