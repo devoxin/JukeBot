@@ -8,7 +8,7 @@ import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;
 import net.dv8tion.jda.core.EmbedBuilder;
 
-@CommandProperties(description = "DMs you the currently playing track", category = CommandProperties.category.MEDIA)
+@CommandProperties(description = "DMs you the currently playing track. Specify `all` to save the queue", category = CommandProperties.category.MEDIA)
 public class Save implements Command {
 
     public void execute(final Context context) {
