@@ -40,12 +40,17 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
 
         httpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                JukeBot.LOG.error("[SpotifyAudioSource] Unable to update Spotify access token!", e)
-                Helpers.schedule({ refreshAccessToken() }, 5, TimeUnit.MINUTES)
+                JukeBot.LOG.warn("[SpotifyAPI] Unable to update Spotify access token!", e)
+                Helpers.schedule({ refreshAccessToken() }, 1, TimeUnit.MINUTES)
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val json = response.json() ?: return JukeBot.LOG.error("[SpotifyAudioSource] Response body was null!")
+                val json = response.json()
+
+                if (json == null) {
+                    JukeBot.LOG.warn("[SpotifyAPI] Response body was null!", response.code(), response.message())
+                    return Helpers.schedule({ refreshAccessToken() }, 5, TimeUnit.MINUTES)
+                }
 
                 if (json.has("error") && json.getString("error").startsWith("invalid_")) {
                     return JukeBot.LOG.error("[SpotifyAudioSource] Spotify API access disabled (${json.getString("error")})")

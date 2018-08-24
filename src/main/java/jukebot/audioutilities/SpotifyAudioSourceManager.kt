@@ -25,7 +25,7 @@ class SpotifyAudioSourceManager(private val sApi: SpotifyAPI, poolSize: Int) : A
     }
 
     override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
-        if (!reference.identifier.startsWith("spotify:")) {
+        if (!reference.identifier.startsWith("spotify:") || !sApi.isEnabled()) {
             return null
         }
 
