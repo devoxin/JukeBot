@@ -49,7 +49,7 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
 
                 if (json == null) {
                     JukeBot.LOG.warn("[SpotifyAPI] Response body was null!", response.code(), response.message())
-                    return Helpers.schedule({ refreshAccessToken() }, 5, TimeUnit.MINUTES)
+                    return Helpers.schedule({ refreshAccessToken() }, 1, TimeUnit.MINUTES)
                 }
 
                 if (json.has("error") && json.getString("error").startsWith("invalid_")) {
