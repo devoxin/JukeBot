@@ -1,5 +1,6 @@
 package jukebot
 
+import com.google.common.reflect.ClassPath
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
 import jukebot.utils.*
 import net.dv8tion.jda.core.EmbedBuilder
@@ -9,7 +10,6 @@ import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
-import org.reflections.Reflections
 import java.util.concurrent.TimeUnit
 
 class CommandHandler : ListenerAdapter() {
@@ -21,18 +21,19 @@ class CommandHandler : ListenerAdapter() {
     val permissions = Permissions()
 
     init {
-        val loader = Reflections("jukebot.commands")
+        val classes = ClassPath.from(this::class.java.classLoader).getTopLevelClasses("jukebot.commands")
 
-        loader.getTypesAnnotatedWith(CommandProperties::class.java)
-                .forEach {
-                    val cmd = it.newInstance() as Command
+        for (klass in classes) {
+            val clazz = klass.load()
 
-                    if (!cmd.properties().enabled || cmd.properties().nsfw && !JukeBot.isNSFWEnabled()) {
-                        return@forEach
-                    }
+            val cmd = clazz.newInstance() as Command
 
-                    commands[cmd.name().toLowerCase()] = cmd
-                }
+            if (!cmd.properties().enabled || cmd.properties().nsfw && !JukeBot.isNSFWEnabled()) {
+                continue
+            }
+
+            commands[cmd.name().toLowerCase()] = cmd
+        }
 
         JukeBot.LOG.info("Loaded ${commands.size} commands!")
     }
