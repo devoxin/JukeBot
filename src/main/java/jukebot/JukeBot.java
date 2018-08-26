@@ -76,7 +76,10 @@ public class JukeBot {
         embedColour = Color.decode(config.getProperty("color", "0x1E90FF"));
         spotifyApi = new SpotifyAPI(config.getProperty("spotify_client", ""), config.getProperty("spotify_secret", ""));
         youTubeApi = new YouTubeAPI(config.getProperty("youtube", ""), yt);
-        createPatreonApi(config.getProperty("patreon"));
+
+        if (config.get("patreon") != null) {
+            createPatreonApi(config.getProperty("patreon"));
+        }
 
         if (isNSFWEnabled()) {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
