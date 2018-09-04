@@ -22,6 +22,7 @@ public class Stop implements Command {
             return;
         }
 
+        player.setRepeat(AudioHandler.repeatMode.NONE);
         player.getQueue().clear();
         player.playNext();
 
