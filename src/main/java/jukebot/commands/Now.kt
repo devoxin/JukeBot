@@ -1,10 +1,7 @@
 package jukebot.commands
 
 import jukebot.JukeBot
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
-import jukebot.utils.Helpers
+import jukebot.utils.*
 
 @CommandProperties(description = "Displays the currently playing track", aliases = ["n", "np"], category = CommandProperties.category.MEDIA)
 class Now : Command {
@@ -20,8 +17,9 @@ class Now : Command {
             return
         }
 
-        val playbackSettings: String = "Shuffle: " + (if (player.isShuffleEnabled) "On" else "Off") + " | Repeat: Off"
-        val duration: String = if (current.info.isStream) "LIVE" else Helpers.fTime(current.duration)
+        val playbackSettings = "Shuffle: ${if (player.isShuffleEnabled) "On" else "Off"}" +
+                " | Repeat: ${player.repeatMode.toTitleCase()}"
+        val duration = if (current.info.isStream) "LIVE" else Helpers.fTime(current.duration)
 
         context.sendEmbed("Now Playing",
                 "**[${current.info.title}](${current.info.uri})**\n"

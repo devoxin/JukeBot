@@ -14,3 +14,7 @@ fun Response.json(): JSONObject? {
         }
     }
 }
+
+fun String.toTitleCase(): String {
+    return this[0].toUpperCase() + this.substring(1)
+}
