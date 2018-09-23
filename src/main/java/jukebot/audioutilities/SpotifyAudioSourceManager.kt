@@ -8,7 +8,6 @@ import com.sedmelluq.discord.lavaplayer.track.*
 import jukebot.JukeBot
 import java.io.DataInput
 import java.io.DataOutput
-import java.lang.UnsupportedOperationException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit

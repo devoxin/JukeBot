@@ -3,6 +3,7 @@ package jukebot.utils
 
 import jukebot.Database
 import jukebot.JukeBot
+import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.future.await
 import java.io.BufferedReader
@@ -12,6 +13,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
+import kotlin.coroutines.experimental.EmptyCoroutineContext
 
 class Helpers {
 
@@ -33,19 +35,6 @@ class Helpers {
             }
         }
 
-        fun fTime(milliseconds: Long): String {
-            val seconds = milliseconds / 1000 % 60
-            val minutes = milliseconds / (1000 * 60) % 60
-            val hours = milliseconds / (1000 * 60 * 60) % 24
-            val days = milliseconds / (1000 * 60 * 60 * 24)
-
-            return when {
-                days > 0 -> String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds)
-                hours > 0 -> String.format("%02d:%02d:%02d", hours, minutes, seconds)
-                else -> String.format("%02d:%02d", minutes, seconds)
-            }
-        }
-
         public fun schedule(task: Runnable, delay: Int, unit: TimeUnit) {
             timer.schedule(task, delay.toLong(), unit)
         }
@@ -63,7 +52,7 @@ class Helpers {
         }
 
         fun monitorPledges() {
-            async {
+            CoroutineScope(EmptyCoroutineContext).async {
                 JukeBot.LOG.info("Checking pledges...")
 
                 val future = CompletableFuture<List<PatreonUser>>()

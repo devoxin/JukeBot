@@ -13,12 +13,12 @@ public class ScSearch implements Command {
     public void execute(final Context context) {
 
         if (context.getArgString().isEmpty()) {
-            context.sendEmbed("SoundCloud Search", "Specify what to search for.");
+            context.embed("SoundCloud Search", "Specify what to search for.");
             return;
         }
 
         final AudioHandler player = context.getAudioPlayer();
-        final Boolean voiceConnected = context.ensureVoice();
+        final boolean voiceConnected = context.ensureVoice();
 
         if (!voiceConnected) {
             return;

@@ -13,18 +13,18 @@ public class ClearQueue implements Command {
         final AudioHandler player = context.getAudioPlayer();
 
         if (player.getQueue().isEmpty()) {
-            context.sendEmbed("Nothing to Clear", "The queue is already empty!");
+            context.embed("Nothing to Clear", "The queue is already empty!");
             return;
         }
 
         if (!context.isDJ(true)) {
-            context.sendEmbed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.xyz/faq)");
+            context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.xyz/faq)");
             return;
         }
 
         player.getQueue().clear();
 
-        context.sendEmbed("Queue Cleared", "The queue is now empty.");
+        context.embed("Queue Cleared", "The queue is now empty.");
 
     }
 

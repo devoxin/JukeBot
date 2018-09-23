@@ -16,21 +16,21 @@ public class Shuffle implements Command {
         final AudioHandler player = context.getAudioPlayer();
 
         if (!player.isPlaying()) {
-            context.sendEmbed("Not Playing", "Nothing is currently playing.");
+            context.embed("Not Playing", "Nothing is currently playing.");
             return;
         }
 
         if (!permissions.ensureMutualVoiceChannel(context.getMember())) {
-            context.sendEmbed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.");
+            context.embed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.");
             return;
         }
 
         if (!context.isDJ(true)) {
-            context.sendEmbed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.xyz/faq)");
+            context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.xyz/faq)");
             return;
         }
 
-        context.sendEmbed("Player Shuffle", "Shuffle is now **" + (player.toggleShuffle() ? "enabled" : "disabled") + "**");
+        context.embed("Player Shuffle", "Shuffle is now **" + (player.toggleShuffle() ? "enabled" : "disabled") + "**");
 
     }
 }

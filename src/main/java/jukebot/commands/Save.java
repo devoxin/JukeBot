@@ -17,14 +17,14 @@ public class Save implements Command {
         final AudioTrack currentTrack = player.player.getPlayingTrack();
 
         if (!player.isPlaying()) {
-            context.sendEmbed("Not Playing", "Nothing is currently playing.");
+            context.embed("Not Playing", "Nothing is currently playing.");
             return;
         }
 
         if ("all".equalsIgnoreCase(context.getArgString())) {
 
             if (player.getQueue().isEmpty()) {
-                context.sendEmbed("Queue is empty", "There are no tracks to save.");
+                context.embed("Queue is empty", "There are no tracks to save.");
                 return;
             }
 
@@ -40,7 +40,7 @@ public class Save implements Command {
                     dm.sendFile(
                             sb.toString().getBytes(), "queue.txt", null
                     ).queue(null, error ->
-                            context.sendEmbed("Unable to DM", "Ensure your DMs are enabled.")
+                            context.embed("Unable to DM", "Ensure your DMs are enabled.")
                     )
             );
         } else {
@@ -51,7 +51,7 @@ public class Save implements Command {
                                     .setTitle(currentTrack.getInfo().title, currentTrack.getInfo().uri)
                                     .build()
                     ).queue(null, error ->
-                            context.sendEmbed("Unable to DM", "Ensure your DMs are enabled.")
+                            context.embed("Unable to DM", "Ensure your DMs are enabled.")
                     )
             );
         }

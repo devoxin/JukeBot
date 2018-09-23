@@ -2,7 +2,7 @@ group 'Testing'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.2.61'
+    ext.kotlin_version = '1.2.70'
     repositories {
         jcenter()
         mavenCentral()
@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compile ('net.dv8tion:JDA:3.7.1_411') {
+    compile ('net.dv8tion:JDA:3.8.0_427') {
         exclude module: 'opus-java'
     }
     compile 'com.sedmelluq:lavaplayer:1.3.7'
@@ -38,23 +38,13 @@ dependencies {
     compile 'com.google.guava:guava:26.0-jre'
     compile 'org.apache.logging.log4j:log4j-core:2.11.1'
     compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.1'
-    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.25.0'
-    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.25.0'
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.26.1'
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.26.1'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 shadowJar {
     from("src/main/Resources") {
         include "log4j2.xml"
-    }
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }

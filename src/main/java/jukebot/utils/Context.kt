@@ -43,10 +43,10 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
 
         if (memberVoice.channel == null) {
             return if (isConnected) {
-                sendEmbed("No Mutual VoiceChannel", "You need to join my VoiceChannel!")
+                embed("No Mutual VoiceChannel", "You need to join my VoiceChannel!")
                 false
             } else {
-                sendEmbed("No VoiceChannel", "You need to join a VoiceChannel!")
+                embed("No VoiceChannel", "You need to join a VoiceChannel!")
                 false
             }
         }
@@ -55,14 +55,14 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
             val connectionError: ConnectionError? = Permissions.canConnectTo(memberVoice.channel)
 
             if (connectionError != null) {
-                sendEmbed(connectionError.title, connectionError.description)
+                embed(connectionError.title, connectionError.description)
                 return false
             }
 
             audioManager.openAudioConnection(memberVoice.channel)
             return true
         } else if (memberVoice.channel.idLong != audioManager.connectedChannel.idLong) {
-            sendEmbed("No Mutual VoiceChannel", "You need to join my VoiceChannel!")
+            embed("No Mutual VoiceChannel", "You need to join my VoiceChannel!")
             return false
         } else {
             return true
@@ -86,34 +86,25 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
         return isElevated
     }
 
-    fun sendEmbed(title: String, description: String) {
-        sendEmbed(title, description, emptyArray(), null)
+    fun embed(title: String, description: String) {
+        embed {
+            setTitle(title)
+            setDescription(description)
+        }
     }
 
-    fun sendEmbed(title: String?, description: String?, fields: Array<MessageEmbed.Field>) {
-        sendEmbed(title, description, fields, null)
+    fun embed(block: EmbedBuilder.() -> Unit) {
+        embed(EmbedBuilder().apply(block))
     }
 
-    fun sendEmbed(title: String, description: String, footer: String) {
-        sendEmbed(title, description, emptyArray(), footer)
-    }
-
-    fun sendEmbed(title: String?, description: String?, fields: Array<MessageEmbed.Field>, footer: String?) {
+    fun embed(embed: EmbedBuilder) {
         if (!permissions.canSendTo(channel)) {
             return
         }
 
-        val builder: EmbedBuilder = EmbedBuilder()
-                .setColor(JukeBot.embedColour)
-                .setTitle(title)
-                .setDescription(description)
-                .setFooter(footer, null)
+        embed.setColor(JukeBot.embedColour)
 
-        for (field in fields) {
-            builder.addField(field)
-        }
-
-        event.channel.sendMessage(builder.build()).queue(null) {
+        event.channel.sendMessage(embed.build()).queue(null) {
             JukeBot.LOG.error("Failed to send message from context!\n" +
                     "\tMessage: ${event.message.contentRaw}\n" +
                     "\tStack: ${it.stackTrace.joinToString("\n")}")

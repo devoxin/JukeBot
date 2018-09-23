@@ -6,7 +6,7 @@ import jukebot.JukeBot
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
-import jukebot.utils.Helpers
+import jukebot.utils.toTimeString
 import net.dv8tion.jda.core.JDA
 import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
@@ -37,7 +37,7 @@ class Stats : Command {
 
         toSend.append("```ini\n")
                 .append("[ JVM ]\n")
-                .append("Uptime          = ").append(Helpers.fTime(System.currentTimeMillis() - JukeBot.startTime)).append("\n")
+                .append("Uptime          = ").append((System.currentTimeMillis() - JukeBot.startTime).toTimeString()).append("\n")
                 .append("JVM_CPU_Usage   = ").append(procCpuUsage).append("%\n")
                 .append("System_CPU_Usage= ").append(sysCpuUsage).append("%\n")
                 .append("RAM_Usage       = ").append(usedMB).append("MB (").append(rPercent).append("%)\n")

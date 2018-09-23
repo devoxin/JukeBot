@@ -9,7 +9,7 @@ public class Invite implements Command {
 
     public void execute(final Context context) {
 
-        context.sendEmbed("Invite Links",
+        context.embed("Invite Links",
                 "[**Add JukeBot**](https://discordapp.com/oauth2/authorize?permissions=36793345&scope=bot&client_id=249303797371895820)\n"
                         + "[**Get Support**](https://discord.gg/xvtH2Yn)");
 

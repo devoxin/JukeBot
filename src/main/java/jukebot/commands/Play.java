@@ -14,14 +14,14 @@ public class Play implements Command {
     public void execute(final Context context) {
 
         if (context.getArgString().isEmpty()) {
-            context.sendEmbed("Play", "Specify a URL or a search term");
+            context.embed("Play", "Specify a URL or a search term");
             return;
         }
 
         final AudioManager manager = context.getGuild().getAudioManager();
         final AudioHandler player = context.getAudioPlayer();
 
-        final Boolean voiceConnected = context.ensureVoice();
+        final boolean voiceConnected = context.ensureVoice();
 
         if (!voiceConnected) {
             return;
@@ -35,7 +35,7 @@ public class Play implements Command {
 
         if (userQuery.startsWith("http")) {
             if (userQuery.toLowerCase().contains("/you/likes")) {
-                context.sendEmbed("SoundCloud Liked Tracks", "JukeBot doesn't implement oauth and as a result\ncannot access your liked tracks when referenced as `you`");
+                context.embed("SoundCloud Liked Tracks", "JukeBot doesn't implement oauth and as a result\ncannot access your liked tracks when referenced as `you`");
 
                 if (!player.isPlaying()) {
                     manager.closeAudioConnection();
@@ -43,7 +43,7 @@ public class Play implements Command {
                 return;
             }
             if (userQuery.toLowerCase().contains("pornhub") && !context.getChannel().isNSFW()) {
-                context.sendEmbed("PornHub Tracks", "PornHub tracks can only be loaded from NSFW channels!");
+                context.embed("PornHub Tracks", "PornHub tracks can only be loaded from NSFW channels!");
 
                 if (!player.isPlaying()) {
                     manager.closeAudioConnection();

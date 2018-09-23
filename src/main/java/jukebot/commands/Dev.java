@@ -15,34 +15,34 @@ public class Dev implements Command {
 
         if (args[0].equalsIgnoreCase("preload")) {
             if (JukeBot.isSelfHosted) {
-                context.sendEmbed("Command Unavailable", "This command is unavailable on self-hosted JukeBot.");
+                context.embed("Command Unavailable", "This command is unavailable on self-hosted JukeBot.");
                 return;
             }
             if (args.length < 2) {
-                context.sendEmbed("Missing Required Arg", "You need to specify `key`");
+                context.embed("Missing Required Arg", "You need to specify `key`");
             } else {
                 JukeBot.createPatreonApi(args[1]);
                 context.getMessage().addReaction("\uD83D\uDC4C").queue();
             }
         } else if (args[0].equalsIgnoreCase("block")) {
             if (args.length < 2) {
-                context.sendEmbed("Missing Required Arg", "You need to specify `userId`");
+                context.embed("Missing Required Arg", "You need to specify `userId`");
             } else {
                 Database.blockUser(Long.parseLong(args[1]));
-                context.sendEmbed("User Blocked", args[1] + " is now blocked from using JukeBot.");
+                context.embed("User Blocked", args[1] + " is now blocked from using JukeBot.");
             }
         } else if (args[0].equalsIgnoreCase("unblock")) {
             if (args.length < 2) {
-                context.sendEmbed("Missing Required Arg", "You need to specify `userId`");
+                context.embed("Missing Required Arg", "You need to specify `userId`");
             } else {
                 Database.unblockUser(Long.parseLong(args[1]));
-                context.sendEmbed("User Unblocked", args[1] + " can now use JukeBot.");
+                context.embed("User Unblocked", args[1] + " can now use JukeBot.");
             }
         } else if (args[0].equalsIgnoreCase("fdc")) {
             context.getGuild().getAudioManager().closeAudioConnection();
             context.getMessage().addReaction("\uD83D\uDC4C").queue();
         } else {
-            context.sendEmbed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>\n`->` fdc");
+            context.embed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>\n`->` fdc");
         }
     }
 

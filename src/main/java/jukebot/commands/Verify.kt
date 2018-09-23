@@ -6,15 +6,17 @@ import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import jukebot.utils.PatreonUser
+import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.future.await
 import java.util.concurrent.CompletableFuture
+import kotlin.coroutines.experimental.EmptyCoroutineContext
 
 @CommandProperties(description = "Receive your donor rewards if you're a patron")
 class Verify : Command {
 
     override fun execute(context: Context) {
-        async {
+        CoroutineScope(EmptyCoroutineContext).async {
             context.channel.sendTyping().queue()
 
             val future = CompletableFuture<List<PatreonUser>>()
@@ -23,16 +25,16 @@ class Verify : Command {
             val users = future.await()
 
             if (users.isEmpty()) {
-                return@async context.sendEmbed("Pledge Verification", "Unable to retrieve a list of donors!\nWe're sorry for the inconvenience.")
+                return@async context.embed("Pledge Verification", "Unable to retrieve a list of donors!\nWe're sorry for the inconvenience.")
             }
 
             val pledge = users.firstOrNull { it.discordId != null && it.discordId == context.author.id }
-                    ?: return@async context.sendEmbed("Pledge Verification",
+                    ?: return@async context.embed("Pledge Verification",
                             "No Discord account linked to your Patreon account. Link your discord and try again.\n" +
                                     "If you continue to receive this error, please [join here](https://discord.gg/xvtH2Yn)")
 
             if (pledge.isDeclined) {
-                return@async context.sendEmbed("Pledge Verification", "It appears your payment has been declined. Please resolve this issue and then try again.\n" +
+                return@async context.embed("Pledge Verification", "It appears your payment has been declined. Please resolve this issue and then try again.\n" +
                         "If you believe this to be in error, please [join here](https://discord.gg/xvtH2Yn)")
             }
 
@@ -46,7 +48,7 @@ class Verify : Command {
                 tier = 2
             }
 
-            context.sendEmbed("Pledge Verification", "Thanks for donating! **Your pledge: $${String.format("%1$,.2f", pledgeAmount)}**\n" +
+            context.embed("Pledge Verification", "Thanks for donating! **Your pledge: $${String.format("%1$,.2f", pledgeAmount)}**\n" +
                     "It looks like you qualify for **Tier $tier**!\n\nYour reward has been applied. If for some reason you encounter issues, please join https://discord.gg/xvtH2Yn")
 
             Database.setTier(context.author.idLong, tier)

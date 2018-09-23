@@ -16,12 +16,12 @@ public class Skip implements Command {
         final AudioHandler player = context.getAudioPlayer();
 
         if (!player.isPlaying()) {
-            context.sendEmbed("Not Playing", "Nothing is currently playing.");
+            context.embed("Not Playing", "Nothing is currently playing.");
             return;
         }
 
         if (!permissions.ensureMutualVoiceChannel(context.getMember())) {
-            context.sendEmbed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.");
+            context.embed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.");
             return;
         }
 
@@ -36,7 +36,7 @@ public class Skip implements Command {
         if (neededVotes - totalVotes <= 0) {
             player.playNext();
         } else {
-            context.sendEmbed("Vote Acknowledged", (neededVotes - totalVotes) + " votes needed to skip.");
+            context.embed("Vote Acknowledged", (neededVotes - totalVotes) + " votes needed to skip.");
         }
     }
 }

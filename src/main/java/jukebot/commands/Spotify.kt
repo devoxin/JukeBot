@@ -11,11 +11,11 @@ public class Spotify : Command { // I hate having a separate command for this bu
 
     override fun execute(context: Context) {
         if (context.donorTier < 2 && !JukeBot.isSelfHosted) {
-            return context.sendEmbed("Spotify Unavailable", "You must be a [donor in Tier 2 or higher](https://patreon.com/Devoxin)")
+            return context.embed("Spotify Unavailable", "You must be a [donor in Tier 2 or higher](https://patreon.com/Devoxin)")
         }
 
         if (context.argString.isEmpty()) {
-            return context.sendEmbed("Spotify", "You need to specify a URL to a playlist")
+            return context.embed("Spotify", "You need to specify a URL to a playlist")
         }
 
         val player = context.getAudioPlayer()

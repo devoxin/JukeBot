@@ -2,7 +2,10 @@ package jukebot
 
 import com.google.common.reflect.ClassPath
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
-import jukebot.utils.*
+import jukebot.utils.Command
+import jukebot.utils.Context
+import jukebot.utils.Helpers
+import jukebot.utils.Permissions
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.events.ReadyEvent
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent

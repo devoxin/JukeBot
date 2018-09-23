@@ -13,11 +13,11 @@ class Porn : Command {
     override fun execute(context: Context) {
 
         if (context.argString.isEmpty()) {
-            return context.sendEmbed("PornHub Search", "Provide a query to search PornHub for")
+            return context.embed("PornHub Search", "Provide a query to search PornHub for")
         }
 
         if (!context.channel.isNSFW) {
-            return context.sendEmbed("PornHub Search", "Searches can only be performed from NSFW channels")
+            return context.embed("PornHub Search", "Searches can only be performed from NSFW channels")
         }
 
         val player = context.getAudioPlayer()

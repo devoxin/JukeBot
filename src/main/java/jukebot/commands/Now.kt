@@ -1,5 +1,6 @@
 package jukebot.commands
 
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import jukebot.JukeBot
 import jukebot.utils.*
 
@@ -13,18 +14,26 @@ class Now : Command {
 
 
         if (!player.isPlaying) {
-            context.sendEmbed("Not Playing", "Nothing is currently playing.")
+            context.embed("Not Playing", "Nothing is currently playing.")
             return
         }
 
         val playbackSettings = "Shuffle: ${if (player.isShuffleEnabled) "On" else "Off"}" +
                 " | Repeat: ${player.repeatMode.toTitleCase()}"
-        val duration = if (current.info.isStream) "LIVE" else Helpers.fTime(current.duration)
+        val duration = if (current.info.isStream) "LIVE" else current.duration.toTimeString()
 
-        context.sendEmbed("Now Playing",
-                "**[${current.info.title}](${current.info.uri})**\n"
-                        + "(${Helpers.fTime(current.position)}/$duration)",
-                playbackSettings)
+        val isYouTubeTrack = current.sourceManager.sourceName == "youtube"
+        val trackMarker = if (isYouTubeTrack) {
+            "*[(${current.position.toTimeString()}/$duration)](${current.info.uri}&t=${current.position / 1000}s)*"
+        } else {
+            "${current.position.toTimeString()}/$duration"
+        }
+
+        context.embed {
+            setTitle("Now Playing")
+            setDescription("**[${current.info.title}](${current.info.uri})**\n$trackMarker")
+            setFooter(playbackSettings, null)
+        }
 
     }
 }

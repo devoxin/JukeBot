@@ -5,6 +5,7 @@ import jukebot.JukeBot
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
+import jukebot.utils.addFields
 import net.dv8tion.jda.core.JDAInfo
 import net.dv8tion.jda.core.entities.MessageEmbed
 import org.sqlite.SQLiteJDBCLoader
@@ -22,6 +23,10 @@ class About : Command {
                 MessageEmbed.Field("Links", "[GitHub](https://github.com/Devoxin/JukeBot)\n[Website](https://jukebot.xyz)", true)
         )
 
-        context.sendEmbed("About JukeBot ${JukeBot.VERSION}", "Developer: **Kromatic#0420**", fields)
+        context.embed {
+            setTitle("JukeBot ${JukeBot.VERSION}")
+            setDescription("Developer: **Devoxin#0101**")
+            addFields(fields)
+        }
     }
 }

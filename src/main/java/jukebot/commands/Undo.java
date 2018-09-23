@@ -18,7 +18,7 @@ public class Undo implements Command {
         AudioHandler handler = context.getAudioPlayer();
 
         if (handler.getQueue().isEmpty()) {
-            context.sendEmbed("Nothing to Remove", "The queue is empty!");
+            context.embed("Nothing to Remove", "The queue is empty!");
             return;
         }
 
@@ -27,17 +27,17 @@ public class Undo implements Command {
 
         while (i.hasNext()) {
             AudioTrack t = (AudioTrack) i.next();
-            Long requester = (long) t.getUserData();
+            long requester = (long) t.getUserData();
 
             if (requester == context.getAuthor().getIdLong()) {
                 i.remove();
 
-                context.sendEmbed("Track Removed", "**" + t.getInfo().title + "** removed from the queue.");
+                context.embed("Track Removed", "**" + t.getInfo().title + "** removed from the queue.");
                 return;
             }
         }
 
-        context.sendEmbed("No Tracks Found", "No tracks queued by you were found.");
+        context.embed("No Tracks Found", "No tracks queued by you were found.");
 
     }
 }

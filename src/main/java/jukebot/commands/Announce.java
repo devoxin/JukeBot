@@ -16,12 +16,12 @@ public class Announce implements Command {
         if (args[0].equalsIgnoreCase("here")) {
             player.setChannel(context.getChannel().getIdLong());
             player.setShouldAnnounce(true);
-            context.sendEmbed("Track Announcements", "This channel will now be used to post track announcements");
+            context.embed("Track Announcements", "This channel will now be used to post track announcements");
         } else if (args[0].equalsIgnoreCase("off")) {
             player.setShouldAnnounce(false);
-            context.sendEmbed("Track Announcements", "Track announcements are now disabled for this server");
+            context.embed("Track Announcements", "Track announcements are now disabled for this server");
         } else {
-            context.sendEmbed("Track Announcements", "`here` - Uses the current channel for track announcements\n`off` - Disables track announcements");
+            context.embed("Track Announcements", "`here` - Uses the current channel for track announcements\n`off` - Disables track announcements");
         }
     }
 }
