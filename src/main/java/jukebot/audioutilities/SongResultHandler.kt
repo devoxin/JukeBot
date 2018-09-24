@@ -43,7 +43,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
 
                 val selector = StringBuilder()
 
-                val tracks = playlist.tracks.slice(0..Math.min(playlist.tracks.size, 5))
+                val tracks = playlist.tracks.subList(0, Math.min(playlist.tracks.size, 5))
 
                 for (i in tracks.indices) {
                     val track = tracks[i]
@@ -115,7 +115,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
 
         } else {
 
-            val tracks = playlist.tracks.slice(0..Math.min(playlist.tracks.size, playlistLimit))
+            val tracks = playlist.tracks.subList(0, Math.min(playlist.tracks.size, playlistLimit))
 
             for (track in tracks) {
                 if (canQueueTrack(track)) {
