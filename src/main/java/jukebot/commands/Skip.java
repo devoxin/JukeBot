@@ -29,8 +29,6 @@ public class Skip implements Command {
         final int totalVotes = player.voteSkip(context.getAuthor().getIdLong());
         final double voteThreshold = Database.getSkipThreshold(context.getGuild().getIdLong());
 
-        System.out.println(voteThreshold);
-
         final int neededVotes = (int) Math.ceil(context.getGuild().getAudioManager().getConnectedChannel()
                 .getMembers()
                 .stream()
