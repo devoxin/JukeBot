@@ -20,7 +20,6 @@ public class Database {
 
     public static void setupDatabase() {
         try (Connection connection = getConnection()) {
-
             Statement statement = connection.createStatement();
             statement.addBatch("CREATE TABLE IF NOT EXISTS blocked (id INTEGER PRIMARY KEY)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS donators (id INTEGER PRIMARY KEY, tier TEXT NOT NULL)");
@@ -28,27 +27,20 @@ public class Database {
             statement.addBatch("CREATE TABLE IF NOT EXISTS djroles (guildid INTEGER PRIMARY KEY, roleid INTEGER NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS skipthres (id INTEGER PRIMARY KEY, threshold REAL NOT NULL)");
             statement.executeBatch();
-
         } catch (SQLException e) {
             JukeBot.LOG.error("There was an error setting up the SQL database!", e);
         }
     }
 
     public static String getPrefix(final long id) {
-        try {
-            ResultSet result = getFromDatabase("prefixes", id);
-            return result != null && result.next() ? result.getString("prefix") : JukeBot.getDefaultPrefix();
-        } catch (SQLException e) {
-            JukeBot.LOG.error("Error accessing results from ResultSet", e);
-            return JukeBot.getDefaultPrefix();
-        }
+        String prefix = getFromDatabase("prefixes", id, "prefix");
+        return prefix == null ? JukeBot.getDefaultPrefix() : prefix;
     }
 
     public static boolean setPrefix(final long id, final String newPrefix) {
-
         try (Connection connection = getConnection()) {
 
-            final boolean shouldUpdate = entryExists("prefixes", id);
+            final boolean shouldUpdate = tableContains("prefixes", id);
             PreparedStatement update;
 
             if (shouldUpdate) {
@@ -66,14 +58,13 @@ public class Database {
         } catch (SQLException e) {
             return false;
         }
-
     }
 
     public static boolean setTier(final long id, final int newTier) {
 
         try (Connection connection = getConnection()) {
 
-            final boolean shouldUpdate = entryExists("donators", id);
+            final boolean shouldUpdate = tableContains("donators", id);
 
             if (newTier == 0) {
                 if (!shouldUpdate) return true;
@@ -103,19 +94,14 @@ public class Database {
     }
 
     public static int getTier(long id) {
-        try {
-            ResultSet result = getFromDatabase("donators", id);
-            return result != null && result.next() ? result.getInt("tier") : 0;
-        } catch (SQLException e) {
-            JukeBot.LOG.error("Error accessing results from ResultSet", e);
-            return 0;
-        }
+        Integer tier = getFromDatabase("donators", id, "tier");
+        return tier == null ? 0 : tier;
     }
 
     public static boolean setDjRole(final long guildId, final Long roleId) {
         try (Connection connection = getConnection()) {
 
-            final boolean shouldUpdate = entryExists("djroles", guildId);
+            final boolean shouldUpdate = tableContains("djroles", guildId);
             PreparedStatement update;
 
             if (shouldUpdate) {
@@ -141,23 +127,34 @@ public class Database {
     }
 
     public static Long getDjRole(final long guildId) {
-        try {
-            ResultSet result = getFromDatabase("djroles", guildId);
-            return result != null && result.next() ? result.getLong("roleid") : null;
-        } catch (SQLException e) {
-            JukeBot.LOG.error("Error accessing results from ResultSet", e);
-            return null;
+        return getFromDatabase("djroles", guildId, "roleid");
+    }
+
+    public static boolean setSkipThreshold(final long guildId, double newThreshold) {
+        try (Connection connection = getConnection()) {
+            final boolean shouldUpdate = tableContains("skipthres", guildId);
+            PreparedStatement statement;
+
+            if (shouldUpdate) {
+                statement = connection.prepareStatement("UPDATE skipthres SET threshold = ? WHERE id = ?");
+                statement.setDouble(1, newThreshold);
+                statement.setLong(2, guildId);
+            } else {
+                statement = connection.prepareStatement("INSERT INTO skipthres VALUES (?, ?);");
+                statement.setLong(1, guildId);
+                statement.setDouble(2, newThreshold);
+            }
+
+            return statement.executeUpdate() == 1;
+        } catch (SQLException unused) {
+            JukeBot.LOG.error("Error updating skip thres", unused);
+            return false;
         }
     }
 
     public static Double getSkipThreshold(final long guildId) {
-        try {
-            ResultSet result = getFromDatabase("skipthres", guildId);
-            return result != null && result.next() ? result.getDouble("threshold"): 0.5;
-        } catch (SQLException e) {
-            JukeBot.LOG.error("Error accessing results from ResultSet", e);
-            return 0.5;
-        }
+        Double thresh = getFromDatabase("skipthres", guildId, "threshold");
+        return thresh == null ? 0.5 : thresh;
     }
 
     public static ArrayList<Long> getDonorIds() {
@@ -198,36 +195,38 @@ public class Database {
     }
 
     public static boolean isBlocked(long id) {
-        try {
-            ResultSet result = getFromDatabase("blocked", id);
-            return result != null && result.next();
-        } catch (SQLException e) {
-            JukeBot.LOG.error("Error accessing results from ResultSet", e);
-            return false;
-        }
+        return tableContains("blocked", id);
     }
 
-    private static ResultSet getFromDatabase(String table, long id) {
+    @SuppressWarnings("unchecked")
+    private static <T> T getFromDatabase(String table, long id, String columnId) {
         final String idColumn = table.equals("djroles") ? "guildid" : "id"; // I'm an actual idiot I stg
 
         try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + idColumn + " = ?");
             statement.setLong(1, id);
-            return statement.executeQuery();
+            ResultSet results = statement.executeQuery();
+            return results.next() ? (T) results.getObject(columnId) : null;
         } catch (SQLException e) {
             JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
             return null;
         }
     }
 
-    private static boolean entryExists(String table, long id) { // Same principle as above except this takes out some more work
-        try {
-            ResultSet results = getFromDatabase(table, id);
-            return results != null && results.next();
+    private static boolean tableContains(String table, long id) {
+        final String idColumn = table.equals("djroles") ? "guildid" : "id";
+
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + idColumn + " = ?");
+            statement.setLong(1, id);
+            ResultSet results = statement.executeQuery();
+            return results.next();
         } catch (SQLException e) {
-            JukeBot.LOG.error("An error occurred while checking entry existence in the database", e);
+            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
             return false;
         }
     }
+
+    // TODO: Consider reusing connections for the above two functions, somehow.
 
 }

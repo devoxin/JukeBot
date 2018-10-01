@@ -1,5 +1,6 @@
 package jukebot.commands;
 
+import jukebot.Database;
 import jukebot.audioutilities.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
@@ -9,7 +10,7 @@ import jukebot.utils.Permissions;
 @CommandProperties(description = "Vote to skip the track", category = CommandProperties.category.CONTROLS)
 public class Skip implements Command {
 
-    final Permissions permissions = new Permissions();
+    private final Permissions permissions = new Permissions();
 
     public void execute(final Context context) {
 
@@ -26,12 +27,15 @@ public class Skip implements Command {
         }
 
         final int totalVotes = player.voteSkip(context.getAuthor().getIdLong());
+        final double voteThreshold = Database.getSkipThreshold(context.getGuild().getIdLong());
+
+        System.out.println(voteThreshold);
 
         final int neededVotes = (int) Math.ceil(context.getGuild().getAudioManager().getConnectedChannel()
                 .getMembers()
                 .stream()
                 .filter(u -> !u.getUser().isBot())
-                .count() * 0.5);
+                .count() * voteThreshold);
 
         if (neededVotes - totalVotes <= 0) {
             player.playNext();

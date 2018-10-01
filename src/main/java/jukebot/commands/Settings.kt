@@ -6,22 +6,25 @@ import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import jukebot.utils.addFields
 import net.dv8tion.jda.core.entities.MessageEmbed
+import java.text.DecimalFormat
 import java.util.regex.Pattern
 
 @CommandProperties(description = "Manage server-specific settings such as prefix etc", aliases = ["set", "config", "configure"])
 class Settings : Command {
 
     private val mentionRegex = Pattern.compile("<@!?\\d{17,20}>")
+    private val dpFormatter = DecimalFormat("0.00")
 
     override fun execute(context: Context) {
-        if (context.args[0].isBlank()) {
+        if (context.getArg(0).isBlank()) {
             val customDjRole: Long? = Database.getDjRole(context.guild.idLong)
             val djRoleFormatted: String = if (customDjRole != null) "<@&$customDjRole>" else "Default (DJ)"
+            val skipThreshold: String = dpFormatter.format(Database.getSkipThreshold(context.guild.idLong) * 100)
 
             val fields: Array<MessageEmbed.Field> = arrayOf(
                     MessageEmbed.Field("Server Prefix (prefix)", "`${context.prefix}`", true),
                     MessageEmbed.Field("DJ Role (role)", djRoleFormatted, true),
-                    MessageEmbed.Field("\u200B", "\u200B", true)
+                    MessageEmbed.Field("Skip Vote Threshold (vote)", "$skipThreshold%", true)
             )
 
             return context.embed {
@@ -48,13 +51,8 @@ class Settings : Command {
                 return
             }
 
-            val prefixUpdated: Boolean = Database.setPrefix(context.guild.idLong, newPrefix)
-
-            return if (prefixUpdated) {
-                context.embed("Server Prefix Updated", "The new prefix for this server is `$newPrefix`")
-            } else {
-                context.embed("An Error Occurred", "Unable to update the server prefix.")
-            }
+            Database.setPrefix(context.guild.idLong, newPrefix)
+            context.embed("Server Prefix Updated", "The new prefix for this server is `$newPrefix`")
         } else if (context.args[0] == "role") {
             if (context.getArg(1).isBlank()) {
                 return context.embed("Invalid Role", "You need to specify the name of the new role (case-sensitive).")
@@ -80,8 +78,23 @@ class Settings : Command {
                 Database.setDjRole(context.guild.idLong, newRole.idLong)
                 context.embed("DJ Role Updated", "New role set to <@&${newRole.idLong}>")
             }
+        } else if (context.args[0] == "vote") {
+            if (context.getArg(1).isBlank()) {
+                return context.embed("Invalid Threshold", "You need to specify a number between `0-100`")
+            }
+
+            val threshold = context.getArg(1).toDoubleOrNull()
+                    ?: return context.embed("Invalid Threshold", "You need to specify a number between `0-100`")
+
+            if (threshold < 0 || threshold > 100) {
+                return context.embed("Invalid Threshold", "You need to specify a number between `0-100`")
+            }
+
+            val formattedThreshold = dpFormatter.format(threshold)
+            Database.setSkipThreshold(context.guild.idLong, threshold / 100)
+            context.embed("Skip Threshold Updated", "Skip Vote Threshold set to `$formattedThreshold%`")
         } else {
-            context.embed("Unrecognised Setting", "`${context.args[0]}` is not a recognised setting\n\nValid settings: `prefix`, `role`")
+            context.embed("Unrecognised Setting", "`${context.args[0]}` is not a recognised setting\n\nValid settings: `prefix`, `role`, `vote`")
         }
     }
 

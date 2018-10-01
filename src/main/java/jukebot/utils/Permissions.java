@@ -15,7 +15,7 @@ public class Permissions {
     }
 
     public boolean canSendTo(TextChannel channel) {
-        return channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE, Permission.MESSAGE_EMBED_LINKS);
+        return channel.canTalk() && channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_EMBED_LINKS);
     }
 
     public static ConnectionError canConnectTo(VoiceChannel channel) {
