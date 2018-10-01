@@ -26,7 +26,7 @@ public class Database {
             statement.addBatch("CREATE TABLE IF NOT EXISTS donators (id INTEGER PRIMARY KEY, tier TEXT NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS prefixes (id INTEGER PRIMARY KEY, prefix TEXT NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS djroles (guildid INTEGER PRIMARY KEY, roleid INTEGER NOT NULL)");
-            statement.addBatch("CREATE TABLE IF NOT EXISTS skipthres (guildid INTEGER PRIMARY KEY, threshold REAL NOT NULL)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS skipthres (id INTEGER PRIMARY KEY, threshold REAL NOT NULL)");
             statement.executeBatch();
 
         } catch (SQLException e) {
@@ -35,32 +35,23 @@ public class Database {
     }
 
     public static String getPrefix(final long id) {
-
-        try (Connection connection = getConnection()) {
-
-            PreparedStatement state = connection.prepareStatement("SELECT * FROM prefixes WHERE id = ?");
-            state.setLong(1, id);
-
-            ResultSet prefix = state.executeQuery();
-
-            return prefix.next() ? prefix.getString("prefix") : JukeBot.getDefaultPrefix();
-
+        try {
+            ResultSet result = getFromDatabase("prefixes", id);
+            return result != null && result.next() ? result.getString("prefix") : JukeBot.getDefaultPrefix();
         } catch (SQLException e) {
+            JukeBot.LOG.error("Error accessing results from ResultSet", e);
             return JukeBot.getDefaultPrefix();
         }
-
     }
 
     public static boolean setPrefix(final long id, final String newPrefix) {
 
         try (Connection connection = getConnection()) {
 
-            PreparedStatement state = connection.prepareStatement("SELECT * FROM prefixes WHERE id = ?");
-            state.setLong(1, id);
-
+            final boolean shouldUpdate = entryExists("prefixes", id);
             PreparedStatement update;
 
-            if (state.executeQuery().next()) {
+            if (shouldUpdate) {
                 update = connection.prepareStatement("UPDATE prefixes SET prefix = ? WHERE id = ?");
                 update.setString(1, newPrefix);
                 update.setLong(2, id);
@@ -82,13 +73,10 @@ public class Database {
 
         try (Connection connection = getConnection()) {
 
-            PreparedStatement state = connection.prepareStatement("SELECT * FROM donators WHERE id = ?");
-            state.setLong(1, id);
-
-            final boolean entryExists = state.executeQuery().next();
+            final boolean shouldUpdate = entryExists("donators", id);
 
             if (newTier == 0) {
-                if (!entryExists) return true;
+                if (!shouldUpdate) return true;
                 PreparedStatement update = connection.prepareStatement("DELETE FROM donators WHERE id = ?");
                 update.setLong(1, id);
                 return update.executeUpdate() == 1;
@@ -96,7 +84,7 @@ public class Database {
 
             PreparedStatement update;
 
-            if (entryExists) {
+            if (shouldUpdate) {
                 update = connection.prepareStatement("UPDATE donators SET tier = ? WHERE id = ?");
                 update.setInt(1, newTier);
                 update.setLong(2, id);
@@ -115,33 +103,22 @@ public class Database {
     }
 
     public static int getTier(long id) {
-
-        try (Connection connection = getConnection()) {
-
-            PreparedStatement state = connection.prepareStatement("SELECT * FROM donators WHERE id = ?");
-            state.setLong(1, id);
-
-            ResultSet tier = state.executeQuery();
-
-            return tier.next() ? tier.getInt("tier") : 0;
-
+        try {
+            ResultSet result = getFromDatabase("donators", id);
+            return result != null && result.next() ? result.getInt("tier") : 0;
         } catch (SQLException e) {
+            JukeBot.LOG.error("Error accessing results from ResultSet", e);
             return 0;
         }
-
     }
 
     public static boolean setDjRole(final long guildId, final Long roleId) {
         try (Connection connection = getConnection()) {
 
-            PreparedStatement state = connection.prepareStatement("SELECT * FROM djroles WHERE guildid = ?");
-            state.setLong(1, guildId);
-
-            final boolean entryExists = state.executeQuery().next();
-
+            final boolean shouldUpdate = entryExists("djroles", guildId);
             PreparedStatement update;
 
-            if (entryExists) {
+            if (shouldUpdate) {
                 if (roleId == null) {
                     update = connection.prepareStatement("DELETE FROM djroles WHERE guildid = ?");
                     update.setLong(1, guildId);
@@ -164,29 +141,21 @@ public class Database {
     }
 
     public static Long getDjRole(final long guildId) {
-        try (Connection connection = getConnection()) {
-
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM djroles WHERE guildid = ?");
-            statement.setLong(1, guildId);
-            ResultSet result = statement.executeQuery();
-
-            return result.next() ? result.getLong("roleid") : null;
-
+        try {
+            ResultSet result = getFromDatabase("djroles", guildId);
+            return result != null && result.next() ? result.getLong("roleid") : null;
         } catch (SQLException e) {
+            JukeBot.LOG.error("Error accessing results from ResultSet", e);
             return null;
         }
     }
 
     public static Double getSkipThreshold(final long guildId) {
-        try (Connection connection = getConnection()) {
-
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM skipthres WHERE guildid = ?");
-            statement.setLong(1, guildId);
-            ResultSet result = statement.executeQuery();
-
-            return result.next() ? result.getDouble("threshold") : 0.5;
-
+        try {
+            ResultSet result = getFromDatabase("skipthres", guildId);
+            return result != null && result.next() ? result.getDouble("threshold"): 0.5;
         } catch (SQLException e) {
+            JukeBot.LOG.error("Error accessing results from ResultSet", e);
             return 0.5;
         }
     }
@@ -229,14 +198,41 @@ public class Database {
     }
 
     public static boolean isBlocked(long id) {
+        try {
+            ResultSet result = getFromDatabase("blocked", id);
+            return result != null && result.next();
+        } catch (SQLException e) {
+            JukeBot.LOG.error("Error accessing results from ResultSet", e);
+            return false;
+        }
+    }
+
+    public static ResultSet getFromDatabase(String table, long id) {
+        final String idColumn = table.equals("djroles") ? "guildid" : "id"; // I'm an actual idiot I stg
+
         try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM blocked WHERE id = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + idColumn + " = ?");
+            statement.setLong(1, id);
+            return statement.executeQuery();
+        } catch (SQLException e) {
+            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            return null;
+        }
+    }
+
+    public static boolean entryExists(String table, long id) { // Same principle as above except this takes out some more work
+        final String idColumn = table.equals("djroles") ? "guildid" : "id";
+
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + idColumn + " = ?");
             statement.setLong(1, id);
             ResultSet results = statement.executeQuery();
 
             return results.next();
-        } catch (SQLException unused) {
+        } catch (SQLException e) {
+            JukeBot.LOG.error("An error occurred while checking entry existence in the database", e);
             return false;
         }
     }
+
 }
