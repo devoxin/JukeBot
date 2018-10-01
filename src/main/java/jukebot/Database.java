@@ -227,6 +227,4 @@ public class Database {
         }
     }
 
-    // TODO: Consider reusing connections for the above two functions, somehow.
-
 }
