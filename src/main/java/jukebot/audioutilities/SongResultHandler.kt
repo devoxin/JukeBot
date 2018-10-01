@@ -43,7 +43,13 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
 
                 val selector = StringBuilder()
 
-                val tracks = playlist.tracks.subList(0, Math.min(playlist.tracks.size, 5))
+                val tracks = playlist.tracks
+                        .filter { canQueueTrack(it) }
+                        .subList(0, Math.min(playlist.tracks.size, 5))
+
+                if (tracks.isEmpty()) {
+                    return noMatches()
+                }
 
                 for (i in tracks.indices) {
                     val track = tracks[i]
@@ -60,6 +66,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
                         .setColor(JukeBot.embedColour)
                         .setTitle("Select Song")
                         .setDescription(selector.toString().trim())
+                        .setFooter("Results are now filtered to display what you can queue", null)
                         .build()
                 ).queue { m ->
                     JukeBot.waiter.waitForSelection(e.author.idLong, Consumer { selected ->
@@ -78,14 +85,6 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
 
                         val track = tracks[s - 1]
 
-                        if (!canQueueTrack(track)) {
-                            return@Consumer m.editEmbed {
-                                setColor(JukeBot.embedColour)
-                                setTitle("Track Unavailable")
-                                setDescription("This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
-                            }
-                        }
-
                         m.editEmbed {
                             setColor(JukeBot.embedColour)
                             setTitle("Track Selected")
@@ -98,8 +97,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
 
             } else {
                 if (playlist.tracks.isEmpty()) {
-                    noMatches()
-                    return
+                    return noMatches()
                 }
 
                 val track = playlist.tracks[0]
@@ -115,15 +113,15 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
 
         } else {
 
-            val tracks = playlist.tracks.subList(0, Math.min(playlist.tracks.size, playlistLimit))
+            val tracks = playlist.tracks
+                    .subList(0, Math.min(playlist.tracks.size, playlistLimit))
+                    .filter { canQueueTrack(it) }
 
             for (track in tracks) {
-                if (canQueueTrack(track)) {
-                    musicManager.addToQueue(track, e.author.idLong)
-                }
+                musicManager.addToQueue(track, e.author.idLong)
             }
 
-            e.embed("Playlist Enqueued", "${playlist.name} - ${tracks.size} tracks")
+            e.embed(playlist.name, "${tracks.size} tracks enqueued")
         }
     }
 

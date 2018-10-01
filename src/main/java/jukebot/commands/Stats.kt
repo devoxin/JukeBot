@@ -28,12 +28,16 @@ class Stats : Command {
         val users = JukeBot.shardManager.userCache.size()
 
         val shards = JukeBot.shardManager.shardsTotal
-        val shardsOnline = JukeBot.shardManager.shards.filter { s -> s.status == JDA.Status.CONNECTED }.count()
+        val shardsOnline = JukeBot.shardManager.shards.asSequence().filter { s -> s.status == JDA.Status.CONNECTED }.count()
         val averageShardLatency = JukeBot.shardManager.averagePing.toInt()
 
         val osBean: OperatingSystemMXBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean::class.java)
         val procCpuUsage = dpFormatter.format(osBean.processCpuLoad * 100)
         val sysCpuUsage = dpFormatter.format(osBean.systemCpuLoad * 100)
+
+        val secondsSinceBoot = ((System.currentTimeMillis() - JukeBot.startTime) / 1000).toDouble()
+        val callsPerSecond = (Database.calls / secondsSinceBoot)
+        val formattedCPS = dpFormatter.format(callsPerSecond)
 
         toSend.append("```ini\n")
                 .append("[ JVM ]\n")
@@ -46,7 +50,7 @@ class Stats : Command {
                 .append("Guilds          = ").append(servers).append("\n")
                 .append("Users           = ").append(users).append("\n")
                 .append("Players         = ").append(players).append(" (").append(encodingPlayers).append(" encoding)\n\n")
-                .append("Database_Calls  = ").append(Database.calls).append("\n")
+                .append("Database_Calls  = ").append(Database.calls).append(" (").append(formattedCPS).append("/sec)").append("\n")
                 .append("Shards_Online   = ").append(shardsOnline).append("/").append(shards).append("\n")
                 .append("Average_Latency = ").append(averageShardLatency).append("ms\n")
                 .append("```")

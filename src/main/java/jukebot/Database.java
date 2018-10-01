@@ -26,6 +26,7 @@ public class Database {
             statement.addBatch("CREATE TABLE IF NOT EXISTS donators (id INTEGER PRIMARY KEY, tier TEXT NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS prefixes (id INTEGER PRIMARY KEY, prefix TEXT NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS djroles (guildid INTEGER PRIMARY KEY, roleid INTEGER NOT NULL)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS skipthres (guildid INTEGER PRIMARY KEY, threshold REAL NOT NULL)");
             statement.executeBatch();
 
         } catch (SQLException e) {
@@ -173,6 +174,20 @@ public class Database {
 
         } catch (SQLException e) {
             return null;
+        }
+    }
+
+    public static Double getSkipThreshold(final long guildId) {
+        try (Connection connection = getConnection()) {
+
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM skipthres WHERE guildid = ?");
+            statement.setLong(1, guildId);
+            ResultSet result = statement.executeQuery();
+
+            return result.next() ? result.getDouble("threshold") : 0.5;
+
+        } catch (SQLException e) {
+            return 0.5;
         }
     }
 
