@@ -207,7 +207,7 @@ public class Database {
         }
     }
 
-    public static ResultSet getFromDatabase(String table, long id) {
+    private static ResultSet getFromDatabase(String table, long id) {
         final String idColumn = table.equals("djroles") ? "guildid" : "id"; // I'm an actual idiot I stg
 
         try (Connection connection = getConnection()) {
@@ -220,15 +220,10 @@ public class Database {
         }
     }
 
-    public static boolean entryExists(String table, long id) { // Same principle as above except this takes out some more work
-        final String idColumn = table.equals("djroles") ? "guildid" : "id";
-
-        try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + idColumn + " = ?");
-            statement.setLong(1, id);
-            ResultSet results = statement.executeQuery();
-
-            return results.next();
+    private static boolean entryExists(String table, long id) { // Same principle as above except this takes out some more work
+        try {
+            ResultSet results = getFromDatabase(table, id);
+            return results != null && results.next();
         } catch (SQLException e) {
             JukeBot.LOG.error("An error occurred while checking entry existence in the database", e);
             return false;
