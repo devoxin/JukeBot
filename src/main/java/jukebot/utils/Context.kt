@@ -72,7 +72,7 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
     fun isDJ(allowLoneVC: Boolean): Boolean {
         val customDjRole: Long? = Database.getDjRole(guild.idLong)
         val roleMatch: Boolean = if (customDjRole != null) {
-            member.roles.any { it.idLong == customDjRole }
+            customDjRole == guild.publicRole.idLong || member.roles.any { it.idLong == customDjRole }
         } else {
             member.roles.any { it.name.equals("dj", true) }
         }
