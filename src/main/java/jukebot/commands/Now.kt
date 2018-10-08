@@ -32,6 +32,7 @@ class Now : Command {
         context.embed {
             setTitle("Now Playing")
             setDescription("**[${current.info.title}](${current.info.uri})**\n$trackMarker")
+            //setThumbnail(current.info.artworkUri)
             setFooter(playbackSettings, null)
         }
 
