@@ -17,7 +17,9 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
     private var accessToken: String = ""
 
     init {
-        refreshAccessToken()
+        if (credentialsProvided()) {
+            refreshAccessToken()
+        }
     }
 
     fun credentialsProvided(): Boolean {
