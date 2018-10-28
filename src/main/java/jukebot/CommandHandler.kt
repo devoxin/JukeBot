@@ -29,7 +29,7 @@ class CommandHandler : ListenerAdapter() {
         for (klass in classes) {
             val clazz = klass.load()
 
-            val cmd = clazz.newInstance() as Command
+            val cmd = clazz.getDeclaredConstructor().newInstance() as Command
 
             if (!cmd.properties().enabled || cmd.properties().nsfw && !JukeBot.isNSFWEnabled()) {
                 continue

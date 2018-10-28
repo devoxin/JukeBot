@@ -51,6 +51,16 @@ class Helpers {
             }
         }
 
+        fun dm(userId: String, message: String) {
+            val user = JukeBot.shardManager.getUserById(userId) ?: return
+
+            user.openPrivateChannel().queue {
+                it.sendMessage(message)
+                        .submit()
+                        .handle { _, _ -> it.close().queue() }
+            }
+        }
+
         fun monitorPledges() {
             CoroutineScope(EmptyCoroutineContext).async {
                 JukeBot.LOG.info("Checking pledges...")
@@ -61,6 +71,7 @@ class Helpers {
                 val users = future.await()
 
                 if (users.isEmpty()) {
+                    dm("180093157554388993", "⚠  |  Unable to check pledges. Ensure key is valid!")
                     return@async JukeBot.LOG.warn("Scheduled pledge clean failed: No users to check")
                 }
 

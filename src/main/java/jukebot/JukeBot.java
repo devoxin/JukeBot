@@ -21,9 +21,16 @@ import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.audioutilities.*;
+import jukebot.utils.Config;
 import jukebot.utils.Helpers;
 import jukebot.utils.PatreonAPI;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
@@ -44,12 +51,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.3.3";
+    public static final String VERSION = "6.3.4";
 
     public static final Long startTime = System.currentTimeMillis();
     public static boolean isReady = false;
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
-    public static Properties config;
+    public static Config config = new Config("config.properties");
 
     public static Color embedColour;
     public static Long botOwnerId = 0L;
@@ -59,6 +66,7 @@ public class JukeBot {
     public static PatreonAPI patreonApi;
     public static SpotifyAPI spotifyApi;
     public static YouTubeAPI youTubeApi;
+
     private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
     public static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
@@ -69,39 +77,21 @@ public class JukeBot {
         Thread.currentThread().setName("JukeBot-Main");
         printBanner();
 
-        config = readConfig();
+        embedColour = Color.decode(config.getString("color", "0x1E90FF"));
 
-        final YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
-        yt.setPlaylistPageCount(Integer.MAX_VALUE);
-
-        embedColour = Color.decode(config.getProperty("color", "0x1E90FF"));
-        spotifyApi = new SpotifyAPI(config.getProperty("spotify_client", ""), config.getProperty("spotify_secret", ""));
-        youTubeApi = new YouTubeAPI(config.getProperty("youtube", ""), yt);
-
-        if (config.get("patreon") != null) {
-            createPatreonApi(config.getProperty("patreon"));
-        }
-
-        if (isNSFWEnabled()) {
-            playerManager.registerSourceManager(new PornHubAudioSourceManager());
-        }
-
-        if (spotifyApi.credentialsProvided()) {
-            playerManager.registerSourceManager(new SpotifyAudioSourceManager(spotifyApi, 2));
+        if (config.keyExists("patreon")) {
+            createPatreonApi(config.getString("patreon"));
         }
 
         playerManager.setPlayerCleanupThreshold(30000);
-        playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.LOW);
-        playerManager.getConfiguration().setOpusEncodingQuality(9);
+        //playerManager.getConfiguration().setOpusEncodingQuality(9);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
-
-        playerManager.registerSourceManager(yt);
-        AudioSourceManagers.registerRemoteSources(playerManager);
+        registerSourceManagers();
 
         Database.setupDatabase();
 
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
-                .setToken(config.getProperty("token"))
+                .setToken(config.getString("token", ""))
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), waiter)
                 .setGame(Game.listening(getDefaultPrefix() + "help | jukebot.xyz"));
@@ -132,12 +122,28 @@ public class JukeBot {
                 " | " + os + " " + arch + "\n");
     }
 
-    private static Properties readConfig() throws IOException {
-        try (FileReader fr = new FileReader("config.properties")) {
-            final Properties p = new Properties();
-            p.load(fr);
-            return p;
+    private static void registerSourceManagers() {
+        final YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
+        yt.setPlaylistPageCount(Integer.MAX_VALUE);
+
+        spotifyApi = new SpotifyAPI(config.getString("spotify_client", ""), config.getString("spotify_secret", ""));
+        youTubeApi = new YouTubeAPI(config.getString("youtube", ""), yt);
+
+        if (config.getBoolean("nsfw")) {
+            playerManager.registerSourceManager(new PornHubAudioSourceManager());
         }
+
+        if (config.keyExists("spotify_client") && config.keyExists("spotify_secret")) {
+            playerManager.registerSourceManager(new SpotifyAudioSourceManager(spotifyApi, 2));
+        }
+
+        playerManager.registerSourceManager(yt);
+        playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
+        playerManager.registerSourceManager(new BandcampAudioSourceManager());
+        playerManager.registerSourceManager(new VimeoAudioSourceManager());
+        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+        playerManager.registerSourceManager(new BeamAudioSourceManager());
+        playerManager.registerSourceManager(new HttpAudioSourceManager());
     }
 
     public static ConcurrentHashMap<Long, AudioHandler> getPlayers() {
@@ -149,7 +155,6 @@ public class JukeBot {
     }
 
     public static AudioHandler getPlayer(final AudioManager manager) {
-
         AudioHandler handler = players.computeIfAbsent(manager.getGuild().getIdLong(),
                 v -> new AudioHandler(manager.getGuild().getIdLong(), playerManager.createPlayer()));
 
@@ -157,7 +162,6 @@ public class JukeBot {
             manager.setSendingHandler(handler);
 
         return handler;
-
     }
 
     public static void removePlayer(final long guildId) {
@@ -171,11 +175,11 @@ public class JukeBot {
     }
 
     public static String getDefaultPrefix() {
-        return config.getProperty("prefix");
+        return config.getString("prefix");
     }
 
     public static Boolean isNSFWEnabled() {
-        return config.getProperty("nsfw", "true").equalsIgnoreCase("true");
+        return config.getBoolean("nsfw");
     }
 
 }
