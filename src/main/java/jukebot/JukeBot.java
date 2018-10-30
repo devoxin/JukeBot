@@ -38,6 +38,7 @@ import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
@@ -45,6 +46,7 @@ import org.sqlite.SQLiteJDBCLoader;
 import java.awt.*;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -94,6 +96,7 @@ public class JukeBot {
                 .setToken(config.getString("token", ""))
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), waiter)
+                .setDisabledCacheFlags(EnumSet.of(CacheFlag.EMOTE, CacheFlag.GAME))
                 .setGame(Game.listening(getDefaultPrefix() + "help | jukebot.xyz"));
 
         final String os = System.getProperty("os.name").toLowerCase();
