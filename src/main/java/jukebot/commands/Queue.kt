@@ -2,7 +2,7 @@ package jukebot.commands
 
 import jukebot.utils.*
 
-@CommandProperties(description = "Displays the current queue", aliases = arrayOf("q", "list", "songs"), category = CommandProperties.category.MEDIA)
+@CommandProperties(description = "Displays the current queue", aliases = ["q", "list", "songs"], category = CommandProperties.category.MEDIA)
 class Queue : Command {
 
     override fun execute(context: Context) {
@@ -15,17 +15,13 @@ class Queue : Command {
             return
         }
 
-        val queueDuration = queue.asSequence().map { it.duration }.sum().toTimeString()
+        val queueDuration = queue.map { it.duration }.sum().toTimeString()
         val fQueue = StringBuilder()
 
+        val selectedPage = context.args.getOrNull(0)?.toInt() ?: 1
+
         val maxPages = Math.ceil(queue.size.toDouble() / 10).toInt()
-        var page = Helpers.parseNumber(context.argString, 1)
-
-        if (page < 1)
-            page = 1
-
-        if (page > maxPages)
-            page = maxPages
+        val page = Math.min(Math.max(selectedPage, 1), maxPages)
 
         val begin = (page - 1) * 10
         val end = if (begin + 10 > queue.size) queue.size else begin + 10
