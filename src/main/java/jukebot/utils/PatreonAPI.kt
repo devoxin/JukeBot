@@ -36,7 +36,7 @@ class PatreonAPI(private val accessToken: String) {
         val response = httpClient.newCall(request.build()).execute()
 
         if (!response.isSuccessful) {
-            JukeBot.LOG.error("Unable to get list of pledges (%d): %s", response.code(), response.message())
+            JukeBot.LOG.error("Unable to get list of pledges ({}): {}", response.code(), response.message())
             return users.toList()
         }
 
