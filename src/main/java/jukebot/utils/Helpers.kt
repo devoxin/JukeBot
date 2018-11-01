@@ -19,20 +19,11 @@ class Helpers {
 
     companion object {
 
-        private val executor = Executors.newSingleThreadExecutor { Thread(it, "JukeBot-Helper") }
-        public val monitor = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }
-        private val timer = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
+        private val timer = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }!!
+        val monitor = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }!!
 
         fun parseNumber(num: String?, def: Int): Int {
-            return if (num == null) {
-                def
-            } else {
-                try {
-                    num.toInt()
-                } catch (e: NumberFormatException) {
-                    def
-                }
-            }
+            return num?.toIntOrNull() ?: def
         }
 
         public fun schedule(task: Runnable, delay: Int, unit: TimeUnit) {

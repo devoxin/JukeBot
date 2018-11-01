@@ -9,12 +9,8 @@ import org.json.JSONObject
 fun Response.json(): JSONObject? {
     val body = body()
 
-    body().use {
-        return if (isSuccessful && body != null) {
-            JSONObject(body()!!.string())
-        } else {
-            null
-        }
+    body.use {
+        return if (isSuccessful && body != null) JSONObject(body.string()) else null
     }
 }
 
