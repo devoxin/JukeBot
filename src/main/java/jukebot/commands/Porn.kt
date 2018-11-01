@@ -11,7 +11,6 @@ import jukebot.utils.Context
 class Porn : Command {
 
     override fun execute(context: Context) {
-
         if (context.argString.isEmpty()) {
             return context.embed("PornHub Search", "Provide a query to search PornHub for")
         }
@@ -32,6 +31,5 @@ class Porn : Command {
         }
 
         JukeBot.playerManager.loadItem("phsearch:${context.argString}", SongResultHandler(context, player, true))
-
     }
 }

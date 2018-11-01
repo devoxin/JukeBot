@@ -5,7 +5,7 @@ import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import jukebot.utils.toTimeString
 
-@CommandProperties(description = "Move to the specified position in the track", category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Move to the specified position in the track", category = CommandProperties.category.CONTROLS, aliases = ["jump"])
 class Seek : Command {
 
     override fun execute(context: Context) {
@@ -25,13 +25,16 @@ class Seek : Command {
             return context.embed("Seek Unavailable", "The current track doesn't support seeking.")
         }
 
-        val forwardTime = (context.argString.toIntOrNull() ?: 10) * 1000
+        val jumpTime = context.getArg(0).toIntOrNull()
+                ?: return context.embed("Track Seeking", "You need to specify a valid amount of seconds to jump.")
 
-        if (currentTrack.position + forwardTime >= currentTrack.duration) {
+        val jumpTimeMs = jumpTime * 1000
+
+        if (currentTrack.position + jumpTimeMs >= currentTrack.duration) {
             return player.playNext()
         }
 
-        currentTrack.position = currentTrack.position + forwardTime
+        currentTrack.position = currentTrack.position + jumpTimeMs
         context.embed("Track Seeking", "The current track has been moved to **${currentTrack.position.toTimeString()}**")
 
     }
