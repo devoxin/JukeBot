@@ -90,7 +90,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 return AudioReference.NO_TRACK
 
             val videoTitle = info.get("video_title").text()
-            val videoDuration = Integer.parseInt(info.get("video_duration").text()) * 1000 // PH returns seconds
+            val videoDuration = info.get("video_duration").text().toInt() * 1000 // PH returns seconds
             val videoUrl = info.get("link_url").text()
             val matcher = VIDEO_REGEX.matcher(videoUrl)
             val videoId = if (matcher.matches()) matcher.group(1) else reference.identifier
