@@ -3,9 +3,9 @@ package jukebot.utils
 
 import jukebot.Database
 import jukebot.JukeBot
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.future.await
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.await
 import java.io.BufferedReader
 import java.io.FileReader
 import java.io.IOException
@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
-import kotlin.coroutines.experimental.EmptyCoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 class Helpers {
 
