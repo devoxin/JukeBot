@@ -8,12 +8,13 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.FAULT
 import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpConfigurable
-import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterfaceManager
 import com.sedmelluq.discord.lavaplayer.track.*
 import org.apache.commons.io.IOUtils
 import org.apache.http.client.config.RequestConfig
+import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.impl.client.HttpClientBuilder
 import org.jsoup.Jsoup
@@ -25,16 +26,14 @@ import java.io.IOException
 import java.net.URI
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.regex.Pattern
 
 
 class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
-    private val httpInterfaceManager: HttpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager()
-
-    val httpInterface: HttpInterface
-        get() = httpInterfaceManager.`interface`
+    val httpInterfaceManager: HttpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager()
 
     override fun getSourceName(): String {
         return "pornhub"
@@ -61,12 +60,10 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
     }
 
-    override fun isTrackEncodable(track: AudioTrack): Boolean {
-        return true
-    }
+    override fun isTrackEncodable(track: AudioTrack) = true
 
     override fun encodeTrack(track: AudioTrack, output: DataOutput) {
-        // No custom values that need saving
+
     }
 
     override fun decodeTrack(trackInfo: AudioTrackInfo, input: DataInput): AudioTrack {
@@ -74,10 +71,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
     }
 
     override fun shutdown() {
-        try {
-            httpInterface.close()
-        } catch (ignored: IOException) {
-        }
+        httpInterfaceManager.close()
     }
 
     override fun configureRequests(configurator: Function<RequestConfig, RequestConfig>) {
@@ -90,66 +84,69 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
     private fun loadItemOnce(reference: AudioReference): AudioItem {
         try {
-            httpInterface.use { httpInterface ->
-                val info = getVideoInfo(httpInterface, reference.identifier) ?: return AudioReference.NO_TRACK
+            val info = getVideoInfo(reference.identifier) ?: return AudioReference.NO_TRACK
 
-                if (info.get("video_unavailable").text() == "true")
-                    return AudioReference.NO_TRACK
+            if (info.get("video_unavailable").text() == "true")
+                return AudioReference.NO_TRACK
 
-                val videoTitle = info.get("video_title").text()
-                val videoDuration = Integer.parseInt(info.get("video_duration").text()) * 1000 // PH returns seconds
+            val videoTitle = info.get("video_title").text()
+            val videoDuration = Integer.parseInt(info.get("video_duration").text()) * 1000 // PH returns seconds
+            val videoUrl = info.get("link_url").text()
+            val matcher = VIDEO_REGEX.matcher(videoUrl)
+            val videoId = if (matcher.matches()) matcher.group(1) else reference.identifier
 
-                // todo: one of these should be the video id, the other should be the complete URL
-                return buildTrackObject(reference.identifier, reference.identifier, videoTitle, "Unknown Uploader", false, videoDuration.toLong())
-            }
+            return buildTrackObject(videoUrl, videoId, videoTitle, "Unknown Uploader", false, videoDuration.toLong())
         } catch (e: Exception) {
             throw ExceptionTools.wrapUnfriendlyExceptions("Loading information for a PornHub track failed.", FAULT, e)
         }
     }
 
     private fun searchForVideos(query: String): AudioItem {
-        httpInterfaceManager.`interface`.use {
-            val uri: URI = URIBuilder("https://www.pornhub.com/video/search").addParameter("search", query).build()
+        val uri: URI = URIBuilder("https://www.pornhub.com/video/search").addParameter("search", query).build()
 
-            httpInterface.execute(HttpGet(uri)).use {
-                val statusCode: Int = it.statusLine.statusCode
+        makeHttpRequest(uri).use {
+            val statusCode: Int = it.statusLine.statusCode
 
-                if (statusCode != 200) {
-                    if (statusCode == 404) {
-                        return AudioReference.NO_TRACK
-                    }
-                    throw IOException("Invalid status code for search response: $statusCode")
-                }
-
-                val document: Document = Jsoup.parse(it.entity.content, StandardCharsets.UTF_8.name(), "https://pornhub.com")
-                val videos = document.getElementsByClass("wrap")
-                        .filter { !it.select("div.thumbnail-info-wrapper span.title a").first().attr("href").contains("playlist") }
-
-                if (videos.isEmpty())
+            if (statusCode != 200) {
+                if (statusCode == 404) {
                     return AudioReference.NO_TRACK
-
-                val tracks = ArrayList<AudioTrack>()
-
-                for (e: Element in videos) {
-                    val anchor = e.select("div.thumbnail-info-wrapper span.title a").first()
-                    val title = anchor.text()
-                    val identifier = anchor.parents().select("li.videoBox").first().attr("_vkey")
-                    val url = anchor.absUrl("href")
-                    val durationStr = anchor.parents().select("div.videoPreviewBg .marker-overlays var").firstOrNull()?.text()
-                    val duration = if (durationStr != null) parseDuration(durationStr) else 0L
-
-                    tracks.add(buildTrackObject(url, identifier, title, "Unknown Uploader", false, duration))
                 }
-
-                return BasicAudioPlaylist("Search results for: $query", tracks, null, true)
+                throw IOException("Invalid status code for search response: $statusCode")
             }
+
+            val document: Document = Jsoup.parse(it.entity.content, StandardCharsets.UTF_8.name(), "https://pornhub.com")
+            val videos = document.getElementsByClass("wrap")
+                    .filter { elem ->
+                        !elem.select("div.thumbnail-info-wrapper span.title a")
+                                .first()
+                                .attr("href")
+                                .contains("playlist")
+                    }
+
+            if (videos.isEmpty())
+                return AudioReference.NO_TRACK
+
+            val tracks = ArrayList<AudioTrack>()
+
+            for (e: Element in videos) {
+                val anchor = e.select("div.thumbnail-info-wrapper span.title a").first()
+                val title = anchor.text()
+                val identifier = anchor.parents().select("li.videoBox").first().attr("_vkey")
+                val url = anchor.absUrl("href")
+                val durationStr = anchor.parents().select("div.videoPreviewBg .marker-overlays var").firstOrNull()?.text()
+                val duration = if (durationStr != null) parseDuration(durationStr) else 0L
+
+                tracks.add(buildTrackObject(url, identifier, title, "Unknown Uploader", false, duration))
+            }
+
+            return BasicAudioPlaylist("Search results for: $query", tracks, null, true)
         }
     }
 
     @Throws(IOException::class)
-    private fun getVideoInfo(httpInterface: HttpInterface, videoURL: String): JsonBrowser? {
-        httpInterface.execute(HttpGet(videoURL)).use { response ->
-            val statusCode = response.statusLine.statusCode
+    private fun getVideoInfo(videoURL: String): JsonBrowser? {
+        makeHttpRequest(videoURL).use {
+            val statusCode = it.statusLine.statusCode
 
             if (statusCode != 200) {
                 if (statusCode == 404) {
@@ -158,7 +155,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 throw IOException("Invalid status code for video page response: $statusCode")
             }
 
-            val html = IOUtils.toString(response.entity.content, Charset.forName(CHARSET))
+            val html = IOUtils.toString(it.entity.content, CHARSET)
             val match = VIDEO_INFO_REGEX.matcher(html)
 
             return if (match.find()) JsonBrowser.parse(match.group(1)) else null
@@ -177,9 +174,24 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
         return (mins + secs).toLong()
     }
 
+    private fun makeHttpRequest(url: String): CloseableHttpResponse {
+        return makeHttpRequest(HttpGet(url))
+    }
+
+    private fun makeHttpRequest(uri: URI): CloseableHttpResponse {
+        return makeHttpRequest(HttpGet(uri))
+    }
+
+    private fun makeHttpRequest(request: HttpUriRequest): CloseableHttpResponse {
+        return httpInterfaceManager.`interface`.use {
+            it.execute(request)
+        }
+
+    }
+
     companion object {
-        private const val CHARSET = "UTF-8"
-        private val VIDEO_REGEX = Pattern.compile("^https?://www.pornhub.com/view_video.php\\?viewkey=[a-zA-Z0-9]{9,15}$")
+        private val CHARSET = Charset.forName("UTF-8")
+        private val VIDEO_REGEX = Pattern.compile("^https?://www\\.pornhub\\.com/view_video\\.php\\?viewkey=([a-zA-Z0-9]{9,15})\$")
         private val VIDEO_INFO_REGEX = Pattern.compile("var flashvars_\\d{7,9} = (\\{.+})")
         private const val VIDEO_SEARCH_PREFIX = "phsearch:"
     }

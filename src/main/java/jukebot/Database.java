@@ -39,7 +39,6 @@ public class Database {
 
     public static boolean setPrefix(final long id, final String newPrefix) {
         try (Connection connection = getConnection()) {
-
             final boolean shouldUpdate = tableContains("prefixes", id);
             PreparedStatement update;
 
@@ -54,16 +53,13 @@ public class Database {
             }
 
             return update.executeUpdate() == 1;
-
         } catch (SQLException e) {
             return false;
         }
     }
 
     public static boolean setTier(final long id, final int newTier) {
-
         try (Connection connection = getConnection()) {
-
             final boolean shouldUpdate = tableContains("donators", id);
 
             if (newTier == 0) {
@@ -86,16 +82,14 @@ public class Database {
             }
 
             return update.executeUpdate() == 1;
-
         } catch (SQLException e) {
             return false;
         }
-
     }
 
     public static int getTier(long id) {
-        Integer tier = getFromDatabase("donators", id, "tier");
-        return tier == null ? 0 : tier;
+        String result = getFromDatabase("donators", id, "tier");
+        return result != null ? Integer.parseInt(result) : 0;
     }
 
     public static boolean setDjRole(final long guildId, final Long roleId) {
@@ -127,7 +121,8 @@ public class Database {
     }
 
     public static Long getDjRole(final long guildId) {
-        return getFromDatabase("djroles", guildId, "roleid");
+        String result = getFromDatabase("djroles", guildId, "roleid");
+        return result != null ? Long.parseLong(result) : null;
     }
 
     public static boolean setSkipThreshold(final long guildId, double newThreshold) {
@@ -153,12 +148,11 @@ public class Database {
     }
 
     public static Double getSkipThreshold(final long guildId) {
-        Double thresh = getFromDatabase("skipthres", guildId, "threshold");
-        return thresh == null ? 0.5 : thresh;
+        String result = getFromDatabase("skipthres", guildId, "threshold");
+        return result == null ? 0.5 : Double.parseDouble(result);
     }
 
     public static ArrayList<Long> getDonorIds() {
-
         ArrayList<Long> donors = new ArrayList<>();
 
         try (Connection connection = getConnection()) {
@@ -173,7 +167,6 @@ public class Database {
         }
 
         return donors;
-
     }
 
     public static void blockUser(long id) {
@@ -199,14 +192,14 @@ public class Database {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getFromDatabase(String table, long id, String columnId) {
+    private static String getFromDatabase(String table, long id, String columnId) {
         final String idColumn = table.equals("djroles") ? "guildid" : "id"; // I'm an actual idiot I stg
 
         try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + table + " WHERE " + idColumn + " = ?");
             statement.setLong(1, id);
             ResultSet results = statement.executeQuery();
-            return results.next() ? (T) results.getObject(columnId) : null;
+            return results.next() ? results.getString(columnId) : null;
         } catch (SQLException e) {
             JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
             return null;
