@@ -27,7 +27,7 @@ public class BassBoost implements Command {
         }
 
         if (!context.isDJ(true)) {
-            context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.xyz/faq)");
+            context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)");
             return;
         }
 

@@ -40,7 +40,7 @@ class Help : Command {
 
             context.embed {
                 setTitle("Help for **$category**")
-                setDescription("[View more information here](https://jukebot.xyz/documentation)\n$builder")
+                setDescription("[View more information here](https://jukebot.serux.pro/documentation)\n$builder")
                 setFooter("You can use ${context.prefix}help <command> to view additional command information", null)
             }
         }

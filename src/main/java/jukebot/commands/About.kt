@@ -20,7 +20,7 @@ class About : Command {
 
         val fields = arrayOf(
                 MessageEmbed.Field("Dependencies", dependencies, true),
-                MessageEmbed.Field("Links", "[GitHub](https://github.com/Devoxin/JukeBot)\n[Website](https://jukebot.xyz)", true)
+                MessageEmbed.Field("Links", "[GitHub](https://github.com/Devoxin/JukeBot)\n[Website](https://jukebot.serux.pro)", true)
         )
 
         context.embed {

@@ -37,7 +37,7 @@ public class Move implements Command {
         final AudioTrack selectedTrack = player.getQueue().get(target - 1);
 
         if (!context.isDJ(true)) {
-            context.embed("Not a DJ", "You need the DJ role to move others' tracks. [See here on how to become a DJ](https://jukebot.xyz/faq)");
+            context.embed("Not a DJ", "You need the DJ role to move others' tracks. [See here on how to become a DJ](https://jukebot.serux.pro/faq)");
             return;
         }
 

@@ -96,7 +96,7 @@ public class JukeBot {
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), waiter)
                 .setDisabledCacheFlags(EnumSet.of(CacheFlag.EMOTE, CacheFlag.GAME))
-                .setGame(Game.listening(getDefaultPrefix() + "help | jukebot.xyz"));
+                .setGame(Game.listening(getDefaultPrefix() + "help | https://jukebot.serux.pro"));
 
         final String os = System.getProperty("os.name").toLowerCase();
         final String arch = System.getProperty("os.arch");

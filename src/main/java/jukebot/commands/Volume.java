@@ -28,7 +28,7 @@ public class Volume implements Command {
         }
 
         if (!context.isDJ(false)) {
-            context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.xyz/faq)");
+            context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)");
             return;
         }
 
@@ -47,14 +47,14 @@ public class Volume implements Command {
 
         for (int i = 0; i < maxBricks; i++) {
             if (i == blocks) {
-                sb.append("](http://jukebot.xyz)");
+                sb.append("](http://jukebot.serux.pro)");
             }
 
             sb.append(brick);
         }
 
         if (blocks == maxBricks) {
-            sb.append("](http://jukebot.xyz)");
+            sb.append("](http://jukebot.serux.pro)");
         }
 
         return sb.toString();

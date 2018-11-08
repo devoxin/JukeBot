@@ -34,7 +34,7 @@ public class Unqueue implements Command {
         final AudioTrack selectedTrack = player.getQueue().get(selected - 1);
 
         if ((long) selectedTrack.getUserData() != context.getAuthor().getIdLong() && !context.isDJ(false)) {
-            context.embed("Not a DJ", "You need the DJ role to unqueue others' tracks. [See here on how to become a DJ](https://jukebot.xyz/faq)");
+            context.embed("Not a DJ", "You need the DJ role to unqueue others' tracks. [See here on how to become a DJ](https://jukebot.serux.pro/faq)");
             return;
         }
 
