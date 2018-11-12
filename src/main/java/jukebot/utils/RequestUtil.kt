@@ -16,7 +16,6 @@ class RequestUtil {
 
         fun queue(success: (Response) -> Unit, failure: (IOException) -> Unit) {
             httpClient.newCall(request).enqueue(object : Callback {
-
                 override fun onFailure(call: Call, e: IOException) {
                     logger.error("An error occurred during a HTTP request to ${call.request().url()}", e)
                     failure(e)
@@ -25,10 +24,8 @@ class RequestUtil {
                 override fun onResponse(call: Call, response: Response) {
                     success(response)
                 }
-
             })
         }
-
     }
 
     public fun get(url: String, headers: Headers = Headers.of()): PendingRequest {

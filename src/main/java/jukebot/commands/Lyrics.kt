@@ -22,7 +22,7 @@ class Lyrics : Command {
 
         JukeBot.kSoftAPI.getLyrics(query) {
             if (it == null || 25 > it.score) {
-                return@getLyrics context.embed("No Lyrics Found", "The API returned no lyrics for **$}**")
+                return@getLyrics context.embed("No Lyrics Found", "The API returned no lyrics for **$query**")
             }
 
             val title = "${it.track} by ${it.artist}"
