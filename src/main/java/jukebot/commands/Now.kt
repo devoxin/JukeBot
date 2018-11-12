@@ -1,6 +1,5 @@
 package jukebot.commands
 
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import jukebot.JukeBot
 import jukebot.utils.*
 
@@ -10,14 +9,13 @@ class Now : Command {
     override fun execute(context: Context) {
 
         val player = JukeBot.getPlayer(context.guild.audioManager)
-        val current = player.player.playingTrack
-
 
         if (!player.isPlaying) {
             context.embed("Not Playing", "Nothing is currently playing.")
             return
         }
 
+        val current = player.player.playingTrack
         val playbackSettings = "Shuffle: ${if (player.isShuffleEnabled) "On" else "Off"}" +
                 " | Repeat: ${player.repeatMode.toTitleCase()}"
         val duration = if (current.info.isStream) "LIVE" else current.duration.toTimeString()

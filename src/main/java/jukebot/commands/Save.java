@@ -2,7 +2,7 @@ package jukebot.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import jukebot.JukeBot;
-import jukebot.audioutilities.AudioHandler;
+import jukebot.audio.AudioHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;

@@ -17,10 +17,8 @@
 package jukebot;
 
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
-import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
@@ -29,10 +27,16 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
-import jukebot.audioutilities.*;
+import jukebot.apis.KSoftAPI;
+import jukebot.apis.PatreonAPI;
+import jukebot.apis.SpotifyAPI;
+import jukebot.apis.YouTubeAPI;
+import jukebot.audio.AudioHandler;
+import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
+import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
 import jukebot.utils.Config;
 import jukebot.utils.Helpers;
-import jukebot.utils.PatreonAPI;
+import jukebot.utils.RequestUtil;
 import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.bot.sharding.ShardManager;
 import net.dv8tion.jda.core.JDAInfo;
@@ -44,16 +48,13 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.EnumSet;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.3.6";
+    public static final String VERSION = "6.3.7";
 
     public static final Long startTime = System.currentTimeMillis();
     public static boolean isReady = false;
@@ -65,9 +66,11 @@ public class JukeBot {
     public static boolean isSelfHosted = false;
 
     /* Operation-Related */
+    public static final RequestUtil httpClient = new RequestUtil();
     public static PatreonAPI patreonApi;
     public static SpotifyAPI spotifyApi;
     public static YouTubeAPI youTubeApi;
+    public static KSoftAPI kSoftAPI;
 
     private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
@@ -84,6 +87,8 @@ public class JukeBot {
         if (config.keyExists("patreon")) {
             createPatreonApi(config.getString("patreon"));
         }
+
+        kSoftAPI = new KSoftAPI(config.getString("ksoft", ""));
 
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);

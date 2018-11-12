@@ -1,4 +1,4 @@
-package jukebot.audioutilities
+package jukebot.audio
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException

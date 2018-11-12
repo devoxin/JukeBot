@@ -3,6 +3,7 @@ package jukebot.utils
 
 import jukebot.Database
 import jukebot.JukeBot
+import jukebot.apis.PatreonUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.await

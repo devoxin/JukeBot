@@ -2,10 +2,10 @@ package jukebot.commands
 
 import jukebot.Database
 import jukebot.JukeBot
+import jukebot.apis.PatreonUser
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
-import jukebot.utils.PatreonUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.await

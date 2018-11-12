@@ -1,8 +1,8 @@
 package jukebot.commands;
 
 import jukebot.JukeBot;
-import jukebot.audioutilities.AudioHandler;
-import jukebot.audioutilities.SongResultHandler;
+import jukebot.audio.AudioHandler;
+import jukebot.audio.SongResultHandler;
 import jukebot.utils.Command;
 import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;

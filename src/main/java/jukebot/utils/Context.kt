@@ -2,7 +2,7 @@ package jukebot.utils
 
 import jukebot.Database
 import jukebot.JukeBot
-import jukebot.audioutilities.AudioHandler
+import jukebot.audio.AudioHandler
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.JDA
 import net.dv8tion.jda.core.entities.*

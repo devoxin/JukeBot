@@ -1,7 +1,7 @@
-package jukebot.utils
+package jukebot.apis
 
 import jukebot.JukeBot
-import okhttp3.OkHttpClient
+import jukebot.utils.json
 import okhttp3.Request
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.client.utils.URLEncodedUtils
@@ -11,7 +11,6 @@ import java.nio.charset.Charset
 import java.util.concurrent.CompletableFuture
 
 class PatreonAPI(private val accessToken: String) {
-    private val httpClient = OkHttpClient()
 
     public fun fetchPledgesOfCampaign(campaignId: String, callback: CompletableFuture<List<PatreonUser>>) {
         callback.complete(getPageOfPledge(campaignId, null))
@@ -32,8 +31,9 @@ class PatreonAPI(private val accessToken: String) {
                 .addHeader("Authorization", "Bearer $accessToken")
                 .url(url.build().toURL())
                 .get()
+                .build()
 
-        val response = httpClient.newCall(request.build()).execute()
+        val response = JukeBot.httpClient.makeRequest(request).block()
 
         if (!response.isSuccessful) {
             JukeBot.LOG.error("Unable to get list of pledges ({}): {}", response.code(), response.message())
