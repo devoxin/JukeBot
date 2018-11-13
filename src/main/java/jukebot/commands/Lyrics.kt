@@ -37,6 +37,7 @@ class Lyrics : Command {
                 .setColor(JukeBot.embedColour)
                 .setTitle(title)
                 .setDescription(chunks[index])
+                .setFooter("KSoft.Si API", null)
                 .build()
         ).queue {
             if (chunks.size > index + 1) {
