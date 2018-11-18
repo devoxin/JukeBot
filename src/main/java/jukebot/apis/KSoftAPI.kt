@@ -19,7 +19,7 @@ public class KSoftAPI(private val key: String) {
         }
 
         val req = Request.Builder()
-                .url("$baseUrl/lyrics/search?q=$title&limit=1")
+                .url("$baseUrl/lyrics/search?q=$title&limit=1&clean_up=true")
                 .headers(createHeaders(Pair("Authorization", "Bearer $key")))
                 .get()
                 .build()
