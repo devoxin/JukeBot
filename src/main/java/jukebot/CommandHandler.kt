@@ -2,15 +2,20 @@ package jukebot
 
 import com.google.common.reflect.ClassPath
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
+import jukebot.audio.AudioHandler
+import jukebot.commands.Feedback
 import jukebot.utils.Command
 import jukebot.utils.Context
 import jukebot.utils.Helpers
 import jukebot.utils.Permissions
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.entities.VoiceChannel
 import net.dv8tion.jda.core.events.ReadyEvent
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
+import net.dv8tion.jda.core.events.guild.voice.GuildVoiceMoveEvent
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.util.concurrent.TimeUnit
@@ -106,6 +111,7 @@ class CommandHandler : ListenerAdapter() {
                 if (JukeBot.isSelfHosted) {
                     commands.remove("patreon")
                     commands.remove("verify")
+                    (commands.remove("feedback") as Feedback).shutdown()
                 } else {
                     Helpers.monitor.scheduleAtFixedRate({ Helpers.monitorPledges() }, 0, 1, TimeUnit.DAYS)
                 }
@@ -119,8 +125,59 @@ class CommandHandler : ListenerAdapter() {
     }
 
     override fun onGuildVoiceLeave(e: GuildVoiceLeaveEvent) {
-        if (e.member.user.idLong == e.jda.selfUser.idLong && JukeBot.hasPlayer(e.guild.idLong))
-            JukeBot.getPlayer(e.guild.audioManager).stop()
+        if (e.member.user.isBot) return
+
+        handleLeave(e.channelLeft)
+    }
+
+    override fun onGuildVoiceMove(e: GuildVoiceMoveEvent) {
+        if (e.member.user.isBot) return
+
+        val channel = e.guild.audioManager.connectedChannel ?: return
+
+        if (e.channelJoined.idLong == channel.idLong) {
+            handleJoin(e.channelJoined)
+        } else if (e.channelLeft.idLong == channel.idLong) {
+            handleLeave(e.channelLeft)
+        }
+    }
+
+    override fun onGuildVoiceJoin(e: GuildVoiceJoinEvent) {
+        if (e.member.user.isBot) return
+
+        handleJoin(e.channelJoined)
+    }
+
+    public fun handleLeave(channel: VoiceChannel) {
+        val connectedChannel = channel.guild.audioManager.connectedChannel ?: return
+
+        if (!JukeBot.hasPlayer(channel.guild.idLong)) {
+            return
+        }
+
+        val listeners = connectedChannel.members.filter { !it.user.isBot }.size
+
+        val player = JukeBot.getPlayer(channel.guild.audioManager)
+
+        if (!player.player.isPaused && listeners == 0) {
+            player.setAutoPause(true)
+        }
+    }
+
+    public fun handleJoin(channel: VoiceChannel) {
+        val connectedChannel = channel.guild.audioManager.connectedChannel ?: return
+
+        if (!JukeBot.hasPlayer(channel.guild.idLong)) {
+            return
+        }
+
+        val listeners = connectedChannel.members.filter { !it.user.isBot }.size
+
+        val player = JukeBot.getPlayer(channel.guild.audioManager)
+
+        if (player.player.isPaused && player.wasAutoPaused && listeners >= 1) {
+            player.setAutoPause(false)
+        }
     }
 
 }

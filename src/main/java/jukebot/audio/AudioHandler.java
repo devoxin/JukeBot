@@ -46,15 +46,19 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public int trackPacketLoss = 0;
     public int trackPackets = 0;
 
+    public boolean wasAutoPaused = false;
+
     public AudioHandler(Long guildId, AudioPlayer player) {
         this.guildId = guildId;
         this.player = player;
         player.addListener(this);
     }
 
-    /*
-     * Custom Events
-     */
+
+    public void setAutoPause(boolean pause) {
+        wasAutoPaused = pause;
+        player.setPaused(pause);
+    }
 
     public boolean addToQueue(AudioTrack track, Long userID) { // boolean: shouldAnnounce
         track.setUserData(userID);
@@ -120,6 +124,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public void playNext() {
+        wasAutoPaused = false;
         AudioTrack nextTrack = null;
 
         if (repeat == repeatMode.ALL && current != null) {
@@ -154,7 +159,8 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
             if (audioManager.isConnected() || audioManager.isAttemptingToConnect()) {
                 Helpers.Companion.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS);
 
-                announce("Queue Concluded!", "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)");
+                announce("Queue Concluded!", "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)" +
+                        "\nSuggest features with the `feedback` command!");
             }
         }
     }
@@ -239,7 +245,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         if (repeat != repeatMode.NONE)
             repeat = repeatMode.NONE;
 
-        announce("Track Stuck", "JukeBot has automatically detected a stuck track and will now play the next song in the queue.");
+        announce("Track Stuck", "Playback of **" + track.getInfo().title + "** has frozen and is unable to resume!");
         playNext();
     }
 
