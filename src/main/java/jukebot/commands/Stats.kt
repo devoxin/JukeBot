@@ -22,7 +22,8 @@ class Stats : Command {
         val rPercent = dpFormatter.format(rUsedRaw.toDouble() / Runtime.getRuntime().totalMemory() * 100)
         val usedMB = dpFormatter.format(rUsedRaw.toDouble() / 1048576)
 
-        val players = JukeBot.getPlayers().values.filter { it.isPlaying }.size
+        val players = JukeBot.getPlayers().size
+        val playingPlayers = JukeBot.getPlayers().values.filter { it.isPlaying }.size
         val encodingPlayers = JukeBot.getPlayers().values.filter { it.isPlaying && (it.isBassBoosted || it.player.volume != 100) }.size
         val autoPausedPlayers = JukeBot.getPlayers().values.filter { it.player.isPaused && it.wasAutoPaused }.size
 
@@ -52,6 +53,7 @@ class Stats : Command {
                 .append("Guilds          = ").append(servers).append("\n")
                 .append("Users           = ").append(users).append("\n")
                 .append("Total_Players   = ").append(players).append("\n")
+                .append("  Playing       = ").append(playingPlayers).append("\n")
                 .append("  Encoding      = ").append(encodingPlayers).append("\n")
                 .append("  Auto_Paused   = ").append(autoPausedPlayers).append("\n\n")
                 .append("Database_Calls  = ").append(Database.calls).append(" (").append(formattedCPS).append("/sec)").append("\n")
