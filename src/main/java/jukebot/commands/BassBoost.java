@@ -33,7 +33,7 @@ public class BassBoost implements Command {
 
         if (context.getArgString().isEmpty()) {
             context.embed("BassBoost Presets",
-                    "Current Setting: `" + handler.getBassBoostSetting() + "`\n\nValid presets: `Off`, `Low`, `Medium`, `High`, `Insane`");
+                    "Current Setting: `" + handler.getBassBoostSetting() + "`\n\nValid presets: `Off`, `Weak`, `Medium`, `Strong`, `Insane`, `Wtf`");
             return;
         }
 
@@ -42,21 +42,24 @@ public class BassBoost implements Command {
             case "off":
                 handler.bassBoost(AudioHandler.bassBoost.OFF);
                 break;
-            case "l":
-            case "low":
-                handler.bassBoost(AudioHandler.bassBoost.LOW);
+            case "w":
+            case "weak":
+                handler.bassBoost(AudioHandler.bassBoost.WEAK);
                 break;
             case "m":
             case "medium":
                 handler.bassBoost(AudioHandler.bassBoost.MEDIUM);
                 break;
-            case "h":
-            case "high":
-                handler.bassBoost(AudioHandler.bassBoost.HIGH);
+            case "s":
+            case "strong":
+                handler.bassBoost(AudioHandler.bassBoost.STRONG);
                 break;
             case "i":
             case "insane":
                 handler.bassBoost(AudioHandler.bassBoost.INSANE);
+                break;
+            case "wtf":
+                handler.bassBoost(AudioHandler.bassBoost.WTF);
                 break;
             default:
                 context.embed("BassBoost", args[0] + " is not a recognised preset");

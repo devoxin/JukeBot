@@ -25,7 +25,7 @@ class Stats : Command {
         val players = JukeBot.getPlayers().size
         val playingPlayers = JukeBot.getPlayers().values.filter { it.isPlaying }.size
         val encodingPlayers = JukeBot.getPlayers().values.filter { it.isPlaying && (it.isBassBoosted || it.player.volume != 100) }.size
-        val autoPausedPlayers = JukeBot.getPlayers().values.filter { it.player.isPaused && it.wasAutoPaused }.size
+        val autoPausedPlayers = JukeBot.getPlayers().values.filter { it.isPlaying && it.player.isPaused && it.wasAutoPaused }.size
 
         val servers = JukeBot.shardManager.guildCache.size()
         val users = JukeBot.shardManager.userCache.size()
@@ -55,7 +55,7 @@ class Stats : Command {
                 .append("Total_Players   = ").append(players).append("\n")
                 .append("  Playing       = ").append(playingPlayers).append("\n")
                 .append("  Encoding      = ").append(encodingPlayers).append("\n")
-                .append("  Auto_Paused   = ").append(autoPausedPlayers).append("\n\n")
+                .append("  Auto_Paused   = ").append(autoPausedPlayers).append("\n")
                 .append("Database_Calls  = ").append(Database.calls).append(" (").append(formattedCPS).append("/sec)").append("\n")
                 .append("Shards_Online   = ").append(shardsOnline).append("/").append(shards).append("\n")
                 .append("Average_Latency = ").append(averageShardLatency).append("ms\n")

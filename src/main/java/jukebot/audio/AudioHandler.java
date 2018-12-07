@@ -71,13 +71,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         return false;
     }
 
-    public void stop() {
-        if (isPlaying()) {
-            queue.clear();
-            playNext();
-        }
-    }
-
     public boolean isPlaying() {
         return player.getPlayingTrack() != null;
     }
@@ -179,9 +172,17 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         channel.sendMessage(new EmbedBuilder()
                 .setColor(JukeBot.embedColour)
                 .setTitle(title)
-                .setDescription(description)
+                .setDescription(truncate(description, 1000))
                 .build()
         ).queue(null, err -> JukeBot.LOG.error("Encountered an error while posting track announcement", err));
+    }
+
+    private String truncate(String content, int maxLength) {
+        if (content.length() > maxLength) {
+            return content.substring(0, maxLength - 3) + "...";
+        }
+
+        return content;
     }
 
     public void cleanup() {
@@ -284,10 +285,11 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
 
     public enum bassBoost {
         OFF(0F, 0F),
-        LOW(0.25F, 0.15F),
-        MEDIUM(0.50F, 0.25F),
-        HIGH(0.75F, 0.50F),
-        INSANE(1F, 0.75F);
+        WEAK(0.075F, 0.05F),
+        MEDIUM(0.15F, 0.09F),
+        STRONG(0.25F, 0.12F),
+        INSANE(0.5F, 0.34F),
+        WTF(1F, 0.8F);
 
         private final float band0;
         private final float band1;
