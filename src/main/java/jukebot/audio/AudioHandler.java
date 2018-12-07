@@ -204,8 +204,9 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         }
 
         bassBoostMode = preset;
-        equalizer.setGain(0, preset.getBand0());
-        equalizer.setGain(1, preset.getBand1());
+        equalizer.setGain(0, preset.band0);
+        equalizer.setGain(1, preset.band1);
+        equalizer.setGain(2, preset.band2);
     }
 
     /*
@@ -284,27 +285,21 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public enum bassBoost {
-        OFF(0F, 0F),
-        WEAK(0.075F, 0.05F),
-        MEDIUM(0.15F, 0.09F),
-        STRONG(0.25F, 0.12F),
-        INSANE(0.5F, 0.34F),
-        WTF(1F, 0.8F);
+        OFF(0F, 0F, 0F),
+        WEAK(0.03F, 0.01F, 0.0F),
+        MEDIUM(0.1F, 0.08F, 0.04F),
+        STRONG(0.2F, 0.15F, 0.11F),
+        INSANE(0.4F, 0.26F, 0.18F),
+        WTF(1F, 0.8F, 0.6F);
 
         private final float band0;
         private final float band1;
+        private final float band2;
 
-        bassBoost(float b0, float b1) {
+        bassBoost(float b0, float b1, float b2) {
             this.band0 = b0;
             this.band1 = b1;
-        }
-
-        public float getBand0() {
-            return band0;
-        }
-
-        public float getBand1() {
-            return band1;
+            this.band2 = b2;
         }
     }
 
