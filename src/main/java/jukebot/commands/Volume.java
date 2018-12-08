@@ -6,7 +6,7 @@ import jukebot.utils.CommandProperties;
 import jukebot.utils.Context;
 import jukebot.utils.Helpers;
 
-@CommandProperties(aliases = {"vol"}, description = "Adjust the player volume", category = CommandProperties.category.CONTROLS)
+@CommandProperties(aliases = {"vol", "v"}, description = "Adjust the player volume", category = CommandProperties.category.CONTROLS)
 public class Volume implements Command {
 
     private final String brick = "\u25AC";
