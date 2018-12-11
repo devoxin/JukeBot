@@ -125,27 +125,9 @@ class CommandHandler : ListenerAdapter() {
     }
 
     override fun onGuildVoiceLeave(e: GuildVoiceLeaveEvent) {
-        if (e.member.user.isBot) return
-
-        handleLeave(e.channelLeft)
-    }
-
-    override fun onGuildVoiceMove(e: GuildVoiceMoveEvent) {
-        if (e.member.user.isBot) return
-
-        val channel = e.guild.audioManager.connectedChannel ?: return
-
-        if (e.channelJoined.idLong == channel.idLong) {
-            handleJoin(e.channelJoined)
-        } else if (e.channelLeft.idLong == channel.idLong) {
+        if (!e.member.user.isBot) {
             handleLeave(e.channelLeft)
         }
-    }
-
-    override fun onGuildVoiceJoin(e: GuildVoiceJoinEvent) {
-        if (e.member.user.isBot) return
-
-        handleJoin(e.channelJoined)
     }
 
     public fun handleLeave(channel: VoiceChannel) {
@@ -159,24 +141,9 @@ class CommandHandler : ListenerAdapter() {
 
         val player = JukeBot.getPlayer(channel.guild.audioManager)
 
-        if (!player.player.isPaused && listeners == 0) {
-            player.setAutoPause(true)
-        }
-    }
-
-    public fun handleJoin(channel: VoiceChannel) {
-        val connectedChannel = channel.guild.audioManager.connectedChannel ?: return
-
-        if (!JukeBot.hasPlayer(channel.guild.idLong)) {
-            return
-        }
-
-        val listeners = connectedChannel.members.filter { !it.user.isBot }.size
-
-        val player = JukeBot.getPlayer(channel.guild.audioManager)
-
-        if (player.player.isPaused && player.wasAutoPaused && listeners >= 1) {
-            player.setAutoPause(false)
+        if (listeners == 0) {
+            player.cleanup()
+            connectedChannel.guild.audioManager.closeAudioConnection()
         }
     }
 
