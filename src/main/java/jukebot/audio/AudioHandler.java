@@ -46,18 +46,10 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     public int trackPacketLoss = 0;
     public int trackPackets = 0;
 
-    public boolean wasAutoPaused = false;
-
     public AudioHandler(Long guildId, AudioPlayer player) {
         this.guildId = guildId;
         this.player = player;
         player.addListener(this);
-    }
-
-
-    public void setAutoPause(boolean pause) {
-        wasAutoPaused = pause;
-        player.setPaused(pause);
     }
 
     public boolean addToQueue(AudioTrack track, Long userID) { // boolean: shouldAnnounce
@@ -117,7 +109,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
     }
 
     public void playNext() {
-        wasAutoPaused = false;
         AudioTrack nextTrack = null;
 
         if (repeat == repeatMode.ALL && current != null) {
