@@ -29,7 +29,9 @@ class Eval : Command {
             val result = engine.eval("$bindString\n${context.argString}", bind)
             context.channel.sendMessage("```\n$result```").queue()
         } catch (e: Exception) {
-            context.channel.sendMessage("Engine Error\n```\n$e```").queue()
+            context.channel.sendMessage("Engine Error\n```\n$e```").queue(null) {
+                context.embed("Response Error", e.toString())
+            }
         }
     }
 
