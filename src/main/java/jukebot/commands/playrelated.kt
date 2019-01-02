@@ -11,11 +11,12 @@ import kotlinx.coroutines.future.await
 import java.util.regex.Pattern
 
 
-@CommandProperties(description = "Enqueues a song similar to the current", developerOnly = true, aliases = ["pr"])
+@CommandProperties(description = "Enqueues a song similar to the current", developerOnly = false, aliases = ["pr"])
 class PlayRelated : Command(ExecutionType.REQUIRE_MUTUAL) {
 
-    val noVideoTags = Pattern.compile("(?:(?:official)? (?:(?:music|lyrics?) )?video) ?").toRegex()
-    val noFeaturing = Pattern.compile(" ?\\(?(?:ft|feat)\\.? *?.+").toRegex()
+    //val noVideoTags = Pattern.compile("(?:(?:official)? (?:(?:music|lyrics?) )?video) ?").toRegex()
+    val noVideoTags = Pattern.compile("(?:official|music|lyrics?|video)").toRegex()
+    val noFeaturing = Pattern.compile(" \\(?(?:ft|feat)\\.? *?.+").toRegex()
 
     // TODO cleanup remix tags
 
