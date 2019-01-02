@@ -1,12 +1,10 @@
 package jukebot.commands
 
 import jukebot.JukeBot
-import jukebot.audio.AudioHandler
 import jukebot.audio.SongResultHandler
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
-import net.dv8tion.jda.core.managers.AudioManager
 
 @CommandProperties(description = "Finds and plays the provided song query/URL", aliases = ["p"], category = CommandProperties.category.CONTROLS)
 class Play : Command(ExecutionType.TRIGGER_CONNECT) {

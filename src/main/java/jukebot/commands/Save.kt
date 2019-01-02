@@ -1,8 +1,6 @@
 package jukebot.commands
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.JukeBot
-import jukebot.audio.AudioHandler
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
@@ -37,7 +35,7 @@ class Save : Command(ExecutionType.STANDARD) {
             context.author.openPrivateChannel().queue { dm ->
                 dm.sendFile(sb.toString().toByteArray(), "queue.txt", null)
                         .queue(null, { context.embed("Unable to DM", "Ensure your DMs are enabled.") }
-                )
+                        )
             }
         } else {
             context.author.openPrivateChannel().queue { dm ->
@@ -47,7 +45,7 @@ class Save : Command(ExecutionType.STANDARD) {
                                 .setTitle(currentTrack.info.title, currentTrack.info.uri)
                                 .build())
                         .queue(null, { context.embed("Unable to DM", "Ensure your DMs are enabled.") }
-                )
+                        )
             }
         }
 

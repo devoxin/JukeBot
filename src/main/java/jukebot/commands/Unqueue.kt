@@ -1,11 +1,8 @@
 package jukebot.commands
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import jukebot.audio.AudioHandler
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
-import jukebot.utils.Helpers
 
 @CommandProperties(description = "Remove a track from the queue", aliases = ["uq", "remove", "r"], category = CommandProperties.category.MEDIA)
 class Unqueue : Command(ExecutionType.STANDARD) {
