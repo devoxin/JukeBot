@@ -149,14 +149,6 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         }
     }
 
-    public void loadRelatedTrack(String provider, String videoId) {
-        if (provider.equalsIgnoreCase("youtube")) {
-            return;
-        }
-
-
-    }
-
     private void announce(String title, String description) {
         if (!shouldAnnounce || channelId == null) {
             return;
