@@ -14,8 +14,8 @@ import java.util.regex.Pattern
 @CommandProperties(description = "Enqueues a song similar to the current", developerOnly = true, aliases = ["pr"])
 class PlayRelated : Command(ExecutionType.REQUIRE_MUTUAL) {
 
-    val unshitter = Pattern.compile("\\(?(?:(?:official)? (?:music|lyrics?) video)\\)? ?").toRegex()
-    val nahDidItSoloMate = Pattern.compile(" ?\\(?(?:ft|feat)\\.? *?.+").toRegex()
+    val noVideoTags = Pattern.compile("(?:(?:official)? (?:(?:music|lyrics?) )?video) ?").toRegex()
+    val noFeaturing = Pattern.compile(" ?\\(?(?:ft|feat)\\.? *?.+").toRegex()
 
     // TODO cleanup remix tags
 
@@ -25,16 +25,36 @@ class PlayRelated : Command(ExecutionType.REQUIRE_MUTUAL) {
             val track = ap.player.playingTrack
             val title = track.info.title.toLowerCase()
 
-            val unshit = title.replace(unshitter, "").replace(nahDidItSoloMate, "")
-            val res = JukeBot.spotifyApi.search(unshit).await()
-                    ?: return@async context.embed("Spotify Track Search", "No matches found.")
+            var cleaned = title.replace(noVideoTags, "")
+                    .replace(noFeaturing, "")
+                    .replace("()", "")
 
-            context.embed("Spotify Track Search", "${res.artist} - ${res.title}")
+            if (cleaned.contains(',') && cleaned.contains('-')) { // Multiple artists
+                val sliced = cleaned.split('-')
+                val artists = sliced[0].split(',')
+
+                val firstArtist = artists[0].trim()
+                val unhyphenatedTitle = sliced[1].trim()
+
+                cleaned = "$firstArtist - $unhyphenatedTitle"
+            } else if (cleaned.contains('&') && cleaned.contains('-')) {
+                val sliced = cleaned.split('-')
+                val artists = sliced[0].split('&')
+
+                val firstArtist = artists[0].trim()
+                val unhyphenatedTitle = sliced[1].trim()
+
+                cleaned = "$firstArtist $unhyphenatedTitle"
+            }
+
+            cleaned = cleaned.replace("-", "").trim()
+            println(cleaned)
+
+            val res = JukeBot.spotifyApi.search(cleaned).await()
+                    ?: return@async context.embed("Related Tracks", "No matches found.")
 
             val similar = JukeBot.lastFM.findSimilar(res.title, res.artist).await()
-                    ?: return@async context.embed("LastFM Similar Track", "No matches found.")
-
-            context.embed("LastFM Similar Track", "${similar.artist} - ${similar.title}")
+                    ?: return@async context.embed("Related Tracks", "No matches found.")
 
             JukeBot.playerManager.loadItem("ytsearch:${similar.artist} - ${similar.title}", SongResultHandler(context, ap, false))
         }
