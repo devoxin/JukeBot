@@ -29,6 +29,10 @@ class PlayRelated : Command(ExecutionType.REQUIRE_MUTUAL) {
             var cleaned = title.replace(noVideoTags, "")
                     .replace(noFeaturing, "")
                     .replace("()", "")
+                    .replace("( )", "")
+                    .replace("[]", "")
+                    .replace("\"", "")
+                    .replace("'", "")
 
             if (cleaned.contains(',') && cleaned.contains('-')) { // Multiple artists
                 val sliced = cleaned.split('-')
@@ -57,7 +61,9 @@ class PlayRelated : Command(ExecutionType.REQUIRE_MUTUAL) {
             val similar = JukeBot.lastFM.findSimilar(res.title, res.artist).await()
                     ?: return@async context.embed("Related Tracks", "No matches found.")
 
-            JukeBot.playerManager.loadItem("ytsearch:${similar.artist} - ${similar.title}", SongResultHandler(context, ap, false))
+            val chosen = similar.random()
+
+            JukeBot.playerManager.loadItem("ytsearch:${chosen.artist} - ${chosen.title}", SongResultHandler(context, ap, false))
         }
     }
 

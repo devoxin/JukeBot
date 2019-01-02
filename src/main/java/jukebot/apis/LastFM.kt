@@ -11,7 +11,7 @@ public class LastFM(private val key: String) {
 
     private val baseUrl = "http://ws.audioscrobbler.com/2.0"
 
-    public fun findSimilar(title: String, artist: String): CompletableFuture<TrackMatch?> {
+    public fun findSimilar(title: String, artist: String): CompletableFuture<List<TrackMatch>?> {
         val url = URIBuilder("$baseUrl/?method=track.getsimilar&api_key=$key&format=json")
 
         url.addParameter("track", title)
@@ -22,7 +22,7 @@ public class LastFM(private val key: String) {
                 .get()
                 .build()
 
-        val future = CompletableFuture<TrackMatch?>()
+        val future = CompletableFuture<List<TrackMatch>?>()
 
         JukeBot.httpClient.makeRequest(req).queue({
             val json = it.json()
@@ -39,12 +39,17 @@ public class LastFM(private val key: String) {
                 return@queue
             }
 
-            val first = obj.getJSONObject(0)
+            val tracks = mutableListOf<TrackMatch>()
 
-            val t = first.getString("name")
-            val a = first.getJSONObject("artist").getString("name")
+            for (i in 0..Math.min(3, obj.length())) {
+                val tr = obj.getJSONObject(i)
 
-            future.complete(TrackMatch(a, t))
+                val t = tr.getString("name")
+                val a = tr.getJSONObject("artist").getString("name")
+                tracks.add(TrackMatch(a, t))
+            }
+
+            future.complete(tracks)
         }, {
             future.complete(null)
         })
