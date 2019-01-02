@@ -4,7 +4,7 @@ import jukebot.JukeBot
 import jukebot.utils.*
 
 @CommandProperties(description = "Displays the currently playing track", aliases = ["n", "np"], category = CommandProperties.category.MEDIA)
-class Now : Command {
+class Now : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
 

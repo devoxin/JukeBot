@@ -73,7 +73,7 @@ class CommandHandler : ListenerAdapter() {
             if (foundCommand == null || foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong)
                 return
 
-            foundCommand.execute(Context(e, args, guildPrefix))
+            foundCommand.runChecks(Context(e, args, guildPrefix))
         } catch (err: Exception) {
             val formatted = "An error occurred in the CommandHandler!\n" +
                     "\tMessage: ${e.message.contentStripped}\n" +

@@ -10,7 +10,7 @@ import java.text.DecimalFormat
 import java.util.regex.Pattern
 
 @CommandProperties(description = "Manage server-specific settings such as prefix etc", aliases = ["set", "config", "configure"])
-class Settings : Command {
+class Settings : Command(ExecutionType.STANDARD) {
 
     private val mentionRegex = Pattern.compile("<@!?\\d{17,20}>")
     private val dpFormatter = DecimalFormat("0.00")

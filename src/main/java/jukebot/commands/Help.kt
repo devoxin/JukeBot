@@ -7,7 +7,7 @@ import jukebot.utils.Context
 import jukebot.utils.Helpers
 
 @CommandProperties(description = "Displays all commands", aliases = ["commands"], category = CommandProperties.category.MISC)
-class Help : Command {
+class Help : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
 

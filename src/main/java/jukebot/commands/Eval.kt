@@ -8,7 +8,7 @@ import jukebot.utils.Context
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 
 @CommandProperties(description = "Evaluate arbitrary code.", developerOnly = true)
-class Eval : Command {
+class Eval : Command(ExecutionType.STANDARD) {
 
     private val engine = KotlinJsr223JvmLocalScriptEngineFactory().scriptEngine
     private val db = Database()

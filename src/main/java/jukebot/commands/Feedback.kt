@@ -10,7 +10,7 @@ import net.dv8tion.jda.webhook.WebhookClientBuilder
 import java.time.Instant
 
 @CommandProperties(description = "Send feedback to the developer")
-class Feedback : Command {
+class Feedback : Command(ExecutionType.STANDARD) {
 
     private val webhookClient: WebhookClient = WebhookClientBuilder(JukeBot.config.getString("feedback_webhook")!!).build()
 

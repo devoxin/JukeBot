@@ -52,7 +52,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         player.addListener(this);
     }
 
-    public boolean addToQueue(AudioTrack track, Long userID) { // boolean: shouldAnnounce
+    public boolean enqueue(AudioTrack track, Long userID) { // boolean: shouldAnnounce
         track.setUserData(userID);
 
         if (!player.startTrack(track, true)) {
@@ -147,6 +147,14 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
                         "\nSuggest features with the `feedback` command!");
             }
         }
+    }
+
+    public void loadRelatedTrack(String provider, String videoId) {
+        if (provider.equalsIgnoreCase("youtube")) {
+            return;
+        }
+
+
     }
 
     private void announce(String title, String description) {

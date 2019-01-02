@@ -6,7 +6,7 @@ import jukebot.utils.Context
 import jukebot.utils.toTimeString
 
 @CommandProperties(description = "Displays the current queue", aliases = ["q", "list", "songs"], category = CommandProperties.category.MEDIA)
-class Queue : Command {
+class Queue : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
 
@@ -14,8 +14,7 @@ class Queue : Command {
         val queue = player.queue
 
         if (queue.isEmpty()) {
-            context.embed("Queue is empty", "There are no tracks to display.\nUse `${context.prefix}now` to view current track.")
-            return
+            return context.embed("Queue is empty", "There are no tracks to display.\nUse `${context.prefix}now` to view current track.")
         }
 
         val queueDuration = queue.map { it.duration }.sum().toTimeString()

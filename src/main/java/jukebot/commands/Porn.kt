@@ -8,23 +8,14 @@ import jukebot.utils.Context
 
 
 @CommandProperties(description = "Searches for a track on PornHub and queues it", nsfw = true, category = CommandProperties.category.CONTROLS)
-class Porn : Command {
+class Porn : Command(ExecutionType.TRIGGER_CONNECT) {
 
     override fun execute(context: Context) {
-        if (context.argString.isEmpty()) {
-            return context.embed("PornHub Search", "Provide a query to search PornHub for")
-        }
-
         if (!context.channel.isNSFW) {
             return context.embed("PornHub Search", "Searches can only be performed from NSFW channels")
         }
 
         val player = context.getAudioPlayer()
-        val voiceConnected = context.ensureVoice()
-
-        if (!voiceConnected) {
-            return
-        }
 
         if (!player.isPlaying) {
             player.setChannel(context.channel.idLong)

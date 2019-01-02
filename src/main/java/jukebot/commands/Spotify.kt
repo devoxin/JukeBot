@@ -7,7 +7,7 @@ import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 
 @CommandProperties(description = "Loads a playlist from Spotify", category = CommandProperties.category.CONTROLS)
-public class Spotify : Command { // TODO: Consider moving this to `play` eventually
+public class Spotify : Command(ExecutionType.TRIGGER_CONNECT) { // TODO: Consider moving this to `play` eventually
 
     override fun execute(context: Context) {
         if (context.donorTier < 2 && !JukeBot.isSelfHosted) {
@@ -21,11 +21,6 @@ public class Spotify : Command { // TODO: Consider moving this to `play` eventua
         }
 
         val player = context.getAudioPlayer()
-        val voiceConnected = context.ensureVoice()
-
-        if (!voiceConnected) {
-            return
-        }
 
         if (!player.isPlaying) {
             player.setChannel(context.channel.idLong)

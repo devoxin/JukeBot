@@ -8,7 +8,7 @@ import jukebot.utils.TextSplitter
 import net.dv8tion.jda.core.EmbedBuilder
 
 @CommandProperties(description = "Displays lyrics for the currently playing song")
-class Lyrics : Command {
+class Lyrics : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
         val player = JukeBot.getPlayer(context.guild.audioManager)

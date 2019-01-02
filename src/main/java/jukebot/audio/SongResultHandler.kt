@@ -22,7 +22,6 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
                 return Integer.MAX_VALUE
 
             return if (e.donorTier == 0) 100 else 1000
-
         }
 
     override fun trackLoaded(track: AudioTrack) {
@@ -31,7 +30,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
             return
         }
 
-        if (musicManager.addToQueue(track, e.author.idLong)) {
+        if (musicManager.enqueue(track, e.author.idLong)) {
             e.embed("Track Enqueued", track.info.title)
         }
     }
@@ -91,7 +90,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
                             setDescription(track.info.title)
                         }
 
-                        musicManager.addToQueue(track, e.author.idLong)
+                        musicManager.enqueue(track, e.author.idLong)
                     })
                 }
 
@@ -106,7 +105,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
                     return e.embed("Track Unavailable", "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
                 }
 
-                if (musicManager.addToQueue(track, e.author.idLong)) {
+                if (musicManager.enqueue(track, e.author.idLong)) {
                     e.embed("Track Enqueued", track.info.title)
                 }
             }
@@ -118,7 +117,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
                     .filter { canQueueTrack(it) }
 
             for (track in tracks) {
-                musicManager.addToQueue(track, e.author.idLong)
+                musicManager.enqueue(track, e.author.idLong)
             }
 
             e.embed(playlist.name, "${tracks.size} tracks enqueued")

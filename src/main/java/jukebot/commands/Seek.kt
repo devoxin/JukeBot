@@ -6,7 +6,7 @@ import jukebot.utils.Context
 import jukebot.utils.toTimeString
 
 @CommandProperties(description = "Move to the specified position in the track", category = CommandProperties.category.CONTROLS, aliases = ["jump"])
-class Seek : Command {
+class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
 

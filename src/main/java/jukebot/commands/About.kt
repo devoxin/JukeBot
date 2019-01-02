@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed
 import org.sqlite.SQLiteJDBCLoader
 
 @CommandProperties(aliases = ["info"], description = "Displays some information about the bot")
-class About : Command {
+class About : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
         val dependencies = "**JDA**: ${JDAInfo.VERSION}" +

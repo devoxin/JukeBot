@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
 import kotlin.coroutines.EmptyCoroutineContext
 
 @CommandProperties(description = "Receive your donor rewards if you're a patron")
-class Verify : Command {
+class Verify : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
         CoroutineScope(EmptyCoroutineContext).async {

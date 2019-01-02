@@ -12,7 +12,7 @@ import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
 
 @CommandProperties(description = "Displays JukeBot statistics")
-class Stats : Command {
+class Stats : Command(ExecutionType.STANDARD) {
 
     private val dpFormatter = DecimalFormat("0.00")
 

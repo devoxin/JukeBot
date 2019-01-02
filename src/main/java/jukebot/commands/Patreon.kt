@@ -7,7 +7,7 @@ import jukebot.utils.addFields
 import net.dv8tion.jda.core.entities.MessageEmbed
 
 @CommandProperties(aliases = ["donate"], description = "Provides a link to JukeBot's Patreon")
-class Patreon : Command {
+class Patreon : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
 
