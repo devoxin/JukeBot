@@ -105,6 +105,40 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
         return promise.get(30, TimeUnit.SECONDS)
     }
 
+    fun search(title: String): CompletableFuture<SpotifyAudioTrack?> {
+        val request = Request.Builder()
+                .url("https://api.spotify.com/v1/search?q=$title&type=track")
+                .addHeader("Authorization", "Bearer $accessToken")
+                .build()
+
+        val future = CompletableFuture<SpotifyAudioTrack?>()
+
+        JukeBot.httpClient.makeRequest(request).queue({
+            val json = it.json()
+
+            if (json == null) {
+                future.complete(null)
+                return@queue
+            }
+
+            val results = json.getJSONObject("tracks").getJSONArray("items")
+
+            if (results.length() == 0) {
+                future.complete(null)
+                return@queue
+            }
+
+            val track = results.getJSONObject(0)
+            val artist = track.getJSONArray("artists").getJSONObject(0).getString("name")
+            val trackTitle = track.getString("name")
+
+            future.complete(SpotifyAudioTrack(artist, trackTitle))
+        }, {
+            future.complete(null)
+        })
+
+        return future
+    }
 }
 
 class SpotifyPlaylist(val name: String = "Spotify Playlist") {

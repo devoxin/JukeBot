@@ -27,10 +27,7 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
-import jukebot.apis.KSoftAPI;
-import jukebot.apis.PatreonAPI;
-import jukebot.apis.SpotifyAPI;
-import jukebot.apis.YouTubeAPI;
+import jukebot.apis.*;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
@@ -71,6 +68,7 @@ public class JukeBot {
     public static SpotifyAPI spotifyApi;
     public static YouTubeAPI youTubeApi;
     public static KSoftAPI kSoftAPI;
+    public static LastFM lastFM;
 
     private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
@@ -89,6 +87,7 @@ public class JukeBot {
         }
 
         kSoftAPI = new KSoftAPI(config.getString("ksoft", ""));
+        lastFM = new LastFM(config.getString("lastfm", ""));
 
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
