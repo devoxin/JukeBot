@@ -11,26 +11,25 @@ import kotlinx.coroutines.future.await
 import java.util.regex.Pattern
 
 
-@CommandProperties(description = "Enqueues a song similar to the current", developerOnly = false, aliases = ["pr"])
+@CommandProperties(description = "Enqueues a song similar to the current", aliases = ["pr"])
 class PlayRelated : Command(ExecutionType.REQUIRE_MUTUAL) {
 
-    //val noVideoTags = Pattern.compile("(?:(?:official)? (?:(?:music|lyrics?) )?video) ?").toRegex()
-    val noVideoTags = Pattern.compile("(?:official|music|lyrics?|video)").toRegex()
-    val noFeaturing = Pattern.compile(" \\(?(?:ft|feat)\\.? *?.+").toRegex()
-
+    //val noVideoTags = Pattern.compile("(?:official|music|lyrics?|video)").toRegex()
+    //val noFeaturing = Pattern.compile(" \\(?(?:ft|feat)\\.? *?.+").toRegex()
+    //val emptyBrackets = Pattern.compile("(?:\\( *?\\)|\\[ *?])").toRegex()
     // TODO cleanup remix tags
 
     override fun execute(context: Context) {
         GlobalScope.async {
             val ap = context.getAudioPlayer()
             val track = ap.player.playingTrack
+
+            /*
             val title = track.info.title.toLowerCase()
 
             var cleaned = title.replace(noVideoTags, "")
                     .replace(noFeaturing, "")
-                    .replace("()", "")
-                    .replace("( )", "")
-                    .replace("[]", "")
+                    .replace(emptyBrackets, "")
                     .replace("\"", "")
                     .replace("'", "")
 
@@ -53,17 +52,12 @@ class PlayRelated : Command(ExecutionType.REQUIRE_MUTUAL) {
             }
 
             cleaned = cleaned.replace("-", "").trim()
-            println(cleaned)
+            */
 
-            val res = JukeBot.spotifyApi.search(cleaned).await()
+            val chosen = JukeBot.kSoftAPI.getMusicRecommendations(track.identifier).await()
                     ?: return@async context.embed("Related Tracks", "No matches found.")
 
-            val similar = JukeBot.lastFM.findSimilar(res.title, res.artist).await()
-                    ?: return@async context.embed("Related Tracks", "No matches found.")
-
-            val chosen = similar.random()
-
-            JukeBot.playerManager.loadItem("ytsearch:${chosen.artist} - ${chosen.title}", SongResultHandler(context, ap, false))
+            JukeBot.playerManager.loadItem(chosen.url, SongResultHandler(context, ap, false))
         }
     }
 

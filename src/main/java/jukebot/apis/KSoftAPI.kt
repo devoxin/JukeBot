@@ -8,6 +8,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.concurrent.CompletableFuture
 
 public class KSoftAPI(private val key: String) {
 
@@ -50,16 +51,19 @@ public class KSoftAPI(private val key: String) {
         })
     }
 
-    public fun getMusicRecommendations(vararg tracks: String, callback: (TrackRecommendation?) -> Unit) {
+    public fun getMusicRecommendations(vararg tracks: String): CompletableFuture<TrackRecommendation?> {
+        val fut = CompletableFuture<TrackRecommendation?>()
+
         if (!credentialsProvided()) {
-            return callback(null)
+            fut.complete(null)
+            return fut
         }
 
         val obj = JSONObject()
         val trackList = JSONArray()
         tracks.forEach { trackList.put(it) }
 
-        obj.put("provider", "spotify")
+        obj.put("provider", "youtube_ids")
         obj.put("tracks", tracks)
 
         val req = Request.Builder()
@@ -72,14 +76,21 @@ public class KSoftAPI(private val key: String) {
 
         JukeBot.httpClient.makeRequest(req).queue({
             println(it.code())
-            val json = it.json() ?: return@queue callback(null)
+            val json = it.json()
+
+            if (json == null) {
+                fut.complete(null)
+                return@queue
+            }
+
             val results = json.getJSONArray("tracks")
 
             println(results.toString())
 
             if (results.length() == 0) {
                 println("THIS BITCH EMPTY, YEET")
-                return@queue callback(null)
+                fut.complete(null)
+                return@queue
             }
 
             val selected = results.getJSONObject(0).getJSONObject("youtube")
@@ -88,10 +99,12 @@ public class KSoftAPI(private val key: String) {
             val title = selected.getString("title")
             val thumbnail = selected.getString("thumbnail")
             val description = selected.getString("description")
-            callback(TrackRecommendation(id, link, title, thumbnail, description))
+            fut.complete(TrackRecommendation(id, link, title, thumbnail, description))
         }, {
-            callback(null)
+            fut.complete(null)
         })
+
+        return fut
     }
 
 }

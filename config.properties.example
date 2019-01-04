@@ -5,5 +5,4 @@ spotify_client=not required
 spotify_secret=not required
 youtube=only fill if using Spotify
 nsfw=true
-ksoft=for lyrics
-lastfm=for similar tracks/autoplay
+ksoft=for lyrics + playrelated
