@@ -70,7 +70,7 @@ public class JukeBot {
     public static KSoftAPI kSoftAPI;
     public static LastFM lastFM;
 
-    private static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
     public static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
     public static ShardManager shardManager;
