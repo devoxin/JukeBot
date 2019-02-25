@@ -72,10 +72,7 @@ public class KSoftAPI(private val key: String) {
                 .post(RequestBody.create(JSON, obj.toString()))
                 .build()
 
-        println(obj.toString())
-
         JukeBot.httpClient.makeRequest(req).queue({
-            println(it.code())
             val json = it.json()
 
             if (json == null) {
@@ -85,10 +82,7 @@ public class KSoftAPI(private val key: String) {
 
             val results = json.getJSONArray("tracks")
 
-            println(results.toString())
-
             if (results.length() == 0) {
-                println("THIS BITCH EMPTY, YEET")
                 fut.complete(null)
                 return@queue
             }
