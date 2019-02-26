@@ -2,6 +2,7 @@ package jukebot;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -26,6 +27,7 @@ public class Database {
             statement.addBatch("CREATE TABLE IF NOT EXISTS prefixes (id INTEGER PRIMARY KEY, prefix TEXT NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS djroles (guildid INTEGER PRIMARY KEY, roleid INTEGER NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS skipthres (id INTEGER PRIMARY KEY, threshold REAL NOT NULL)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS colours (id INTEGER PRIMARY KEY, rgb INTEGER NOT NULL)");
             statement.executeBatch();
         } catch (SQLException e) {
             JukeBot.LOG.error("There was an error setting up the SQL database!", e);
@@ -189,6 +191,40 @@ public class Database {
 
     public static boolean isBlocked(long id) {
         return tableContains("blocked", id);
+    }
+
+    public static boolean setColour(long id, int rgb) {
+        try (Connection connection = getConnection()) {
+            final boolean shouldUpdate = tableContains("colours", id);
+            PreparedStatement statement;
+
+            if (shouldUpdate) {
+                statement = connection.prepareStatement("UPDATE colours SET rgb = ? WHERE id = ?");
+                statement.setInt(1, rgb);
+                statement.setLong(2, id);
+            } else {
+                statement = connection.prepareStatement("INSERT INTO colours VALUES (?, ?);");
+                statement.setLong(1, id);
+                statement.setInt(2, rgb);
+            }
+
+            return statement.executeUpdate() == 1;
+        } catch (SQLException unused) {
+            JukeBot.LOG.error("Error updating colour", unused);
+            return false;
+        }
+    }
+
+    public static int getColour(long id) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM colours WHERE id = ?");
+            statement.setLong(1, id);
+            ResultSet results = statement.executeQuery();
+            return results.next() ? results.getInt("rgb") : JukeBot.embedColour.getRGB();
+        } catch (SQLException e) {
+            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            return JukeBot.embedColour.getRGB();
+        }
     }
 
     @SuppressWarnings("unchecked")

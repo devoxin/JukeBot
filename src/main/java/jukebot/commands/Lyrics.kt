@@ -1,5 +1,6 @@
 package jukebot.commands
 
+import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
@@ -38,7 +39,7 @@ class Lyrics : Command(ExecutionType.STANDARD) {
 
     private fun sendChunks(context: Context, title: String, chunks: Array<String>, index: Int = 0) {
         context.channel.sendMessage(EmbedBuilder()
-                .setColor(JukeBot.embedColour)
+                .setColor(context.embedColor)
                 .setTitle(title)
                 .setDescription(chunks[index])
                 .setFooter("KSoft.Si API", null)

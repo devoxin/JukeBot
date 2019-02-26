@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
+import jukebot.Database;
 import jukebot.JukeBot;
 import jukebot.utils.Helpers;
 import jukebot.utils.Permissions;
@@ -161,7 +162,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         }
 
         channel.sendMessage(new EmbedBuilder()
-                .setColor(JukeBot.embedColour)
+                .setColor(Database.getColour(channel.getGuild().getIdLong()))
                 .setTitle(title)
                 .setDescription(truncate(description, 1000))
                 .build()

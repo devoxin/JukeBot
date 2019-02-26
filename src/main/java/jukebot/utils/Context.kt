@@ -28,6 +28,8 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
 
     val donorTier: Int = permissions.getTier(author.idLong)
 
+    val embedColor: Int = Database.getColour(guild.idLong)
+
     fun getArg(index: Int): String {
         return args.getOrNull(index) ?: ""
     }
@@ -102,7 +104,7 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
             return
         }
 
-        embed.setColor(JukeBot.embedColour)
+        embed.setColor(embedColor)
 
         event.channel.sendMessage(embed.build()).queue(null) {
             JukeBot.LOG.error("Failed to send message from context!\n" +

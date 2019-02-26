@@ -41,7 +41,7 @@ class Save : Command(ExecutionType.STANDARD) {
             context.author.openPrivateChannel().queue { dm ->
                 dm.sendMessage(
                         EmbedBuilder()
-                                .setColor(JukeBot.embedColour)
+                                .setColor(context.embedColor)
                                 .setTitle(currentTrack.info.title, currentTrack.info.uri)
                                 .build())
                         .queue(null, { context.embed("Unable to DM", "Ensure your DMs are enabled.") }

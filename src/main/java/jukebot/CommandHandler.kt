@@ -81,7 +81,7 @@ class CommandHandler : ListenerAdapter() {
             JukeBot.LOG.error(formatted)
 
             e.channel.sendMessage(EmbedBuilder()
-                    .setColor(JukeBot.embedColour)
+                    .setColor(Database.getColour(e.guild.idLong))
                     .setTitle("An unknown error occurred!")
                     .setDescription("The error has been logged, we're sorry for any inconvenience caused!")
                     .build()

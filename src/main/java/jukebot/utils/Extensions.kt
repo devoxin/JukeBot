@@ -5,6 +5,8 @@ import net.dv8tion.jda.core.entities.Message
 import net.dv8tion.jda.core.entities.MessageEmbed
 import okhttp3.Response
 import org.json.JSONObject
+import java.awt.Color
+import java.lang.NumberFormatException
 
 fun Response.json(): JSONObject? {
     val body = body()
@@ -40,3 +42,12 @@ fun Long.toTimeString(): String {
         else -> String.format("%02d:%02d", minutes, seconds)
     }
 }
+
+fun decodeColor(nm: String): Color? {
+    return try {
+        Color.decode(nm)
+    } catch (e: NumberFormatException) {
+        null
+    }
+}
+

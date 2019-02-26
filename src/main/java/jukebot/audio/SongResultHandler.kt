@@ -62,7 +62,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
                 }
 
                 e.channel.sendMessage(EmbedBuilder()
-                        .setColor(JukeBot.embedColour)
+                        .setColor(e.embedColor)
                         .setTitle("Select Song")
                         .setDescription(selector.toString().trim())
                         .setFooter("Results are now filtered to display what you can queue", null)
@@ -85,7 +85,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
                         val track = tracks[s - 1]
 
                         m.editEmbed {
-                            setColor(JukeBot.embedColour)
+                            setColor(e.embedColor)
                             setTitle("Track Selected")
                             setDescription(track.info.title)
                         }
