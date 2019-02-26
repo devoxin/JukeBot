@@ -6,7 +6,6 @@ import net.dv8tion.jda.core.entities.MessageEmbed
 import okhttp3.Response
 import org.json.JSONObject
 import java.awt.Color
-import java.lang.NumberFormatException
 
 fun Response.json(): JSONObject? {
     val body = body()

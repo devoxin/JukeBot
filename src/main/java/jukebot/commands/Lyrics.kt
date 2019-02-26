@@ -1,6 +1,5 @@
 package jukebot.commands
 
-import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties

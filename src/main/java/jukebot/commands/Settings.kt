@@ -4,7 +4,6 @@ import jukebot.Database
 import jukebot.utils.*
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.MessageEmbed
-import java.awt.Color
 import java.text.DecimalFormat
 import java.util.regex.Pattern
 
@@ -59,7 +58,7 @@ class Settings : Command(ExecutionType.STANDARD) {
 
         if (mentionRegex.matcher(newPrefix).matches()) {
             return context.embed("Invalid Prefix", "Mentions cannot be used as prefixes.")
-                    }
+        }
 
         Database.setPrefix(context.guild.idLong, newPrefix)
         context.embed("Server Prefix Updated", "The new prefix for this server is `$newPrefix`")
