@@ -20,44 +20,18 @@ class PlayRelated : Command(ExecutionType.REQUIRE_MUTUAL) {
     // TODO cleanup remix tags
 
     override fun execute(context: Context) {
-        GlobalScope.async {
-            val ap = context.getAudioPlayer()
-            val track = ap.player.playingTrack
+        val ap = context.getAudioPlayer()
 
-            /*
-            val title = track.info.title.toLowerCase()
+        if (!ap.isPlaying) {
+            return context.embed("Not Playing", "Nothing is currently playing.")
+        }
 
-            var cleaned = title.replace(noVideoTags, "")
-                    .replace(noFeaturing, "")
-                    .replace(emptyBrackets, "")
-                    .replace("\"", "")
-                    .replace("'", "")
-
-            if (cleaned.contains(',') && cleaned.contains('-')) { // Multiple artists
-                val sliced = cleaned.split('-')
-                val artists = sliced[0].split(',')
-
-                val firstArtist = artists[0].trim()
-                val unhyphenatedTitle = sliced[1].trim()
-
-                cleaned = "$firstArtist - $unhyphenatedTitle"
-            } else if (cleaned.contains('&') && cleaned.contains('-')) {
-                val sliced = cleaned.split('-')
-                val artists = sliced[0].split('&')
-
-                val firstArtist = artists[0].trim()
-                val unhyphenatedTitle = sliced[1].trim()
-
-                cleaned = "$firstArtist $unhyphenatedTitle"
+        JukeBot.kSoftAPI.getMusicRecommendations(ap.player.playingTrack.identifier).thenAccept {
+            if (it == null) {
+                return@thenAccept context.embed("Related Tracks", "No matches found.")
             }
 
-            cleaned = cleaned.replace("-", "").trim()
-            */
-
-            val chosen = JukeBot.kSoftAPI.getMusicRecommendations(track.identifier).await()
-                    ?: return@async context.embed("Related Tracks", "No matches found.")
-
-            JukeBot.playerManager.loadItem(chosen.url, SongResultHandler(context, ap, false))
+            JukeBot.playerManager.loadItem(it.url, SongResultHandler(context, ap, false))
         }
     }
 
