@@ -5,10 +5,6 @@ import jukebot.audio.SongResultHandler
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.future.await
-import java.util.regex.Pattern
 
 
 @CommandProperties(description = "Enqueues a song similar to the current", aliases = ["pr"])
