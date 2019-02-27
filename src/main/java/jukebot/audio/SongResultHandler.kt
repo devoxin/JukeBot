@@ -12,7 +12,12 @@ import net.dv8tion.jda.core.EmbedBuilder
 import java.util.function.Consumer
 import java.util.regex.Pattern
 
-class SongResultHandler(private val e: Context, private val musicManager: AudioHandler, private val useSelection: Boolean) : AudioLoadResultHandler {
+class SongResultHandler(
+        private val e: Context,
+        private val musicManager: AudioHandler,
+        private val useSelection: Boolean,
+        private val playNext: Boolean = false
+) : AudioLoadResultHandler {
 
     private val command = Pattern.compile("(?:p(?:lay)?|s(?:el(?:ect)?)?|sc(?:search)?|porn|spotify)\\s.+")
 
@@ -30,7 +35,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
             return
         }
 
-        if (musicManager.enqueue(track, e.author.idLong)) {
+        if (musicManager.enqueue(track, e.author.idLong, playNext)) {
             e.embed("Track Enqueued", track.info.title)
         }
     }
@@ -90,7 +95,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
                             setDescription(track.info.title)
                         }
 
-                        musicManager.enqueue(track, e.author.idLong)
+                        musicManager.enqueue(track, e.author.idLong, false)
                     })
                 }
 
@@ -105,7 +110,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
                     return e.embed("Track Unavailable", "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
                 }
 
-                if (musicManager.enqueue(track, e.author.idLong)) {
+                if (musicManager.enqueue(track, e.author.idLong, playNext)) {
                     e.embed("Track Enqueued", track.info.title)
                 }
             }
@@ -117,7 +122,7 @@ class SongResultHandler(private val e: Context, private val musicManager: AudioH
                     .filter { canQueueTrack(it) }
 
             for (track in tracks) {
-                musicManager.enqueue(track, e.author.idLong)
+                musicManager.enqueue(track, e.author.idLong, false)
             }
 
             e.embed(playlist.name, "${tracks.size} tracks enqueued")

@@ -16,13 +16,11 @@ class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {
         val player = context.getAudioPlayer()
 
         if (!player.isPlaying) {
-            context.embed("Not Playing", "Nothing is currently playing.")
-            return
+            return context.embed("Not Playing", "Nothing is currently playing.")
         }
 
         if (!permissions.ensureMutualVoiceChannel(context.member)) {
-            context.embed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.")
-            return
+            return context.embed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.")
         }
 
         val totalVotes = player.voteSkip(context.author.idLong)
@@ -37,7 +35,7 @@ class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {
         if (neededVotes - totalVotes <= 0) {
             player.playNext()
         } else {
-            context.embed("Vote Acknowledged", (neededVotes - totalVotes).toString() + " votes needed to skip.")
+            context.embed("Vote Acknowledged", "${(neededVotes - totalVotes)} votes needed to skip.")
         }
     }
 }

@@ -53,11 +53,15 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         player.addListener(this);
     }
 
-    public boolean enqueue(AudioTrack track, Long userID) { // boolean: shouldAnnounce
+    public boolean enqueue(AudioTrack track, long userID, boolean playNext) { // boolean: shouldAnnounce
         track.setUserData(userID);
 
         if (!player.startTrack(track, true)) {
-            queue.offer(track);
+            if (playNext) {
+                queue.add(0, track);
+            } else {
+                queue.offer(track);
+            }
             return true;
         }
 
@@ -105,7 +109,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler 
         this.channelId = channelId;
     }
 
-    public void setShouldAnnounce(Boolean shouldAnnounce) {
+    public void setShouldAnnounce(boolean shouldAnnounce) {
         this.shouldAnnounce = shouldAnnounce;
     }
 

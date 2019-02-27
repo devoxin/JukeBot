@@ -18,7 +18,7 @@ abstract class Command(private val executionType: ExecutionType) {
                         context.embed("No VoiceChannel", "You need to join a VoiceChannel!")
                     }
                 } else {
-                    if (memberVoice.channel.idLong != audioManager.connectedChannel.idLong) {
+                    if (isConnected && memberVoice.channel.idLong != audioManager.connectedChannel.idLong) {
                         return context.embed("No Mutual VoiceChannel", "You need to join **$channelName**!")
                     }
 
