@@ -18,8 +18,8 @@ class Eval : Command(ExecutionType.STANDARD) {
                 "ctx" to context,
                 "jda" to context.jda,
                 "sm" to JukeBot.shardManager,
-                "db" to db,
-                "players" to JukeBot.players
+                "db" to db
+                //"players" to JukeBot.players
         )
 
         val bindString = bindings.map { "val ${it.key} = bindings[\"${it.key}\"] as ${it.value.javaClass.kotlin.qualifiedName}" }.joinToString("\n")

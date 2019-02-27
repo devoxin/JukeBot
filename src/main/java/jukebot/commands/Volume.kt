@@ -19,6 +19,8 @@ class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {
             return context.embed("Not Playing", "Nothing is currently playing.")
         }
 
+        // If listeners == 1, ask them to use Discord volume slider?
+
         if (context.argString.isEmpty()) {
             val vol = player.player.volume
             return context.embed("Player Volume", "${calculateBricks(vol)} `$vol`")
