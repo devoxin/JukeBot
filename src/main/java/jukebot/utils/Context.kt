@@ -12,7 +12,7 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
 
     private val permissions = Permissions()
 
-    val args: Array<String> = argString.split("\\s+".toRegex()).toTypedArray()
+    val args = argString.split("\\s+".toRegex())
 
     val message: Message = event.message
 

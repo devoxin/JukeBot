@@ -12,6 +12,8 @@ import java.util.concurrent.CompletableFuture
 
 class PatreonAPI(private val accessToken: String) {
 
+    // TODO: Unshit
+
     public fun fetchPledgesOfCampaign(campaignId: String, callback: CompletableFuture<List<PatreonUser>>) {
         callback.complete(getPageOfPledge(campaignId, null))
     }

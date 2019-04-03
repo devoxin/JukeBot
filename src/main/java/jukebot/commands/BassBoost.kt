@@ -5,11 +5,10 @@ import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import jukebot.utils.Permissions
+import java.text.DecimalFormat
 
 @CommandProperties(aliases = ["bb"], description = "Bass boosts the audio", category = CommandProperties.category.CONTROLS)
 class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
-
-    private val permissions = Permissions()
 
     override fun execute(context: Context) {
         val handler = context.getAudioPlayer()
@@ -24,20 +23,16 @@ class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
         }
 
         if (context.argString.isEmpty()) {
-            return context.embed("BassBoost Presets",
-                    "Current Setting: `" + handler.bassBoostSetting + "`\n\nValid presets: `Off`, `Weak`, `Medium`, `Strong`, `Insane`, `Wtf`")
+            return context.embed("Bass Boost", "Boosting by ${handler.bassBooster.pcString}%")
         }
 
-        when (args[0].toLowerCase()) {
-            "o", "off" -> handler.bassBoost(AudioHandler.bassBoost.OFF)
-            "w", "weak" -> handler.bassBoost(AudioHandler.bassBoost.WEAK)
-            "m", "medium" -> handler.bassBoost(AudioHandler.bassBoost.MEDIUM)
-            "s", "strong" -> handler.bassBoost(AudioHandler.bassBoost.STRONG)
-            "i", "insane" -> handler.bassBoost(AudioHandler.bassBoost.INSANE)
-            "wtf" -> handler.bassBoost(AudioHandler.bassBoost.WTF)
-            else -> return context.embed("BassBoost", args[0] + " is not a recognised preset")
+        val boost = args[0].toFloatOrNull()
+
+        if (boost == null || boost < 0 || boost > 100) {
+            return context.embed("Bass Boost", "You need to specify a valid number from 0-100.")
         }
 
-        context.embed("BassBoost", "Set bass boost to `${handler.bassBoostSetting}`")
+        handler.bassBooster.boost(boost)
+        context.embed("Bass Boost", "Boosting by ${handler.bassBooster.pcString}%")
     }
 }

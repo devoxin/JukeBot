@@ -10,8 +10,7 @@ import jukebot.utils.Helpers
 class Help : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
-
-        val args: Array<String> = context.args
+        val args = context.args
 
         if (args[0] == "1") {
             return context.embed("Getting Started",

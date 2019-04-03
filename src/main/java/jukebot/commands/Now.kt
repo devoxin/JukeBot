@@ -17,12 +17,12 @@ class Now : Command(ExecutionType.STANDARD) {
 
         val current = player.player.playingTrack
         val playbackSettings = "Shuffle: ${if (player.isShuffleEnabled) "On" else "Off"}" +
-                " | Repeat: ${player.repeatMode.toTitleCase()}"
+                " • Repeat: ${player.repeatString}"
         val duration = if (current.info.isStream) "LIVE" else current.duration.toTimeString()
 
         val isYouTubeTrack = current.sourceManager.sourceName == "youtube"
         val trackMarker = if (isYouTubeTrack) {
-            "*[(${current.position.toTimeString()}/$duration)](${current.info.uri}&t=${current.position / 1000}s)*"
+            "[(${current.position.toTimeString()}/$duration)](${current.info.uri}&t=${current.position / 1000}s)"
         } else {
             "${current.position.toTimeString()}/$duration"
         }

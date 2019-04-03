@@ -73,7 +73,7 @@ class SongResultHandler(
                         .setFooter("Results are now filtered to display what you can queue", null)
                         .build()
                 ).queue { m ->
-                    JukeBot.waiter.waitForSelection(e.author.idLong, Consumer { selected ->
+                    JukeBot.waiter.waitForSelection(e.author.idLong, { selected ->
                         val s = selected?.toIntOrNull()
 
                         if (s == null || s <= 0 || s > tracks.size) {
@@ -81,10 +81,11 @@ class SongResultHandler(
 
                             val manager = e.guild.audioManager
 
-                            if (!musicManager.isPlaying && (selected == null || !command.matcher(selected.toLowerCase()).find()))
+                            if (!musicManager.isPlaying && (selected == null || !command.matcher(selected.toLowerCase()).find())) {
                                 manager.closeAudioConnection()
+                            }
 
-                            return@Consumer
+                            return@waitForSelection
                         }
 
                         val track = tracks[s - 1]
@@ -118,8 +119,8 @@ class SongResultHandler(
         } else {
 
             val tracks = playlist.tracks
-                    .subList(0, Math.min(playlist.tracks.size, playlistLimit))
                     .filter { canQueueTrack(it) }
+                    .subList(0, Math.min(playlist.tracks.size, playlistLimit))
 
             for (track in tracks) {
                 musicManager.enqueue(track, e.author.idLong, false)

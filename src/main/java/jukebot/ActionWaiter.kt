@@ -5,29 +5,18 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
 
 class ActionWaiter : ListenerAdapter() {
 
-    private val selectionMenus = HashMap<Long, Consumer<String?>>()
+    private val selectionMenus = HashMap<Long, (String?) -> Unit>()
 
-    fun waitForSelection(userID: Long, selection: Consumer<String?>) {
-        waitForSelection(userID, selection, 10, TimeUnit.SECONDS)
-    }
-
-    fun waitForSelection(userID: Long, selection: Consumer<String?>, delay: Int, unit: TimeUnit) {
-        if (!selectionMenus.containsKey(userID)) {
-            selectionMenus[userID] = selection
-            Helpers.schedule({
-                if (selectionMenus.containsValue(selection)) {
-                    selectionMenus.remove(userID)?.accept(null)
-                }
-            }, delay, unit)
-        }
+    fun waitForSelection(userID: Long, selection: (String?) -> Unit, delay: Int = 10, unit: TimeUnit = TimeUnit.SECONDS) {
+        selectionMenus[userID] = selection
+        Helpers.schedule({ selectionMenus.remove(userID)?.invoke(null) }, delay, unit)
     }
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
-        selectionMenus.remove(e.author.idLong)?.accept(e.message.contentDisplay)
+        selectionMenus.remove(e.author.idLong)?.invoke(e.message.contentDisplay)
     }
 
 }

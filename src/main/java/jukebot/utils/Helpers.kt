@@ -35,6 +35,12 @@ class Helpers {
             timer.schedule(task, delay.toLong(), unit)
         }
 
+        public fun truncate(content: String, maxLength: Int): String {
+            return if (content.length > maxLength) {
+                content.substring(0, maxLength - 3) + "..."
+            } else content
+        }
+
         fun readFile(path: String, def: String): String {
             try {
                 FileReader(path).use { file -> BufferedReader(file).use { reader -> return reader.lines().collect(Collectors.joining("\n")) } }

@@ -9,8 +9,6 @@ import jukebot.utils.Permissions
 @CommandProperties(description = "Loop the queue, track or nothing", category = CommandProperties.category.CONTROLS)
 class Repeat : Command(ExecutionType.REQUIRE_MUTUAL) {
 
-    private val permissions = Permissions()
-
     override fun execute(context: Context) {
 
         val player = context.getAudioPlayer()
@@ -28,15 +26,15 @@ class Repeat : Command(ExecutionType.REQUIRE_MUTUAL) {
         val args = context.args
 
         when (args[0].toLowerCase()) {
-            "a", "all" -> player.setRepeat(AudioHandler.repeatMode.ALL)
-            "s", "single" -> player.setRepeat(AudioHandler.repeatMode.SINGLE)
-            "n", "none" -> player.setRepeat(AudioHandler.repeatMode.NONE)
+            "a", "all" -> player.setRepeat(AudioHandler.RepeatMode.ALL)
+            "s", "single" -> player.setRepeat(AudioHandler.RepeatMode.SINGLE)
+            "n", "none" -> player.setRepeat(AudioHandler.RepeatMode.NONE)
             else -> {
-                return context.embed("Player Repeat", "Current mode: ${player.repeatMode}\nAvailable modes: `s`ingle, `a`ll, `n`one")
+                return context.embed("Player Repeat", "Current mode: ${player.repeatString}\nAvailable modes: `s`ingle, `a`ll, `n`one")
             }
         }
 
-        context.embed("Player Repeat", "Set repeat to **${player.repeatMode}**")
+        context.embed("Player Repeat", "Set repeat to **${player.repeatString}**")
 
     }
 }

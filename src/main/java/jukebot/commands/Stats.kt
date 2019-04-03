@@ -24,7 +24,7 @@ class Stats : Command(ExecutionType.STANDARD) {
 
         val players = JukeBot.getPlayers().size
         val playingPlayers = JukeBot.getPlayers().values.filter { it.isPlaying }.size
-        val encodingPlayers = JukeBot.getPlayers().values.filter { it.isPlaying && (it.isBassBoosted || it.player.volume != 100) }.size
+        val encodingPlayers = JukeBot.getPlayers().values.filter { it.isPlaying && (it.bassBooster.isEnabled || it.player.volume != 100) }.size
 
         val servers = JukeBot.shardManager.guildCache.size()
         val users = JukeBot.shardManager.userCache.size()
