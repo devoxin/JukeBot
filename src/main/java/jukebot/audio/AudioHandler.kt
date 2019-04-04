@@ -177,7 +177,6 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         trackPacketLoss = 0
         trackPackets = 0
 
-        println(endReason)
         if (endReason.mayStartNext) {
             playNext()
         }
