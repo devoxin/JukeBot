@@ -32,8 +32,6 @@ class Now : Command(ExecutionType.STANDARD) {
             "${current.position.toTimeString()}/$duration"
         }
 
-
-
         context.embed {
             setTitle("Now Playing")
             setDescription("**[${current.info.title}](${current.info.uri})**\n$trackMarker")
