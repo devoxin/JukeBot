@@ -5,8 +5,8 @@ import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import jukebot.utils.Permissions
 
-@CommandProperties(description = "Pause/Resume the current track", aliases = arrayOf("tp"), category = CommandProperties.category.CONTROLS)
-class TogglePause : Command(ExecutionType.REQUIRE_MUTUAL) {
+@CommandProperties(description = "Resumes the player", category = CommandProperties.category.CONTROLS)
+class Resume : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     private val permissions = Permissions()
 
@@ -29,7 +29,7 @@ class TogglePause : Command(ExecutionType.REQUIRE_MUTUAL) {
             return
         }
 
-        player.player.isPaused = !player.player.isPaused
+        player.player.isPaused = false
 
     }
 

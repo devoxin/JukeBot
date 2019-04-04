@@ -45,7 +45,8 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     var current: AudioTrack? = null
 
     val repeatString: String
-        get() = repeat.toString().toTitleCase()
+        get() = repeat.toString().toLowerCase().toTitleCase()
+    // fuck toTitleCase
 
     init {
         player.addListener(this)
@@ -161,21 +162,24 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
      * Player Events
      */
 
-    override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
-        skips.clear()
-        trackPacketLoss = 0
-        trackPackets = 0
-
-        if (endReason.mayStartNext) {
-            playNext()
-        }
-    }
-
     override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
         player.isPaused = false
 
         if (current == null || current!!.identifier == track.identifier) {
             announce("Now Playing", track.info.title)
+        }
+
+        current = track
+    }
+
+    override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
+        skips.clear()
+        trackPacketLoss = 0
+        trackPackets = 0
+
+        println(endReason)
+        if (endReason.mayStartNext) {
+            playNext()
         }
     }
 
