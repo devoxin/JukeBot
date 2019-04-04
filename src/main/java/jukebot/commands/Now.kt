@@ -16,9 +16,14 @@ class Now : Command(ExecutionType.STANDARD) {
         }
 
         val current = player.player.playingTrack
-        val playbackSettings = "Shuffle: ${if (player.isShuffleEnabled) "On" else "Off"}" +
-                " • Repeat: ${player.repeatString}"
         val duration = if (current.info.isStream) "LIVE" else current.duration.toTimeString()
+
+        val requesterId = current.userData.toString().toLong()
+        val requester = JukeBot.shardManager.getUserById(requesterId)
+        val requesterInfo = if (requester != null) "• Queued by ${requester.asTag}" else ""
+
+        val playbackSettings = "Shuffle: ${if (player.isShuffleEnabled) "On" else "Off"}" +
+                " • Repeat: ${player.repeatString} $requesterInfo"
 
         val isYouTubeTrack = current.sourceManager.sourceName == "youtube"
         val trackMarker = if (isYouTubeTrack) {
@@ -26,6 +31,8 @@ class Now : Command(ExecutionType.STANDARD) {
         } else {
             "${current.position.toTimeString()}/$duration"
         }
+
+
 
         context.embed {
             setTitle("Now Playing")

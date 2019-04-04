@@ -10,6 +10,7 @@ import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Helpers
 import jukebot.utils.Permissions
+import jukebot.utils.toTimeString
 import jukebot.utils.toTitleCase
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.audio.AudioSendHandler
@@ -166,7 +167,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         player.isPaused = false
 
         if (current == null || current!!.identifier == track.identifier) {
-            announce("Now Playing", track.info.title)
+            announce("Now Playing", "${track.info.title} - `${track.info.length.toTimeString()}`")
         }
 
         current = track
