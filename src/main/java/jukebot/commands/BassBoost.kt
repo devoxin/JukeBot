@@ -28,8 +28,8 @@ class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
 
         val boost = args[0].toFloatOrNull()
 
-        if (boost == null || boost < 0 || boost > 100) {
-            return context.embed("Bass Boost", "You need to specify a valid number from 0-100.")
+        if (boost == null || boost < 0 || boost > 200) {
+            return context.embed("Bass Boost", "You need to specify a valid number from 0-200.")
         }
 
         handler.bassBooster.boost(boost)
