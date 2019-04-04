@@ -166,11 +166,10 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
         player.isPaused = false
 
-        if (current == null || current!!.identifier == track.identifier) {
+        if (current == null || current!!.identifier != track.identifier) {
+            current = track
             announce("Now Playing", "${track.info.title} - `${track.info.length.toTimeString()}`")
         }
-
-        current = track
     }
 
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
