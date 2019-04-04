@@ -23,5 +23,4 @@ public @interface CommandProperties {
     enum category {
         CONTROLS, MEDIA, MISC
     }
-
 }

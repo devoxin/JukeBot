@@ -1,11 +1,8 @@
 package jukebot.commands
 
-import jukebot.audio.AudioHandler
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
-import jukebot.utils.Permissions
-import java.text.DecimalFormat
 
 @CommandProperties(aliases = ["bb"], description = "Bass boosts the audio", category = CommandProperties.category.CONTROLS)
 class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
