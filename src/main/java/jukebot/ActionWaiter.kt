@@ -12,7 +12,11 @@ class ActionWaiter : ListenerAdapter() {
 
     fun waitForSelection(userID: Long, selection: (String?) -> Unit, delay: Int = 10, unit: TimeUnit = TimeUnit.SECONDS) {
         selectionMenus[userID] = selection
-        Helpers.schedule({ selectionMenus.remove(userID)?.invoke(null) }, delay, unit)
+        Helpers.schedule({
+            if (selectionMenus.containsValue(selection)) {
+                selectionMenus.remove(userID)?.invoke(null)
+            }
+        }, delay, unit)
     }
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
