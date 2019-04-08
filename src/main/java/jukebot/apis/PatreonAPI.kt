@@ -7,6 +7,7 @@ import org.apache.http.client.utils.URIBuilder
 import org.apache.http.client.utils.URLEncodedUtils
 import org.json.JSONObject
 import java.net.URI
+import java.net.URLDecoder
 import java.nio.charset.Charset
 import java.util.concurrent.CompletableFuture
 
@@ -14,11 +15,17 @@ class PatreonAPI(private val accessToken: String) {
 
     // TODO: Unshit
 
-    public fun fetchPledgesOfCampaign(campaignId: String, callback: CompletableFuture<List<PatreonUser>>) {
-        callback.complete(getPageOfPledge(campaignId, null))
+    public fun fetchPledgesOfCampaign(campaignId: String): CompletableFuture<List<PatreonUser>> {
+        val future = CompletableFuture<List<PatreonUser>>()
+
+        getPageOfPledge(campaignId, null) {
+            future.complete(it)
+        }
+
+        return future
     }
 
-    private fun getPageOfPledge(campaignId: String, offset: String?): List<PatreonUser> {
+    private fun getPageOfPledge(campaignId: String, offset: String?, cb: (List<PatreonUser>) -> Unit) {
         val users = mutableSetOf<PatreonUser>()
 
         val url = URIBuilder("$BASE_URL/campaigns/$campaignId/pledges")
@@ -35,30 +42,31 @@ class PatreonAPI(private val accessToken: String) {
                 .get()
                 .build()
 
-        val response = JukeBot.httpClient.makeRequest(request).block()
+        JukeBot.httpClient.makeRequest(request).queue({
+            if (!it.isSuccessful) {
+                JukeBot.LOG.error("Unable to get list of pledges ({}): {}", it.code(), it.message())
+                it.close()
 
-        if (!response.isSuccessful) {
-            JukeBot.LOG.error("Unable to get list of pledges ({}): {}", response.code(), response.message())
-            response.close()
-            return users.toList()
-        }
-
-        val json = response.json() ?: return users.toList()
-        val pledges = json.getJSONArray("data")
-
-        json.getJSONArray("included").forEachIndexed { index, user ->
-            val obj = user as JSONObject
-
-            if (obj.getString("type") == "user") {
-                users.add(buildUser(obj, pledges.getJSONObject(index)))
+                return@queue cb(users.toList())
             }
-        }
 
-        val nextPage = getNextPage(json) ?: return users.toList()
+            val json = it.json() ?: return@queue cb(users.toList())
+            val pledges = json.getJSONArray("data")
 
-        users.addAll(getPageOfPledge(campaignId, nextPage))
+            json.getJSONArray("included").forEachIndexed { index, user ->
+                val obj = user as JSONObject
 
-        return users.toList()
+                if (obj.getString("type") == "user") {
+                    users.add(buildUser(obj, pledges.getJSONObject(index)))
+                }
+            }
+
+            val nextPage = getNextPage(json) ?: return@queue cb(users.toList())
+            getPageOfPledge(campaignId, nextPage, cb)
+        }, {
+            JukeBot.LOG.error("Unable to get list of pledges", it)
+            return@queue cb(users.toList())
+        })
     }
 
     private fun getNextPage(json: JSONObject): String? {
@@ -68,8 +76,26 @@ class PatreonAPI(private val accessToken: String) {
             return null
         }
 
-        val queryParams = URLEncodedUtils.parse(URI(links.getString("next")), Charset.forName("utf8"))
-        return queryParams.firstOrNull { it.name == "page[cursor]" }?.value
+        return parseQueryString(links.getString("next"))["page[cursor]"]
+//
+//        val queryParams = URLEncodedUtils.parse(URI(links.getString("next")), Charset.forName("utf8"))
+//        return queryParams.firstOrNull { it.name == "page[cursor]" }?.value
+    }
+
+    fun parseQueryString(url: String): HashMap<String, String> {
+        val query = URI(url).query
+        val pairs = query.split("&")
+        val map = hashMapOf<String, String>()
+
+        for (pair in pairs) {
+            val nameValue = pair.split("=")
+            val key = URLDecoder.decode(nameValue[0], CHARSET)
+            val value = URLDecoder.decode(nameValue[1], CHARSET)
+
+            map[key] = value
+        }
+
+        return map
     }
 
     private fun buildUser(user: JSONObject, pledge: JSONObject): PatreonUser {
@@ -78,7 +104,7 @@ class PatreonAPI(private val accessToken: String) {
 
         val connections = userAttr.getJSONObject("social_connections")
         val discordId = if (!connections.isNull("discord")) {
-            connections.getJSONObject("discord").getString("user_id")
+            connections.getJSONObject("discord").getLong("user_id")
         } else {
             null
         }
@@ -95,6 +121,7 @@ class PatreonAPI(private val accessToken: String) {
 
     companion object {
         private const val BASE_URL = "https://www.patreon.com/api/oauth2/api/"
+        private val CHARSET = Charsets.UTF_8
     }
 }
 
@@ -105,5 +132,5 @@ class PatreonUser(
         val email: String,
         val pledgeCents: Int,
         val isDeclined: Boolean,
-        val discordId: String?
+        val discordId: Long?
 )

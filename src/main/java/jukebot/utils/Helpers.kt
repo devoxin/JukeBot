@@ -60,27 +60,40 @@ class Helpers {
         }
 
         fun monitorPledges() {
-            CoroutineScope(EmptyCoroutineContext).async {
-                JukeBot.LOG.info("Checking pledges...")
+            JukeBot.LOG.info("Checking pledges...")
 
-                val future = CompletableFuture<List<PatreonUser>>()
-                JukeBot.patreonApi.fetchPledgesOfCampaign("750822", future)
-
-                val users = future.await()
-
+            JukeBot.patreonApi.fetchPledgesOfCampaign("750822").thenAccept { users ->
                 if (users.isEmpty()) {
                     dm("180093157554388993", "⚠  |  Unable to check pledges. Ensure key is valid!")
-                    return@async JukeBot.LOG.warn("Scheduled pledge clean failed: No users to check")
+                    return@thenAccept JukeBot.LOG.warn("Scheduled pledge clean failed: No users to check")
                 }
 
                 Database.getDonorIds().forEach { id ->
-                    val pledge = users.firstOrNull { it.discordId != null && it.discordId.toLong() == id }
+                    val pledge = users.firstOrNull { it.discordId != null && it.discordId == id }
 
                     if (pledge == null || pledge.isDeclined) {
                         Database.setTier(id, 0)
                         JukeBot.LOG.info("Removed $id from donors")
+                    } else {
+                        val amount = pledge.pledgeCents.toDouble() / 100
+                        val friendly = String.format("%1$,.2f", amount)
+                        val tier = Database.getTier(id)
+                        val calculatedTier = calculateTier(amount)
+
+                        if (tier != calculatedTier) {
+                            JukeBot.LOG.info("Adjusting $id's tier (saved: $tier, calculated: $calculatedTier, pledge: $$friendly)")
+                            Database.setTier(id, calculatedTier)
+                        }
                     }
                 }
+            }
+        }
+
+        fun calculateTier(pledgeAmount: Double): Int {
+            return when {
+                pledgeAmount >= 1 && pledgeAmount < 2 -> 1
+                pledgeAmount >= 2 -> 2
+                else -> 0
             }
         }
 
