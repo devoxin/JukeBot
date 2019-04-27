@@ -39,7 +39,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
             }
             JukeBot.playerManager.loadItem(userQuery, SongResultHandler(context, player, false))
         } else {
-            JukeBot.playerManager.loadItem("ytsearch:$userQuery", SongResultHandler(context, player, false))
+            JukeBot.playerManager.loadItem(/*"ytsearch:$userQuery"*/ userQuery, SongResultHandler(context, player, false))
         }
 
     }

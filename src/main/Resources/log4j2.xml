@@ -12,8 +12,8 @@
         </File>
     </Appenders>
     <Loggers>
-        <Root level="debug">
-            <AppenderRef ref="Console" level="info"/>
+        <Root level="trace">
+            <AppenderRef ref="Console" level="trace"/>
             <AppenderRef ref="File" level="info"/>
             <AppenderRef ref="DebugFile" level="debug"/>
         </Root>

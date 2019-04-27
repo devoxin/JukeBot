@@ -139,7 +139,7 @@ class SongResultHandler(
     }
 
     override fun loadFailed(ex: FriendlyException) {
-        e.embed("Track Unavailable", ex.message!!)
+        e.embed("Track Unavailable", ex.localizedMessage)
 
         if (!musicManager.isPlaying) {
             e.guild.audioManager.closeAudioConnection()
