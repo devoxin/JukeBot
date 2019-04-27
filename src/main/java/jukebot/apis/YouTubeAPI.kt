@@ -4,11 +4,13 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.JukeBot
+import jukebot.entities.youtube.YoutubeTrackInformation
 import jukebot.utils.json
 import okhttp3.*
 import org.json.JSONObject
 import org.jsoup.Jsoup
 import java.io.IOException
+import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -16,14 +18,32 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
 
     private val httpClient = OkHttpClient()
 
-    fun searchVideo(query: String): CompletableFuture<AudioTrack> {
+    fun search(query: String): CompletableFuture<AudioTrack> {
         val request = Request.Builder()
-                .url("https://www.googleapis.com/youtube/v3/search?q=$query&key=$key&type=video&maxResults=3&part=id,snippet")
+                .url("https://www.googleapis.com/youtube/v3/search?q=$query&key=$key&type=video&maxResults=3&part=id")
                 .addHeader("User-Agent", "JukeBot/v${JukeBot.VERSION} (https://www.jukebot.serux.pro)")
                 .get()
                 .build()
 
         val fut = CompletableFuture<AudioTrack>()
+
+        makeRequest(request)
+                .thenAccept {
+                    getVideoInfo(it.getJSONArray("items").getJSONObject(0).getJSONObject("id").getString("videoId"))
+                            .thenAccept { ti -> fut.complete(toYouTubeAudioTrack(ti)) }
+                }
+
+        return fut
+    }
+
+    fun getVideoInfo(id: String): CompletableFuture<YoutubeTrackInformation> {
+        val request = Request.Builder()
+                .url("https://www.googleapis.com/youtube/v3/videos?id=$id&key=$key&type=video&maxResults=3&part=snippet,contentDetails")
+                .addHeader("User-Agent", "JukeBot/v${JukeBot.VERSION} (https://www.jukebot.serux.pro)")
+                .get()
+                .build()
+
+        val fut = CompletableFuture<YoutubeTrackInformation>()
 
         makeRequest(request)
                 .thenAccept {
@@ -34,16 +54,8 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
                         return@thenAccept
                     }
 
-                    val result = results.getJSONObject(0)
-                    val videoId = result.getJSONObject("id").getString("videoId")
-                    val garbageTitle = result.getJSONObject("snippet").getString("title")
-                    val title = Jsoup.parse(garbageTitle).text()
-                    val uploader = result.getJSONObject("snippet").getString("channelTitle")
-                    val isStream = result.getJSONObject("snippet").getString("liveBroadcastContent") != "none"
-                    val duration = if (isStream) Long.MAX_VALUE else Long.MIN_VALUE // TODO: Stuffs
-
-                    JukeBot.LOG.debug("Found YouTubeTrack for identifier $query")
-                    fut.complete(toYouTubeAudioTrack(videoId, title, uploader, isStream, duration))
+                    val yti = YoutubeTrackInformation.fromJson(results.getJSONObject(0))
+                    fut.complete(yti)
                 }
                 .exceptionally {
                     fut.completeExceptionally(it)
@@ -79,12 +91,9 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
         return fut
     }
 
-    private fun toYouTubeAudioTrack(videoId: String, title: String, uploader: String, isStream: Boolean, duration: Long): YoutubeAudioTrack {
+    private fun toYouTubeAudioTrack(trackInformation: YoutubeTrackInformation): YoutubeAudioTrack {
+        val (videoId, title, uploader, isStream, duration) = trackInformation
         return source.buildTrackObject(videoId, title, uploader, isStream, duration)
-    }
-
-    private fun ISO8601toMillis(duration: String): Long {
-        return Long.MAX_VALUE // TODO: Fix
     }
 
 }

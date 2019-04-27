@@ -90,11 +90,8 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
                     val tracks = mutableListOf<SpotifyAudioTrack>()
 
                     for (jTrack in jsonTracks) {
-                        val t = (jTrack as JSONObject).getJSONObject("track")
-                        val artist = t.getJSONArray("artists").getJSONObject(0).getString("name")
-                        val title = t.getString("name")
-
-                        tracks.add(SpotifyAudioTrack(artist, title))
+                        val track = (jTrack as JSONObject).getJSONObject("track")
+                        tracks.add(SpotifyAudioTrack.fromJson(track))
                     }
 
                     future.complete(SpotifyPlaylist(playlistName, tracks))
@@ -125,10 +122,7 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
                     }
 
                     val track = results.getJSONObject(0)
-                    val artist = track.getJSONArray("artists").getJSONObject(0).getString("name")
-                    val trackTitle = track.getString("name")
-
-                    future.complete(SpotifyAudioTrack(artist, trackTitle))
+                    future.complete(SpotifyAudioTrack.fromJson(track))
                 }
                 .exceptionally {
                     future.completeExceptionally(it)
