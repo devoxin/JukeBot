@@ -7,6 +7,7 @@ import jukebot.JukeBot
 import jukebot.utils.json
 import okhttp3.*
 import org.json.JSONObject
+import org.jsoup.Jsoup
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
@@ -35,7 +36,8 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
 
                     val result = results.getJSONObject(0)
                     val videoId = result.getJSONObject("id").getString("videoId")
-                    val title = result.getJSONObject("snippet").getString("title")
+                    val garbageTitle = result.getJSONObject("snippet").getString("title")
+                    val title = Jsoup.parse(garbageTitle).text()
                     val uploader = result.getJSONObject("snippet").getString("channelTitle")
                     val isStream = result.getJSONObject("snippet").getString("liveBroadcastContent") != "none"
                     val duration = if (isStream) Long.MAX_VALUE else Long.MIN_VALUE // TODO: Stuffs
