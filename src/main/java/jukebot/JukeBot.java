@@ -30,7 +30,6 @@ import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import jukebot.apis.*;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
-import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
 import jukebot.utils.Config;
 import jukebot.utils.Helpers;
 import jukebot.utils.RequestUtil;
@@ -137,10 +136,6 @@ public class JukeBot {
 
         if (config.getBoolean("nsfw")) {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
-        }
-
-        if (config.keyExists("spotify_client") && config.keyExists("spotify_secret")) {
-            playerManager.registerSourceManager(new SpotifyAudioSourceManager(spotifyApi, 2));
         }
 
         playerManager.registerSourceManager(yt);

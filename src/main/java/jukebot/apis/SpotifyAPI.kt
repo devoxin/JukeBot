@@ -1,6 +1,8 @@
 package jukebot.apis
 
 import jukebot.JukeBot
+import jukebot.entities.spotify.SpotifyAudioTrack
+import jukebot.entities.spotify.SpotifyPlaylist
 import jukebot.utils.Helpers
 import jukebot.utils.json
 import okhttp3.MediaType
@@ -10,11 +12,11 @@ import org.json.JSONObject
 import java.util.Base64
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
+import java.util.regex.Pattern
 
 class SpotifyAPI(private val clientId: String, private val clientSecret: String) {
 
-    private var accessToken: String = ""
+    private var accessToken = ""
 
     init {
         if (credentialsProvided()) {
@@ -22,13 +24,9 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
         }
     }
 
-    fun credentialsProvided(): Boolean {
-        return clientId.isNotBlank() && clientSecret.isNotBlank()
-    }
+    fun credentialsProvided() = clientId.isNotBlank() && clientSecret.isNotBlank()
 
-    fun isEnabled(): Boolean {
-        return credentialsProvided() && accessToken.isNotBlank()
-    }
+    fun isEnabled() = credentialsProvided() && accessToken.isNotBlank()
 
     private fun refreshAccessToken() {
         val base64Auth = Base64.getEncoder().encodeToString("$clientId:$clientSecret".toByteArray())
@@ -40,115 +38,126 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
                 .post(body)
                 .build()
 
-        JukeBot.httpClient.makeRequest(request).queue({
-            val json = it.json()
+        makeRequest(request)
+                .thenAccept {
+                    if (it.has("error") && it.getString("error").startsWith("invalid_")) {
+                        JukeBot.LOG.error("[SpotifyAudioSource] Spotify API access disabled (${it.getString("error")})")
+                        return@thenAccept
+                    }
 
-            if (json == null) {
-                JukeBot.LOG.warn("[SpotifyAPI] Response body was null!", it.code(), it.message())
-                Helpers.schedule({ refreshAccessToken() }, 1, TimeUnit.MINUTES)
-                return@queue
-            }
+                    val refreshIn = it.getInt("expires_in")
 
-            if (json.has("error") && json.getString("error").startsWith("invalid_")) {
-                JukeBot.LOG.error("[SpotifyAudioSource] Spotify API access disabled (${json.getString("error")})")
-                return@queue
-            }
+                    accessToken = it.getString("access_token")
+                    Helpers.schedule({ refreshAccessToken() }, (refreshIn * 1000) - 10000, TimeUnit.MILLISECONDS)
 
-            val refreshIn = json.getInt("expires_in")
-
-            accessToken = json.getString("access_token")
-            Helpers.schedule({ refreshAccessToken() }, (refreshIn * 1000) - 10000, TimeUnit.MILLISECONDS)
-
-            JukeBot.LOG.info("[SpotifyAudioSource] Updated access token to $accessToken")
-        }, {
-            JukeBot.LOG.warn("[SpotifyAPI] Unable to update Spotify access token!", it)
-            Helpers.schedule({ refreshAccessToken() }, 1, TimeUnit.MINUTES)
-        })
+                    JukeBot.LOG.info("[SpotifyAudioSource] Updated access token to $accessToken")
+                }
+                .exceptionally {
+                    JukeBot.LOG.warn("[SpotifyAPI] Error occurred while refreshing access token!", it)
+                    Helpers.schedule({ refreshAccessToken() }, 1, TimeUnit.MINUTES)
+                    return@exceptionally null
+                }
     }
 
-    fun getTracksFromPlaylist(userId: String, playlistId: String, callback: (SpotifyPlaylist?) -> Unit) {
+    fun getPlaylistInfo(playlistId: String): JSONObject {
         val request = Request.Builder()
-                .url("https://api.spotify.com/v1/users/$userId/playlists/$playlistId/tracks")
+                .url("https://api.spotify.com/v1/playlists/$playlistId")
                 .addHeader("Authorization", "Bearer $accessToken")
                 .build()
 
-        JukeBot.httpClient.makeRequest(request).queue({
-            val json = it.json() ?: return@queue callback(null)
-            val playlist = SpotifyPlaylist()
-
-            if (!json.has("items")) {
-                return@queue callback(null)
-            }
-
-            val tracks = json.getJSONArray("items")
-
-            tracks.forEach {
-                val t = (it as JSONObject).getJSONObject("track")
-                val artist = t.getJSONArray("artists").getJSONObject(0).getString("name")
-                val trackName = t.getString("name")
-                playlist.addTrack(artist, trackName)
-            }
-
-            callback(playlist)
-        }, {
-            callback(null)
-        })
+        return makeRequest(request).get()
     }
 
-    fun getTracksFromPlaylistBlocking(userId: String, playlistId: String): SpotifyPlaylist? {
-        val promise = CompletableFuture<SpotifyPlaylist?>()
+    fun getPlaylist(playlistId: String): CompletableFuture<SpotifyPlaylist> {
+        val request = Request.Builder()
+                .url("https://api.spotify.com/v1/playlists/$playlistId/tracks")
+                .addHeader("Authorization", "Bearer $accessToken")
+                .build()
 
-        getTracksFromPlaylist(userId, playlistId) {
-            promise.complete(it)
-        }
+        val future = CompletableFuture<SpotifyPlaylist>()
 
-        return promise.get(30, TimeUnit.SECONDS)
+        makeRequest(request)
+                .thenAccept {
+                    val info = getPlaylistInfo(playlistId)
+                    val playlistName = info.getString("name")
+
+                    if (!it.has("items")) {
+                        future.complete(SpotifyPlaylist(playlistName, emptyList()))
+                        return@thenAccept
+                    }
+
+                    val jsonTracks = it.getJSONArray("items")
+                    val tracks = mutableListOf<SpotifyAudioTrack>()
+
+                    for (jTrack in jsonTracks) {
+                        val t = (jTrack as JSONObject).getJSONObject("track")
+                        val artist = t.getJSONArray("artists").getJSONObject(0).getString("name")
+                        val title = t.getString("name")
+
+                        tracks.add(SpotifyAudioTrack(artist, title))
+                    }
+
+                    future.complete(SpotifyPlaylist(playlistName, tracks))
+                }
+                .exceptionally {
+                    future.completeExceptionally(it)
+                    return@exceptionally null
+                }
+
+        return future
     }
 
-    fun search(title: String): CompletableFuture<SpotifyAudioTrack?> {
+    fun search(title: String): CompletableFuture<SpotifyAudioTrack> {
         val request = Request.Builder()
                 .url("https://api.spotify.com/v1/search?q=$title&type=track")
                 .addHeader("Authorization", "Bearer $accessToken")
                 .build()
 
-        val future = CompletableFuture<SpotifyAudioTrack?>()
+        val future = CompletableFuture<SpotifyAudioTrack>()
+
+        makeRequest(request)
+                .thenAccept {
+                    val results = it.getJSONObject("tracks").getJSONArray("items")
+
+                    if (results.length() == 0) {
+                        future.complete(null)
+                        return@thenAccept
+                    }
+
+                    val track = results.getJSONObject(0)
+                    val artist = track.getJSONArray("artists").getJSONObject(0).getString("name")
+                    val trackTitle = track.getString("name")
+
+                    future.complete(SpotifyAudioTrack(artist, trackTitle))
+                }
+                .exceptionally {
+                    future.completeExceptionally(it)
+                    return@exceptionally null
+                }
+
+        return future
+    }
+
+    private fun makeRequest(request: Request): CompletableFuture<JSONObject> {
+        val fut = CompletableFuture<JSONObject>()
 
         JukeBot.httpClient.makeRequest(request).queue({
             val json = it.json()
 
             if (json == null) {
-                future.complete(null)
+                fut.completeExceptionally(Exception("Expected JSON object, got null"))
                 return@queue
             }
 
-            val results = json.getJSONObject("tracks").getJSONArray("items")
-
-            if (results.length() == 0) {
-                future.complete(null)
-                return@queue
-            }
-
-            val track = results.getJSONObject(0)
-            val artist = track.getJSONArray("artists").getJSONObject(0).getString("name")
-            val trackTitle = track.getString("name")
-
-            future.complete(SpotifyAudioTrack(artist, trackTitle))
+            fut.complete(json)
         }, {
-            future.complete(null)
+            fut.completeExceptionally(it)
         })
 
-        return future
-    }
-}
-
-class SpotifyPlaylist(val name: String = "Spotify Playlist") {
-
-    val tracks: MutableList<SpotifyAudioTrack> = ArrayList()
-
-    fun addTrack(artist: String, title: String) {
-        tracks.add(SpotifyAudioTrack(artist, title))
+        return fut
     }
 
+    companion object {
+        val PLAYLIST_PATTERN = Pattern.compile("^https?://(?:.*\\.)?spotify\\.com/(?:user/[a-zA-Z0-9_]+/)?playlist/([a-zA-Z0-9]+).*")!!
+    }
 }
-
-class SpotifyAudioTrack(val artist: String, val title: String)

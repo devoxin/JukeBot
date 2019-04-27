@@ -15,51 +15,66 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
 
     private val httpClient = OkHttpClient()
 
-    public fun searchVideo(query: String, callback: (AudioTrack?) -> Unit) {
+    fun searchVideo(query: String): CompletableFuture<AudioTrack> {
         val request = Request.Builder()
                 .url("https://www.googleapis.com/youtube/v3/search?q=$query&key=$key&type=video&maxResults=3&part=id,snippet")
                 .addHeader("User-Agent", "JukeBot/v${JukeBot.VERSION} (https://www.jukebot.serux.pro)")
                 .get()
                 .build()
 
+        val fut = CompletableFuture<AudioTrack>()
+
+        makeRequest(request)
+                .thenAccept {
+                    val results = it.getJSONArray("items")
+
+                    if (results.length() == 0) {
+                        fut.completeExceptionally(Exception("No tracks found related to the given query"))
+                        return@thenAccept
+                    }
+
+                    val result = results.getJSONObject(0)
+                    val videoId = result.getJSONObject("id").getString("videoId")
+                    val title = result.getJSONObject("snippet").getString("title")
+                    val uploader = result.getJSONObject("snippet").getString("channelTitle")
+                    val isStream = result.getJSONObject("snippet").getString("liveBroadcastContent") != "none"
+                    val duration = if (isStream) Long.MAX_VALUE else Long.MIN_VALUE // TODO: Stuffs
+
+                    JukeBot.LOG.debug("Found YouTubeTrack for identifier $query")
+                    fut.complete(toYouTubeAudioTrack(videoId, title, uploader, isStream, duration))
+                }
+                .exceptionally {
+                    fut.completeExceptionally(it)
+                    return@exceptionally null
+                }
+
+        return fut
+    }
+
+    fun makeRequest(request: Request): CompletableFuture<JSONObject> {
+        val fut = CompletableFuture<JSONObject>()
+
         httpClient.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 JukeBot.LOG.error("YouTube API request failed!", e)
-                callback(null)
+                fut.completeExceptionally(e)
             }
 
             override fun onResponse(call: Call, response: Response) {
                 JukeBot.LOG.debug("YouTube API response:\n\tStatus Code: ${response.code()}\n\tResponse Message: ${response.message()}")
 
-                val json = response.json() ?: return callback(null)
+                val json = response.json()
 
-                val results = json.getJSONArray("items")
-
-                if (results.length() == 0) {
-                    callback(null)
-                } else {
-                    val result: JSONObject = results.getJSONObject(0)
-                    val videoId: String = result.getJSONObject("id").getString("videoId")
-                    val title: String = result.getJSONObject("snippet").getString("title")
-                    val uploader: String = result.getJSONObject("snippet").getString("channelTitle")
-                    val isStream: Boolean = result.getJSONObject("snippet").getString("liveBroadcastContent") != "none"
-                    val duration: Long = if (isStream) Long.MAX_VALUE else Long.MIN_VALUE // TODO: Stuffs
-
-                    JukeBot.LOG.debug("Found YouTubeTrack for identifier $query")
-                    callback(toYouTubeAudioTrack(videoId, title, uploader, isStream, duration))
+                if (json == null) {
+                    fut.completeExceptionally(Exception("Expected JSON response, got null!"))
+                    return
                 }
+
+                fut.complete(json)
             }
         })
-    }
 
-    public fun searchVideoBlocking(query: String): AudioTrack? {
-        val promise = CompletableFuture<AudioTrack?>()
-
-        searchVideo(query) {
-            promise.complete(it)
-        }
-
-        return promise.get(15, TimeUnit.SECONDS)
+        return fut
     }
 
     private fun toYouTubeAudioTrack(videoId: String, title: String, uploader: String, isStream: Boolean, duration: Long): YoutubeAudioTrack {
