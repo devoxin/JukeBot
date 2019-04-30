@@ -13,8 +13,9 @@ class Config(private val file: String) {
         }
     }
 
-    public fun keyExists(key: String): Boolean {
-        return getString(key) != null
+    public fun hasKey(key: String): Boolean {
+        val value = getString(key)
+        return value != null && value.isNotEmpty()
     }
 
     public fun getString(key: String): String? {

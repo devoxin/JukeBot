@@ -2,17 +2,27 @@ package jukebot.commands
 
 import jukebot.JukeBot
 import jukebot.utils.Command
+import jukebot.utils.CommandInitializationError
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.webhook.WebhookClient
 import net.dv8tion.jda.webhook.WebhookClientBuilder
+import java.lang.Exception
 import java.time.Instant
 
 @CommandProperties(description = "Send feedback to the developer")
 class Feedback : Command(ExecutionType.STANDARD) {
 
-    private val webhookClient: WebhookClient = WebhookClientBuilder(JukeBot.config.getString("feedback_webhook")!!).build()
+    private val webhookClient: WebhookClient
+
+    init {
+        if (JukeBot.config.hasKey("feedback_webhook")) {
+            webhookClient = WebhookClientBuilder(JukeBot.config.getString("feedback_webhook")!!).build()
+        } else {
+            throw CommandInitializationError("feedback_webhook key is missing from config")
+        }
+    }
 
     override fun execute(context: Context) {
         if (context.argString.isEmpty()) {

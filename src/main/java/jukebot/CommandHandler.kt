@@ -3,10 +3,7 @@ package jukebot
 import com.google.common.reflect.ClassPath
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
 import jukebot.commands.Feedback
-import jukebot.utils.Command
-import jukebot.utils.Context
-import jukebot.utils.Helpers
-import jukebot.utils.Permissions
+import jukebot.utils.*
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.VoiceChannel
 import net.dv8tion.jda.core.events.ReadyEvent
@@ -30,8 +27,18 @@ class CommandHandler : ListenerAdapter() {
 
         for (klass in classes) {
             val clazz = klass.load()
+            var cmd: Command
 
-            val cmd = clazz.getDeclaredConstructor().newInstance() as Command
+            try {
+                cmd = clazz.getDeclaredConstructor().newInstance() as Command
+            } catch (e: Exception) {
+                if (e.cause != null && e.cause!!::class.java.isAssignableFrom(CommandInitializationError::class.java)) {
+                    continue
+                }
+
+                JukeBot.LOG.warn("Command ${clazz.simpleName} failed to load", e)
+                continue
+            }
 
             if (!cmd.properties().enabled || cmd.properties().nsfw && !JukeBot.isNSFWEnabled()) {
                 continue
@@ -108,7 +115,6 @@ class CommandHandler : ListenerAdapter() {
                 if (JukeBot.isSelfHosted) {
                     commands.remove("patreon")
                     commands.remove("verify")
-                    (commands.remove("feedback") as Feedback).shutdown()
                 } else {
                     Helpers.monitor.scheduleAtFixedRate({ Helpers.monitorPledges() }, 0, 1, TimeUnit.DAYS)
                 }

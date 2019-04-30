@@ -45,6 +45,7 @@ import org.sqlite.SQLiteJDBCLoader;
 
 import java.awt.*;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JukeBot {
@@ -67,7 +68,7 @@ public class JukeBot {
     public static SpotifyAPI spotifyApi;
     public static YouTubeAPI youTubeApi;
     public static KSoftAPI kSoftAPI;
-    public static LastFM lastFM;
+    //public static LastFM lastFM;
 
     public static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
@@ -80,18 +81,11 @@ public class JukeBot {
         printBanner();
 
         embedColour = Color.decode(config.getString("color", "0x1E90FF"));
-
-        if (config.keyExists("patreon")) {
-            createPatreonApi(config.getString("patreon"));
-        }
-
-        kSoftAPI = new KSoftAPI(config.getString("ksoft", ""));
-        lastFM = new LastFM(config.getString("lastfm", ""));
-
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
-        registerSourceManagers();
 
+        registerSourceManagers();
+        loadApis();
         Database.setupDatabase();
 
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
@@ -112,7 +106,6 @@ public class JukeBot {
         shardManager = shardManagerBuilder.build();
     }
 
-
     private static void printBanner() {
         String os = System.getProperty("os.name");
         String arch = System.getProperty("os.arch");
@@ -127,12 +120,36 @@ public class JukeBot {
                 " | " + os + " " + arch + "\n");
     }
 
+    private static void loadApis() {
+        if (config.hasKey("patreon")) {
+            LOG.debug("Config has patreon key, loading patreon API...");
+            createPatreonApi(config.getString("patreon"));
+        }
+
+        if (config.hasKey("ksoft")) {
+            LOG.debug("Config has ksoft key, loading ksoft API...");
+            String key = Objects.requireNonNull(config.getString("ksoft"));
+            kSoftAPI = new KSoftAPI(key);
+        }
+
+        if (config.hasKey("spotify_client") && config.hasKey("spotify_secret")) {
+            LOG.debug("Config has spotify keys, loading spotify API...");
+            String client = Objects.requireNonNull(config.getString("spotify_client"));
+            String secret = Objects.requireNonNull(config.getString("spotify_secret"));
+            spotifyApi = new SpotifyAPI(client, secret);
+        }
+
+        if (config.hasKey("youtube")) {
+            LOG.debug("Config has youtube key, loading youtube API...");
+            String key = Objects.requireNonNull(config.getString("youtube"));
+            YoutubeAudioSourceManager sm = playerManager.source(YoutubeAudioSourceManager.class);
+            youTubeApi = new YouTubeAPI(key, sm);
+        }
+    }
+
     private static void registerSourceManagers() {
         final YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
         yt.setPlaylistPageCount(Integer.MAX_VALUE);
-
-        spotifyApi = new SpotifyAPI(config.getString("spotify_client", ""), config.getString("spotify_secret", ""));
-        youTubeApi = new YouTubeAPI(config.getString("youtube", ""), yt);
 
         if (config.getBoolean("nsfw")) {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
