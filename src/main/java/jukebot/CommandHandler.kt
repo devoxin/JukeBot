@@ -97,9 +97,11 @@ class CommandHandler : ListenerAdapter() {
     }
 
     override fun onGuildJoin(e: GuildJoinEvent) {
-        val bots = e.guild.members.filter { member -> member.user.isBot }.size
-        if (bots / e.guild.members.size > 0.6)
+        val bots = e.guild.members.filter { it.user.isBot }.size
+
+        if (bots / e.guild.members.size > 0.6) {
             e.guild.leave().queue()
+        }
     }
 
     override fun onGuildLeave(event: GuildLeaveEvent) {
