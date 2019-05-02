@@ -115,6 +115,7 @@ class CommandHandler : ListenerAdapter() {
                 if (JukeBot.isSelfHosted) {
                     commands.remove("patreon")
                     commands.remove("verify")
+                    (commands.remove("feedback") as Feedback).shutdown()
                 } else {
                     Helpers.monitor.scheduleAtFixedRate({ Helpers.monitorPledges() }, 0, 1, TimeUnit.DAYS)
                 }
