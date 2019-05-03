@@ -2,16 +2,10 @@ package jukebot.commands
 
 import jukebot.Database
 import jukebot.JukeBot
-import jukebot.apis.PatreonUser
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import jukebot.utils.Helpers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.future.await
-import java.util.concurrent.CompletableFuture
-import kotlin.coroutines.EmptyCoroutineContext
 
 @CommandProperties(description = "Receive your donor rewards if you're a patron")
 class Verify : Command(ExecutionType.STANDARD) {

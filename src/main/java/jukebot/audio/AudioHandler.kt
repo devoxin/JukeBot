@@ -9,20 +9,15 @@ import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame
 import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Helpers
-import jukebot.utils.Permissions
 import jukebot.utils.toTimeString
 import jukebot.utils.toTitleCase
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.audio.AudioSendHandler
-
-import java.util.HashSet
-import java.util.LinkedList
-import java.util.Random
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEventAdapter(), AudioSendHandler {
 
-    private val permissions = Permissions()
     val bassBooster = BassBooster(player)
 
     private var lastFrame: AudioFrame? = null

@@ -3,20 +3,14 @@ package jukebot.utils
 
 import jukebot.Database
 import jukebot.JukeBot
-import jukebot.apis.PatreonUser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.future.await
 import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.entities.TextChannel
 import java.io.BufferedReader
 import java.io.FileReader
 import java.io.IOException
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
-import kotlin.coroutines.EmptyCoroutineContext
 
 class Helpers {
 

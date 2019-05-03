@@ -9,7 +9,6 @@ import jukebot.utils.Context
 import jukebot.utils.editEmbed
 import jukebot.utils.toTimeString
 import net.dv8tion.jda.core.EmbedBuilder
-import java.util.function.Consumer
 import java.util.regex.Pattern
 
 class SongResultHandler(

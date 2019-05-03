@@ -4,11 +4,9 @@ import jukebot.JukeBot
 import jukebot.utils.json
 import okhttp3.Request
 import org.apache.http.client.utils.URIBuilder
-import org.apache.http.client.utils.URLEncodedUtils
 import org.json.JSONObject
 import java.net.URI
 import java.net.URLDecoder
-import java.nio.charset.Charset
 import java.util.concurrent.CompletableFuture
 
 class PatreonAPI(private val accessToken: String) {

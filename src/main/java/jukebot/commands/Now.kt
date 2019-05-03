@@ -1,7 +1,10 @@
 package jukebot.commands
 
 import jukebot.JukeBot
-import jukebot.utils.*
+import jukebot.utils.Command
+import jukebot.utils.CommandProperties
+import jukebot.utils.Context
+import jukebot.utils.toTimeString
 
 @CommandProperties(description = "Displays the currently playing track", aliases = ["n", "np"], category = CommandProperties.category.MEDIA)
 class Now : Command(ExecutionType.STANDARD) {

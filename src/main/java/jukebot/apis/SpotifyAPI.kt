@@ -9,7 +9,7 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
-import java.util.Base64
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern

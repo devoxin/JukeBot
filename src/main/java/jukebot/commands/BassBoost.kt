@@ -18,8 +18,8 @@ class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
             return context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
         }
 
-        val boost = context.args.firstOrNull()?.toFloatOrNull() ?:
-            return context.embed("Bass Boost", "Boosting by ${handler.bassBooster.pcString}%")
+        val boost = context.args.firstOrNull()?.toFloatOrNull()
+                ?: return context.embed("Bass Boost", "Boosting by ${handler.bassBooster.pcString}%")
 
         if (boost < 0 || boost > 200) {
             return context.embed("Bass Boost", "You need to specify a valid number from 0-200.")

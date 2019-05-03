@@ -8,7 +8,6 @@ import jukebot.utils.Context
 import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.webhook.WebhookClient
 import net.dv8tion.jda.webhook.WebhookClientBuilder
-import java.lang.Exception
 import java.time.Instant
 
 @CommandProperties(description = "Send feedback to the developer")

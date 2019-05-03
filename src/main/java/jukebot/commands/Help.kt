@@ -1,7 +1,10 @@
 package jukebot.commands
 
 import jukebot.CommandHandler
-import jukebot.utils.*
+import jukebot.utils.Command
+import jukebot.utils.CommandProperties
+import jukebot.utils.Context
+import jukebot.utils.toTitleCase
 
 @CommandProperties(description = "Displays all commands", aliases = ["commands"], category = CommandProperties.category.MISC)
 class Help : Command(ExecutionType.STANDARD) {
@@ -62,8 +65,8 @@ class Help : Command(ExecutionType.STANDARD) {
 
     private fun commandsByCategory(category: CommandProperties.category) =
             CommandHandler.commands
-                .values
-                .filter { it.properties().category == category }
-                .sortedBy { it.name() }
+                    .values
+                    .filter { it.properties().category == category }
+                    .sortedBy { it.name() }
 
 }

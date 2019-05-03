@@ -8,11 +8,8 @@ import jukebot.entities.youtube.YoutubeTrackInformation
 import jukebot.utils.json
 import okhttp3.*
 import org.json.JSONObject
-import org.jsoup.Jsoup
 import java.io.IOException
-import java.time.Duration
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
 
 class YouTubeAPI(private val key: String, private val source: YoutubeAudioSourceManager) {
 

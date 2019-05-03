@@ -27,7 +27,10 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
-import jukebot.apis.*;
+import jukebot.apis.KSoftAPI;
+import jukebot.apis.PatreonAPI;
+import jukebot.apis.SpotifyAPI;
+import jukebot.apis.YouTubeAPI;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.utils.Config;
