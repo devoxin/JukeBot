@@ -32,10 +32,6 @@ class RequestUtil {
         return makeRequest("GET", url, null, headers)
     }
 
-    public fun post(url: String, body: RequestBody, headers: Headers): PendingRequest {
-        return makeRequest("POST", url, body, headers)
-    }
-
     public fun makeRequest(method: String, url: String, body: RequestBody? = null, headers: Headers): PendingRequest {
         val request = Request.Builder()
                 .method(method.toUpperCase(), body)
@@ -49,14 +45,4 @@ class RequestUtil {
     public fun makeRequest(request: Request): PendingRequest {
         return PendingRequest(request)
     }
-}
-
-public fun createHeaders(vararg kv: Pair<String, String>): Headers {
-    val builder = Headers.Builder()
-
-    for (header in kv) {
-        builder.add(header.first, header.second)
-    }
-
-    return builder.build()
 }

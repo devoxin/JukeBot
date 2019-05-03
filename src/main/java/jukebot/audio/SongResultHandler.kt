@@ -49,7 +49,7 @@ class SongResultHandler(
 
                 val tracks = playlist.tracks
                         .filter { canQueueTrack(it) }
-                        .subList(0, Math.min(playlist.tracks.size, 5))
+                        .take(5)
 
                 if (tracks.isEmpty()) {
                     return noMatches()
@@ -120,7 +120,7 @@ class SongResultHandler(
 
             val tracks = playlist.tracks
                     .filter { canQueueTrack(it) }
-                    .subList(0, Math.min(playlist.tracks.size, playlistLimit))
+                    .take(playlistLimit)
 
             for (track in tracks) {
                 musicManager.enqueue(track, e.author.idLong, false)

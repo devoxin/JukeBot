@@ -1,11 +1,12 @@
 package jukebot.utils
 
+import java.awt.Color
 import java.io.FileReader
 import java.util.*
 
-class Config(private val file: String) {
+class Config(file: String) {
 
-    private val _conf: Properties = Properties()
+    private val _conf = Properties()
 
     init {
         FileReader(file).use {
@@ -13,20 +14,25 @@ class Config(private val file: String) {
         }
     }
 
-    public fun hasKey(key: String): Boolean {
+    val token = getString("token", "")
+    val defaultPrefix = getString("prefix", "$")
+    val embedColour = decodeColor(getString("color", "")) ?: Color.decode("#1E90FF")
+    val nsfwEnabled = getBoolean("nsfw")
+
+    fun hasKey(key: String): Boolean {
         val value = getString(key)
         return value != null && value.isNotEmpty()
     }
 
-    public fun getString(key: String): String? {
+    fun getString(key: String): String? {
         return _conf.getProperty(key, null)
     }
 
-    public fun getString(key: String, default: String): String {
+    fun getString(key: String, default: String): String {
         return _conf.getProperty(key, default)
     }
 
-    public fun getBoolean(key: String): Boolean {
+    fun getBoolean(key: String): Boolean {
         return getString(key)?.toBoolean() ?: false
     }
 

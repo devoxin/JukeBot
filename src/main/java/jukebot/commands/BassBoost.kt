@@ -9,7 +9,6 @@ class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
         val handler = context.getAudioPlayer()
-        val args = context.args
 
         if (!handler.isPlaying) {
             return context.embed("Not Playing", "Nothing is currently playing.")
@@ -19,17 +18,15 @@ class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
             return context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
         }
 
-        if (context.argString.isEmpty()) {
+        val boost = context.args.firstOrNull()?.toFloatOrNull() ?:
             return context.embed("Bass Boost", "Boosting by ${handler.bassBooster.pcString}%")
-        }
 
-        val boost = args[0].toFloatOrNull()
-
-        if (boost == null || boost < 0 || boost > 200) {
+        if (boost < 0 || boost > 200) {
             return context.embed("Bass Boost", "You need to specify a valid number from 0-200.")
         }
 
         handler.bassBooster.boost(boost)
         context.embed("Bass Boost", "Boosting by ${handler.bassBooster.pcString}%")
     }
+
 }

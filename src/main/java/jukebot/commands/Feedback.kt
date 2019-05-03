@@ -37,7 +37,7 @@ class Feedback : Command(ExecutionType.STANDARD) {
         val guild = "${context.guild.name}\n(${context.guild.id})"
 
         webhookClient.send(EmbedBuilder()
-                .setColor(JukeBot.embedColour)
+                .setColor(JukeBot.config.embedColour)
                 .setTitle("New Feedback")
                 .setDescription(context.argString)
                 .addField("Sender:", sender, true)

@@ -38,37 +38,12 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
         return JukeBot.getPlayer(event.guild.audioManager)
     }
 
-    fun ensureVoice(): Boolean {
-        val audioManager = guild.audioManager
-        val isConnected = audioManager.connectedChannel != null
-        val memberVoice = member.voiceState
+    fun ensureMutualVoiceChannel(): Boolean {
+        val manager = member.guild.audioManager
 
-        if (memberVoice.channel == null) {
-            return if (isConnected) {
-                embed("No Mutual VoiceChannel", "You need to join my VoiceChannel!")
-                false
-            } else {
-                embed("No VoiceChannel", "You need to join a VoiceChannel!")
-                false
-            }
-        }
-
-        if (!isConnected) {
-            val connectionError: ConnectionError? = Permissions.canConnectTo(memberVoice.channel)
-
-            if (connectionError != null) {
-                embed(connectionError.title, connectionError.description)
-                return false
-            }
-
-            audioManager.openAudioConnection(memberVoice.channel)
-            return true
-        } else if (memberVoice.channel.idLong != audioManager.connectedChannel.idLong) {
-            embed("No Mutual VoiceChannel", "You need to join my VoiceChannel!")
-            return false
-        } else {
-            return true
-        }
+        return (member.voiceState.channel != null
+                && manager.connectedChannel != null
+                && manager.connectedChannel.idLong == member.voiceState.channel.idLong)
     }
 
     fun isDJ(allowLoneVC: Boolean): Boolean {
@@ -100,7 +75,7 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
     }
 
     fun embed(embed: EmbedBuilder) {
-        if (!permissions.canSendTo(channel)) {
+        if (!Helpers.canSendTo(channel)) {
             return
         }
 

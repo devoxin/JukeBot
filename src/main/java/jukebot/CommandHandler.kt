@@ -4,7 +4,6 @@ import com.google.common.reflect.ClassPath
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
 import jukebot.commands.Feedback
 import jukebot.utils.*
-import net.dv8tion.jda.core.EmbedBuilder
 import net.dv8tion.jda.core.entities.VoiceChannel
 import net.dv8tion.jda.core.events.ReadyEvent
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent
@@ -15,12 +14,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter
 import java.util.concurrent.TimeUnit
 
 class CommandHandler : ListenerAdapter() {
-
-    companion object {
-        val commands = HashMap<String, Command>()
-    }
-
-    val permissions = Permissions()
 
     init {
         val classes = ClassPath.from(this::class.java.classLoader).getTopLevelClasses("jukebot.commands")
@@ -40,7 +33,7 @@ class CommandHandler : ListenerAdapter() {
                 continue
             }
 
-            if (!cmd.properties().enabled || cmd.properties().nsfw && !JukeBot.isNSFWEnabled()) {
+            if (!cmd.properties().enabled || cmd.properties().nsfw && !JukeBot.config.nsfwEnabled) {
                 continue
             }
 
@@ -51,49 +44,35 @@ class CommandHandler : ListenerAdapter() {
     }
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
-        try {
-            if (!e.guild.isAvailable || e.author.isBot || e.author.isFake || !permissions.canSendTo(e.channel) || Database.isBlocked(e.author.idLong))
-                return
-
-            val guildPrefix = Database.getPrefix(e.guild.idLong)
-            val wasMentioned = e.message.contentRaw.startsWith(e.guild.selfMember.asMention)
-            val triggerLength = if (wasMentioned) e.guild.selfMember.asMention.length + 1 else guildPrefix.length
-
-            if (!e.message.contentRaw.startsWith(guildPrefix) && !wasMentioned)
-                return
-
-            if (wasMentioned && !e.message.contentRaw.contains(" "))
-                return
-
-            val content = e.message.contentRaw.substring(triggerLength).trim()
-            val command = content.split("\\s+".toRegex())[0].toLowerCase()
-            val args = if (content.length >= command.length) content.substring(command.length).trim() else ""
-
-            val foundCommand = commands
-                    .filter { c -> c.key == command || c.value.properties().aliases.contains(command) }
-                    .values
-                    .firstOrNull()
-
-            if (foundCommand == null || foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong)
-                return
-
-            foundCommand.runChecks(Context(e, args, guildPrefix))
-        } catch (err: Exception) {
-            val formatted = "An error occurred in the CommandHandler!\n" +
-                    "\tMessage: ${e.message.contentStripped}\n" +
-                    "\tBot/Webhook: ${e.author.isBot || e.isWebhookMessage}\n" +
-                    "\tCause: $err\n" +
-                    "\tStack: ${err.stackTrace.joinToString("\n\t\t")}"
-
-            JukeBot.LOG.error(formatted)
-
-            e.channel.sendMessage(EmbedBuilder()
-                    .setColor(Database.getColour(e.guild.idLong))
-                    .setTitle("An unknown error occurred!")
-                    .setDescription("The error has been logged, we're sorry for any inconvenience caused!")
-                    .build()
-            ).queue()
+        if (!e.guild.isAvailable || e.author.isBot || e.author.isFake || !Helpers.canSendTo(e.channel)
+                || Database.isBlocked(e.author.idLong)) {
+            return
         }
+
+        val guildPrefix = Database.getPrefix(e.guild.idLong)
+        val wasMentioned = e.message.contentRaw.startsWith(e.guild.selfMember.asMention)
+        val triggerLength = if (wasMentioned) e.guild.selfMember.asMention.length + 1 else guildPrefix.length
+
+        if (!e.message.contentRaw.startsWith(guildPrefix) && !wasMentioned)
+            return
+
+        if (wasMentioned && !e.message.contentRaw.contains(" "))
+            return
+
+        val content = e.message.contentRaw.substring(triggerLength).trim()
+        val command = content.split("\\s+".toRegex())[0].toLowerCase()
+        val args = if (content.length >= command.length) content.substring(command.length).trim() else ""
+
+        val foundCommand = commands
+                .filter { it.key == command || it.value.properties().aliases.contains(command) }
+                .values
+                .firstOrNull() ?: return
+
+        if (foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong) {
+            return
+        }
+
+        foundCommand.runChecks(Context(e, args, guildPrefix))
     }
 
     override fun onGuildJoin(e: GuildJoinEvent) {
@@ -136,7 +115,7 @@ class CommandHandler : ListenerAdapter() {
         }
     }
 
-    public fun handleLeave(channel: VoiceChannel) {
+    fun handleLeave(channel: VoiceChannel) {
         val connectedChannel = channel.guild.audioManager.connectedChannel ?: return
 
         if (!JukeBot.hasPlayer(channel.guild.idLong)) {
@@ -151,6 +130,10 @@ class CommandHandler : ListenerAdapter() {
             player.cleanup()
             connectedChannel.guild.audioManager.closeAudioConnection()
         }
+    }
+
+    companion object {
+        val commands = HashMap<String, Command>()
     }
 
 }

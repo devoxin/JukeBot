@@ -138,7 +138,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
         val channel = JukeBot.shardManager.getTextChannelById(channelId!!)
 
-        if (channel == null || !permissions.canSendTo(channel)) {
+        if (channel == null || !Helpers.canSendTo(channel)) {
             return
         }
 

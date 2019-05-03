@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
-import java.awt.*;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,7 +57,6 @@ public class JukeBot {
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
     public static Config config = new Config("config.properties");
 
-    public static Color embedColour;
     public static Long botOwnerId = 0L;
     public static boolean isSelfHosted = false;
 
@@ -80,7 +78,6 @@ public class JukeBot {
         Thread.currentThread().setName("JukeBot-Main");
         printBanner();
 
-        embedColour = Color.decode(config.getString("color", "0x1E90FF"));
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
 
@@ -89,11 +86,11 @@ public class JukeBot {
         Database.setupDatabase();
 
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
-                .setToken(config.getString("token", ""))
+                .setToken(config.getToken())
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), waiter)
                 .setDisabledCacheFlags(EnumSet.of(CacheFlag.EMOTE, CacheFlag.GAME))
-                .setGame(Game.listening(getDefaultPrefix() + "help | https://jukebot.serux.pro"));
+                .setGame(Game.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"));
 
         final String os = System.getProperty("os.name").toLowerCase();
         final String arch = System.getProperty("os.arch");
@@ -151,7 +148,7 @@ public class JukeBot {
         final YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
         yt.setPlaylistPageCount(Integer.MAX_VALUE);
 
-        if (config.getBoolean("nsfw")) {
+        if (config.getNsfwEnabled()) {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
         }
 
@@ -192,12 +189,5 @@ public class JukeBot {
         patreonApi = new PatreonAPI(key);
     }
 
-    public static String getDefaultPrefix() {
-        return config.getString("prefix");
-    }
-
-    public static Boolean isNSFWEnabled() {
-        return config.getBoolean("nsfw");
-    }
 
 }

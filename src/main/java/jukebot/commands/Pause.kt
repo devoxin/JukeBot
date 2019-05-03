@@ -3,12 +3,9 @@ package jukebot.commands
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
-import jukebot.utils.Permissions
 
 @CommandProperties(description = "Pauses the player", aliases = ["ps"], category = CommandProperties.category.CONTROLS)
 class Pause : Command(ExecutionType.REQUIRE_MUTUAL) {
-
-    private val permissions = Permissions()
 
     override fun execute(context: Context) {
 
@@ -19,8 +16,7 @@ class Pause : Command(ExecutionType.REQUIRE_MUTUAL) {
             return
         }
 
-        if (!permissions.ensureMutualVoiceChannel(context.member)) {
-            context.embed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.")
+        if (!context.ensureMutualVoiceChannel()) {
             return
         }
 

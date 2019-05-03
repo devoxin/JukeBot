@@ -35,7 +35,7 @@ public class Database {
 
     public static String getPrefix(final long id) {
         String prefix = getFromDatabase("prefixes", id, "prefix");
-        return prefix == null ? JukeBot.getDefaultPrefix() : prefix;
+        return prefix == null ? JukeBot.config.getDefaultPrefix() : prefix;
     }
 
     public static boolean setPrefix(final long id, final String newPrefix) {
@@ -219,10 +219,10 @@ public class Database {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM colours WHERE id = ?");
             statement.setLong(1, id);
             ResultSet results = statement.executeQuery();
-            return results.next() ? results.getInt("rgb") : JukeBot.embedColour.getRGB();
+            return results.next() ? results.getInt("rgb") : JukeBot.config.getEmbedColour().getRGB();
         } catch (SQLException e) {
             JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
-            return JukeBot.embedColour.getRGB();
+            return JukeBot.config.getEmbedColour().getRGB();
         }
     }
 

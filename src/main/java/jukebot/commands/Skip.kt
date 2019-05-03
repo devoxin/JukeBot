@@ -4,12 +4,9 @@ import jukebot.Database
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
-import jukebot.utils.Permissions
 
 @CommandProperties(description = "Vote to skip the track", category = CommandProperties.category.CONTROLS)
 class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {
-
-    private val permissions = Permissions()
 
     override fun execute(context: Context) {
 
@@ -19,8 +16,8 @@ class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {
             return context.embed("Not Playing", "Nothing is currently playing.")
         }
 
-        if (!permissions.ensureMutualVoiceChannel(context.member)) {
-            return context.embed("No Mutual VoiceChannel", "Join my VoiceChannel to use this command.")
+        if (!context.ensureMutualVoiceChannel()) {
+            return
         }
 
         val totalVotes = player.voteSkip(context.author.idLong)

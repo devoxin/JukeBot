@@ -7,6 +7,8 @@ import jukebot.apis.PatreonUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.future.await
+import net.dv8tion.jda.core.Permission
+import net.dv8tion.jda.core.entities.TextChannel
 import java.io.BufferedReader
 import java.io.FileReader
 import java.io.IOException
@@ -27,15 +29,15 @@ class Helpers {
             return num?.toIntOrNull() ?: def
         }
 
-        public fun schedule(task: Runnable, delay: Int, unit: TimeUnit) {
+        fun canSendTo(channel: TextChannel): Boolean {
+            return channel.canTalk() && channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)
+        }
+
+        fun schedule(task: () -> Unit, delay: Int, unit: TimeUnit) {
             timer.schedule(task, delay.toLong(), unit)
         }
 
-        public fun schedule(task: () -> Unit, delay: Int, unit: TimeUnit) {
-            timer.schedule(task, delay.toLong(), unit)
-        }
-
-        public fun truncate(content: String, maxLength: Int): String {
+        fun truncate(content: String, maxLength: Int): String {
             return if (content.length > maxLength) {
                 content.substring(0, maxLength - 3) + "..."
             } else content
