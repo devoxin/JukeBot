@@ -28,7 +28,7 @@ class Lyrics : Command(ExecutionType.STANDARD) {
             val title = "${it.track} by ${it.artist}"
             val pages = TextSplitter.split(it.lyrics)
 
-            if (pages.size > 4) {
+            if (pages.isEmpty() || pages.size > 4) {
                 return@getLyrics context.embed("No Lyrics Found", "The API returned no lyrics for **$query**")
             }
 
