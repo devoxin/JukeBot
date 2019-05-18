@@ -16,16 +16,15 @@ class PatreonAPI(private val accessToken: String) {
     public fun fetchPledgesOfCampaign(campaignId: String): CompletableFuture<List<PatreonUser>> {
         val future = CompletableFuture<List<PatreonUser>>()
 
-        getPageOfPledge(campaignId, null) {
+        getPageOfPledge(campaignId) {
             future.complete(it)
         }
 
         return future
     }
 
-    private fun getPageOfPledge(campaignId: String, offset: String?, cb: (List<PatreonUser>) -> Unit) {
-        val users = mutableSetOf<PatreonUser>()
-
+    private fun getPageOfPledge(campaignId: String, offset: String? = null,
+                                users: MutableSet<PatreonUser> = mutableSetOf(), cb: (List<PatreonUser>) -> Unit) {
         val url = URIBuilder("$BASE_URL/campaigns/$campaignId/pledges")
 
         url.addParameter("include", "pledge,patron")
@@ -60,7 +59,7 @@ class PatreonAPI(private val accessToken: String) {
             }
 
             val nextPage = getNextPage(json) ?: return@queue cb(users.toList())
-            getPageOfPledge(campaignId, nextPage, cb)
+            getPageOfPledge(campaignId, nextPage, users, cb)
         }, {
             JukeBot.LOG.error("Unable to get list of pledges", it)
             return@queue cb(users.toList())
