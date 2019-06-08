@@ -25,9 +25,15 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
         val fut = CompletableFuture<AudioTrack>()
 
         makeRequest(request)
-                .thenAccept {
-                    getVideoInfo(it.getJSONArray("items").getJSONObject(0).getJSONObject("id").getString("videoId"))
-                            .thenAccept { ti -> fut.complete(toYouTubeAudioTrack(ti)) }
+                .thenApply { it.getJSONArray("items").getJSONObject(0).getJSONObject("id").getString("videoId") }
+                .thenApply { getVideoInfo(it) }
+                .thenAccept { yti ->
+                    yti.thenApply { toYouTubeAudioTrack(it) }
+                            .thenAccept { fut.complete(it) }
+                }
+                .exceptionally {
+                    fut.completeExceptionally(it)
+                    return@exceptionally null
                 }
 
         return fut

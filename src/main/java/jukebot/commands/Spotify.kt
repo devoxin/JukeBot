@@ -49,8 +49,9 @@ public class Spotify : Command(ExecutionType.TRIGGER_CONNECT) { // TODO: Conside
 
         JukeBot.spotifyApi.getPlaylist(listId).thenAccept { playlist ->
             val tasks = playlist.tracks.map { track -> track.toYoutubeAudioTrack() }
-            CompletableFuture.allOf(*tasks.toTypedArray()).thenAccept {
-                val loadResult = BasicAudioPlaylist(playlist.name, tasks.map { it.get() }, null, false)
+            CompletableFuture.allOf(*tasks.toTypedArray()).handle { _, _ ->
+                val tracks = tasks.filter { !it.isCompletedExceptionally }.map { it.get() }
+                val loadResult = BasicAudioPlaylist(playlist.name, tracks, null, false)
                 loadHandler.playlistLoaded(loadResult)
             }
         }

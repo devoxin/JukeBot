@@ -94,6 +94,7 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
                         tracks.add(SpotifyAudioTrack.fromJson(track))
                     }
 
+                    println("returning track list")
                     future.complete(SpotifyPlaylist(playlistName, tracks))
                 }
                 .exceptionally {
