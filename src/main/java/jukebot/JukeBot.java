@@ -53,7 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.4.4";
+    public static final String VERSION = "6.4.5";
 
     public static final Long startTime = System.currentTimeMillis();
     public static boolean isReady = false;
@@ -84,9 +84,9 @@ public class JukeBot {
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
 
+        Database.setupDatabase();
         registerSourceManagers();
         loadApis();
-        Database.setupDatabase();
 
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
                 .setToken(config.getToken())
