@@ -12,7 +12,7 @@ class Settings : Command(ExecutionType.STANDARD) {
 
     private val mentionRegex = Pattern.compile("<@!?\\d{17,20}>")
     private val dpFormatter = DecimalFormat("0.00")
-    private val validFields = arrayOf("prefix", "role", "vote", "colour").joinToString("`, ", prefix = "`", postfix = "`")
+    private val validFields = arrayOf("prefix", "role", "vote", "colour", "nick").joinToString("`, `", prefix = "`", postfix = "`")
 
     override fun execute(context: Context) {
         if (context.getArg(0).isBlank()) {
@@ -20,12 +20,15 @@ class Settings : Command(ExecutionType.STANDARD) {
             val djRoleFormatted: String = if (customDjRole != null) "<@&$customDjRole>" else "Default (DJ)"
             val skipThreshold: String = dpFormatter.format(Database.getSkipThreshold(context.guild.idLong) * 100)
             val hex = Integer.toHexString(context.embedColor and 0xffffff)
+            val musicNick = if (Database.getIsMusicNickEnabled(context.guild.idLong)) "Enabled" else "Disabled"
 
             val fields: Array<MessageEmbed.Field> = arrayOf(
                     MessageEmbed.Field("Server Prefix (prefix)", "`${context.prefix}`", true),
                     MessageEmbed.Field("DJ Role (role)", djRoleFormatted, true),
                     MessageEmbed.Field("Skip Vote Threshold (vote)", "$skipThreshold%", true),
-                    MessageEmbed.Field("Embed Colour (colour)", hex, true)
+                    MessageEmbed.Field("Embed Colour (colour)", hex, true),
+                    MessageEmbed.Field("Music Nickname (nick)", musicNick, true),
+                    MessageEmbed.Field("\u200b", "\u200b", true)
             )
 
             return context.embed {
@@ -45,6 +48,7 @@ class Settings : Command(ExecutionType.STANDARD) {
             "role" -> roleSetting(context)
             "vote" -> voteSetting(context)
             "colour" -> colourSetting(context)
+            "nick" -> nickSetting(context)
             else -> context.embed("Unrecognised Setting", "`${context.args[0]}` is not a recognised setting\n\nValid settings: $validFields")
         }
     }
@@ -117,12 +121,24 @@ class Settings : Command(ExecutionType.STANDARD) {
                 ?: return context.embed("Invalid Colour", "You need to specify a valid hex. Example: `#1E90FF`")
 
         Database.setColour(context.guild.idLong, color.rgb)
-        context.channel.sendMessage(EmbedBuilder()
-                .setColor(color.rgb)
-                .setTitle("Colour Updated")
-                .setDescription("Set new colour to `${context.getArg(1)}`")
-                .build()
-        ).queue()
+        context.embed {
+            setColor(color.rgb)
+            setTitle("Colour Updated")
+            setDescription("Set new colour to `${context.getArg(1)}`")
+        }
+    }
+
+    fun nickSetting(context: Context) {
+        val opt = when (context.getArg(1)) {
+            "enable", "y" -> true
+            "disable", "n" -> false
+            else -> return context.embed("Invalid Option", "You need to specify a valid option (`y`/`n`|`enable`/`disable`)")
+        }
+
+        Database.setMusicNickEnabled(context.guild.idLong, opt)
+
+        val human = if (opt) "enabled" else "disabled"
+        context.embed("Music Nick Updated", "Nickname changing for playing tracks `$human`")
     }
 
 }

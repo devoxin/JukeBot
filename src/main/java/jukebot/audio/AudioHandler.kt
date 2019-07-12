@@ -12,6 +12,7 @@ import jukebot.utils.Helpers
 import jukebot.utils.toTimeString
 import jukebot.utils.toTitleCase
 import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.core.Permission
 import net.dv8tion.jda.core.audio.AudioSendHandler
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -164,6 +165,14 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         if (current == null || current!!.identifier != track.identifier) {
             current = track
             announce("Now Playing", "${track.info.title} - `${track.info.length.toTimeString()}`")
+
+            val guild = JukeBot.shardManager.getGuildById(guildId) ?: return
+
+            if (guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guild.idLong)) {
+                val title = track.info.title
+                val nick = if (title.length > 32) "${title.substring(0, 29)}..." else title
+                guild.controller.setNickname(guild.selfMember, nick).queue()
+            }
         }
     }
 
