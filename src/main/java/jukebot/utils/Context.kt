@@ -71,17 +71,16 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
     }
 
     fun embed(block: EmbedBuilder.() -> Unit) {
-        embed(EmbedBuilder().apply(block))
-    }
-
-    fun embed(embed: EmbedBuilder) {
         if (!Helpers.canSendTo(channel)) {
             return
         }
 
-        embed.setColor(embedColor)
+        val embed = EmbedBuilder()
+                .setColor(embedColor)
+                .apply(block)
+                .build()
 
-        event.channel.sendMessage(embed.build()).queue(null) {
+        event.channel.sendMessage(embed).queue(null) {
             JukeBot.LOG.error("Failed to send message from context!\n" +
                     "\tMessage: ${event.message.contentRaw}\n" +
                     "\tStack: ${it.stackTrace.joinToString("\n")}")

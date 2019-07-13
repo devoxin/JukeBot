@@ -123,6 +123,8 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
                 announce("Queue Concluded!",
                         "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)\nSuggest features with the `feedback` command!")
+
+                setNick(null)
             }
         }
     }
@@ -155,6 +157,14 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         JukeBot.shardManager.getGuildById(guildId)?.audioManager?.sendingHandler = null
     }
 
+    fun setNick(nick: String?) {
+        val guild = JukeBot.shardManager.getGuildById(guildId) ?: return
+
+        if (guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guild.idLong)) {
+            guild.controller.setNickname(guild.selfMember, nick).queue()
+        }
+    }
+
     /*
      * Player Events
      */
@@ -166,13 +176,9 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             current = track
             announce("Now Playing", "${track.info.title} - `${track.info.length.toTimeString()}`")
 
-            val guild = JukeBot.shardManager.getGuildById(guildId) ?: return
-
-            if (guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guild.idLong)) {
-                val title = track.info.title
-                val nick = if (title.length > 32) "${title.substring(0, 29)}..." else title
-                guild.controller.setNickname(guild.selfMember, nick).queue()
-            }
+            val title = track.info.title
+            val nick = if (title.length > 32) "${title.substring(0, 29)}..." else title
+            setNick(nick)
         }
     }
 
