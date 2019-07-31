@@ -19,31 +19,28 @@ import java.util.concurrent.TimeUnit
 
 class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEventAdapter(), AudioSendHandler {
 
-    val bassBooster = BassBooster(player)
-
     private var lastFrame: AudioFrame? = null
-    private val selector = Random()
+
+    // Playback Settings
+    val bassBooster = BassBooster(player)
+    var repeat = RepeatMode.NONE
+    var shuffle = false
 
     val queue = LinkedList<AudioTrack>()
-    private val skips = HashSet<Long>()
-    private var channelId: Long? = null
-    private var shouldAnnounce = true
+    private val skips = hashSetOf<Long>()
+    private val selector = Random()
 
-    private var repeat = RepeatMode.NONE
-    var isShuffleEnabled = false
-        private set
+    var shouldAnnounce = true
+    var channelId: Long? = null
 
-    var trackPacketLoss = 0
-    var trackPackets = 0
+    // Performance Tracking
+    var trackPacketLost = 0
+    var trackPacketsSent = 0
 
+    // Player Stuff
+    var current: AudioTrack? = null
     val isPlaying: Boolean
         get() = player.playingTrack != null
-
-    var current: AudioTrack? = null
-
-    val repeatString: String
-        get() = repeat.toString().toLowerCase().toTitleCase()
-    // fuck toTitleCase
 
     init {
         player.addListener(this)
@@ -64,68 +61,58 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         return false
     }
 
-    fun toggleShuffle(): Boolean {
-        isShuffleEnabled = !isShuffleEnabled
-        return isShuffleEnabled
-    }
-
-    fun setRepeat(mode: RepeatMode) {
-        repeat = mode
-    }
-
     fun voteSkip(userID: Long): Int {
         skips.add(userID)
         return skips.size
     }
 
-    fun setChannel(channelId: Long?) {
-        this.channelId = channelId
-    }
-
-    fun setShouldAnnounce(shouldAnnounce: Boolean) {
-        this.shouldAnnounce = shouldAnnounce
-    }
-
     fun playNext() {
         var nextTrack: AudioTrack? = null
 
-        if (repeat == RepeatMode.ALL && current != null) {
-            val r = current!!.makeClone()
-            r.userData = current!!.userData
-            queue.offer(r)
+        if (current != null) {
+            if (repeat == RepeatMode.ALL) {
+                    val r = current!!.makeClone()
+                    r.userData = current!!.userData
+                    queue.offer(r)
+            } else if (repeat == RepeatMode.SINGLE) {
+                nextTrack = current!!.makeClone()
+                nextTrack.userData = current!!.userData
+            }
         }
 
-        if (repeat == RepeatMode.SINGLE && current != null) {
-            nextTrack = current!!.makeClone()
-            nextTrack!!.userData = current!!.userData
-        } else if (!queue.isEmpty()) {
-            nextTrack = if (isShuffleEnabled) queue.removeAt(selector.nextInt(queue.size)) else queue.poll()
+        if (nextTrack == null) {
+            nextTrack = if (shuffle) {
+                queue.removeAt(selector.nextInt(queue.size))
+            } else {
+                queue.poll()
+            }
         }
 
         if (nextTrack != null) {
             player.startTrack(nextTrack, false)
-        } else {
-            current = null
-            player.stopTrack()
-            bassBooster.boost(0.0f)
+            return
+        }
 
-            val guild = JukeBot.shardManager.getGuildById(guildId)
+        current = null
+        player.stopTrack()
+        bassBooster.boost(0.0f)
 
-            if (guild == null) { // Bot was kicked or something
-                JukeBot.removePlayer(guildId)
-                return
-            }
+        val guild = JukeBot.shardManager.getGuildById(guildId)
 
-            val audioManager = guild.audioManager
+        if (guild == null) { // Bot was kicked or something
+            JukeBot.removePlayer(guildId)
+            return
+        }
 
-            if (audioManager.isConnected || audioManager.isAttemptingToConnect) {
-                Helpers.schedule({ audioManager.closeAudioConnection() }, 1, TimeUnit.SECONDS)
+        val audioManager = guild.audioManager
 
-                announce("Queue Concluded!",
-                        "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)\nSuggest features with the `feedback` command!")
+        if (audioManager.isConnected || audioManager.isAttemptingToConnect) {
+            Helpers.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS)
 
-                setNick(null)
-            }
+            announce("Queue Concluded!",
+                    "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)\nSuggest features with the `feedback` command!")
+
+            setNick(null)
         }
     }
 
@@ -148,6 +135,13 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         ).queue(null, { err -> JukeBot.LOG.error("Encountered an error while posting track announcement", err) })
     }
 
+    fun setNick(nick: String?) {
+        val guild = JukeBot.shardManager.getGuildById(guildId) ?: return
+
+        if (guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guild.idLong)) {
+            guild.controller.setNickname(guild.selfMember, nick).queue()
+        }
+    }
 
     fun cleanup() {
         queue.clear()
@@ -155,14 +149,6 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         player.destroy()
 
         JukeBot.shardManager.getGuildById(guildId)?.audioManager?.sendingHandler = null
-    }
-
-    fun setNick(nick: String?) {
-        val guild = JukeBot.shardManager.getGuildById(guildId) ?: return
-
-        if (guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guild.idLong)) {
-            guild.controller.setNickname(guild.selfMember, nick).queue()
-        }
     }
 
     /*
@@ -184,8 +170,8 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
         skips.clear()
-        trackPacketLoss = 0
-        trackPackets = 0
+        trackPacketLost = 0
+        trackPacketsSent = 0
 
         if (endReason.mayStartNext) {
             playNext()
@@ -217,9 +203,9 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
         if (!player.isPaused) {
             if (lastFrame == null) {
-                trackPacketLoss++
+                trackPacketLost++
             } else {
-                trackPackets++
+                trackPacketsSent++
             }
         }
 
@@ -235,7 +221,17 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     enum class RepeatMode {
-        SINGLE, ALL, NONE
+        ALL,
+        SINGLE,
+        NONE;
+
+        fun humanized(): String {
+            return this.toString().toLowerCase().toTitleCase()
+        }
+    }
+
+    companion object {
+        val EXPECTED_PACKET_COUNT_PER_MIN = ((60 * 1000) / 20).toDouble()
     }
 
 }

@@ -9,7 +9,6 @@ import jukebot.utils.Context
 class Repeat : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
-
         val player = context.getAudioPlayer()
 
         if (!player.isPlaying) {
@@ -25,15 +24,14 @@ class Repeat : Command(ExecutionType.REQUIRE_MUTUAL) {
         val args = context.args
 
         when (args[0].toLowerCase()) {
-            "a", "all" -> player.setRepeat(AudioHandler.RepeatMode.ALL)
-            "s", "single" -> player.setRepeat(AudioHandler.RepeatMode.SINGLE)
-            "n", "none" -> player.setRepeat(AudioHandler.RepeatMode.NONE)
+            "a", "all" -> player.repeat = AudioHandler.RepeatMode.ALL
+            "s", "single" -> player.repeat = AudioHandler.RepeatMode.SINGLE
+            "n", "none" -> player.repeat = AudioHandler.RepeatMode.NONE
             else -> {
-                return context.embed("Player Repeat", "Current mode: ${player.repeatString}\nAvailable modes: `s`ingle, `a`ll, `n`one")
+                return context.embed("Player Repeat", "Current mode: ${player.repeat.humanized()}\nAvailable modes: `s`ingle, `a`ll, `n`one")
             }
         }
 
-        context.embed("Player Repeat", "Set repeat to **${player.repeatString}**")
-
+        context.embed("Player Repeat", "Set repeat to **${player.repeat.humanized()}**")
     }
 }

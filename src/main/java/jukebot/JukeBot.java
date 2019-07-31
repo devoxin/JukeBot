@@ -16,6 +16,7 @@
 
 package jukebot;
 
+import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -53,7 +54,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.4.5";
+    public static final String VERSION = "6.4.6";
 
     public static final Long startTime = System.currentTimeMillis();
     public static boolean isReady = false;
@@ -123,7 +124,7 @@ public class JukeBot {
     private static void loadApis() {
         if (config.hasKey("patreon")) {
             LOG.debug("Config has patreon key, loading patreon API...");
-            createPatreonApi(config.getString("patreon"));
+            patreonApi = new PatreonAPI(Objects.requireNonNull(config.getString("patreon")));
         }
 
         if (config.hasKey("ksoft")) {
@@ -164,10 +165,6 @@ public class JukeBot {
         playerManager.registerSourceManager(new HttpAudioSourceManager());
     }
 
-    public static ConcurrentHashMap<Long, AudioHandler> getPlayers() {
-        return players;
-    }
-
     public static boolean hasPlayer(final long guildId) {
         return players.containsKey(guildId);
     }
@@ -187,10 +184,5 @@ public class JukeBot {
             players.remove(guildId).cleanup();
         }
     }
-
-    public static void createPatreonApi(String key) {
-        patreonApi = new PatreonAPI(key);
-    }
-
 
 }

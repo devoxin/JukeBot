@@ -3,6 +3,7 @@ package jukebot.commands
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
+import jukebot.utils.Helpers
 
 @CommandProperties(aliases = ["bb"], description = "Bass boosts the audio", category = CommandProperties.category.CONTROLS)
 class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
@@ -19,14 +20,16 @@ class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
         }
 
         val boost = context.args.firstOrNull()?.toFloatOrNull()
-                ?: return context.embed("Bass Boost", "Boosting by ${handler.bassBooster.pcString}%")
+                ?: return context.embed("Bass Boost", "${createBar(handler.bassBooster.percentage)} `${handler.bassBooster.percentage.toInt()}`")
 
         if (boost < 0 || boost > 200) {
             return context.embed("Bass Boost", "You need to specify a valid number from 0-200.")
         }
 
         handler.bassBooster.boost(boost)
-        context.embed("Bass Boost", "Boosting by ${handler.bassBooster.pcString}%")
+        context.embed("Bass Boost", "${createBar(boost)} `${boost.toInt()}`")
     }
+
+    private fun createBar(v: Float) = Helpers.createBar(v.toInt(), 200, 10)
 
 }

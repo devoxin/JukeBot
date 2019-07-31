@@ -8,11 +8,10 @@ import jukebot.utils.Helpers
 @CommandProperties(aliases = ["vol", "v"], description = "Adjust the player volume", category = CommandProperties.category.CONTROLS)
 class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {
 
-    private val brick = "\u25AC"
+
     private val maxBricks = 10
 
     override fun execute(context: Context) {
-
         val player = context.getAudioPlayer()
 
         if (!player.isPlaying) {
@@ -23,38 +22,18 @@ class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {
 
         if (context.argString.isEmpty()) {
             val vol = player.player.volume
-            return context.embed("Player Volume", "${calculateBricks(vol)} `$vol`")
+            return context.embed("Player Volume", "${Helpers.createBar(vol, 250, 10)} `$vol`")
         }
 
         if (!context.isDJ(false)) {
             return context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
         }
 
-        player.player.volume = Math.min(Helpers.parseNumber(context.argString, 100), 200)
+        player.player.volume = Math.min(Helpers.parseNumber(context.argString, 100), 250)
 
         val vol = player.player.volume
-        context.embed("Player Volume", "${calculateBricks(vol)} `$vol`")
-
+        context.embed("Player Volume", "${Helpers.createBar(vol, 250, 10)} `$vol`")
     }
 
-    private fun calculateBricks(volume: Int): String {
-        val percent = volume.toFloat() / 200
-        val blocks = Math.floor((maxBricks * percent).toDouble()).toInt()
 
-        val sb = StringBuilder("[")
-
-        for (i in 0 until maxBricks) {
-            if (i == blocks) {
-                sb.append("](http://jukebot.serux.pro)")
-            }
-
-            sb.append(brick)
-        }
-
-        if (blocks == maxBricks) {
-            sb.append("](http://jukebot.serux.pro)")
-        }
-
-        return sb.toString()
-    }
 }

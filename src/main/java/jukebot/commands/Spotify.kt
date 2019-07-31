@@ -31,7 +31,7 @@ public class Spotify : Command(ExecutionType.TRIGGER_CONNECT) { // TODO: Conside
         val player = context.getAudioPlayer()
 
         if (!player.isPlaying) {
-            player.setChannel(context.channel.idLong)
+            player.channelId = context.channel.idLong
         }
 
         loadSpotifyPlaylist(context, player, url)

@@ -19,6 +19,27 @@ class Helpers {
         private val timer = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }!!
         val monitor = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }!!
 
+        fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC'): String {
+            val percent = v.toFloat() / max
+            val blocks = Math.floor((barLength * percent).toDouble()).toInt()
+
+            val sb = StringBuilder("[")
+
+            for (i in 0 until barLength) {
+                if (i == blocks) {
+                    sb.append("](http://jukebot.serux.pro)")
+                }
+
+                sb.append(bar)
+            }
+
+            if (blocks == barLength) {
+                sb.append("](http://jukebot.serux.pro)")
+            }
+
+            return sb.toString()
+        }
+
         fun parseNumber(num: String?, def: Int): Int {
             return num?.toIntOrNull() ?: def
         }

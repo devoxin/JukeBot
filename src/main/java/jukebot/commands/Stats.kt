@@ -22,23 +22,23 @@ class Stats : Command(ExecutionType.STANDARD) {
         val rPercent = dpFormatter.format(rUsedRaw.toDouble() / Runtime.getRuntime().totalMemory() * 100)
         val usedMB = dpFormatter.format(rUsedRaw.toDouble() / 1048576)
 
-        val players = JukeBot.getPlayers().size
-        val playingPlayers = JukeBot.getPlayers().values.filter { it.isPlaying }.size
-        val encodingPlayers = JukeBot.getPlayers().values.filter { it.isPlaying && (it.bassBooster.isEnabled || it.player.volume != 100) }.size
+        val players = JukeBot.players.size
+        val playingPlayers = JukeBot.players.values.filter { it.isPlaying }.size
+        val encodingPlayers = JukeBot.players.values.filter { it.isPlaying && (it.bassBooster.isEnabled || it.player.volume != 100) }.size
 
         val servers = JukeBot.shardManager.guildCache.size()
         val users = JukeBot.shardManager.userCache.size()
 
         val shards = JukeBot.shardManager.shardsTotal
-        val shardsOnline = JukeBot.shardManager.shards.asSequence().filter { s -> s.status == JDA.Status.CONNECTED }.count()
+        val shardsOnline = JukeBot.shardManager.shards.filter { s -> s.status == JDA.Status.CONNECTED }.size
         val averageShardLatency = JukeBot.shardManager.averagePing.toInt()
 
-        val osBean: OperatingSystemMXBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean::class.java)
+        val osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean::class.java)
         val procCpuUsage = dpFormatter.format(osBean.processCpuLoad * 100)
         val sysCpuUsage = dpFormatter.format(osBean.systemCpuLoad * 100)
 
         val secondsSinceBoot = ((System.currentTimeMillis() - JukeBot.startTime) / 1000).toDouble()
-        val callsPerSecond = (Database.calls / secondsSinceBoot)
+        val callsPerSecond = Database.calls / secondsSinceBoot
         val formattedCPS = dpFormatter.format(callsPerSecond)
 
         toSend.append("```ini\n")

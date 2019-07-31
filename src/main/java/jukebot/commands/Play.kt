@@ -14,7 +14,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
         val player = context.getAudioPlayer()
 
         if (!player.isPlaying) {
-            player.setChannel(context.channel.idLong)
+            player.channelId = context.channel.idLong
         }
 
         val userQuery = context.argString.replace("[<>]".toRegex(), "")

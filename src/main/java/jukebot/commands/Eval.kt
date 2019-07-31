@@ -1,6 +1,5 @@
 package jukebot.commands
 
-import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Command
 import jukebot.utils.CommandProperties
@@ -11,15 +10,12 @@ import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactor
 class Eval : Command(ExecutionType.STANDARD) {
 
     private val engine = KotlinJsr223JvmLocalScriptEngineFactory().scriptEngine
-    private val db = Database()
 
     override fun execute(context: Context) {
         val bindings = mapOf(
                 "ctx" to context,
                 "jda" to context.jda,
-                "sm" to JukeBot.shardManager,
-                "db" to db
-                //"players" to JukeBot.players
+                "sm" to JukeBot.shardManager
         )
 
         val bindString = bindings.map { "val ${it.key} = bindings[\"${it.key}\"] as ${it.value.javaClass.kotlin.qualifiedName}" }.joinToString("\n")

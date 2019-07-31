@@ -10,7 +10,6 @@ import jukebot.utils.toTimeString
 class Now : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
-
         val player = JukeBot.getPlayer(context.guild.audioManager)
 
         if (!player.isPlaying) {
@@ -25,8 +24,8 @@ class Now : Command(ExecutionType.STANDARD) {
         val requester = JukeBot.shardManager.getUserById(requesterId)
         val requesterInfo = if (requester != null) "• Queued by ${requester.asTag}" else ""
 
-        val playbackSettings = "Shuffle: ${if (player.isShuffleEnabled) "On" else "Off"}" +
-                " • Repeat: ${player.repeatString} $requesterInfo"
+        val playbackSettings = "Shuffle: ${if (player.shuffle) "On" else "Off"}" +
+                " • Repeat: ${player.repeat.humanized()} $requesterInfo"
 
         val isYouTubeTrack = current.sourceManager.sourceName == "youtube"
         val trackMarker = if (isYouTubeTrack) {
@@ -38,9 +37,7 @@ class Now : Command(ExecutionType.STANDARD) {
         context.embed {
             setTitle("Now Playing")
             setDescription("**[${current.info.title}](${current.info.uri})**\n$trackMarker")
-            //setThumbnail(current.info.artworkUri)
             setFooter(playbackSettings, null)
         }
-
     }
 }

@@ -22,7 +22,7 @@ class Stop : Command(ExecutionType.REQUIRE_MUTUAL) {
             return
         }
 
-        player.setRepeat(AudioHandler.RepeatMode.NONE)
+        player.repeat = AudioHandler.RepeatMode.NONE
         player.queue.clear()
         player.playNext()
 

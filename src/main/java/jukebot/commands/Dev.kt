@@ -10,38 +10,38 @@ import jukebot.utils.Context
 class Dev : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
+        when (context.args.firstOrNull()) {
+            "preload" -> {
+                if (JukeBot.isSelfHosted) {
+                    return context.embed("Command Unavailable", "This command is unavailable on self-hosted JukeBot.")
+                }
 
-        val args = context.args
+                if (context.args.size < 2) {
+                    return context.embed("Missing Required Arg", "You need to specify `key`")
+                }
 
-        if (args[0] == "preload") {
-            if (JukeBot.isSelfHosted) {
-                return context.embed("Command Unavailable", "This command is unavailable on self-hosted JukeBot.")
-            }
-            if (args.size < 2) {
-                context.embed("Missing Required Arg", "You need to specify `key`")
-            } else {
-                JukeBot.createPatreonApi(args[1])
+                JukeBot.patreonApi.setAccessToken(context.args[1])
                 context.message.addReaction("\uD83D\uDC4C").queue()
             }
-        } else if (args[0] == "block") {
-            if (args.size < 2) {
-                context.embed("Missing Required Arg", "You need to specify `userId`")
-            } else {
-                Database.blockUser(java.lang.Long.parseLong(args[1]))
-                context.embed("User Blocked", "${args[1]} is now blocked from using JukeBot.")
+            "block" -> {
+                if (context.args.size < 2) {
+                    return context.embed("Missing Required Arg", "You need to specify `userId`")
+                }
+
+                Database.blockUser(context.args[1].toLong())
+                context.embed("User Blocked", "${context.args[1]} is now blocked from using JukeBot.")
             }
-        } else if (args[0] == "unblock") {
-            if (args.size < 2) {
-                context.embed("Missing Required Arg", "You need to specify `userId`")
-            } else {
-                Database.unblockUser(java.lang.Long.parseLong(args[1]))
-                context.embed("User Unblocked", "${args[1]} can now use JukeBot.")
+            "unblock" -> {
+                if (context.args.size < 2) {
+                    return context.embed("Missing Required Arg", "You need to specify `userId`")
+                }
+
+                Database.unblockUser(context.args[1].toLong())
+                context.embed("User Unblocked", "${context.args[1]} can now use JukeBot.")
             }
-        } else if (args[0] == "fdc") {
-            context.guild.audioManager.closeAudioConnection()
-            context.message.addReaction("\uD83D\uDC4C").queue()
-        } else {
-            context.embed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>\n`->` fdc")
+            else -> {
+                context.embed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>")
+            }
         }
     }
 

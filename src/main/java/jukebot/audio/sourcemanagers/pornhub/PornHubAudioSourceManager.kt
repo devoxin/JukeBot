@@ -102,7 +102,9 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
     }
 
     private fun searchForVideos(query: String): AudioItem {
-        val uri: URI = URIBuilder("https://www.pornhub.com/video/search").addParameter("search", query).build()
+        val uri = URIBuilder("https://www.pornhub.com/video/search")
+                .addParameter("search", query)
+                .build()
 
         makeHttpRequest(uri).use {
             val statusCode: Int = it.statusLine.statusCode
@@ -114,7 +116,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 throw IOException("Invalid status code for search response: $statusCode")
             }
 
-            val document: Document = Jsoup.parse(it.entity.content, StandardCharsets.UTF_8.name(), "https://pornhub.com")
+            val document = Jsoup.parse(it.entity.content, StandardCharsets.UTF_8.name(), "https://pornhub.com")
             val videos = document.getElementsByClass("wrap")
                     .filter { elem ->
                         !elem.select("div.thumbnail-info-wrapper span.title a")
@@ -128,7 +130,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
             val tracks = ArrayList<AudioTrack>()
 
-            for (e: Element in videos) {
+            for (e in videos) {
                 val anchor = e.select("div.thumbnail-info-wrapper span.title a").first()
                 val title = anchor.text()
                 val identifier = anchor.parents().select("li.videoBox").first().attr("_vkey")

@@ -13,7 +13,7 @@ class ScSearch : Command(ExecutionType.TRIGGER_CONNECT) {
         val player = context.getAudioPlayer()
 
         if (!player.isPlaying) {
-            player.setChannel(context.channel.idLong)
+            player.channelId = context.channel.idLong
         }
 
         JukeBot.playerManager.loadItem("scsearch:${context.argString}", SongResultHandler(context, player, false))

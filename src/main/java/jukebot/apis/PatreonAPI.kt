@@ -9,9 +9,11 @@ import java.net.URI
 import java.net.URLDecoder
 import java.util.concurrent.CompletableFuture
 
-class PatreonAPI(private val accessToken: String) {
+class PatreonAPI(private var accessToken: String) {
 
-    // TODO: Unshit
+    public fun setAccessToken(token: String) {
+        accessToken = token
+    }
 
     public fun fetchPledgesOfCampaign(campaignId: String): CompletableFuture<List<PatreonUser>> {
         val future = CompletableFuture<List<PatreonUser>>()

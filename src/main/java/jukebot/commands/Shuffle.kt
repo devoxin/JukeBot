@@ -25,7 +25,8 @@ class Shuffle : Command(ExecutionType.REQUIRE_MUTUAL) {
             return
         }
 
-        context.embed("Player Shuffle", "Shuffle is now **" + (if (player.toggleShuffle()) "enabled" else "disabled") + "**")
+        player.shuffle = !player.shuffle
+        context.embed("Player Shuffle", "Shuffle is now **${if (player.shuffle) "enabled" else "disabled"}**")
 
     }
 }
