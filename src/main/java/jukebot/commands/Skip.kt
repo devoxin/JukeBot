@@ -23,7 +23,7 @@ class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {
         val totalVotes = player.voteSkip(context.author.idLong)
         val voteThreshold = Database.getSkipThreshold(context.guild.idLong)
 
-        val neededVotes = Math.ceil(context.guild.audioManager.connectedChannel
+        val neededVotes = Math.ceil(context.guild.audioManager.connectedChannel!!
                 .members
                 .stream()
                 .filter { u -> !u.user.isBot }

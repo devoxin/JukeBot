@@ -5,13 +5,13 @@ import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import jukebot.utils.TextSplitter
-import net.dv8tion.jda.core.EmbedBuilder
+import net.dv8tion.jda.api.EmbedBuilder
 
 @CommandProperties(description = "Displays lyrics for the currently playing song")
 class Lyrics : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
-        val player = JukeBot.getPlayer(context.guild.audioManager)
+        val player = JukeBot.getPlayer(context.guild.idLong)
 
         if (!player.isPlaying) {
             context.embed("Not Playing", "Nothing is currently playing.")

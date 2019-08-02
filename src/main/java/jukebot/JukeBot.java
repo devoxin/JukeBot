@@ -16,7 +16,6 @@
 
 package jukebot;
 
-import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -28,6 +27,7 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
+import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
 import jukebot.apis.KSoftAPI;
 import jukebot.apis.PatreonAPI;
 import jukebot.apis.SpotifyAPI;
@@ -37,12 +37,14 @@ import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.utils.Config;
 import jukebot.utils.Helpers;
 import jukebot.utils.RequestUtil;
-import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.JDAInfo;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.managers.AudioManager;
-import net.dv8tion.jda.core.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.JDAInfo;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
@@ -70,7 +72,6 @@ public class JukeBot {
     public static SpotifyAPI spotifyApi;
     public static YouTubeAPI youTubeApi;
     public static KSoftAPI kSoftAPI;
-    //public static LastFM lastFM;
 
     public static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
@@ -93,8 +94,15 @@ public class JukeBot {
                 .setToken(config.getToken())
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), waiter)
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.EMOTE, CacheFlag.GAME))
-                .setGame(Game.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"));
+                .setDisabledCacheFlags(
+                        EnumSet.of(
+                                CacheFlag.EMOTE,
+                                CacheFlag.ACTIVITY,
+                                CacheFlag.CLIENT_STATUS
+                        )
+                )
+                .setGuildSubscriptionsEnabled(false)
+                .setActivity(Activity.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"));
 
         final String os = System.getProperty("os.name").toLowerCase();
         final String arch = System.getProperty("os.arch");
@@ -163,18 +171,29 @@ public class JukeBot {
         playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
         playerManager.registerSourceManager(new BeamAudioSourceManager());
         playerManager.registerSourceManager(new HttpAudioSourceManager());
+
+        playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
     }
 
     public static boolean hasPlayer(final long guildId) {
         return players.containsKey(guildId);
     }
 
-    public static AudioHandler getPlayer(final AudioManager manager) {
-        AudioHandler handler = players.computeIfAbsent(manager.getGuild().getIdLong(),
-                v -> new AudioHandler(manager.getGuild().getIdLong(), playerManager.createPlayer()));
+    public static AudioHandler getPlayer(final long guildId) {
+        Guild g = shardManager.getGuildById(guildId);
 
-        if (manager.getSendingHandler() == null)
-            manager.setSendingHandler(handler);
+        if (g == null) {
+            throw new IllegalArgumentException("guildId is invalid!");
+            // should never happen
+        }
+
+        AudioHandler handler = players.computeIfAbsent(guildId,
+                v -> new AudioHandler(guildId, playerManager.createPlayer()));
+
+        AudioManager audioManager = g.getAudioManager();
+
+        if (audioManager.getSendingHandler() == null)
+            audioManager.setSendingHandler(handler);
 
         return handler;
     }

@@ -6,8 +6,8 @@ import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import jukebot.utils.addFields
-import net.dv8tion.jda.core.JDAInfo
-import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.api.JDAInfo
+import net.dv8tion.jda.api.entities.MessageEmbed
 import org.sqlite.SQLiteJDBCLoader
 
 @CommandProperties(aliases = ["info"], description = "Displays some information about the bot")

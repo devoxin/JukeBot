@@ -7,7 +7,7 @@ import jukebot.utils.Command
 import jukebot.utils.CommandProperties
 import jukebot.utils.Context
 import jukebot.utils.toTimeString
-import net.dv8tion.jda.core.JDA
+import net.dv8tion.jda.api.JDA
 import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
 
@@ -31,7 +31,7 @@ class Stats : Command(ExecutionType.STANDARD) {
 
         val shards = JukeBot.shardManager.shardsTotal
         val shardsOnline = JukeBot.shardManager.shards.filter { s -> s.status == JDA.Status.CONNECTED }.size
-        val averageShardLatency = JukeBot.shardManager.averagePing.toInt()
+        val averageShardLatency = JukeBot.shardManager.averageGatewayPing.toInt()
 
         val osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean::class.java)
         val procCpuUsage = dpFormatter.format(osBean.processCpuLoad * 100)

@@ -3,10 +3,10 @@ package jukebot.utils
 import jukebot.Database
 import jukebot.JukeBot
 import jukebot.audio.AudioHandler
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.JDA
-import net.dv8tion.jda.core.entities.*
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 
 class Context constructor(val event: GuildMessageReceivedEvent, val argString: String, val prefix: String) {
 
@@ -16,7 +16,7 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
 
     val message: Message = event.message
 
-    val member: Member = event.member
+    val member: Member = event.member!!
 
     val author: User = event.author
 
@@ -35,15 +35,15 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
     }
 
     fun getAudioPlayer(): AudioHandler {
-        return JukeBot.getPlayer(event.guild.audioManager)
+        return JukeBot.getPlayer(guild.idLong)
     }
 
     fun ensureMutualVoiceChannel(): Boolean {
         val manager = member.guild.audioManager
 
-        return (member.voiceState.channel != null
+        return (member.voiceState?.channel != null
                 && manager.connectedChannel != null
-                && manager.connectedChannel.idLong == member.voiceState.channel.idLong)
+                && manager.connectedChannel!!.idLong == member.voiceState?.channel?.idLong)
     }
 
     fun isDJ(allowLoneVC: Boolean): Boolean {
@@ -57,7 +57,7 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
         val isElevated: Boolean = member.isOwner || JukeBot.botOwnerId == author.idLong || roleMatch
 
         if (allowLoneVC && !isElevated) {
-            return member.voiceState.channel != null && member.voiceState.channel.members.filter { !it.user.isBot }.size == 1
+            return member.voiceState?.channel != null && member.voiceState?.channel?.members?.filter { !it.user.isBot }?.size == 1
         }
 
         return isElevated

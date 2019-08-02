@@ -8,7 +8,7 @@ abstract class Command(private val executionType: ExecutionType) {
             ExecutionType.REQUIRE_MUTUAL -> {
                 val audioManager = context.guild.audioManager
                 val isConnected = audioManager.connectedChannel != null
-                val memberVoice = context.member.voiceState
+                val memberVoice = context.member.voiceState!!
                 val channelName = audioManager.connectedChannel?.name
 
                 if (memberVoice.channel == null) {
@@ -18,7 +18,7 @@ abstract class Command(private val executionType: ExecutionType) {
                         context.embed("No VoiceChannel", "You need to join a VoiceChannel!")
                     }
                 } else {
-                    if (isConnected && memberVoice.channel.idLong != audioManager.connectedChannel.idLong) {
+                    if (isConnected && memberVoice.channel?.idLong != audioManager.connectedChannel?.idLong) {
                         return context.embed("No Mutual VoiceChannel", "You need to join **$channelName**!")
                     }
 
@@ -32,7 +32,7 @@ abstract class Command(private val executionType: ExecutionType) {
 
                 val audioManager = context.guild.audioManager
                 val isConnected = audioManager.connectedChannel != null
-                val memberVoice = context.member.voiceState
+                val memberVoice = context.member.voiceState!!
                 val channelName = audioManager.connectedChannel?.name
 
                 if (memberVoice.channel == null) {
@@ -53,7 +53,7 @@ abstract class Command(private val executionType: ExecutionType) {
                     }
 
                     audioManager.openAudioConnection(memberVoice.channel)
-                } else if (memberVoice.channel.idLong != audioManager.connectedChannel.idLong) {
+                } else if (memberVoice.channel?.idLong != audioManager.connectedChannel?.idLong) {
                     return context.embed("No Mutual VoiceChannel", "You need to join **$channelName**!")
                 }
 

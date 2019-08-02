@@ -3,11 +3,10 @@ package jukebot.utils
 
 import jukebot.Database
 import jukebot.JukeBot
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.entities.TextChannel
-import java.io.BufferedReader
-import java.io.FileReader
-import java.io.IOException
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.TextChannel
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
@@ -59,10 +58,10 @@ class Helpers {
         }
 
         fun readFile(path: String, def: String): String {
-            try {
-                FileReader(path).use { file -> BufferedReader(file).use { reader -> return reader.lines().collect(Collectors.joining("\n")) } }
-            } catch (e: IOException) {
-                return def
+            return try {
+                Files.lines(Paths.get(path)).collect(Collectors.joining("\n"))
+            } catch (e: Exception) {
+                def
             }
         }
 

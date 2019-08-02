@@ -7,13 +7,13 @@ import jukebot.utils.Command
 import jukebot.utils.CommandInitializationError
 import jukebot.utils.Context
 import jukebot.utils.Helpers
-import net.dv8tion.jda.core.entities.VoiceChannel
-import net.dv8tion.jda.core.events.ReadyEvent
-import net.dv8tion.jda.core.events.guild.GuildJoinEvent
-import net.dv8tion.jda.core.events.guild.GuildLeaveEvent
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.core.hooks.ListenerAdapter
+import net.dv8tion.jda.api.entities.VoiceChannel
+import net.dv8tion.jda.api.events.ReadyEvent
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent
+import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.concurrent.TimeUnit
 
 class CommandHandler : ListenerAdapter() {
@@ -92,7 +92,7 @@ class CommandHandler : ListenerAdapter() {
 
     override fun onReady(e: ReadyEvent) {
         if (!JukeBot.isReady) {
-            e.jda.asBot().applicationInfo.queue { info ->
+            e.jda.retrieveApplicationInfo().queue { info ->
                 JukeBot.botOwnerId = info.owner.idLong
                 JukeBot.isSelfHosted = info.idLong != 249303797371895820L && info.idLong != 314145804807962634L
 
@@ -127,7 +127,7 @@ class CommandHandler : ListenerAdapter() {
 
         val listeners = connectedChannel.members.filter { !it.user.isBot }.size
 
-        val player = JukeBot.getPlayer(channel.guild.audioManager)
+        val player = JukeBot.getPlayer(channel.guild.idLong)
 
         if (listeners == 0) {
             player.cleanup()

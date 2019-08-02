@@ -2,8 +2,7 @@ package jukebot.commands
 
 import jukebot.Database
 import jukebot.utils.*
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.MessageEmbed
 import java.text.DecimalFormat
 import java.util.regex.Pattern
 
@@ -14,7 +13,9 @@ class Settings : Command(ExecutionType.STANDARD) {
     private val dpFormatter = DecimalFormat("0.00")
 
     private val availableSettings = hashMapOf<String, Setting>()
-    private val validFields = arrayOf("prefix", "role", "vote", "colour", "nick").joinToString("`, `", prefix = "`", postfix = "`")
+
+    // todo, break up available settings into functions annotated with @Setting(description)
+    // scan on command initialisation and put each func into a hashMap.
 
     init {
         availableSettings["prefix"] = Setting("Sets the server prefix") { ctx, firstArg ->

@@ -1,25 +1,30 @@
 package jukebot.audio
 
+import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat
+import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame
+import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
 import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Helpers
 import jukebot.utils.toTimeString
 import jukebot.utils.toTitleCase
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.audio.AudioSendHandler
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.audio.AudioSendHandler
+import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEventAdapter(), AudioSendHandler {
-
-    private var lastFrame: AudioFrame? = null
+    private val mutableFrame = MutableAudioFrame()
+    private val buffer = ByteBuffer.allocate(1024)
+            // ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize())
 
     // Playback Settings
     val bassBooster = BassBooster(player)
@@ -44,6 +49,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
     init {
         player.addListener(this)
+        this.mutableFrame.setBuffer(buffer)
     }
 
     fun enqueue(track: AudioTrack, userID: Long, playNext: Boolean): Boolean { // boolean: shouldAnnounce
@@ -139,7 +145,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         val guild = JukeBot.shardManager.getGuildById(guildId) ?: return
 
         if (guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guild.idLong)) {
-            guild.controller.setNickname(guild.selfMember, nick).queue()
+            guild.selfMember.modifyNickname(nick).queue()
         }
     }
 
@@ -199,21 +205,21 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
      */
 
     override fun canProvide(): Boolean {
-        lastFrame = player.provide()
+        val frameProvided = player.provide(mutableFrame)
 
         if (!player.isPaused) {
-            if (lastFrame == null) {
+            if (!frameProvided) {
                 trackPacketLost++
             } else {
                 trackPacketsSent++
             }
         }
 
-        return lastFrame != null
+        return frameProvided
     }
 
-    override fun provide20MsAudio(): ByteArray {
-        return lastFrame!!.data
+    override fun provide20MsAudio(): ByteBuffer {
+        return buffer.flip()
     }
 
     override fun isOpus(): Boolean {
@@ -231,7 +237,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     companion object {
-        val EXPECTED_PACKET_COUNT_PER_MIN = ((60 * 1000) / 20).toDouble()
+        const val EXPECTED_PACKET_COUNT_PER_MIN = ((60 * 1000) / 20).toDouble()
     }
 
 }

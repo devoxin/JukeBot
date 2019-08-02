@@ -10,7 +10,7 @@ import jukebot.utils.toTimeString
 class Now : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
-        val player = JukeBot.getPlayer(context.guild.audioManager)
+        val player = JukeBot.getPlayer(context.guild.idLong)
 
         if (!player.isPlaying) {
             context.embed("Not Playing", "Nothing is currently playing.")
