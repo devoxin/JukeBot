@@ -80,8 +80,8 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             }
         }
 
-        if (nextTrack == null) {
-            nextTrack = if (shuffle && !queue.isEmpty()) {
+        if (nextTrack == null && !queue.isEmpty()) {
+            nextTrack = if (shuffle) {
                 queue.removeAt(selector.nextInt(queue.size))
             } else {
                 queue.poll()
