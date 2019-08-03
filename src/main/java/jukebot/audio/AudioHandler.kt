@@ -1,13 +1,10 @@
 package jukebot.audio
 
-import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat
-import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
-import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
 import jukebot.Database
 import jukebot.JukeBot
@@ -24,7 +21,7 @@ import java.util.concurrent.TimeUnit
 class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEventAdapter(), AudioSendHandler {
     private val mutableFrame = MutableAudioFrame()
     private val buffer = ByteBuffer.allocate(1024)
-            // ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize())
+    // ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize())
 
     // Playback Settings
     val bassBooster = BassBooster(player)
@@ -77,9 +74,9 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
         if (current != null) {
             if (repeat == RepeatMode.ALL) {
-                    val r = current!!.makeClone()
-                    r.userData = current!!.userData
-                    queue.offer(r)
+                val r = current!!.makeClone()
+                r.userData = current!!.userData
+                queue.offer(r)
             } else if (repeat == RepeatMode.SINGLE) {
                 nextTrack = current!!.makeClone()
                 nextTrack.userData = current!!.userData

@@ -4,7 +4,6 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.JukeBot
-import jukebot.apis.youtube.YoutubeTrackInformation
 import jukebot.utils.json
 import okhttp3.*
 import org.json.JSONObject

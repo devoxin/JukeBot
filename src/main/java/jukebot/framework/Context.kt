@@ -5,7 +5,6 @@ import jukebot.JukeBot
 import jukebot.audio.AudioHandler
 import jukebot.utils.Helpers
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 
 class Context constructor(val event: GuildMessageReceivedEvent, val argString: String, val prefix: String) {

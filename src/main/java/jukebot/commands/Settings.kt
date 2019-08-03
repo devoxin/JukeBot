@@ -4,7 +4,8 @@ import jukebot.Database
 import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
-import jukebot.utils.*
+import jukebot.utils.addFields
+import jukebot.utils.decodeColor
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.text.DecimalFormat
 import java.util.regex.Pattern
@@ -64,7 +65,8 @@ class Settings : Command(ExecutionType.STANDARD) {
         }
 
         availableSettings["votes"] = Setting("Sets the vote-skip percentage threshold") { ctx, pc ->
-            val threshold = pc?.toDouble() ?: return@Setting ctx.embed("Invalid Threshold", "You need to specify a number between `0-100`")
+            val threshold = pc?.toDouble()
+                    ?: return@Setting ctx.embed("Invalid Threshold", "You need to specify a number between `0-100`")
 
             if (threshold < 0 || threshold > 100) {
                 return@Setting ctx.embed("Invalid Threshold", "You need to specify a number between `0-100`")

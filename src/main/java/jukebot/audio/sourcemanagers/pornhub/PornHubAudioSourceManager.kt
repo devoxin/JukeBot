@@ -18,8 +18,6 @@ import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.client.utils.URIBuilder
 import org.apache.http.impl.client.HttpClientBuilder
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException
