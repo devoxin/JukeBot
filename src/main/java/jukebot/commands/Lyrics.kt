@@ -21,6 +21,7 @@ class Lyrics : Command(ExecutionType.STANDARD) {
         if (JukeBot.kSoftAPI == null) {
             context.embed("Not Configured", "The Lyrics API has not been configured.\n" +
                     "This feature is unavailable.")
+            return
         }
 
         val query = player.player.playingTrack.info.title
