@@ -78,14 +78,6 @@ class CommandHandler : ListenerAdapter() {
         foundCommand.runChecks(Context(e, args, guildPrefix))
     }
 
-    override fun onGuildJoin(e: GuildJoinEvent) {
-        val bots = e.guild.members.filter { it.user.isBot }.size
-
-        if (bots / e.guild.members.size > 0.6) {
-            e.guild.leave().queue()
-        }
-    }
-
     override fun onGuildLeave(event: GuildLeaveEvent) {
         JukeBot.removePlayer(event.guild.idLong)
     }
