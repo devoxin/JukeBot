@@ -29,9 +29,9 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
 import jukebot.apis.ksoft.KSoftAPI;
-import jukebot.apis.PatreonAPI;
+import jukebot.apis.patreon.PatreonAPI;
 import jukebot.apis.spotify.SpotifyAPI;
-import jukebot.apis.YouTubeAPI;
+import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.utils.Config;

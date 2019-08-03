@@ -1,4 +1,4 @@
-package jukebot.apis
+package jukebot.apis.patreon
 
 import jukebot.JukeBot
 import jukebot.utils.json
@@ -117,15 +117,6 @@ class PatreonAPI(private var accessToken: String) {
                 discordId
         )
     }
-
-    inner class PatreonUser(
-            val firstName: String,
-            val lastName: String,
-            val email: String,
-            val pledgeCents: Int,
-            val isDeclined: Boolean,
-            val discordId: Long?
-    )
 
     companion object {
         private const val BASE_URL = "https://www.patreon.com/api/oauth2/api"

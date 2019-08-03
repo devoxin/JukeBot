@@ -1,4 +1,4 @@
-package jukebot.apis
+package jukebot.apis.youtube
 
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack
