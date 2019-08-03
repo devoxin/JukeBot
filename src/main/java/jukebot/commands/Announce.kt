@@ -1,8 +1,8 @@
 package jukebot.commands
 
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 
 @CommandProperties(description = "Configure track announcements", category = CommandProperties.category.MEDIA)
 class Announce : Command(ExecutionType.STANDARD) {

@@ -11,11 +11,11 @@ import java.util.concurrent.CompletableFuture
 
 class PatreonAPI(private var accessToken: String) {
 
-    public fun setAccessToken(token: String) {
+    fun setAccessToken(token: String) {
         accessToken = token
     }
 
-    public fun fetchPledgesOfCampaign(campaignId: String): CompletableFuture<List<PatreonUser>> {
+    fun fetchPledgesOfCampaign(campaignId: String): CompletableFuture<List<PatreonUser>> {
         val future = CompletableFuture<List<PatreonUser>>()
 
         getPageOfPledge(campaignId) {
@@ -118,18 +118,17 @@ class PatreonAPI(private var accessToken: String) {
         )
     }
 
+    inner class PatreonUser(
+            val firstName: String,
+            val lastName: String,
+            val email: String,
+            val pledgeCents: Int,
+            val isDeclined: Boolean,
+            val discordId: Long?
+    )
+
     companion object {
-        private const val BASE_URL = "https://www.patreon.com/api/oauth2/api/"
+        private const val BASE_URL = "https://www.patreon.com/api/oauth2/api"
         private val CHARSET = Charsets.UTF_8
     }
 }
-
-
-class PatreonUser(
-        val firstName: String,
-        val lastName: String,
-        val email: String,
-        val pledgeCents: Int,
-        val isDeclined: Boolean,
-        val discordId: Long?
-)

@@ -3,13 +3,12 @@ package jukebot
 import com.google.common.reflect.ClassPath
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
 import jukebot.commands.Feedback
-import jukebot.utils.Command
-import jukebot.utils.CommandInitializationError
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandInitializationError
+import jukebot.framework.Context
 import jukebot.utils.Helpers
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.ReadyEvent
-import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent

@@ -1,8 +1,8 @@
 package jukebot.commands
 
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 import jukebot.utils.Helpers
 
 @CommandProperties(aliases = ["vol", "v"], description = "Adjust the player volume", category = CommandProperties.category.CONTROLS)

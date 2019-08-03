@@ -1,6 +1,9 @@
 package jukebot.commands
 
 import jukebot.Database
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 import jukebot.utils.*
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.text.DecimalFormat

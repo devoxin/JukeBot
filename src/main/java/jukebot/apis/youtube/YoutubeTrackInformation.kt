@@ -1,4 +1,4 @@
-package jukebot.entities.youtube
+package jukebot.apis.youtube
 
 import org.json.JSONObject
 import org.jsoup.Jsoup

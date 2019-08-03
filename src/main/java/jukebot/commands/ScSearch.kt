@@ -2,9 +2,9 @@ package jukebot.commands
 
 import jukebot.JukeBot
 import jukebot.audio.SongResultHandler
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 
 @CommandProperties(description = "Search SoundCloud and queue the top result", aliases = arrayOf("sc"), category = CommandProperties.category.CONTROLS)
 class ScSearch : Command(ExecutionType.TRIGGER_CONNECT) {

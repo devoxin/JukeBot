@@ -1,9 +1,9 @@
 package jukebot.commands
 
 import jukebot.JukeBot
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 
 @CommandProperties(description = "Evaluate arbitrary code.", developerOnly = true)

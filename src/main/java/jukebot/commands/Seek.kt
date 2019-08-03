@@ -1,8 +1,8 @@
 package jukebot.commands
 
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 import jukebot.utils.toTimeString
 
 @CommandProperties(description = "Move to the specified position in the track", category = CommandProperties.category.CONTROLS, aliases = ["jump"])

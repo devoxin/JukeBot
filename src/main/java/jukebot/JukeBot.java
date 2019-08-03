@@ -28,9 +28,9 @@ import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
-import jukebot.apis.KSoftAPI;
+import jukebot.apis.ksoft.KSoftAPI;
 import jukebot.apis.PatreonAPI;
-import jukebot.apis.SpotifyAPI;
+import jukebot.apis.spotify.SpotifyAPI;
 import jukebot.apis.YouTubeAPI;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
@@ -43,7 +43,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +117,7 @@ public class JukeBot {
     private static void printBanner() {
         String os = System.getProperty("os.name");
         String arch = System.getProperty("os.arch");
-        String banner = Helpers.Companion.readFile("banner.txt", "");
+        String banner = Helpers.INSTANCE.readFile("banner.txt", "");
 
         LOG.info("\n" + banner + "\n" +
                 "JukeBot v" + VERSION +

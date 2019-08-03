@@ -2,9 +2,9 @@ package jukebot.commands
 
 import jukebot.Database
 import jukebot.JukeBot
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 import jukebot.utils.Helpers
 
 @CommandProperties(description = "Receive your donor rewards if you're a patron")

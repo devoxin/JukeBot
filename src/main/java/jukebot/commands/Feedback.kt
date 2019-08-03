@@ -1,14 +1,11 @@
 package jukebot.commands
 
-import jukebot.JukeBot
-import jukebot.utils.Command
-import jukebot.utils.CommandInitializationError
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 //import net.dv8tion.jda.core.EmbedBuilder
 //import net.dv8tion.jda.webhook.WebhookClient
 //import net.dv8tion.jda.webhook.WebhookClientBuilder
-import java.time.Instant
 
 @CommandProperties(description = "Send feedback to the developer")
 class Feedback : Command(ExecutionType.STANDARD) {

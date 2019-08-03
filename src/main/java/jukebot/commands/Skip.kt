@@ -1,9 +1,9 @@
 package jukebot.commands
 
 import jukebot.Database
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 
 @CommandProperties(description = "Vote to skip the track", category = CommandProperties.category.CONTROLS)
 class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {

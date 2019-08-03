@@ -1,9 +1,9 @@
 package jukebot.commands
 
 import jukebot.CommandHandler
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 import jukebot.utils.toTitleCase
 
 @CommandProperties(description = "Displays all commands", aliases = ["commands"], category = CommandProperties.category.MISC)

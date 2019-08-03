@@ -1,8 +1,8 @@
 package jukebot.commands
 
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 
 @CommandProperties(description = "Plays the queue in random order", category = CommandProperties.category.CONTROLS)
 class Shuffle : Command(ExecutionType.REQUIRE_MUTUAL) {

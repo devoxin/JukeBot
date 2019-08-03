@@ -2,9 +2,9 @@ package jukebot.commands
 
 import jukebot.Database
 import jukebot.JukeBot
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 
 @CommandProperties(description = "Developer menu", category = CommandProperties.category.MISC, developerOnly = true)
 class Dev : Command(ExecutionType.STANDARD) {

@@ -2,9 +2,9 @@ package jukebot.commands
 
 import jukebot.JukeBot
 import jukebot.audio.SongResultHandler
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 
 @CommandProperties(description = "Search YouTube and select from up to 5 tracks", aliases = arrayOf("search", "sel", "s"), category = CommandProperties.category.CONTROLS)
 class Select : Command(ExecutionType.TRIGGER_CONNECT) {

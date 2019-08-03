@@ -3,9 +3,9 @@ package jukebot.commands
 import com.sun.management.OperatingSystemMXBean
 import jukebot.Database
 import jukebot.JukeBot
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 import jukebot.utils.toTimeString
 import net.dv8tion.jda.api.JDA
 import java.lang.management.ManagementFactory

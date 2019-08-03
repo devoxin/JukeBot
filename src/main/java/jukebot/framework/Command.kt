@@ -1,4 +1,6 @@
-package jukebot.utils
+package jukebot.framework
+
+import net.dv8tion.jda.api.Permission
 
 abstract class Command(private val executionType: ExecutionType) {
 
@@ -46,10 +48,23 @@ abstract class Command(private val executionType: ExecutionType) {
                 }
 
                 if (!isConnected) {
-                    val connectionError: ConnectionError? = Permissions.canConnectTo(memberVoice.channel)
+                    val voiceChannel = memberVoice.channel!!
 
-                    if (connectionError != null) {
-                        return context.embed(connectionError.title, connectionError.description)
+                    if (!voiceChannel.guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK)) {
+                        return context.embed(
+                                "Unable to Connect",
+                                "The VoiceChannel permissions prevent me from connecting.\n" +
+                                        "Check that I have the `Connect` and `Speak` permissions."
+                        )
+                    }
+
+                    if (voiceChannel.userLimit != 0 && voiceChannel.members.size >= voiceChannel.userLimit &&
+                            !voiceChannel.guild.selfMember.hasPermission(Permission.VOICE_MOVE_OTHERS)) {
+                        return context.embed(
+                                "Unable to Connect",
+                                "Your VoiceChannel is currently full.\n" +
+                                        "Raise the user limit, or move to another channel."
+                        )
                     }
 
                     audioManager.openAudioConnection(memberVoice.channel)

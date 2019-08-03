@@ -2,9 +2,9 @@ package jukebot.commands
 
 import jukebot.JukeBot
 import jukebot.audio.SongResultHandler
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 
 @CommandProperties(description = "Finds a track and queues it to be played next", aliases = ["pn"], category = CommandProperties.category.CONTROLS)
 class PlayNext : Command(ExecutionType.REQUIRE_MUTUAL) {

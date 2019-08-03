@@ -1,9 +1,9 @@
 package jukebot.commands
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 
 @CommandProperties(aliases = ["z"], description = "Removes the last song queued by you", category = CommandProperties.category.MEDIA)
 class Undo : Command(ExecutionType.REQUIRE_MUTUAL) {

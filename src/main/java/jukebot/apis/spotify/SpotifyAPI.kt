@@ -1,8 +1,6 @@
-package jukebot.apis
+package jukebot.apis.spotify
 
 import jukebot.JukeBot
-import jukebot.entities.spotify.SpotifyAudioTrack
-import jukebot.entities.spotify.SpotifyPlaylist
 import jukebot.utils.Helpers
 import jukebot.utils.json
 import okhttp3.MediaType

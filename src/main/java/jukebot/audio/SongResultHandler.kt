@@ -5,7 +5,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.JukeBot
-import jukebot.utils.Context
+import jukebot.framework.Context
 import jukebot.utils.editEmbed
 import jukebot.utils.toTimeString
 import net.dv8tion.jda.api.EmbedBuilder

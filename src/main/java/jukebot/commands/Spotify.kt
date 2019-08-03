@@ -2,12 +2,12 @@ package jukebot.commands
 
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
 import jukebot.JukeBot
-import jukebot.apis.SpotifyAPI
+import jukebot.apis.spotify.SpotifyAPI
 import jukebot.audio.AudioHandler
 import jukebot.audio.SongResultHandler
-import jukebot.utils.Command
-import jukebot.utils.CommandProperties
-import jukebot.utils.Context
+import jukebot.framework.Command
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 import java.util.concurrent.CompletableFuture
 
 @CommandProperties(description = "Loads a playlist from Spotify", category = CommandProperties.category.CONTROLS)

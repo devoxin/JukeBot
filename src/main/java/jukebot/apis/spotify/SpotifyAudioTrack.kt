@@ -1,4 +1,4 @@
-package jukebot.entities.spotify
+package jukebot.apis.spotify
 
 import jukebot.JukeBot
 import org.json.JSONObject
