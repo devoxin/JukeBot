@@ -11,18 +11,16 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 class Context constructor(val event: GuildMessageReceivedEvent, val argString: String, val prefix: String) {
 
     val args = argString.split("\\s+".toRegex())
-    val message: Message = event.message
-    val member: Member = event.member!!
-    val author: User = event.author
-    val channel: TextChannel = event.channel
-    val guild: Guild = event.guild
+    val message = event.message
+    val member = event.member!!
+    val author = event.author
+    val channel = event.channel
+    val guild = event.guild
     val jda = event.jda
-    val donorTier = if (author.idLong == JukeBot.botOwnerId) 3 else Database.getTier(author.idLong)
-    val embedColor = Database.getColour(guild.idLong)
-
-    fun getArg(index: Int): String {
-        return args.getOrNull(index) ?: ""
-    }
+    val donorTier: Int
+        get() = if (author.idLong == JukeBot.botOwnerId) 3 else Database.getTier(author.idLong)
+    val embedColor: Int
+        get() = Database.getColour(guild.idLong)
 
     fun getAudioPlayer(): AudioHandler {
         return JukeBot.getPlayer(guild.idLong)
@@ -31,14 +29,14 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
     fun ensureMutualVoiceChannel(): Boolean {
         val manager = member.guild.audioManager
 
-        return (member.voiceState?.channel != null
+        return (member.voiceState!!.channel != null
                 && manager.connectedChannel != null
-                && manager.connectedChannel!!.idLong == member.voiceState?.channel?.idLong)
+                && manager.connectedChannel!!.idLong == member.voiceState!!.channel!!.idLong)
     }
 
     fun isDJ(allowLoneVC: Boolean): Boolean {
         val customDjRole: Long? = Database.getDjRole(guild.idLong)
-        val roleMatch: Boolean = if (customDjRole != null) {
+        val roleMatch = if (customDjRole != null) {
             customDjRole == guild.publicRole.idLong || member.roles.any { it.idLong == customDjRole }
         } else {
             member.roles.any { it.name.equals("dj", true) }
@@ -47,7 +45,7 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
         val isElevated = member.isOwner || JukeBot.botOwnerId == author.idLong || roleMatch
 
         if (allowLoneVC && !isElevated) {
-            return member.voiceState?.channel != null && member.voiceState?.channel?.members?.filter { !it.user.isBot }?.size == 1
+            return member.voiceState!!.channel != null && member.voiceState!!.channel!!.members.filter { !it.user.isBot }.size == 1
         }
 
         return isElevated

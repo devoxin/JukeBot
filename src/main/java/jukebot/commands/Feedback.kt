@@ -49,7 +49,7 @@ class Feedback : Command(ExecutionType.STANDARD) {
 //        context.embed("Feedback sent!", "Thanks for your feedback! :)")
 //    }
 
-    public fun shutdown() {
+    fun shutdown() {
 //        webhookClient.close()
     }
 

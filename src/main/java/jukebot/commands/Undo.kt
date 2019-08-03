@@ -24,7 +24,7 @@ class Undo : Command(ExecutionType.REQUIRE_MUTUAL) {
 
             if (requester == context.author.idLong) {
                 i.remove()
-                return context.embed("Track Removed", "**" + t.info.title + "** removed from the queue.")
+                return context.embed("Track Removed", "**${t.info.title}** removed from the queue.")
             }
         }
 

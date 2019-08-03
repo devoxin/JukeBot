@@ -11,14 +11,14 @@ class Unqueue : Command(ExecutionType.STANDARD) {
         val player = context.getAudioPlayer()
 
         if (player.queue.isEmpty()) {
-            return context.embed("Nothing to Unqueue", "The queue is empty!")
+            return context.embed("Queue Empty", "There are no tracks to remove.")
         }
 
         if (context.argString.isEmpty()) {
-            return context.embed("Specify track index", "You need to specify the index of the track to unqueue.")
+            return context.embed("Specify track index", "You need to specify the index of the track to remove.")
         }
 
-        val selected = context.getArg(0).toIntOrNull() ?: 0
+        val selected = context.args.firstOrNull()?.toIntOrNull() ?: 0
 
         if (selected < 1 || selected > player.queue.size) {
             return context.embed("Invalid position specified!", "You need to specify a valid target track.")
@@ -31,6 +31,6 @@ class Unqueue : Command(ExecutionType.STANDARD) {
         }
 
         player.queue.removeAt(selected - 1)
-        context.embed("Track Unqueued", "Removed **" + selectedTrack.info.title + "** from the queue.")
+        context.embed("Track Unqueued", "Removed **${selectedTrack.info.title}** from the queue.")
     }
 }

@@ -28,11 +28,11 @@ class RequestUtil {
         }
     }
 
-    public fun get(url: String, headers: Headers = Headers.of()): PendingRequest {
+    fun get(url: String, headers: Headers = Headers.of()): PendingRequest {
         return makeRequest("GET", url, null, headers)
     }
 
-    public fun makeRequest(method: String, url: String, body: RequestBody? = null, headers: Headers): PendingRequest {
+    fun makeRequest(method: String, url: String, body: RequestBody? = null, headers: Headers): PendingRequest {
         val request = Request.Builder()
                 .method(method.toUpperCase(), body)
                 .header("User-Agent", "JukeBot (https://github.com/Devoxin/JukeBot)")
@@ -42,7 +42,7 @@ class RequestUtil {
         return PendingRequest(request.build())
     }
 
-    public fun makeRequest(request: Request): PendingRequest {
+    fun makeRequest(request: Request): PendingRequest {
         return PendingRequest(request)
     }
 }

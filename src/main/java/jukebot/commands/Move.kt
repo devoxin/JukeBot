@@ -5,7 +5,7 @@ import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.utils.Helpers
 
-@CommandProperties(description = "Moves a track in the queue", aliases = arrayOf("m"), category = CommandProperties.category.MEDIA)
+@CommandProperties(description = "Moves a track in the queue", aliases = ["m", "mv"], category = CommandProperties.category.MEDIA)
 class Move : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
@@ -38,7 +38,7 @@ class Move : Command(ExecutionType.STANDARD) {
         player.queue.removeAt(target - 1)
         player.queue.add(dest - 1, selectedTrack)
 
-        context.embed("Track Moved", "**" + selectedTrack.info.title + "** is now at position **" + dest + "** in the queue")
+        context.embed("Track Moved", "**${selectedTrack.info.title}** is now at position **$dest** in the queue")
 
     }
 }

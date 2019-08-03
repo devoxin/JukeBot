@@ -7,11 +7,11 @@ import org.apache.http.client.utils.URIBuilder
 import java.util.concurrent.CompletableFuture
 
 
-public class LastFM(private val key: String) {
+class LastFM(private val key: String) {
 
     private val baseUrl = "http://ws.audioscrobbler.com/2.0"
 
-    public fun findSimilar(title: String, artist: String): CompletableFuture<List<TrackMatch>?> {
+    fun findSimilar(title: String, artist: String): CompletableFuture<List<TrackMatch>?> {
         val url = URIBuilder("$baseUrl/?method=track.getsimilar&api_key=$key&format=json")
 
         url.addParameter("track", title)
