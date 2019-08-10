@@ -27,7 +27,7 @@ class Spotify : Command(ExecutionType.TRIGGER_CONNECT) { // TODO: Consider movin
             return context.embed("Spotify", "You need to specify a URL to a playlist")
         }
 
-        if (!JukeBot.spotifyApi.isEnabled()) {
+        if (JukeBot.spotifyApi == null || !JukeBot.spotifyApi.isEnabled()) {
             return context.embed("Spotify", "Spotify support is unavailable as no valid client ID/client secret was provided.")
         }
 
