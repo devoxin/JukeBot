@@ -10,7 +10,7 @@ import jukebot.framework.Context
         aliases = ["ra"],
         category = CommandCategory.QUEUE
 )
-class RemoveAbsent : Command(ExecutionType.REQUIRE_MUTUAL) {
+class RemoveAbsent : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
         val handler = context.getAudioPlayer()
