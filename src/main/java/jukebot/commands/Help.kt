@@ -2,21 +2,26 @@ package jukebot.commands
 
 import jukebot.CommandHandler
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.utils.toTitleCase
 
-@CommandProperties(description = "Displays all commands", aliases = ["commands"], category = CommandProperties.category.MISC)
+@CommandProperties(description = "Displays all commands", aliases = ["commands", "cmds", "?"])
 class Help : Command(ExecutionType.STANDARD) {
 
-    private val categories = CommandProperties.category.values()
-            .mapIndexed { i, e -> "`${i + 1}.` ${e.toString().toLowerCase().toTitleCase()}" }
+    private val categories = CommandCategory.values()
+            .mapIndexed { i, e -> "`${i + 1}.` **`${pad(e.toTitleCase())}:`** ${e.description}" }
             .joinToString("\n")
+
+    fun pad(s: String): String {
+        return String.format("%-12s", s).replace(" ", " \u200B")
+    }
 
     override fun execute(context: Context) {
         val menu = context.args[0].toIntOrNull() ?: 0
 
-        if (menu <= 0 || menu > CommandProperties.category.values().size) {
+        if (menu <= 0 || menu > CommandCategory.values().size) {
             val cmd = CommandHandler.commands
                     .filter { it.key == context.args[0] || it.value.properties().aliases.contains(context.args[0]) }
                     .values
@@ -25,12 +30,12 @@ class Help : Command(ExecutionType.STANDARD) {
 
             sendCommandHelp(context, cmd)
         } else {
-            val category = CommandProperties.category.values()[menu - 1]
+            val category = CommandCategory.values()[menu - 1]
             val builder = StringBuilder()
 
             for (cmd in commandsByCategory(category)) {
                 builder.append("**`")
-                        .append(String.format("%-11s", cmd.name().toLowerCase()).replace(" ", " \u200B"))
+                        .append(pad(cmd.name().toLowerCase()))
                         .append(":`** ")
                         .append(cmd.properties().description)
                         .append("\n")
@@ -63,7 +68,7 @@ class Help : Command(ExecutionType.STANDARD) {
                 "**Aliases:** $aliasString\n**Description:** ${cmd.properties().description}")
     }
 
-    private fun commandsByCategory(category: CommandProperties.category) =
+    private fun commandsByCategory(category: CommandCategory) =
             CommandHandler.commands
                     .values
                     .filter { it.properties().category == category }

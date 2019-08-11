@@ -1,10 +1,11 @@
 package jukebot.commands
 
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Removes all of the tracks from the queue", aliases = ["cq", "c", "clear", "empty"], category = CommandProperties.category.MEDIA)
+@CommandProperties(description = "Removes all of the tracks from the queue", aliases = ["cq", "c", "clear", "empty"], category = CommandCategory.QUEUE)
 class ClearQueue : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

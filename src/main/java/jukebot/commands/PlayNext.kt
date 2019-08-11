@@ -3,10 +3,11 @@ package jukebot.commands
 import jukebot.JukeBot
 import jukebot.audio.SongResultHandler
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Finds a track and queues it to be played next", aliases = ["pn"], category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Finds a track and queues it to be played next", aliases = ["pn"], category = CommandCategory.PLAYBACK)
 class PlayNext : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {

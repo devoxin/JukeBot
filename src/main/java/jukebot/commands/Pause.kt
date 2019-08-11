@@ -1,10 +1,11 @@
 package jukebot.commands
 
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Pauses the player", aliases = ["ps"], category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Pauses the player", aliases = ["ps"], category = CommandCategory.CONTROLS)
 class Pause : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {

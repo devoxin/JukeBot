@@ -1,10 +1,11 @@
 package jukebot.commands
 
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Configure track announcements", category = CommandProperties.category.MEDIA)
+@CommandProperties(description = "Configure track announcements", category = CommandCategory.CONTROLS)
 class Announce : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

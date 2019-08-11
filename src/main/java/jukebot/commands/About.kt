@@ -25,7 +25,7 @@ class About : Command(ExecutionType.STANDARD) {
 
         context.embed {
             setTitle("JukeBot ${JukeBot.VERSION}")
-            setDescription("Developer: **Devoxin#0101**")
+            setDescription("Developer: **devoxin#0101**")
             addFields(fields)
         }
     }

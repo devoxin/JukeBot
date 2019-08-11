@@ -12,7 +12,7 @@ public @interface CommandProperties {
 
     String description() default "No description available";
 
-    category category() default category.MISC;
+    CommandCategory category() default CommandCategory.MISC;
 
     boolean developerOnly() default false;
 
@@ -20,7 +20,5 @@ public @interface CommandProperties {
 
     boolean enabled() default true;
 
-    enum category {
-        CONTROLS, MEDIA, MISC
-    }
+
 }

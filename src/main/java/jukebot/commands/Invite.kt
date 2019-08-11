@@ -4,7 +4,7 @@ import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Displays the bot's invite URL", category = CommandProperties.category.MISC)
+@CommandProperties(description = "Displays the bot's invite URL")
 class Invite : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

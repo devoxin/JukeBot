@@ -6,11 +6,12 @@ import jukebot.apis.spotify.SpotifyAPI
 import jukebot.audio.AudioHandler
 import jukebot.audio.SongResultHandler
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import java.util.concurrent.CompletableFuture
 
-@CommandProperties(description = "Loads a playlist from Spotify", category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Loads a playlist from Spotify", category = CommandCategory.PLAYBACK)
 class Spotify : Command(ExecutionType.TRIGGER_CONNECT) { // TODO: Consider moving this to `play` eventually
 
     override fun execute(context: Context) {

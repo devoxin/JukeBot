@@ -1,10 +1,11 @@
 package jukebot.commands
 
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Remove a track from the queue", aliases = ["uq", "remove", "r"], category = CommandProperties.category.MEDIA)
+@CommandProperties(description = "Remove a track from the queue", aliases = ["uq", "remove", "r"], category = CommandCategory.QUEUE)
 class Unqueue : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

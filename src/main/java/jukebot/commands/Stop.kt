@@ -2,10 +2,11 @@ package jukebot.commands
 
 import jukebot.audio.AudioHandler
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Ends the queue and current track", category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Ends the queue and current track", category = CommandCategory.CONTROLS)
 class Stop : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {

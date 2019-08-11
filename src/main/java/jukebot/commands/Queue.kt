@@ -1,11 +1,12 @@
 package jukebot.commands
 
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.utils.toTimeString
 
-@CommandProperties(description = "Displays the current queue", aliases = ["q", "list", "songs"], category = CommandProperties.category.MEDIA)
+@CommandProperties(description = "Displays the current queue", aliases = ["q", "list", "songs"], category = CommandCategory.QUEUE)
 class Queue : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

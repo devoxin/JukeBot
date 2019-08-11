@@ -2,10 +2,11 @@ package jukebot.commands
 
 import jukebot.audio.AudioHandler
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Loop the queue, track or nothing", category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Loop the queue, track or nothing", category = CommandCategory.CONTROLS)
 class Repeat : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {

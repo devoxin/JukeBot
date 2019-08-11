@@ -1,11 +1,12 @@
 package jukebot.commands
 
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import net.dv8tion.jda.api.EmbedBuilder
 
-@CommandProperties(description = "DMs you the currently playing track. Specify `all` to save the queue", category = CommandProperties.category.MEDIA)
+@CommandProperties(description = "DMs you the currently playing track. Specify `all` to save the queue", category = CommandCategory.QUEUE)
 class Save : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

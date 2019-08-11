@@ -3,10 +3,11 @@ package jukebot.commands
 import jukebot.JukeBot
 import jukebot.audio.SongResultHandler
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Search SoundCloud and queue the top result", aliases = ["sc"], category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Search SoundCloud and queue the top result", aliases = ["sc"], category = CommandCategory.PLAYBACK)
 class ScSearch : Command(ExecutionType.TRIGGER_CONNECT) {
 
     override fun execute(context: Context) {

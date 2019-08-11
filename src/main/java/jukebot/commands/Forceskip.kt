@@ -1,10 +1,11 @@
 package jukebot.commands
 
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Skip the track without voting", aliases = ["fs"], category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Skip the track without voting", aliases = ["fs"], category = CommandCategory.CONTROLS)
 class Forceskip : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

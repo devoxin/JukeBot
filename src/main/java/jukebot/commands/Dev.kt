@@ -6,7 +6,7 @@ import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Developer menu", category = CommandProperties.category.MISC, developerOnly = true)
+@CommandProperties(description = "Developer menu", developerOnly = true)
 class Dev : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

@@ -1,10 +1,11 @@
 package jukebot.commands
 
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Plays the queue in random order", category = CommandProperties.category.CONTROLS)
+@CommandProperties(description = "Plays the queue in random order", category = CommandCategory.CONTROLS)
 class Shuffle : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
