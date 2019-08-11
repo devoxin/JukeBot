@@ -41,6 +41,7 @@ import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -88,6 +89,8 @@ public class JukeBot {
         Database.setupDatabase();
         registerSourceManagers();
         loadApis();
+
+        RestAction.setPassContext(false);
 
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
                 .setToken(config.getToken())
