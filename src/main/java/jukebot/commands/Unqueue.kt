@@ -19,6 +19,7 @@ class Unqueue : Command(ExecutionType.STANDARD) {
             return context.embed("Specify track index", "You need to specify the index of the track to remove.")
         }
 
+        // TODO: Accept a range? i.e. 3-7, and/or multiple numbers, i.e. 3 8 11 12 21
         val selected = context.args.firstOrNull()?.toIntOrNull() ?: 0
 
         if (selected < 1 || selected > player.queue.size) {
