@@ -31,7 +31,7 @@ import java.util.regex.Pattern
 
 
 class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
-    val httpInterfaceManager: HttpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager()
+    val httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager()!!
 
     override fun getSourceName(): String {
         return "pornhub"
@@ -64,9 +64,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
     }
 
-    override fun decodeTrack(trackInfo: AudioTrackInfo, input: DataInput): AudioTrack {
-        return PornHubAudioTrack(trackInfo, this)
-    }
+    override fun decodeTrack(trackInfo: AudioTrackInfo, input: DataInput) = PornHubAudioTrack(trackInfo, this)
 
     override fun shutdown() {
         httpInterfaceManager.close()
@@ -105,7 +103,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 .build()
 
         makeHttpRequest(uri).use {
-            val statusCode: Int = it.statusLine.statusCode
+            val statusCode = it.statusLine.statusCode
 
             if (statusCode != 200) {
                 if (statusCode == 404) {
@@ -155,7 +153,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 throw IOException("Invalid status code for video page response: $statusCode")
             }
 
-            val html = IOUtils.toString(it.entity.content, CHARSET)
+            val html = IOUtils.toString(it.entity.content, StandardCharsets.UTF_8)
             val match = VIDEO_INFO_REGEX.matcher(html)
 
             return if (match.find()) JsonBrowser.parse(match.group(1)) else null
@@ -186,11 +184,9 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
         return httpInterfaceManager.`interface`.use {
             it.execute(request)
         }
-
     }
 
     companion object {
-        private val CHARSET = Charset.forName("UTF-8")
         private val VIDEO_REGEX = Pattern.compile("^https?://www\\.pornhub\\.com/view_video\\.php\\?viewkey=([a-zA-Z0-9]{9,15})\$")
         private val VIDEO_INFO_REGEX = Pattern.compile("var flashvars_\\d{7,9} = (\\{.+})")
         private const val VIDEO_SEARCH_PREFIX = "phsearch:"

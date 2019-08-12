@@ -33,6 +33,8 @@ import jukebot.apis.patreon.PatreonAPI;
 import jukebot.apis.spotify.SpotifyAPI;
 import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
+import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
+import jukebot.audio.sourcemanagers.mixcloud.Utils;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.utils.Config;
 import jukebot.utils.Helpers;
@@ -49,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
+import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -166,6 +169,7 @@ public class JukeBot {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
         }
 
+        playerManager.registerSourceManager(new MixcloudAudioSourceManager());
         playerManager.registerSourceManager(yt);
         playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
         playerManager.registerSourceManager(new BandcampAudioSourceManager());

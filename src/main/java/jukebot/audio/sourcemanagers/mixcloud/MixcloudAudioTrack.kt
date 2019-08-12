@@ -1,4 +1,24 @@
-package jukebot.audio.sourcemanagers.pornhub
+/*
+   Copyright 2019 Devoxin
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+// ==========
+// Basically, don't steal this and we won't have a problem.
+// ==========
+
+package jukebot.audio.sourcemanagers.mixcloud
 
 import com.sedmelluq.discord.lavaplayer.container.mpeg.MpegAudioTrack
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
@@ -15,12 +35,13 @@ import org.apache.http.client.methods.HttpGet
 import java.net.URI
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import java.util.*
 import java.util.regex.Pattern
 
-class PornHubAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: PornHubAudioSourceManager) : DelegatedAudioTrack(trackInfo) {
+class MixcloudAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: MixcloudAudioSourceManager) : DelegatedAudioTrack(trackInfo) {
 
     override fun makeClone(): AudioTrack {
-        return PornHubAudioTrack(trackInfo, sourceManager)
+        return MixcloudAudioTrack(trackInfo, sourceManager)
     }
 
     override fun getSourceManager(): AudioSourceManager {
@@ -43,33 +64,16 @@ class PornHubAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: Po
         }
     }
 
-    private fun getPlaybackUrl(httpInterface: HttpInterface): String? {
-        val info = getPageConfig(httpInterface)
+    private fun getPlaybackUrl(httpInterface: HttpInterface): String {
+        val json = sourceManager.getTrackInfo(trackInfo.uri)
                 ?: throw FriendlyException("This track is unplayable", FriendlyException.Severity.SUSPICIOUS, null)
 
-        return info.get("mediaDefinitions").values().stream()
-                .filter { format -> format.get("videoUrl").text().isNotEmpty() }
-                .findFirst()
-                .orElse(null)!!.get("videoUrl").text() ?: null
+        val streamKey = sourceManager.getStreamKey(json)
+        val streamInfo = json.get("streamInfo")
+        val mp4Url = streamInfo.get("url").text()
+
+        return sourceManager.decodeUrl(streamKey, mp4Url)
     }
 
-    private fun getPageConfig(httpInterface: HttpInterface): JsonBrowser? {
-        httpInterface.execute(HttpGet(trackInfo.uri)).use { response ->
-            val statusCode = response.statusLine.statusCode
 
-            if (statusCode != 200) {
-                return null
-            }
-
-            val html = IOUtils.toString(response.entity.content, StandardCharsets.UTF_8)
-            val match = VIDEO_INFO_REGEX.matcher(html)
-
-            return if (match.find()) JsonBrowser.parse(match.group(1)) else null
-        }
-    }
-
-    companion object {
-        private val VIDEO_INFO_REGEX = Pattern.compile("var flashvars_\\d{7,9} = (\\{.+})")
-    }
-
-}
+ }
