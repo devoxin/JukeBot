@@ -34,7 +34,6 @@ import jukebot.apis.spotify.SpotifyAPI;
 import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
-import jukebot.audio.sourcemanagers.mixcloud.Utils;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.utils.Config;
 import jukebot.utils.Helpers;
@@ -51,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
-import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -99,13 +97,11 @@ public class JukeBot {
                 .setToken(config.getToken())
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), waiter)
-                .setDisabledCacheFlags(
-                        EnumSet.of(
-                                CacheFlag.EMOTE,
-                                CacheFlag.ACTIVITY,
-                                CacheFlag.CLIENT_STATUS
-                        )
-                )
+                .setDisabledCacheFlags(EnumSet.of(
+                        CacheFlag.EMOTE,
+                        CacheFlag.ACTIVITY,
+                        CacheFlag.CLIENT_STATUS
+                ))
                 .setGuildSubscriptionsEnabled(false)
                 .setActivity(Activity.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"));
 
