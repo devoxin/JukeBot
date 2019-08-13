@@ -5,9 +5,13 @@ import jukebot.JukeBot
 import jukebot.audio.AudioHandler
 import jukebot.utils.Helpers
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
-class Context constructor(val event: GuildMessageReceivedEvent, val argString: String, val prefix: String) {
+class Context(val event: GuildMessageReceivedEvent, val argString: String, val prefix: String) {
 
     val args = argString.split("\\s+".toRegex())
     val message = event.message
@@ -67,10 +71,24 @@ class Context constructor(val event: GuildMessageReceivedEvent, val argString: S
                 .apply(block)
                 .build()
 
-        event.channel.sendMessage(embed).queue(null) {
-            JukeBot.LOG.error("Failed to send message from context!\n" +
-                    "\tMessage: ${event.message.contentRaw}\n" +
-                    "\tStack: ${it.stackTrace.joinToString("\n")}")
+        event.channel.sendMessage(embed).queue()
+    }
+
+    fun prompt(title: String, description: String, cb: (Message, String?) -> Unit) {
+        if (!Helpers.canSendTo(channel)) {
+            return
+        }
+
+        val embed = EmbedBuilder()
+                .setColor(embedColor)
+                .setTitle(title)
+                .setDescription(description)
+                .build()
+
+        event.channel.sendMessage(embed).queue { m ->
+            JukeBot.waiter.waitForSelection(author.idLong, {
+                cb(m, it)
+            })
         }
     }
 

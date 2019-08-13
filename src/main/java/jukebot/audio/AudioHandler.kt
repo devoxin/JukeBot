@@ -163,7 +163,8 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
         if (current == null || current!!.identifier != track.identifier) {
             current = track
-            announce("Now Playing", "${track.info.title} - `${track.info.length.toTimeString()}`")
+            val durString = if (track.info.isStream) "LIVE" else track.info.length.toTimeString()
+            announce("Now Playing", "${track.info.title} - `$durString`")
 
             val title = track.info.title
             val nick = if (title.length > 32) "${title.substring(0, 29)}..." else title

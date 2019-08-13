@@ -57,14 +57,14 @@ class MixcloudAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: M
 
     @Throws(Exception::class)
     private fun processStatic(localExecutor: LocalAudioTrackExecutor, httpInterface: HttpInterface) {
-        val playbackUrl = getPlaybackUrl(httpInterface) ?: throw Exception("no playback url found")
+        val playbackUrl = getPlaybackUrl()
 
         PersistentHttpStream(httpInterface, URI(playbackUrl), Long.MAX_VALUE).use { stream ->
             processDelegate(MpegAudioTrack(trackInfo, stream), localExecutor)
         }
     }
 
-    private fun getPlaybackUrl(httpInterface: HttpInterface): String {
+    private fun getPlaybackUrl(): String {
         val json = sourceManager.getTrackInfo(trackInfo.uri)
                 ?: throw FriendlyException("This track is unplayable", FriendlyException.Severity.SUSPICIOUS, null)
 

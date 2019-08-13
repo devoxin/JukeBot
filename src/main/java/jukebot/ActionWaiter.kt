@@ -20,7 +20,7 @@ class ActionWaiter : ListenerAdapter() {
     }
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
-        selectionMenus.remove(e.author.idLong)?.invoke(e.message.contentDisplay)
+        selectionMenus.remove(e.author.idLong)?.invoke(e.message.contentRaw)
     }
 
 }
