@@ -7,9 +7,6 @@ import jukebot.utils.Helpers
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
 
 class Context(val event: GuildMessageReceivedEvent, val argString: String, val prefix: String) {
 

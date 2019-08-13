@@ -5,7 +5,6 @@ import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
-import jukebot.utils.toTitleCase
 
 @CommandProperties(description = "Displays all commands", aliases = ["commands", "cmds", "?"])
 class Help : Command(ExecutionType.STANDARD) {

@@ -8,8 +8,6 @@ import jukebot.JukeBot
 import jukebot.framework.Context
 import jukebot.utils.editEmbed
 import jukebot.utils.toTimeString
-import net.dv8tion.jda.api.EmbedBuilder
-import java.util.regex.Pattern
 import kotlin.math.ceil
 
 class SongResultHandler(
