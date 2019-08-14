@@ -30,7 +30,7 @@ class Queue : Command(ExecutionType.STANDARD) {
         val page = min(max(selectedPage, 1), maxPages)
 
         val begin = (page - 1) * 10
-        val end = if (begin + 10 > queue.size) queue.size else begin + 10
+        val end = min(begin + 10, queue.size)
 
         for (i in begin until end) {
             val track = queue[i]

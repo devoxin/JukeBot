@@ -49,3 +49,5 @@ fun decodeColor(nm: String): Color? {
         null
     }
 }
+
+fun <T> List<T>.separate(): Pair<T, List<T>> = Pair(first(), drop(1))

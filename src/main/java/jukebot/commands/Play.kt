@@ -6,7 +6,6 @@ import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
-import java.net.URL
 
 @CommandProperties(description = "Finds and plays the provided song query/URL", aliases = ["p"], category = CommandCategory.PLAYBACK)
 class Play : Command(ExecutionType.TRIGGER_CONNECT) {

@@ -10,30 +10,24 @@ class Page(val content: String, val duration: String, val page: Int, val maxPage
     companion object {
         fun paginate(tracks: List<AudioTrack>, selectedPage: Int = 1): Page {
             val queueDuration = tracks.map { it.duration }.sum().toTimeString()
-            val fQueue = StringBuilder()
+            val content = StringBuilder()
 
             val maxPages = ceil(tracks.size.toDouble() / 10).toInt()
             val page = min(max(selectedPage, 1), maxPages)
 
             if (tracks.isEmpty()) {
-                fQueue.append("`No tracks.`")
+                content.append("`No tracks.`")
             } else {
                 val begin = (page - 1) * 10
-                val end = if (begin + 10 > tracks.size) tracks.size else begin + 10
+                val end = min(begin + 10, tracks.size) //if (begin + 10 > tracks.size) tracks.size else begin + 10
 
                 for (i in begin until end) {
                     val track = tracks[i]
-                    fQueue.append("`")
-                            .append(i + 1)
-                            .append(".` **[")
-                            .append(track.info.title)
-                            .append("](")
-                            .append(track.info.uri)
-                            .append(")**\n")
+                    content.append("`${i + 1}.` **[${track.info.title}](${track.info.uri})**\n")
                 }
             }
 
-            return Page(fQueue.toString(), queueDuration, page, maxPages)
+            return Page(content.toString(), queueDuration, page, maxPages)
         }
     }
 

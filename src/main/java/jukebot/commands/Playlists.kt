@@ -6,19 +6,14 @@ import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.framework.SubCommand
-import jukebot.utils.Page
+import jukebot.utils.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
-import java.util.regex.Pattern
 import kotlin.math.ceil
 
-@CommandProperties(description = "Manage personal playlists stored within the bot.", aliases = ["pl"])
+@CommandProperties(description = "Manage personal playlists stored within the bot.", aliases = ["pl", "playlist"])
 class Playlists : Command(ExecutionType.STANDARD) {
-
-    fun pad(s: String): String {
-        return String.format("%-12s", s).replace(" ", " \u200B")
-    }
 
     override fun execute(context: Context) {
         val sc = context.args.firstOrNull() ?: ""
@@ -26,7 +21,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         if (!this.subcommands.containsKey(sc)) {
             return context.embed(
                     "Custom Playlists",
-                    this.subcommands.map { "**`${pad(it.key)}:`** ${it.value.description}" }.joinToString("\n")
+                    this.subcommands.map { "**`${Helpers.pad(it.key)}:`** ${it.value.description}" }.joinToString("\n")
             )
         }
 
@@ -46,7 +41,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "create", description = "Create a new custom playlist.")
     fun createPlaylist(ctx: Context) {
-        ctx.prompt("Custom Playlists", "What do you want to name the playlist?\n*Max. 32 characters*") { m, title ->
+        ctx.prompt("Custom Playlists", "What do you want to name the playlist?\n*Max. 32 characters*") { _, title ->
             if (title == null) {
                 return@prompt ctx.embed("Custom Playlists", "Playlist creation cancelled.")
             }
@@ -77,7 +72,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
             "`No tracks.`"
         } else {
             val append = if (playlist.tracks.size > 10) "\n*...and ${playlist.tracks.size - 10} more tracks.*" else ""
-            playlist.tracks.take(10).joinToString("\n") { it.info.title } + append
+            Page.paginate(playlist.tracks, 1).content + append
         }
 
         ctx.embed("Custom Playlists - ${playlist.title}", trackList)
@@ -100,94 +95,65 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
         val em = buildEmbed(ctx, playlist)
         ctx.channel.sendMessage(em).queue {
-            manage_func(ctx, it, playlist, 1)
+            manageMenu(ctx, it, playlist, 1)
         }
     }
 
-    fun buildEmbed(ctx: Context, playlist: CustomPlaylist, selectedPage: Int = 1): MessageEmbed {
-        val page = Page.paginate(playlist.tracks, selectedPage)
+    fun manageMenu(ctx: Context, dialog: Message, playlist: CustomPlaylist, page: Int) {
+        ctx.prompt(30) { r ->
+            val (cmd, args) = r?.split(" +".toRegex())?.separate() ?: return@prompt
 
-        return EmbedBuilder()
-                .setColor(ctx.embedColor)
-                .setTitle("Managing Playlist - ${playlist.title}")
-                .setDescription(page.content)
-                .setFooter("Duration: ${page.duration} • Page ${page.page}/${page.maxPages} • \"help\" for syntax")
-                .build()
-    }
-
-    fun manage_func(ctx: Context, dialog: Message, playlist: CustomPlaylist, page: Int = 1) {
-        ctx.prompt(30) {
-            if (it == null) {
-                return@prompt
-            }
-
-            val args = it.split(" +".toRegex())
-
-            when(args.firstOrNull()) {
+            when(cmd) {
                 "help" -> {
-                    ctx.embed("Managing Playlist - ${playlist.title}", "help: Displays this\nremove <index>: Removes the track at the given index\nmove <i1> <i2>: Moves the track at i1 to i2\npage <index>: Displays the page at the given number\nsave: Saves the playlist to the database.")
-                    manage_func(ctx, dialog, playlist, page)
+                    ctx.embed(
+                            "Managing Playlist - ${playlist.title}",
+                            "**`remove:`** Removes the track at the given index.\n" +
+                                    "**`move   :`** Moves a track to the specified index.\n" +
+                                    "**`page   :`** Displays a different page.\n" +
+                                    "**`save   :`** Saves any changes you've made to the database.")
+                    manageMenu(ctx, dialog, playlist, page)
                 }
                 "remove" -> {
-                    val index = args.drop(1).firstOrNull()?.toIntOrNull()
+                    val index = args.firstOrNull()?.toIntOrNull() ?: 0
 
-                    if (index == null) {
-                        ctx.embed("Managing Playlist - ${playlist.title}", "Index needs to be a number.")
-                        return@prompt manage_func(ctx, dialog, playlist, page)
-                    }
-
-                    if (index <= 0 || index > playlist.tracks.size) {
+                    if (index < 1 || index > playlist.tracks.size) {
                         ctx.embed("Managing Playlist - ${playlist.title}", "Index needs be higher than 0, and equal to or less than ${playlist.tracks.size}.")
-                        return@prompt manage_func(ctx, dialog, playlist, page)
+                        return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
                     playlist.tracks.removeAt(index - 1)
-                    dialog.editMessage(buildEmbed(ctx, playlist, page)).queue { nm ->
-                        manage_func(ctx, nm, playlist, page)
-                    }
+                    dialog.editMessage(buildEmbed(ctx, playlist, page)).queue { manageMenu(ctx, it, playlist, page) }
                 }
                 "page" -> {
-                    val index = args.drop(1).firstOrNull()?.toIntOrNull()
-
-                    if (index == null) {
-                        ctx.embed("Managing Playlist - ${playlist.title}", "Page needs to be a number.")
-                        return@prompt manage_func(ctx, dialog, playlist, page)
-                    }
-
+                    val index = args.firstOrNull()?.toIntOrNull() ?: 0
                     val maxPages = ceil(playlist.tracks.size.toDouble() / 10).toInt()
 
-                    if (index <= 0 || index > playlist.tracks.size) {
+                    if (index < 1 || index > maxPages) {
                         ctx.embed("Managing Playlist - ${playlist.title}", "Page needs be higher than 0, and equal to or less than $maxPages.")
-                        return@prompt manage_func(ctx, dialog, playlist, page)
+                        return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
-                    dialog.editMessage(buildEmbed(ctx, playlist, index)).queue { nm ->
-                        manage_func(ctx, nm, playlist, index)
-                    }
+                    dialog.editMessage(buildEmbed(ctx, playlist, index)).queue { manageMenu(ctx, it, playlist, index) }
                 }
                 "move" -> {
-                    val realArgs = args.drop(1)
-
-                    if (realArgs.size < 2) {
+                    if (args.size < 2) {
                         ctx.embed("Managing Playlist - ${playlist.title}", "You need to specify `i1` and `i2`.")
-                        return@prompt manage_func(ctx, dialog, playlist, page)
+                        return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
-                    val i1 = realArgs[0].toIntOrNull()
-                    val i2 = realArgs[1].toIntOrNull()
+                    val i1 = args[0].toIntOrNull() ?: 0
+                    val i2 = args[1].toIntOrNull() ?: 0
 
-                    if (i1 == null || i2 == null || i1 < 1 || i2 < 1 || i1 == i2 || i1 > playlist.tracks.size || i2 > playlist.tracks.size) {
+                    if (i1 < 1 || i2 < 1 || i1 == i2 || i1 > playlist.tracks.size || i2 > playlist.tracks.size) {
                         ctx.embed("Managing Playlist - ${playlist.title}", "You need to specify a valid target track, and a valid target position.")
-                        return@prompt manage_func(ctx, dialog, playlist, page)
+                        return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
                     val selectedTrack = playlist.tracks[i1 - 1]
                     playlist.tracks.removeAt(i1 - 1)
                     playlist.tracks.add(i2 - 1, selectedTrack)
 
-                    dialog.editMessage(buildEmbed(ctx, playlist, page)).queue { nm ->
-                        manage_func(ctx, nm, playlist, page)
-                    }
+                    dialog.editMessage(buildEmbed(ctx, playlist, page)).queue { manageMenu(ctx, it, playlist, page) }
                 }
                 "save" -> {
                     playlist.save()
@@ -195,6 +161,21 @@ class Playlists : Command(ExecutionType.STANDARD) {
                 }
             }
         }
+    }
+
+    @SubCommand(trigger = "delete", description = "Deletes a custom playlist.")
+    fun delete(ctx: Context) {
+        val playlistName = ctx.args.drop(1).joinToString(" ")
+
+        if (playlistName.isEmpty()) {
+            return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to delete.")
+        }
+
+        Database.getPlaylist(ctx.author.idLong, playlistName)
+                ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
+
+        Database.deletePlaylist(ctx.author.idLong, playlistName)
+        ctx.embed("Custom Playlists", "Playlist deleted.")
     }
 
     @SubCommand(trigger = "load", description = "Loads a playlist into the queue.")
@@ -217,7 +198,17 @@ class Playlists : Command(ExecutionType.STANDARD) {
         ctx.embed("Custom Playlists", "Loaded `${playlist.tracks.size}` tracks from playlist `${playlist.title}`")
     }
 
+    private fun buildEmbed(ctx: Context, playlist: CustomPlaylist, selectedPage: Int = 1): MessageEmbed {
+        val page = Page.paginate(playlist.tracks, selectedPage)
+
+        return EmbedBuilder()
+                .setColor(ctx.embedColor)
+                .setTitle("Managing Playlist - ${playlist.title}")
+                .setDescription(page.content)
+                .setFooter("Duration: ${page.duration} • Page ${page.page}/${page.maxPages} • \"help\" for syntax")
+                .build()
+    }
+
     // proper loading system
-    // playlist management
 
 }

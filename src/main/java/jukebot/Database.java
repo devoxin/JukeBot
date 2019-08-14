@@ -101,6 +101,18 @@ public class Database {
         }
     }
 
+    public static boolean deletePlaylist(final long creator, final String title) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement update = connection.prepareStatement("DELETE FROM customplaylists WHERE creator = ? AND title = ?");
+            update.setLong(1, creator);
+            update.setString(2, title);
+
+            return update.executeUpdate() == 1;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
     public static String getPrefix(final long id) {
         String prefix = getFromDatabase("prefixes", id, "prefix");
         return prefix == null ? JukeBot.config.getDefaultPrefix() : prefix;

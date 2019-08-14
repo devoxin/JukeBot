@@ -10,6 +10,7 @@ import java.nio.file.Paths
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
+import kotlin.math.floor
 
 object Helpers {
     private val timer = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }!!
@@ -17,7 +18,7 @@ object Helpers {
 
     fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC'): String {
         val percent = v.toFloat() / max
-        val blocks = Math.floor((barLength * percent).toDouble()).toInt()
+        val blocks = floor((barLength * percent).toDouble()).toInt()
 
         val sb = StringBuilder("[")
 
@@ -38,6 +39,10 @@ object Helpers {
 
     fun parseNumber(num: String?, def: Int): Int {
         return num?.toIntOrNull() ?: def
+    }
+
+    fun pad(s: String): String {
+        return String.format("%-12s", s).replace(" ", " \u200B")
     }
 
     fun canSendTo(channel: TextChannel): Boolean {
