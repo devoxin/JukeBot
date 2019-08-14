@@ -5,6 +5,9 @@ import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.utils.toTimeString
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
 
 @CommandProperties(description = "Displays the current queue", aliases = ["q", "list", "songs"], category = CommandCategory.QUEUE)
 class Queue : Command(ExecutionType.STANDARD) {
@@ -23,8 +26,8 @@ class Queue : Command(ExecutionType.STANDARD) {
 
         val selectedPage = context.args.getOrNull(0)?.toIntOrNull() ?: 1
 
-        val maxPages = Math.ceil(queue.size.toDouble() / 10).toInt()
-        val page = Math.min(Math.max(selectedPage, 1), maxPages)
+        val maxPages = ceil(queue.size.toDouble() / 10).toInt()
+        val page = min(max(selectedPage, 1), maxPages)
 
         val begin = (page - 1) * 10
         val end = if (begin + 10 > queue.size) queue.size else begin + 10

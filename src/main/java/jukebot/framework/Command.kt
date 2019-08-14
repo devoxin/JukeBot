@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.Permission
 
 abstract class Command(private val executionType: ExecutionType) {
 
+    val subcommands = hashMapOf<String, MethodWrapper>()
+
     open fun runChecks(context: Context) {
         when (executionType) {
             ExecutionType.STANDARD -> execute(context)

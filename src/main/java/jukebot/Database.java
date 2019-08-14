@@ -1,9 +1,12 @@
 package jukebot;
 
 import com.zaxxer.hikari.HikariDataSource;
+import jukebot.entities.CustomPlaylist;
 
+import javax.annotation.Nullable;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Database {
 
@@ -28,9 +31,73 @@ public class Database {
             statement.addBatch("CREATE TABLE IF NOT EXISTS skipthres (id INTEGER PRIMARY KEY, threshold REAL NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS colours (id INTEGER PRIMARY KEY, rgb INTEGER NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS musicnick (id INTEGER PRIMARY KEY)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS customplaylists (title TEXT NOT NULL, creator INTEGER, tracks TEXT)");
             statement.executeBatch();
         } catch (SQLException e) {
             JukeBot.LOG.error("There was an error setting up the SQL database!", e);
+        }
+    }
+
+    public static LinkedList<String> getPlaylists(final long creator) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM customplaylists WHERE creator = ?");
+            statement.setLong(1, creator);
+            ResultSet results = statement.executeQuery();
+
+            LinkedList<String> playlists = new LinkedList<>();
+
+            while (results.next()) {
+                playlists.add(results.getString("title"));
+            }
+
+            return playlists;
+        } catch (SQLException e) {
+            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            return null;
+        }
+    }
+
+    @Nullable
+    public static CustomPlaylist getPlaylist(final long creator, final String title) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM customplaylists WHERE creator = ? AND title = ?");
+            statement.setLong(1, creator);
+            statement.setString(2, title);
+
+            ResultSet results = statement.executeQuery();
+
+            return results.next()
+                    ? new CustomPlaylist(results.getString("title"), creator, results.getString("tracks"))
+                    : null;
+        } catch (SQLException e) {
+            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            return null;
+        }
+    }
+
+    public static boolean createPlaylist(final long creator, final String title) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement update = connection.prepareStatement("INSERT INTO customplaylists VALUES (?, ?, ?)");
+            update.setString(1, title);
+            update.setLong(2, creator);
+            update.setString(3, "");
+
+            return update.executeUpdate() == 1;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static boolean updatePlaylist(final long creator, final String title, final String tracks) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement update = connection.prepareStatement("UPDATE customplaylists SET tracks = ? WHERE creator = ? AND title = ?");
+            update.setString(1, tracks);
+            update.setLong(2, creator);
+            update.setString(3, title);
+
+            return update.executeUpdate() == 1;
+        } catch (SQLException e) {
+            return false;
         }
     }
 

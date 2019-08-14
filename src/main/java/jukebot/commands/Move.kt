@@ -10,7 +10,6 @@ import jukebot.utils.Helpers
 class Move : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
-
         val player = context.getAudioPlayer()
 
         if (player.queue.isEmpty()) {

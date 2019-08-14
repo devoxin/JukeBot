@@ -7,6 +7,7 @@ import jukebot.utils.Helpers
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import java.util.concurrent.TimeUnit
 
 class Context(val event: GuildMessageReceivedEvent, val argString: String, val prefix: String) {
 
@@ -87,6 +88,12 @@ class Context(val event: GuildMessageReceivedEvent, val argString: String, val p
                 cb(m, it)
             })
         }
+    }
+
+    fun prompt(delay: Int, cb: (String?) -> Unit) {
+        JukeBot.waiter.waitForSelection(author.idLong, {
+            cb(it)
+        }, 10, TimeUnit.SECONDS)
     }
 
 }

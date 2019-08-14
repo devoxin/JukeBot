@@ -19,6 +19,4 @@ public @interface CommandProperties {
     boolean nsfw() default false;
 
     boolean enabled() default true;
-
-
 }

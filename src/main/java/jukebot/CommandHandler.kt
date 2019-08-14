@@ -3,9 +3,7 @@ package jukebot
 import com.google.common.reflect.ClassPath
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
 import jukebot.commands.Feedback
-import jukebot.framework.Command
-import jukebot.framework.CommandInitializationError
-import jukebot.framework.Context
+import jukebot.framework.*
 import jukebot.utils.Helpers
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.ReadyEvent
@@ -37,6 +35,18 @@ class CommandHandler : ListenerAdapter() {
 
             if (!cmd.properties().enabled || cmd.properties().nsfw && !JukeBot.config.nsfwEnabled) {
                 continue
+            }
+
+            val methods = clazz.methods
+                    .filter { it.isAnnotationPresent(SubCommand::class.java) }
+
+            for (meth in methods) {
+                val annotation = meth.getAnnotation(SubCommand::class.java)
+                val trigger = annotation.trigger.toLowerCase()
+                val description = annotation.description
+
+                val wrapper = MethodWrapper(description, meth, cmd)
+                cmd.subcommands[trigger] = wrapper
             }
 
             commands[cmd.name().toLowerCase()] = cmd
