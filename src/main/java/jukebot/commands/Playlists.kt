@@ -108,9 +108,11 @@ class Playlists : Command(ExecutionType.STANDARD) {
                     ctx.embed(
                             "Managing Playlist - ${playlist.title}",
                             "**`remove:`** Removes the track at the given index.\n" +
-                                    "**`move   :`** Moves a track to the specified index.\n" +
-                                    "**`page   :`** Displays a different page.\n" +
-                                    "**`save   :`** Saves any changes you've made to the database.")
+                                    "**`move \u200B \u200B:`** Moves a track to the specified index.\n" +
+                                    "**`page \u200B \u200B:`** Displays a different page.\n" +
+                                    "**`save \u200B \u200B:`** Saves any changes you've made to the database.")
+                    // u200B is a magical hack that allows our embeds to keep their formatting
+                    // Don't tell Discord, though :>
                     manageMenu(ctx, dialog, playlist, page)
                 }
                 "remove" -> {
