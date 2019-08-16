@@ -93,7 +93,7 @@ class Context(val event: GuildMessageReceivedEvent, val argString: String, val p
     fun prompt(delay: Int, cb: (String?) -> Unit) {
         JukeBot.waiter.waitForSelection(author.idLong, {
             cb(it)
-        }, 10, TimeUnit.SECONDS)
+        }, delay, TimeUnit.SECONDS)
     }
 
 }

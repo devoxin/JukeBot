@@ -6,7 +6,9 @@ import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.framework.SubCommand
-import jukebot.utils.*
+import jukebot.utils.Helpers
+import jukebot.utils.Page
+import jukebot.utils.separate
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -118,7 +120,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         ctx.prompt(30) { r ->
             val (cmd, args) = r?.split(" +".toRegex())?.separate() ?: return@prompt
 
-            when(cmd) {
+            when (cmd) {
                 "help" -> {
                     ctx.embed(
                             "Managing Playlist - ${playlist.title}",
