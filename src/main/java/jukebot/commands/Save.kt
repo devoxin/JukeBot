@@ -6,7 +6,7 @@ import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "DMs you the currently playing track. Specify `all` to save the queue", category = CommandCategory.QUEUE)
+@CommandProperties(description = "Adds the current track to a custom playlist", category = CommandCategory.QUEUE)
 class Save : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
