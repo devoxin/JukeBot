@@ -41,6 +41,21 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "create", description = "Create a new custom playlist.")
     fun createPlaylist(ctx: Context) {
+        val allPlaylists = Database.getPlaylists(ctx.author.idLong)
+        val donorTier = ctx.donorTier
+
+        if (allPlaylists.size >= 50) {
+            ctx.embed("Custom Playlists", "You've reached the maximum amount of playlists!")
+            return
+        } else if (allPlaylists.size >= 5 && donorTier < 1) {
+            ctx.embed(
+                    "Custom Playlists",
+                    "You've reached the maximum amount of custom playlists!\n" +
+                            "[Consider becoming a Patron](https://patreon.com/Devoxin) to get more!"
+            )
+            return
+        }
+
         ctx.prompt("Custom Playlists", "What do you want to name the playlist?\n*Max. 32 characters*") { _, title ->
             if (title == null) {
                 return@prompt ctx.embed("Custom Playlists", "Playlist creation cancelled.")
@@ -191,7 +206,15 @@ class Playlists : Command(ExecutionType.STANDARD) {
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
                 ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
 
+        if (!this.connectToChannel(ctx)) {
+            return
+        }
+
         val player = ctx.getAudioPlayer()
+
+        if (!player.isPlaying) {
+            player.channelId = ctx.channel.idLong
+        }
 
         for (track in playlist.tracks) {
             player.enqueue(track, ctx.author.idLong, false)

@@ -23,7 +23,13 @@ class PlayRelated : Command(ExecutionType.REQUIRE_MUTUAL) {
             return context.embed("Not Playing", "Nothing is currently playing.")
         }
 
-        JukeBot.kSoftAPI.getMusicRecommendations(ap.player.playingTrack.identifier).thenAccept {
+        val trackIds = mutableListOf(ap.current!!.identifier)
+
+        if (ap.queue.isNotEmpty()) {
+            trackIds.addAll(ap.queue.take(4).map { it.identifier })
+        }
+
+        JukeBot.kSoftAPI.getMusicRecommendations(*trackIds.toTypedArray()).thenAccept {
             if (it == null) {
                 return@thenAccept context.embed("Related Tracks", "No matches found.")
             }

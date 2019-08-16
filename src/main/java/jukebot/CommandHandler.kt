@@ -98,7 +98,7 @@ class CommandHandler : ListenerAdapter() {
                 JukeBot.isSelfHosted = info.idLong != 249303797371895820L && info.idLong != 314145804807962634L
 
                 if (JukeBot.isSelfHosted) {
-                    commands.remove("patreon")
+                    //commands.remove("patreon")
                     commands.remove("verify")
                     (commands.remove("feedback") as Feedback).shutdown()
                 } else {
@@ -128,10 +128,8 @@ class CommandHandler : ListenerAdapter() {
 
         val listeners = connectedChannel.members.filter { !it.user.isBot }.size
 
-        val player = JukeBot.getPlayer(channel.guild.idLong)
-
         if (listeners == 0) {
-            player.cleanup()
+            JukeBot.removePlayer(channel.guild.idLong)
             connectedChannel.guild.audioManager.closeAudioConnection()
         }
     }
