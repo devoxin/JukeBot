@@ -34,14 +34,14 @@ repositories {
 }
 
 dependencies {
-    compile ('com.github.DV8FromTheWorld:JDA:42c8355') {
+    compile ('com.github.DV8FromTheWorld:JDA:79319e9') {
         exclude module: 'opus-java'
     }
     compile 'club.minnced:discord-webhooks:0.1.7'
 
     /* Audio */
     //compile 'com.sedmelluq:lavaplayer:1.3.20'
-    compile 'com.github.Devoxin:lavaplayer:111506e'
+    compile 'com.github.Devoxin:lavaplayer:da52df1'
     compile 'com.sedmelluq:jda-nas:1.1.0'
 
     /* Database */
@@ -69,6 +69,7 @@ dependencies {
 }
 
 shadowJar {
+    archiveName = "JukeBot.jar"
     from("src/main/Resources") {
         include "log4j2.xml"
     }

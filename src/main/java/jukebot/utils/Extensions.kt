@@ -8,10 +8,8 @@ import org.json.JSONObject
 import java.awt.Color
 
 fun Response.json(): JSONObject? {
-    val body = body()
-
-    body.use {
-        return if (isSuccessful && body != null) JSONObject(body.string()) else null
+    body().use {
+        return if (isSuccessful && it != null) JSONObject(it.string()) else null
     }
 }
 

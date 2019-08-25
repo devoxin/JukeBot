@@ -95,6 +95,8 @@ abstract class Command(private val executionType: ExecutionType) {
         }
     }
 
+    open fun destroy() {}
+
     abstract fun execute(context: Context)
 
     fun properties() = this.javaClass.getAnnotation(CommandProperties::class.java)

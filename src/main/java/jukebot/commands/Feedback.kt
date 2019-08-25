@@ -57,7 +57,7 @@ class Feedback : Command(ExecutionType.STANDARD) {
         context.embed("Feedback sent!", "Thanks for your feedback! :)")
     }
 
-    fun shutdown() {
+    override fun destroy() {
         webhookClient.close()
     }
 

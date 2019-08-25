@@ -100,9 +100,9 @@ class CommandHandler : ListenerAdapter() {
                 if (JukeBot.isSelfHosted) {
                     commands.remove("patreon")
                     commands.remove("verify")
-                    (commands.remove("feedback") as Feedback).shutdown()
+                    commands.remove("feedback")?.destroy()
                 } else {
-                    Helpers.monitor.scheduleAtFixedRate({ Helpers.monitorPledges() }, 0, 1, TimeUnit.DAYS)
+                    Helpers.monitor.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS)
                 }
 
                 if (info.idLong == 314145804807962634L || JukeBot.isSelfHosted)
