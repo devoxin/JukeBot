@@ -70,9 +70,7 @@ dependencies {
 
 shadowJar {
     archiveName = "JukeBot.jar"
-    from("src/main/Resources") {
-        include "log4j2.xml"
-    }
+    from("src/main/Resources")
 }
 
 wrapper {
