@@ -38,16 +38,16 @@ class Now : Command(ExecutionType.STANDARD) {
         val trackMarker = "${current.position.toTimeString()}/$duration"
 
         val timeLink = if (isYouTubeTrack) {
-            current.info.uri + "&t=${current.position / 1000}"
+            "${current.info.uri}&t=${current.position / 1000}s"
         } else {
             "https://jukebot.serux.pro"
         }
 
         context.embed {
             //setTitle("Now Playing")
+            //setDescription("**[${current.info.title}](${current.info.uri})**\n$trackMarker")
             setTitle(current.info.title, current.info.uri)
             setDescription("${createBar(current.info.length, current.position, timeLink)} ($trackMarker)")
-            //setDescription("**[${current.info.title}](${current.info.uri})**\n$trackMarker")
             setFooter(playbackSettings, null)
         }
     }
