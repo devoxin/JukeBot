@@ -8,15 +8,16 @@ import net.dv8tion.jda.api.entities.TextChannel
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
 import kotlin.math.floor
 
 object Helpers {
-    private val timer = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }!!
-    val monitor = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }!!
+    private val timer: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
+    val monitor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }
 
-    fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC'): String {
+    fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC', link: String = "https://jukebot.serux.pro"): String {
         val percent = v.toFloat() / max
         val blocks = floor((barLength * percent).toDouble()).toInt()
 
@@ -24,14 +25,14 @@ object Helpers {
 
         for (i in 0 until barLength) {
             if (i == blocks) {
-                sb.append("](http://jukebot.serux.pro)")
+                sb.append("]($link)")
             }
 
             sb.append(bar)
         }
 
         if (blocks == barLength) {
-            sb.append("](http://jukebot.serux.pro)")
+            sb.append("]($link)")
         }
 
         return sb.toString()

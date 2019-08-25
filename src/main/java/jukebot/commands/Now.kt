@@ -5,6 +5,7 @@ import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
+import jukebot.utils.Helpers
 import jukebot.utils.toTimeString
 
 @CommandProperties(description = "Displays the currently playing track", aliases = ["n", "np"], category = CommandCategory.QUEUE)
@@ -29,16 +30,27 @@ class Now : Command(ExecutionType.STANDARD) {
                 " • Repeat: ${player.repeat.humanized()} $requesterInfo"
 
         val isYouTubeTrack = current.sourceManager.sourceName == "youtube"
-        val trackMarker = if (isYouTubeTrack) {
-            "[(${current.position.toTimeString()}/$duration)](${current.info.uri}&t=${current.position / 1000}s)"
+//        val trackMarker = if (isYouTubeTrack) {
+//            "[(${current.position.toTimeString()}/$duration)](${current.info.uri}&t=${current.position / 1000}s)"
+//        } else {
+//            "${current.position.toTimeString()}/$duration"
+//        }
+        val trackMarker = "${current.position.toTimeString()}/$duration"
+
+        val timeLink = if (isYouTubeTrack) {
+            current.info.uri + "&t=${current.position / 1000}"
         } else {
-            "${current.position.toTimeString()}/$duration"
+            "https://jukebot.serux.pro"
         }
 
         context.embed {
-            setTitle("Now Playing")
-            setDescription("**[${current.info.title}](${current.info.uri})**\n$trackMarker")
+            //setTitle("Now Playing")
+            setTitle(current.info.title, current.info.uri)
+            setDescription("${createBar(current.info.length, current.position, timeLink)} ($trackMarker)")
+            //setDescription("**[${current.info.title}](${current.info.uri})**\n$trackMarker")
             setFooter(playbackSettings, null)
         }
     }
+
+    private fun createBar(m: Long, v: Long, l: String) = Helpers.createBar(v.toInt(), m.toInt(), 10, link = l)
 }
