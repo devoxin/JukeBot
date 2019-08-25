@@ -6,7 +6,7 @@ import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.utils.Helpers
 
-@CommandProperties(aliases = ["bb"], description = "Bass boosts the audio", category = CommandCategory.CONTROLS)
+@CommandProperties(aliases = ["bb", "bass"], description = "Bass boosts the audio", category = CommandCategory.CONTROLS)
 class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
