@@ -156,7 +156,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
                 }
                 "move" -> {
                     if (args.size < 2) {
-                        ctx.embed("Managing Playlist - ${playlist.title}", "You need to specify `i1` and `i2`.")
+                        ctx.embed("Managing Playlist - ${playlist.title}", "You need to specify two numbers, higher than 0 and equal to or less than ${playlist.tracks.size}")
                         return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
@@ -232,7 +232,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
                 .setColor(ctx.embedColor)
                 .setTitle("Managing Playlist - ${playlist.title}")
                 .setDescription(page.content)
-                .setFooter("Duration: ${page.duration} • Page ${page.page}/${page.maxPages} • \"help\" for syntax")
+                .setFooter("Duration: ${page.duration} • Page ${page.page}/${page.maxPages} • Send \"help\" for management commands")
                 .build()
     }
 

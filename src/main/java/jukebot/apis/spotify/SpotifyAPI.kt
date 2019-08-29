@@ -46,13 +46,13 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
                     val refreshIn = it.getInt("expires_in")
 
                     accessToken = it.getString("access_token")
-                    Helpers.schedule({ refreshAccessToken() }, (refreshIn * 1000) - 10000, TimeUnit.MILLISECONDS)
+                    Helpers.schedule(::refreshAccessToken, (refreshIn * 1000) - 10000, TimeUnit.MILLISECONDS)
 
                     JukeBot.LOG.info("[SpotifyAudioSource] Updated access token to $accessToken")
                 }
                 .exceptionally {
                     JukeBot.LOG.warn("[SpotifyAPI] Error occurred while refreshing access token!", it)
-                    Helpers.schedule({ refreshAccessToken() }, 1, TimeUnit.MINUTES)
+                    Helpers.schedule(::refreshAccessToken, 1, TimeUnit.MINUTES)
                     return@exceptionally null
                 }
     }
@@ -92,7 +92,6 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
                         tracks.add(SpotifyAudioTrack.fromJson(track))
                     }
 
-                    println("returning track list")
                     future.complete(SpotifyPlaylist(playlistName, tracks))
                 }
                 .exceptionally {

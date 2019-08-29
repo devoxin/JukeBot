@@ -7,12 +7,11 @@ import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Adds the current track to a custom playlist", category = CommandCategory.QUEUE)
-class Save : Command(ExecutionType.STANDARD) {
+@CommandProperties(description = "Adds all tracks in the queue to a custom playlist", category = CommandCategory.QUEUE)
+class SaveAll : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
-        val currentTrack = player.player.playingTrack
 
         if (!player.isPlaying) {
             return context.embed("Not Playing", "Nothing is currently playing.")
@@ -29,9 +28,13 @@ class Save : Command(ExecutionType.STANDARD) {
             return context.embed("Save", "You've hit the maximum amount of tracks for this playlist! (${CustomPlaylist.TRACK_LIMIT})")
         }
 
-        playlist.tracks.add(currentTrack.makeClone())
+        val tracksToAdd = player.queue
+                .take(CustomPlaylist.TRACK_LIMIT - playlist.tracks.size)
+                .map { it.makeClone() }
+
+        playlist.tracks.addAll(tracksToAdd)
         playlist.save()
 
-        context.embed("Save", "Saved `${currentTrack.info.title}` to playlist `${playlist.title}`.")
+        context.embed("Save", "Saved `${tracksToAdd.size}` tracks to playlist `${playlist.title}`.")
     }
 }

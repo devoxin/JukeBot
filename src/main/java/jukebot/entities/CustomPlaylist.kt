@@ -38,5 +38,7 @@ class CustomPlaylist(val title: String, val creator: Long, tracks: String) {
     companion object {
         private val decoder = Base64.getDecoder()
         private val encoder = Base64.getEncoder()
+
+        const val TRACK_LIMIT = 100
     }
 }

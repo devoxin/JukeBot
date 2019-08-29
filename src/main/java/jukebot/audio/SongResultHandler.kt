@@ -8,6 +8,8 @@ import jukebot.JukeBot
 import jukebot.framework.Context
 import jukebot.utils.editEmbed
 import jukebot.utils.toTimeString
+import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
+import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 
 class SongResultHandler(
@@ -17,24 +19,24 @@ class SongResultHandler(
         private val playNext: Boolean = false
 ) : AudioLoadResultHandler {
 
-    private val playlistLimit: Int
-        get() {
-            return when {
-                JukeBot.isSelfHosted -> Integer.MAX_VALUE
-                ctx.donorTier >= 2 -> Integer.MAX_VALUE
-                ctx.donorTier == 1 -> 1000
-                else -> 100
-            }
-        }
-
     override fun trackLoaded(track: AudioTrack) {
         if (!canQueueTrack(track)) {
             ctx.embed("Track Unavailable", "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
             return
         }
 
+        var estPlay = musicManager.queue.sumByLong { it.duration }
+
+        if (musicManager.current != null) {
+            estPlay += musicManager.current!!.duration - musicManager.current!!.position
+        }
+
         if (musicManager.enqueue(track, ctx.author.idLong, playNext)) {
-            ctx.embed("Track Enqueued", track.info.title)
+            ctx.embed {
+                setTitle("Track Enqueued")
+                setDescription(track.info.title)
+                setFooter("Estimated time until play: ${estPlay.toTimeString()}")
+            }
         }
     }
 
@@ -71,12 +73,22 @@ class SongResultHandler(
                         return@prompt
                     }
 
+                    var estPlay = musicManager.queue.sumByLong { it.duration }
+
+                    if (musicManager.current != null) {
+                        estPlay += musicManager.current!!.duration - musicManager.current!!.position
+                    }
+
                     val track = tracks[n - 1]
 
                     m.editEmbed {
                         setColor(ctx.embedColor)
                         setTitle("Track Selected")
                         setDescription(track.info.title)
+
+                        if (estPlay > 0) {
+                            setFooter("Estimated time until play: ${estPlay.toTimeString()}")
+                        }
                     }
 
                     musicManager.enqueue(track, ctx.author.idLong, false)
@@ -89,20 +101,40 @@ class SongResultHandler(
                     return
                 }
 
+                var estPlay = musicManager.queue.sumByLong { it.duration }
+
+                if (musicManager.current != null) {
+                    estPlay += musicManager.current!!.duration - musicManager.current!!.position
+                }
+
                 if (musicManager.enqueue(track, ctx.author.idLong, playNext)) {
-                    ctx.embed("Track Enqueued", track.info.title)
+                    ctx.embed {
+                        setTitle("Track Enqueued")
+                        setDescription(track.info.title)
+                        setFooter("Estimated time until play: ${estPlay.toTimeString()}")
+                    }
                 }
             }
         } else {
             val tracks = playlist.tracks
                     .filter { canQueueTrack(it) }
-                    .take(playlistLimit)
+                    .take(playlistLimit(ctx.donorTier))
+
+            var estPlay = musicManager.queue.sumByLong { it.duration }
 
             for (track in tracks) {
                 musicManager.enqueue(track, ctx.author.idLong, false)
             }
 
-            ctx.embed(playlist.name, "${tracks.size} tracks enqueued")
+            if (musicManager.current != null) {
+                estPlay += musicManager.current!!.duration - musicManager.current!!.position
+            }
+
+            ctx.embed {
+                setTitle(playlist.name)
+                setDescription("Enqueued **${tracks.size}** tracks")
+                setFooter("Estimated time until play: ${estPlay.toTimeString()}")
+            }
         }
     }
 
@@ -123,23 +155,17 @@ class SongResultHandler(
     }
 
     private fun canQueueTrack(track: AudioTrack): Boolean {
-        val trackLength = ceil((track.duration / 1000).toDouble()).toInt()
-        var maxTrackDuration = 7500
-
-        /* 7500 = ~ 2 hours
-         * 18500 = ~ 5 hours
-         */
-
-        if (ctx.donorTier == 1) {
-            maxTrackDuration = 18500
-        } else if (ctx.donorTier >= 2) {
-            maxTrackDuration = Integer.MAX_VALUE
+        val trackDuration = track.duration
+        val maxTrackDuration = when {
+            ctx.donorTier >= 2 -> Long.MAX_VALUE
+            ctx.donorTier == 1 -> TimeUnit.HOURS.toMillis(5)
+            else -> TimeUnit.HOURS.toMillis(2)
         }
 
-        return JukeBot.isSelfHosted || track.info.isStream && ctx.donorTier != 0 || trackLength <= maxTrackDuration
+        return JukeBot.isSelfHosted || track.info.isStream && ctx.donorTier != 0 || maxTrackDuration >= trackDuration
     }
 
-    fun isCommand(s: String): Boolean {
+    private fun isCommand(s: String): Boolean {
         if (!s.contains(" ")) {
             return false
         }
@@ -159,6 +185,15 @@ class SongResultHandler(
                 "porn",
                 "spotify"
         )
+
+        fun playlistLimit(tier: Int): Int {
+            return when {
+                JukeBot.isSelfHosted -> Integer.MAX_VALUE
+                tier >= 2 -> Integer.MAX_VALUE
+                tier == 1 -> 1000
+                else -> 100
+            }
+        }
     }
 
 }

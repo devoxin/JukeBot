@@ -7,7 +7,7 @@ import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.utils.Helpers
 
-@CommandProperties(description = "Receive your donor rewards if you're a patron")
+@CommandProperties(description = "Receive your donor rewards if you're a patron", aliases = ["perks", "rewards"])
 class Verify : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

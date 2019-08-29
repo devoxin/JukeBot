@@ -10,7 +10,6 @@ import jukebot.utils.toTimeString
 class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
-
         val player = context.getAudioPlayer()
         val currentTrack = player.player.playingTrack
 
@@ -36,7 +35,6 @@ class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
         }
 
         currentTrack.position = currentTrack.position + jumpTimeMs
-        context.embed("Track Seeking", "The current track has been moved to **${currentTrack.position.toTimeString()}**")
-
+        context.embed("Track Seeking", "Seeked to **${currentTrack.position.toTimeString()}**/${currentTrack.info.length.toTimeString()}")
     }
 }
