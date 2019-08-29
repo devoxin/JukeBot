@@ -40,6 +40,7 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
                 .thenAccept {
                     if (it.has("error") && it.getString("error").startsWith("invalid_")) {
                         JukeBot.LOG.error("[SpotifyAudioSource] Spotify API access disabled (${it.getString("error")})")
+                        accessToken = ""
                         return@thenAccept
                     }
 
@@ -52,6 +53,7 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
                 }
                 .exceptionally {
                     JukeBot.LOG.warn("[SpotifyAPI] Error occurred while refreshing access token!", it)
+                    accessToken = ""
                     Helpers.schedule(::refreshAccessToken, 1, TimeUnit.MINUTES)
                     return@exceptionally null
                 }
