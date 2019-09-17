@@ -22,8 +22,8 @@ class Move : Command(ExecutionType.STANDARD) {
             return context.embed("Specify track index", "You need to specify the index of the track in the queue.")
         }
 
-        val target = Helpers.parseNumber(args[0], 0)
-        val dest = Helpers.parseNumber(args[1], 0)
+        val target = args[0].toIntOrNull() ?: 0
+        val dest = args[1].toIntOrNull() ?: 0
 
         if (target < 1 || dest < 1 || target == dest || target > player.queue.size || dest > player.queue.size) {
             return context.embed("Invalid position(s) specified!", "You need to specify a valid target track, and a valid target position.")

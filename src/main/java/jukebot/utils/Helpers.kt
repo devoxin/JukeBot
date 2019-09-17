@@ -38,10 +38,6 @@ object Helpers {
         return sb.toString()
     }
 
-    fun parseNumber(num: String?, def: Int): Int {
-        return num?.toIntOrNull() ?: def
-    }
-
     fun pad(s: String): String {
         return String.format("%-12s", s).replace(" ", " \u200B")
     }
