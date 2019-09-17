@@ -94,7 +94,7 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
         try {
             val trackInfo = getTrackInfo(reference.identifier) ?: return AudioReference.NO_TRACK
 
-            if ("false".equals(trackInfo.get("isPlayable").text(), false)) {
+            if ("false".equals(trackInfo.get("isPlayable").text(), true)) {
                 throw FriendlyException(trackInfo.get("restrictedReason").text(), FriendlyException.Severity.COMMON, null)
             }
 
