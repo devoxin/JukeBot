@@ -1,4 +1,4 @@
-package jukebot
+package jukebot.listeners
 
 import jukebot.utils.Helpers
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent

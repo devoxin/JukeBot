@@ -84,7 +84,7 @@ abstract class Command(private val executionType: ExecutionType) {
                 }
             }
             ExecutionType.TRIGGER_CONNECT -> {
-                if (context.argString.isEmpty() && context.message.attachments.size == 0) {
+                if (context.args.isEmpty() && context.message.attachments.size == 0) {
                     return context.embed(name(), "You need to specify an identifier to lookup.")
                 }
 

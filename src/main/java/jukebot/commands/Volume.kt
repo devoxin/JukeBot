@@ -19,7 +19,7 @@ class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {
 
         // If listeners == 1, ask them to use Discord volume slider?
 
-        if (context.argString.isEmpty()) {
+        if (context.args.isEmpty()) {
             val vol = player.player.volume
             return context.embed("Player Volume", "${Helpers.createBar(vol, 250, 10)} `$vol`")
         }
@@ -28,7 +28,7 @@ class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {
             return context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
         }
 
-        player.player.volume = min(Helpers.parseNumber(context.argString, 100), 250)
+        player.player.volume = min(Helpers.parseNumber(context.args[0], 100), 250)
 
         val vol = player.player.volume
         context.embed("Player Volume", "${Helpers.createBar(vol, 250, 10)} `$vol`")

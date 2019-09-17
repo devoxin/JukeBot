@@ -18,7 +18,7 @@ class Save : Command(ExecutionType.STANDARD) {
             return context.embed("Not Playing", "Nothing is currently playing.")
         }
 
-        if (context.argString.isEmpty()) {
+        if (context.args.isEmpty()) {
             return context.embed("Save", "You need to provide the name of the playlist to add the track to.")
         }
 

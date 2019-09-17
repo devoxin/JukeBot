@@ -9,9 +9,11 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import java.util.concurrent.TimeUnit
 
-class Context(val event: GuildMessageReceivedEvent, val argString: String, val prefix: String) {
+class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val prefix: String) {
 
-    val args = argString.split("\\s+".toRegex())
+    val argString: String
+        get() = args.joinToString(" ")
+
     val message = event.message
     val member = event.member!!
     val author = event.author

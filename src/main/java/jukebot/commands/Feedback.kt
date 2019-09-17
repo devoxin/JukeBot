@@ -24,7 +24,7 @@ class Feedback : Command(ExecutionType.STANDARD) {
     }
 
     override fun execute(context: Context) {
-        if (context.argString.isEmpty()) {
+        if (context.args.isEmpty()) {
             return context.embed {
                 setTitle("Missing Feedback")
                 setDescription("You need to specify feedback for the developer.")

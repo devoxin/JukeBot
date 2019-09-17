@@ -49,9 +49,7 @@ import java.util.regex.Pattern
 class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
     val httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager()!!
 
-    override fun getSourceName(): String {
-        return "mixcloud"
-    }
+    override fun getSourceName() = "mixcloud"
 
     override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
         val matcher = URL_REGEX.matcher(reference.identifier)
@@ -78,9 +76,7 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
     }
 
-    override fun decodeTrack(trackInfo: AudioTrackInfo, input: DataInput): AudioTrack {
-        return MixcloudAudioTrack(trackInfo, this)
-    }
+    override fun decodeTrack(trackInfo: AudioTrackInfo, input: DataInput) = MixcloudAudioTrack(trackInfo, this)
 
     override fun shutdown() {
         httpInterfaceManager.close()
@@ -98,7 +94,7 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
         try {
             val trackInfo = getTrackInfo(reference.identifier) ?: return AudioReference.NO_TRACK
 
-            if (!trackInfo.get("isPlayable").`as`(Boolean::class.java)) {
+            if ("false".equals(trackInfo.get("isPlayable").text(), false)) {
                 throw FriendlyException(trackInfo.get("restrictedReason").text(), FriendlyException.Severity.COMMON, null)
             }
 
@@ -127,47 +123,38 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
             val content = IOUtils.toString(it.entity.content, StandardCharsets.UTF_8)
 
-            if (content.contains("m-play-info")) { // legacy
-                // TODO
-            }
+//            if (content.contains("m-play-info")) { // legacy
+//                // TODO
+//            }
 
             val matcher = JSON_REGEX.matcher(content)
+            check(matcher.find()) { "Missing MixCloud track JSON" }
 
-            if (matcher.find()) {
-                val json = JsonBrowser.parse(matcher.group(1).replace("&quot;", "\""))
+            val json = JsonBrowser.parse(matcher.group(1).replace("&quot;", "\""))
 
-                for (node in json.values()) {
-                    val info = node.safeGet("cloudcast").safeGet("data").safeGet("cloudcastLookup")
+            for (node in json.values()) {
+                val info = node.safeGet("cloudcast").safeGet("data").safeGet("cloudcastLookup")
 
-                    if (!info.isNull && !info.get("streamInfo").isNull) {
-                        val jsMatcher = JS_REGEX.matcher(content)
+                if (!info.isNull && !info.get("streamInfo").isNull) {
+                    val jsMatcher = JS_REGEX.matcher(content)
 
-                        if (jsMatcher.find()) {
-                            info.put("jsUrl", jsMatcher.group(1))
-                        }
-
-                        return info
+                    if (jsMatcher.find()) {
+                        info.put("jsUrl", jsMatcher.group(1))
                     }
-                }
 
-                throw IllegalStateException("Missing cloudcast.data.cloudcastLookup node")
+                    return info
+                }
             }
 
-            throw IllegalStateException("Missing Mixcloud track JSON")
+            throw IllegalStateException("Missing cloudcast.data.cloudcastLookup node")
         }
     }
 
     fun getStreamKey(json: JsonBrowser): String {
-        if (json.get("jsUrl").isNull) {
-            throw IllegalStateException("jsUrl is missing from json")
-        }
+        check(!json.get("jsUrl").isNull) { "jsUrl is missing from json" }
 
         makeHttpRequest(HttpGet(json.get("jsUrl").text())).use {
-            val statusCode = it.statusLine.statusCode
-
-            if (statusCode != 200) {
-                throw IllegalStateException("Invalid status code while fetching JS")
-            }
+            check(it.statusLine.statusCode == 200) { "Invalid status code while fetching JS" }
 
             val content = IOUtils.toString(it.entity.content, StandardCharsets.UTF_8)
             val keyMatcher = KEY_REGEX.matcher(content)

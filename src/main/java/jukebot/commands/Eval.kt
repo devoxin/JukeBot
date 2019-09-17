@@ -12,6 +12,7 @@ class Eval : Command(ExecutionType.STANDARD) {
     private val engine = KotlinJsr223JvmLocalScriptEngineFactory().scriptEngine
 
     override fun execute(context: Context) {
+        println("oof")
         val bindings = mapOf(
                 "ctx" to context,
                 "jda" to context.jda,

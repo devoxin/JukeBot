@@ -35,6 +35,9 @@ import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
+import jukebot.listeners.ActionWaiter;
+import jukebot.listeners.CommandHandler;
+import jukebot.listeners.EventHandler;
 import jukebot.utils.Config;
 import jukebot.utils.Helpers;
 import jukebot.utils.RequestUtil;
@@ -57,7 +60,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.5.2";
+    public static final String VERSION = "6.5.3";
 
     public static final Long startTime = System.currentTimeMillis();
     public static boolean isReady = false;
@@ -96,7 +99,7 @@ public class JukeBot {
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
                 .setToken(config.getToken())
                 .setShardsTotal(-1)
-                .addEventListeners(new CommandHandler(), waiter)
+                .addEventListeners(new CommandHandler(), new EventHandler(), waiter)
                 .setDisabledCacheFlags(EnumSet.of(
                         CacheFlag.EMOTE,
                         CacheFlag.ACTIVITY,
@@ -183,11 +186,7 @@ public class JukeBot {
 
     public static AudioHandler getPlayer(final long guildId) {
         Guild g = shardManager.getGuildById(guildId);
-
-        if (g == null) {
-            throw new IllegalArgumentException("guildId is invalid!");
-            // should never happen
-        }
+        Objects.requireNonNull(g, "getPlayer was given an invalid guildId!");
 
         AudioHandler handler = players.computeIfAbsent(guildId,
                 v -> new AudioHandler(guildId, playerManager.createPlayer()));

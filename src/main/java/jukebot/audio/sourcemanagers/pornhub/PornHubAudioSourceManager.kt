@@ -31,9 +31,7 @@ import java.util.regex.Pattern
 class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
     val httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager()!!
 
-    override fun getSourceName(): String {
-        return "pornhub"
-    }
+    override fun getSourceName() = "pornhub"
 
     override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
         if (!VIDEO_REGEX.matcher(reference.identifier).matches() && !reference.identifier.startsWith(VIDEO_SEARCH_PREFIX))
@@ -100,7 +98,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 .addParameter("search", query)
                 .build()
 
-        makeHttpRequest(uri).use {
+        makeHttpRequest(HttpGet(uri)).use {
             val statusCode = it.statusLine.statusCode
 
             if (statusCode != 200) {
@@ -141,7 +139,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
     @Throws(IOException::class)
     private fun getVideoInfo(videoURL: String): JsonBrowser? {
-        makeHttpRequest(videoURL).use {
+        makeHttpRequest(HttpGet(videoURL)).use {
             val statusCode = it.statusLine.statusCode
 
             if (statusCode != 200) {
@@ -159,23 +157,18 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
     }
 
     private fun buildTrackObject(uri: String, identifier: String, title: String, uploader: String, isStream: Boolean, duration: Long): PornHubAudioTrack {
-        return PornHubAudioTrack(AudioTrackInfo(title, uploader, duration, identifier, isStream, uri), this)
+        return PornHubAudioTrack(
+                AudioTrackInfo(title, uploader, duration, identifier, isStream, uri),
+                this
+        )
     }
 
     private fun parseDuration(duration: String): Long {
         val time = duration.split(":")
-        val mins = time[0].toInt() * 60000
-        val secs = time[1].toInt() * 1000
+        val mins = time[0].toLong() * 60000L
+        val secs = time[1].toLong() * 1000L
 
-        return (mins + secs).toLong()
-    }
-
-    private fun makeHttpRequest(url: String): CloseableHttpResponse {
-        return makeHttpRequest(HttpGet(url))
-    }
-
-    private fun makeHttpRequest(uri: URI): CloseableHttpResponse {
-        return makeHttpRequest(HttpGet(uri))
+        return mins + secs
     }
 
     private fun makeHttpRequest(request: HttpUriRequest): CloseableHttpResponse {

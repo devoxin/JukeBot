@@ -1,10 +1,12 @@
-package jukebot
+package jukebot.listeners
 
 import com.google.common.reflect.ClassPath
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
-import jukebot.commands.Feedback
+import jukebot.Database
+import jukebot.JukeBot
 import jukebot.framework.*
 import jukebot.utils.Helpers
+import jukebot.utils.separate
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
@@ -37,8 +39,7 @@ class CommandHandler : ListenerAdapter() {
                 continue
             }
 
-            val methods = clazz.methods
-                    .filter { it.isAnnotationPresent(SubCommand::class.java) }
+            val methods = clazz.methods.filter { it.isAnnotationPresent(SubCommand::class.java) }
 
             for (meth in methods) {
                 val annotation = meth.getAnnotation(SubCommand::class.java)
@@ -72,8 +73,8 @@ class CommandHandler : ListenerAdapter() {
             return
 
         val content = e.message.contentRaw.substring(triggerLength).trim()
-        //val command = content.split("\\s+".toRegex())[0].toLowerCase()
-        val (command, args) = content.split("\\s".toRegex(), 2)
+        val (cmdStr, args) = content.split("\\s+".toRegex()).separate()
+        val command = cmdStr.toLowerCase()
         //val args = if (content.length >= command.length) content.substring(command.length).trim() else ""
 
         val foundCommand = commands[command]
@@ -85,53 +86,6 @@ class CommandHandler : ListenerAdapter() {
         }
 
         foundCommand.runChecks(Context(e, args, guildPrefix))
-    }
-
-    override fun onGuildLeave(event: GuildLeaveEvent) {
-        JukeBot.removePlayer(event.guild.idLong)
-    }
-
-    override fun onReady(e: ReadyEvent) {
-        if (!JukeBot.isReady) {
-            e.jda.retrieveApplicationInfo().queue { info ->
-                JukeBot.botOwnerId = info.owner.idLong
-                JukeBot.isSelfHosted = info.idLong != 249303797371895820L && info.idLong != 314145804807962634L
-
-                if (JukeBot.isSelfHosted) {
-                    commands.remove("patreon")
-                    commands.remove("verify")
-                    commands.remove("feedback")?.destroy()
-                } else {
-                    Helpers.monitor.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS)
-                }
-
-                if (info.idLong == 314145804807962634L || JukeBot.isSelfHosted)
-                    JukeBot.playerManager.configuration.resamplingQuality = AudioConfiguration.ResamplingQuality.HIGH
-
-                JukeBot.isReady = true
-            }
-        }
-    }
-
-    override fun onGuildVoiceLeave(e: GuildVoiceLeaveEvent) {
-        if (!e.member.user.isBot) {
-            handleLeave(e.channelLeft)
-        }
-    }
-
-    fun handleLeave(channel: VoiceChannel) {
-        val connectedChannel = channel.guild.audioManager.connectedChannel ?: return
-
-        if (!JukeBot.hasPlayer(channel.guild.idLong)) {
-            return
-        }
-
-        val listeners = connectedChannel.members.filter { !it.user.isBot }.size
-
-        if (listeners == 0) {
-            JukeBot.removePlayer(channel.guild.idLong)
-            connectedChannel.guild.audioManager.closeAudioConnection()
-        }
     }
 
     companion object {

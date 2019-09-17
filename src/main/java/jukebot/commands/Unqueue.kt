@@ -15,7 +15,7 @@ class Unqueue : Command(ExecutionType.STANDARD) {
             return context.embed("Queue Empty", "There are no tracks to remove.")
         }
 
-        if (context.argString.isEmpty()) {
+        if (context.args.isEmpty()) {
             return context.embed("Specify track index", "You need to specify the index of the track to remove.")
         }
 
