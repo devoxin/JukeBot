@@ -1,10 +1,15 @@
 package jukebot.commands
 
 import jukebot.framework.Command
+import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(aliases = ["dedupe", "dd"], description = "Removes all duplicate tracks from the queue")
+@CommandProperties(
+        aliases = ["dedupe", "dd"],
+        description = "Removes all duplicate tracks from the queue",
+        category = CommandCategory.QUEUE
+)
 class DeDuplicate : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
