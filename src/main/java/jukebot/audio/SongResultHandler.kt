@@ -10,7 +10,6 @@ import jukebot.utils.editEmbed
 import jukebot.utils.toTimeString
 import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import java.util.concurrent.TimeUnit
-import kotlin.math.ceil
 
 class SongResultHandler(
         private val ctx: Context,
@@ -25,11 +24,7 @@ class SongResultHandler(
             return
         }
 
-        var estPlay = musicManager.queue.sumByLong { it.duration }
-
-        if (musicManager.current != null) {
-            estPlay += musicManager.current!!.duration - musicManager.current!!.position
-        }
+        val estPlay = calculateEstimatedPlayTime()
 
         if (musicManager.enqueue(track, ctx.author.idLong, playNext)) {
             ctx.embed {
@@ -42,12 +37,11 @@ class SongResultHandler(
 
     override fun playlistLoaded(playlist: AudioPlaylist) {
         if (playlist.isSearchResult) {
-
             if (useSelection) {
                 val menu = StringBuilder()
 
                 val tracks = playlist.tracks
-                        .filter { canQueueTrack(it) }
+                        .filter(::canQueueTrack)
                         .take(5)
 
                 if (tracks.isEmpty()) {
@@ -73,11 +67,7 @@ class SongResultHandler(
                         return@prompt
                     }
 
-                    var estPlay = musicManager.queue.sumByLong { it.duration }
-
-                    if (musicManager.current != null) {
-                        estPlay += musicManager.current!!.duration - musicManager.current!!.position
-                    }
+                    val estPlay = calculateEstimatedPlayTime()
 
                     val track = tracks[n - 1]
 
@@ -101,11 +91,7 @@ class SongResultHandler(
                     return
                 }
 
-                var estPlay = musicManager.queue.sumByLong { it.duration }
-
-                if (musicManager.current != null) {
-                    estPlay += musicManager.current!!.duration - musicManager.current!!.position
-                }
+                val estPlay = calculateEstimatedPlayTime()
 
                 if (musicManager.enqueue(track, ctx.author.idLong, playNext)) {
                     ctx.embed {
@@ -117,7 +103,7 @@ class SongResultHandler(
             }
         } else {
             val tracks = playlist.tracks
-                    .filter { canQueueTrack(it) }
+                    .filter(::canQueueTrack)
                     .take(playlistLimit(ctx.donorTier))
 
             var estPlay = musicManager.queue.sumByLong { it.duration }
@@ -151,6 +137,17 @@ class SongResultHandler(
 
         if (!musicManager.isPlaying) {
             ctx.guild.audioManager.closeAudioConnection()
+        }
+    }
+
+    private fun calculateEstimatedPlayTime(): Long {
+        val current = musicManager.current
+        val remaining = current?.duration?.minus(current.position) ?: 0L
+
+        return if (playNext) {
+            remaining
+        } else {
+            musicManager.queue.sumByLong { it.duration } + remaining
         }
     }
 

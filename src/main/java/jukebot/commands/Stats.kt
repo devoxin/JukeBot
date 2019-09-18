@@ -8,6 +8,7 @@ import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.utils.toTimeString
 import net.dv8tion.jda.api.JDA
+import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
 
@@ -27,7 +28,7 @@ class Stats : Command(ExecutionType.STANDARD) {
         val encodingPlayers = JukeBot.players.values.filter { it.isPlaying && (it.bassBooster.isEnabled || it.player.volume != 100) }.size
 
         val servers = JukeBot.shardManager.guildCache.size()
-        val users = JukeBot.shardManager.userCache.size()
+        val users = JukeBot.shardManager.guilds.sumBy { it.memberCount }
 
         val shards = JukeBot.shardManager.shardsTotal
         val shardsOnline = JukeBot.shardManager.shards.filter { s -> s.status == JDA.Status.CONNECTED }.size
