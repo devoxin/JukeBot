@@ -21,7 +21,17 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
     val guild = event.guild
     val jda = event.jda
     val donorTier: Int
-        get() = if (author.idLong == JukeBot.botOwnerId) 3 else Database.getTier(author.idLong)
+        get() {
+            if (author.idLong == JukeBot.botOwnerId) {
+                return Integer.MAX_VALUE
+            }
+
+            if (Database.isPremiumServer(guild.idLong)) {
+                return 2
+            }
+
+            return Database.getTier(author.idLong)
+        }
     val embedColor: Int
         get() = Database.getColour(guild.idLong)
 

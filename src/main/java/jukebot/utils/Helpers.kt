@@ -12,6 +12,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
 import kotlin.math.floor
+import kotlin.math.round
 
 object Helpers {
     private val timer: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
@@ -83,22 +84,37 @@ object Helpers {
                 return@thenAccept JukeBot.LOG.warn("Scheduled pledge clean failed: No users to check")
             }
 
-            Database.getDonorIds().forEach { id ->
+            for (id in Database.getDonorIds()) {
                 val pledge = users.firstOrNull { it.discordId != null && it.discordId == id }
 
                 if (pledge == null || pledge.isDeclined) {
                     Database.setTier(id, 0)
+                    Database.removePremiumServersOf(id)
                     JukeBot.LOG.info("Removed $id from donors")
-                } else {
-                    val amount = pledge.pledgeCents.toDouble() / 100
-                    val friendly = String.format("%1$,.2f", amount)
-                    val tier = Database.getTier(id)
-                    val calculatedTier = calculateTier(amount)
+                    continue
+                }
 
-                    if (tier != calculatedTier) {
-                        JukeBot.LOG.info("Adjusting $id's tier (saved: $tier, calculated: $calculatedTier, pledge: $$friendly)")
-                        Database.setTier(id, calculatedTier)
+                val amount = pledge.pledgeCents.toDouble() / 100
+                val friendly = String.format("%1$,.2f", amount)
+                val tier = Database.getTier(id)
+                val calculatedTier = calculateTier(amount)
+
+                if (tier != calculatedTier) {
+                    if (calculatedTier < tier) {
+                        val calculatedServerQuota = if (calculatedTier < 3) 0 else ((calculatedTier - 3) / 1.5).toInt() + 1
+                        val allServers = Database.getPremiumServersOf(id)
+
+                        if (allServers.size > calculatedServerQuota) {
+                            JukeBot.LOG.info("Removing some of $id's premium servers to meet quota (quota: $calculatedServerQuota, servers: ${allServers.size}")
+                            val exceededQuotaBy = allServers.size - calculatedServerQuota
+
+                            for (i in 0..exceededQuotaBy) {
+                                allServers[i].remove()
+                            }
+                        }
                     }
+                    JukeBot.LOG.info("Adjusting $id's tier (saved: $tier, calculated: $calculatedTier, pledge: $$friendly)")
+                    Database.setTier(id, calculatedTier)
                 }
             }
         }
@@ -108,6 +124,7 @@ object Helpers {
         return when {
             pledgeAmount >= 1 && pledgeAmount < 2 -> 1
             pledgeAmount >= 2 -> 2
+            pledgeAmount >= 3 -> round(pledgeAmount).toInt()
             else -> 0
         }
     }

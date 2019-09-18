@@ -118,7 +118,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
     fun manageMenu(ctx: Context, dialog: Message, playlist: CustomPlaylist, page: Int) {
         ctx.prompt(30) { r ->
-            val (cmd, args) = r?.split(" +".toRegex())?.separate() ?: return@prompt
+            val (cmd, args) = r?.split("\\s+".toRegex())?.separate() ?: return@prompt
 
             when (cmd) {
                 "help" -> {

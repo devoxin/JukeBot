@@ -162,7 +162,7 @@ class SongResultHandler(
             else -> TimeUnit.HOURS.toMillis(2)
         }
 
-        return JukeBot.isSelfHosted || track.info.isStream && ctx.donorTier != 0 || maxTrackDuration >= trackDuration
+        return JukeBot.isSelfHosted || track.info.isStream && ctx.donorTier > 0 || maxTrackDuration >= trackDuration
     }
 
     private fun isCommand(s: String): Boolean {

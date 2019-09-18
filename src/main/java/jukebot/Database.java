@@ -2,9 +2,11 @@ package jukebot;
 
 import com.zaxxer.hikari.HikariDataSource;
 import jukebot.entities.CustomPlaylist;
+import jukebot.entities.PremiumGuild;
 
 import javax.annotation.Nullable;
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -32,6 +34,7 @@ public class Database {
             statement.addBatch("CREATE TABLE IF NOT EXISTS colours (id INTEGER PRIMARY KEY, rgb INTEGER NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS musicnick (id INTEGER PRIMARY KEY)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS customplaylists (title TEXT NOT NULL, creator INTEGER, tracks TEXT)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS premiumservers (guildid INTEGER PRIMARY KEY, userid INTEGER, added INTEGER)");
             statement.executeBatch();
         } catch (SQLException e) {
             JukeBot.LOG.error("There was an error setting up the SQL database!", e);
@@ -326,6 +329,81 @@ public class Database {
             return JukeBot.config.getEmbedColour().getRGB();
         }
     }
+
+    public static boolean isPremiumServer(long guildId) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM premiumservers WHERE guildid = ?");
+            statement.setLong(1, guildId);
+            ResultSet results = statement.executeQuery();
+            return results.next();
+        } catch (SQLException e) {
+            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            return false;
+        }
+    }
+
+    public static void setPremiumServer(long userId, long guildId) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO premiumservers VALUES (?, ?, ?);");
+            statement.setLong(1, guildId);
+            statement.setLong(2, userId);
+            statement.setLong(3, Instant.now().toEpochMilli());
+            statement.execute();
+        } catch (SQLException ignored) {
+        }
+    }
+
+    public static boolean removePremiumServer(final long guildId) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement update = connection.prepareStatement("DELETE FROM premiumservers WHERE guildid = ?");
+            update.setLong(1, guildId);
+
+            return update.executeUpdate() == 1;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static boolean removePremiumServersOf(final long userId) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement update = connection.prepareStatement("DELETE FROM premiumservers WHERE userid = ?");
+            update.setLong(1, userId);
+
+            return update.executeUpdate() > 0;
+        } catch (SQLException e) {
+            JukeBot.LOG.info("fuck lol", e);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static ArrayList<PremiumGuild> getPremiumServersOf(long userId) {
+        ArrayList<PremiumGuild> premiumGuilds = new ArrayList<>();
+
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM premiumservers WHERE userid = ?");
+            statement.setLong(1, userId);
+            ResultSet results = statement.executeQuery();
+
+            while (results.next()) {
+                premiumGuilds.add(new PremiumGuild(
+                        results.getLong("guildid"),
+                        results.getLong("added")
+                ));
+            }
+        } catch (SQLException ignored) {
+        }
+
+        return premiumGuilds;
+    }
+
+
+
+    /*
+     * +=================================================+
+     * |                IGNORE BELOW THIS                |
+     * +=================================================+
+     */
 
     @SuppressWarnings("unchecked")
     private static String getFromDatabase(String table, long id, String columnId) {
