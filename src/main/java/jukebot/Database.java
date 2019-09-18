@@ -371,8 +371,6 @@ public class Database {
 
             return update.executeUpdate() > 0;
         } catch (SQLException e) {
-            JukeBot.LOG.info("fuck lol", e);
-            e.printStackTrace();
             return false;
         }
     }
