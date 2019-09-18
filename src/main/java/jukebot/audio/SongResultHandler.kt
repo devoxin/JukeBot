@@ -108,18 +108,21 @@ class SongResultHandler(
 
             var estPlay = musicManager.queue.sumByLong { it.duration }
 
-            for (track in tracks) {
-                musicManager.enqueue(track, ctx.author.idLong, false)
-            }
-
             if (musicManager.current != null) {
                 estPlay += musicManager.current!!.duration - musicManager.current!!.position
+            }
+
+            for (track in tracks) {
+                musicManager.enqueue(track, ctx.author.idLong, false)
             }
 
             ctx.embed {
                 setTitle(playlist.name)
                 setDescription("Enqueued **${tracks.size}** tracks")
-                setFooter("Estimated time until play: ${estPlay.toTimeString()}")
+
+                if (estPlay > 0) {
+                    setFooter("Estimated time until play: ${estPlay.toTimeString()}")
+                }
             }
         }
     }
