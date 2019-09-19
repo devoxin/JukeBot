@@ -24,7 +24,7 @@ class Queue : Command(ExecutionType.STANDARD) {
         val queueDuration = queue.map { it.duration }.sum().toTimeString()
         val fQueue = StringBuilder()
 
-        val selectedPage = context.args.getOrNull(0)?.toIntOrNull() ?: 1
+        val selectedPage = context.args.firstOrNull()?.toIntOrNull() ?: 1
 
         val maxPages = ceil(queue.size.toDouble() / 10).toInt()
         val page = min(max(selectedPage, 1), maxPages)

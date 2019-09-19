@@ -22,7 +22,7 @@ class Help : Command(ExecutionType.STANDARD) {
             return sendDefaultHelp(context)
         }
 
-        val menu = context.args.firstOrNull()?.toIntOrNull() ?: 0
+        val menu = context.args.first().toIntOrNull() ?: 0
 
         if (menu <= 0 || menu > CommandCategory.values().size) {
             val cmd = CommandHandler.commands

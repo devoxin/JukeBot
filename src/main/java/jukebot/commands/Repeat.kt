@@ -22,9 +22,7 @@ class Repeat : Command(ExecutionType.REQUIRE_MUTUAL) {
             return
         }
 
-        val args = context.args
-
-        when (args[0].toLowerCase()) {
+        when (context.args.firstOrNull()?.toLowerCase()) {
             "a", "all" -> player.repeat = AudioHandler.RepeatMode.ALL
             "s", "single" -> player.repeat = AudioHandler.RepeatMode.SINGLE
             "n", "none" -> player.repeat = AudioHandler.RepeatMode.NONE

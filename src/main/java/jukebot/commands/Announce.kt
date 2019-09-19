@@ -15,15 +15,14 @@ class Announce : Command(ExecutionType.STANDARD) {
         }
 
         val player = context.getAudioPlayer()
-        val args = context.args
 
-        when {
-            args[0] == "here" -> {
+        when (context.args.firstOrNull()?.toLowerCase()) {
+            "here" -> {
                 player.channelId = context.channel.idLong
                 player.shouldAnnounce = true
                 context.embed("Track Announcements", "This channel will now be used to post track announcements")
             }
-            args[0] == "off" -> {
+            "off" -> {
                 player.shouldAnnounce = false
                 context.embed("Track Announcements", "Track announcements are now disabled for this server")
             }
