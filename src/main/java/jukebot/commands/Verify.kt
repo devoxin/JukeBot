@@ -65,7 +65,11 @@ class Verify : Command(ExecutionType.STANDARD) {
      * @return The amount of servers the user may register.
      */
     fun calculateServerQuota(userId: Long): Int {
-        val pledge = Database.getTier(userId)
+        val pledge = if (userId == JukeBot.botOwnerId) {
+            Integer.MAX_VALUE
+        } else {
+            Database.getTier(userId)
+        }
 
         if (pledge < 3) {
             return 0
