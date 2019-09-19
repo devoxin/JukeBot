@@ -18,9 +18,9 @@ class Help : Command(ExecutionType.STANDARD) {
     }
 
     override fun execute(context: Context) {
-        val menu = context.args[0].toIntOrNull() ?: 0
+        val menu = context.args.firstOrNull()?.toIntOrNull() ?: 0
 
-        if (menu <= 0 || menu > CommandCategory.values().size) {
+        if (context.args.isNotEmpty() && (menu <= 0 || menu > CommandCategory.values().size)) {
             val cmd = CommandHandler.commands
                     .filter { it.key == context.args[0] || it.value.properties().aliases.contains(context.args[0]) }
                     .values
