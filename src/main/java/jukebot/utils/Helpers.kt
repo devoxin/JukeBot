@@ -122,9 +122,9 @@ object Helpers {
 
     fun calculateTier(pledgeAmount: Double): Int {
         return when {
-            pledgeAmount >= 1 && pledgeAmount < 2 -> 1
-            pledgeAmount >= 2 -> 2
             pledgeAmount >= 3 -> round(pledgeAmount).toInt()
+            pledgeAmount >= 2 -> 2
+            pledgeAmount >= 1 -> 1
             else -> 0
         }
     }
