@@ -23,7 +23,7 @@ class Eval : Command(ExecutionType.STANDARD) {
         bind.putAll(bindings)
 
         try {
-            val result = engine.eval("$bindString\n${context.argString}", bind)
+            val result = engine.eval("$bindString\n${context.originalArgs}", bind)
             context.channel.sendMessage("```\n$result```").queue(null) {
                 context.embed("Response Error", it.toString())
             }

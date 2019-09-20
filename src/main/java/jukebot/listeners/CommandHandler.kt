@@ -75,7 +75,7 @@ class CommandHandler : ListenerAdapter() {
         val content = e.message.contentRaw.substring(triggerLength).trim()
         val (cmdStr, args) = content.split("\\s+".toRegex()).separate()
         val command = cmdStr.toLowerCase()
-        //val args = if (content.length >= command.length) content.substring(command.length).trim() else ""
+        val originalArgs = if (content.length >= command.length) content.substring(command.length).trim() else ""
 
         val foundCommand = commands[command]
                 ?: commands.values.firstOrNull { it.properties().aliases.contains(command) }
@@ -85,7 +85,7 @@ class CommandHandler : ListenerAdapter() {
             return
         }
 
-        foundCommand.runChecks(Context(e, args, guildPrefix))
+        foundCommand.runChecks(Context(e, args, originalArgs, guildPrefix))
     }
 
     companion object {
