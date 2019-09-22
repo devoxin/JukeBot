@@ -10,7 +10,6 @@ import jukebot.framework.Context
 class Stop : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
-
         val player = context.getAudioPlayer()
 
         if (!player.isPlaying) {
@@ -25,7 +24,7 @@ class Stop : Command(ExecutionType.REQUIRE_MUTUAL) {
 
         player.repeat = AudioHandler.RepeatMode.NONE
         player.queue.clear()
-        player.playNext()
+        player.playNext(false)
 
     }
 }

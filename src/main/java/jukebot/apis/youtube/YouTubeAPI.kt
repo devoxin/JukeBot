@@ -25,10 +25,13 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
 
         makeRequest(request)
                 .thenApply { it.getJSONArray("items").getJSONObject(0).getJSONObject("id").getString("videoId") }
-                .thenApply { getVideoInfo(it) }
-                .thenAccept { yti ->
-                    yti.thenApply { toYouTubeAudioTrack(it) }
-                            .thenAccept { fut.complete(it) }
+                .thenApply {
+                    getVideoInfo(it)
+                        .thenAccept { t -> fut.complete(t) }
+                        .exceptionally { e ->
+                            fut.completeExceptionally(e)
+                            return@exceptionally null
+                        }
                 }
                 .exceptionally {
                     fut.completeExceptionally(it)
@@ -38,14 +41,14 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
         return fut
     }
 
-    fun getVideoInfo(id: String): CompletableFuture<YoutubeTrackInformation> {
+    fun getVideoInfo(id: String): CompletableFuture<AudioTrack> {
         val request = Request.Builder()
                 .url("https://www.googleapis.com/youtube/v3/videos?id=$id&key=$key&type=video&maxResults=3&part=snippet,contentDetails")
                 .addHeader("User-Agent", "JukeBot/v${JukeBot.VERSION} (https://www.jukebot.serux.pro)")
                 .get()
                 .build()
 
-        val fut = CompletableFuture<YoutubeTrackInformation>()
+        val fut = CompletableFuture<AudioTrack>()
 
         makeRequest(request)
                 .thenAccept {
@@ -57,7 +60,7 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
                     }
 
                     val yti = YoutubeTrackInformation.fromJson(results.getJSONObject(0))
-                    fut.complete(yti)
+                    fut.complete(toYouTubeAudioTrack(yti))
                 }
                 .exceptionally {
                     fut.completeExceptionally(it)

@@ -26,15 +26,19 @@ public class Database {
     public static void setupDatabase() {
         try (Connection connection = getConnection()) {
             Statement statement = connection.createStatement();
+            // Dev/Bot stuff
             statement.addBatch("CREATE TABLE IF NOT EXISTS blocked (id INTEGER PRIMARY KEY)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS donators (id INTEGER PRIMARY KEY, tier TEXT NOT NULL)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS premiumservers (guildid INTEGER PRIMARY KEY, userid INTEGER, added INTEGER)");
+            // Guild Settings
             statement.addBatch("CREATE TABLE IF NOT EXISTS prefixes (id INTEGER PRIMARY KEY, prefix TEXT NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS djroles (guildid INTEGER PRIMARY KEY, roleid INTEGER NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS skipthres (id INTEGER PRIMARY KEY, threshold REAL NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS colours (id INTEGER PRIMARY KEY, rgb INTEGER NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS musicnick (id INTEGER PRIMARY KEY)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS autoplay (id INTEGER PRIMARY KEY)");
+            // User Stuff
             statement.addBatch("CREATE TABLE IF NOT EXISTS customplaylists (title TEXT NOT NULL, creator INTEGER, tracks TEXT)");
-            statement.addBatch("CREATE TABLE IF NOT EXISTS premiumservers (guildid INTEGER PRIMARY KEY, userid INTEGER, added INTEGER)");
             statement.executeBatch();
         } catch (SQLException e) {
             JukeBot.LOG.error("There was an error setting up the SQL database!", e);
@@ -252,44 +256,24 @@ public class Database {
         return donors;
     }
 
-    public static void blockUser(long id) {
-        try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO blocked VALUES (?);");
-            statement.setLong(1, id);
-            statement.execute();
-        } catch (SQLException ignored) {
-        }
+    public static void setIsBlocked(long id, boolean block) {
+        setEnabled("blocked", id, block, getIsBlocked(id));
     }
 
-    public static void unblockUser(long id) {
-        try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("DELETE FROM blocked WHERE id = ?");
-            statement.setLong(1, id);
-            statement.execute();
-        } catch (SQLException unused) {
-        }
-    }
-
-    public static boolean isBlocked(long id) {
+    public static boolean getIsBlocked(long id) {
         return tableContains("blocked", id);
     }
 
+    public static boolean getIsAutoPlayEnabled(long guildId) {
+        return tableContains("autoplay", guildId);
+    }
+
+    public static void setAutoPlayEnabled(long id, boolean enable) {
+        setEnabled("autoplay", id, enable, getIsAutoPlayEnabled(id));
+    }
+
     public static void setMusicNickEnabled(long id, boolean enable) {
-        try (Connection connection = getConnection()) {
-            boolean currentlyEnabled = getIsMusicNickEnabled(id);
-
-            if (!enable && !currentlyEnabled || enable && currentlyEnabled) {
-                return;
-            }
-
-            PreparedStatement statement = enable
-                    ? connection.prepareStatement("INSERT INTO musicnick VALUES (?);")
-                    : connection.prepareStatement("DELETE FROM musicnick WHERE id = ?");
-
-            statement.setLong(1, id);
-            statement.execute();
-        } catch (SQLException ignored) {
-        }
+        setEnabled("musicnick", id, enable, getIsMusicNickEnabled(id));
     }
 
     public static boolean getIsMusicNickEnabled(long id) {
@@ -395,6 +379,22 @@ public class Database {
         return premiumGuilds;
     }
 
+    public static void setEnabled(String table, long id, boolean enable, boolean currentlyEnabled) {
+        try (Connection connection = getConnection()) {
+            if (!enable && !currentlyEnabled || enable && currentlyEnabled) {
+                return;
+            }
+
+            PreparedStatement statement = enable
+                    ? connection.prepareStatement("INSERT INTO " + table + " VALUES (?);")
+                    : connection.prepareStatement("DELETE FROM " + table + " WHERE id = ?");
+
+            statement.setLong(1, id);
+            statement.execute();
+        } catch (SQLException ignored) {
+            ignored.printStackTrace();
+        }
+    }
 
 
     /*

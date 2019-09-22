@@ -40,6 +40,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     var trackPacketsSent = 0
 
     // Player Stuff
+    val autoPlay = AutoPlay(guildId)
     var current: AudioTrack? = null
     val isPlaying: Boolean
         get() = player.playingTrack != null
@@ -69,8 +70,14 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         return skips.size
     }
 
-    fun playNext() {
+    fun playNext(shouldAutoPlay: Boolean = true) {
         var nextTrack: AudioTrack? = null
+
+        current?.let {
+            if (it.sourceManager.sourceName == "youtube") {
+                autoPlay.store(it.identifier)
+            }
+        }
 
         if (current != null) {
             if (repeat == RepeatMode.ALL) {
@@ -92,7 +99,17 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         }
 
         if (nextTrack != null) {
-            player.startTrack(nextTrack, false)
+            return player.playTrack(nextTrack)
+        }
+
+        if (shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
+            autoPlay.getRelatedTrack()
+                .thenAccept(player::playTrack)
+                .exceptionally {
+                    playNext(false)
+                    JukeBot.LOG.error("AutoPlay Error", it)
+                    return@exceptionally null
+                }
             return
         }
 
@@ -112,8 +129,12 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         if (audioManager.isConnected || audioManager.isAttemptingToConnect) {
             Helpers.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS)
 
-            announce("Queue Concluded!",
-                    "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)\nSuggest features with the `feedback` command!")
+            if (Database.isPremiumServer(guildId)) {
+                announce("Queue Concluded", "Enable AutoPlay to keep the party going!")
+            } else {
+                announce("Queue Concluded!",
+                        "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
+            }
 
             setNick(null)
         }
@@ -138,7 +159,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         ).queue(null, { err -> JukeBot.LOG.error("Encountered an error while posting track announcement", err) })
     }
 
-    fun setNick(nick: String?) {
+    private fun setNick(nick: String?) {
         val guild = JukeBot.shardManager.getGuildById(guildId) ?: return
 
         if (guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guild.idLong)) {
@@ -155,9 +176,10 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     /*
-     * Player Events
+     *  +===================+
+     *  |   Player Events   |
+     *  +===================+
      */
-
     override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
         player.isPaused = false
 
@@ -176,6 +198,10 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         skips.clear()
         trackPacketLost = 0
         trackPacketsSent = 0
+
+//        if (track.sourceManager.sourceName == "youtube") {
+//            autoPlay.store(track.identifier)
+//        }
 
         if (endReason.mayStartNext) {
             playNext()
@@ -199,9 +225,10 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     /*
-     * Packet Sending Events
+     *  +=======================+
+     *  |   JDA Audio Sending   |
+     *  +=======================+
      */
-
     override fun canProvide(): Boolean {
         val frameProvided = player.provide(mutableFrame)
 

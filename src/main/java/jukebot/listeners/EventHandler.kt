@@ -19,12 +19,13 @@ class EventHandler : ListenerAdapter() {
     override fun onReady(e: ReadyEvent) {
         if (!JukeBot.isReady) {
             e.jda.retrieveApplicationInfo().queue { info ->
+                JukeBot.selfId = info.idLong;
                 JukeBot.botOwnerId = info.owner.idLong
                 JukeBot.isSelfHosted = info.idLong != 249303797371895820L && info.idLong != 314145804807962634L
 
                 if (JukeBot.isSelfHosted) {
                     CommandHandler.commands.remove("patreon")
-                    CommandHandler.commands.remove("verify")
+                    //CommandHandler.commands.remove("verify")
                     CommandHandler.commands.remove("feedback")?.destroy()
                 } else {
                     Helpers.monitor.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS)

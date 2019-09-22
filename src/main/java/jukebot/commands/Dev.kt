@@ -28,7 +28,7 @@ class Dev : Command(ExecutionType.STANDARD) {
                     return context.embed("Missing Required Arg", "You need to specify `userId`")
                 }
 
-                Database.blockUser(context.args[1].toLong())
+                Database.setIsBlocked(context.args[1].toLong(), true)
                 context.embed("User Blocked", "${context.args[1]} is now blocked from using JukeBot.")
             }
             "unblock" -> {
@@ -36,7 +36,7 @@ class Dev : Command(ExecutionType.STANDARD) {
                     return context.embed("Missing Required Arg", "You need to specify `userId`")
                 }
 
-                Database.unblockUser(context.args[1].toLong())
+                Database.setIsBlocked(context.args[1].toLong(), false)
                 context.embed("User Unblocked", "${context.args[1]} can now use JukeBot.")
             }
             else -> {

@@ -30,11 +30,6 @@ class Now : Command(ExecutionType.STANDARD) {
                 " • Repeat: ${player.repeat.humanized()} $requesterInfo"
 
         val isYouTubeTrack = current.sourceManager.sourceName == "youtube"
-//        val trackMarker = if (isYouTubeTrack) {
-//            "[(${current.position.toTimeString()}/$duration)](${current.info.uri}&t=${current.position / 1000}s)"
-//        } else {
-//            "${current.position.toTimeString()}/$duration"
-//        }
         val trackMarker = "${current.position.toTimeString()}/$duration"
 
         val timeLink = if (isYouTubeTrack) {
@@ -44,8 +39,6 @@ class Now : Command(ExecutionType.STANDARD) {
         }
 
         context.embed {
-            //setTitle("Now Playing")
-            //setDescription("**[${current.info.title}](${current.info.uri})**\n$trackMarker")
             setTitle(current.info.title, current.info.uri)
             setDescription("${createBar(current.info.length, current.position, timeLink)} ($trackMarker)")
             setFooter(playbackSettings, null)

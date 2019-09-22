@@ -29,8 +29,8 @@ class KSoftAPI(private val key: String) {
         }
     }
 
-    fun getMusicRecommendations(vararg tracks: String): CompletableFuture<TrackRecommendation?> {
-        val fut = CompletableFuture<TrackRecommendation?>()
+    fun getMusicRecommendations(vararg tracks: String): CompletableFuture<TrackRecommendation> {
+        val fut = CompletableFuture<TrackRecommendation>()
 
         val obj = JSONObject()
                 .put("provider", "youtube_ids")
@@ -42,7 +42,7 @@ class KSoftAPI(private val key: String) {
             val results = it.getJSONArray("tracks")
 
             if (results.length() == 0) {
-                fut.complete(null)
+                fut.completeExceptionally(IllegalStateException("No recommendations were returned by KSoft API"))
                 return@thenAccept
             }
 
@@ -54,7 +54,7 @@ class KSoftAPI(private val key: String) {
             val description = selected.getString("description")
             fut.complete(TrackRecommendation(id, link, title, thumbnail, description))
         }.exceptionally {
-            fut.complete(null)
+            fut.completeExceptionally(it)
             return@exceptionally null
         }
 
@@ -73,6 +73,7 @@ class KSoftAPI(private val key: String) {
         }
 
         JukeBot.httpClient.makeRequest(req.build()).queue({
+            JukeBot.LOG.debug("Response from KSoft API: code=${it.code()} message=${it.message()}")
             val j = it.json()
 
             if (j == null) {

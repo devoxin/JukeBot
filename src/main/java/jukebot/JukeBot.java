@@ -67,6 +67,7 @@ public class JukeBot {
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
     public static Config config = new Config("config.properties");
 
+    public static Long selfId = 0L;
     public static Long botOwnerId = 0L;
     public static boolean isSelfHosted = false;
 
