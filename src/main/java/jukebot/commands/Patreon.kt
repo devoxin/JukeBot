@@ -37,6 +37,7 @@ class Patreon : Command(ExecutionType.STANDARD) {
                 "• **Everything in Tier 2 and...**\n" +
                     "• Register premium servers which grant all members access to Tier 2 level perks\n" +
                     "• Multi-server discounts; 50% off the cost of each additional server\n" +
+                    "• AutoPlay\n" +
                     "[Join Tier]($BASE_URL$TIER_3)", false)
         )
 
