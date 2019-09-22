@@ -34,8 +34,8 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
         val userQuery = ctx.argString.replace("[<>]".toRegex(), "")
 
         if (userQuery.startsWith("http")) {
-            if (userQuery.toLowerCase().contains("/you/likes")) {
-                ctx.embed("SoundCloud Liked Tracks", "JukeBot doesn't implement oauth and as a result\ncannot access your liked tracks when referenced as `you`")
+            if (userQuery.toLowerCase().contains("soundcloud.com/you/")) {
+                ctx.embed("SoundCloud Liked Tracks", "JukeBot doesn't implement oauth and as a result\ncannot access your tracks when referenced as `you`")
 
                 if (!player.isPlaying) {
                     manager.closeAudioConnection()

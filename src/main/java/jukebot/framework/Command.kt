@@ -59,7 +59,7 @@ abstract class Command(private val executionType: ExecutionType) {
                 return false
             }
 
-            if (voiceChannel.userLimit != 0 && voiceChannel.members.size >= voiceChannel.userLimit &&
+            if (voiceChannel.userLimit > 0 && voiceChannel.members.size >= voiceChannel.userLimit &&
                     !voiceChannel.guild.selfMember.hasPermission(Permission.VOICE_MOVE_OTHERS)) {
                 context.embed(
                         "Unable to Connect",
@@ -69,7 +69,7 @@ abstract class Command(private val executionType: ExecutionType) {
                 return false
             }
 
-            audioManager.openAudioConnection(memberVoice.channel)
+            audioManager.openAudioConnection(voiceChannel)
         }
 
         return true
