@@ -33,8 +33,10 @@ class KSoftAPI(private val key: String) {
         val fut = CompletableFuture<TrackRecommendation>()
 
         val obj = JSONObject()
-                .put("provider", "youtube_ids")
-                .put("tracks", tracks)
+            .put("provider", "youtube_ids")
+            .put("tracks", tracks)
+            .put("limit", 1)
+
 
         makeRequest("/music/recommendations") {
             post(RequestBody.create(applicationJson, obj.toString()))
