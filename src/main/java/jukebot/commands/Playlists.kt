@@ -58,7 +58,9 @@ class Playlists : Command(ExecutionType.STANDARD) {
             return
         }
 
-        if (ctx.args.isEmpty()) {
+        val args = ctx.args.drop(1)
+
+        if (args.isEmpty()) {
             ctx.prompt("Custom Playlists", "What do you want to name the playlist?\n*Max. 32 characters*") { _, title ->
                 if (title == null) {
                     return@prompt ctx.embed("Custom Playlists", "Playlist creation cancelled.")
@@ -67,7 +69,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
                 createPlaylistWithTitle(ctx, title)
             }
         } else {
-            createPlaylistWithTitle(ctx, ctx.args.first())
+            createPlaylistWithTitle(ctx, args.first())
         }
     }
 
