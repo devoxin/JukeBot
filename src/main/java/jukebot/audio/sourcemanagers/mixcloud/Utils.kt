@@ -12,11 +12,11 @@ object Utils {
 
     fun decryptXor(key: String, cipher: String): String {
         return cipher.asIterable()
-                .zip(cycle(key).asIterable())
-                .map { (ch, k) ->
-                    (ch.toString().codePointAt(0) xor k.toString().codePointAt(0)).toChar()
-                }
-                .joinToString("")
+            .zip(cycle(key).asIterable())
+            .map { (ch, k) ->
+                (ch.toString().codePointAt(0) xor k.toString().codePointAt(0)).toChar()
+            }
+            .joinToString("")
     }
 
 }

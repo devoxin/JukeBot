@@ -37,7 +37,6 @@ class KSoftAPI(private val key: String) {
             .put("tracks", tracks)
             .put("limit", 1)
 
-
         makeRequest("/music/recommendations") {
             post(RequestBody.create(applicationJson, obj.toString()))
         }.thenAccept {
@@ -67,8 +66,8 @@ class KSoftAPI(private val key: String) {
         val fut = CompletableFuture<JSONObject>()
 
         val req = Request.Builder()
-                .url(BASE_URL + endpoint)
-                .header("Authorization", "Bearer $key")
+            .url(BASE_URL + endpoint)
+            .header("Authorization", "Bearer $key")
 
         if (requestOptions != null) {
             req.apply(requestOptions)

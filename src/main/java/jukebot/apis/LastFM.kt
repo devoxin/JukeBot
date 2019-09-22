@@ -18,9 +18,9 @@ class LastFM(private val key: String) {
         url.addParameter("artist", artist)
 
         val req = Request.Builder()
-                .url(url.build().toURL())
-                .get()
-                .build()
+            .url(url.build().toURL())
+            .get()
+            .build()
 
         val future = CompletableFuture<List<TrackMatch>?>()
 

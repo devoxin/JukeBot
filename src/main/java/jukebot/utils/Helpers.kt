@@ -70,8 +70,8 @@ object Helpers {
 
         user.openPrivateChannel().queue {
             it.sendMessage(message)
-                    .submit()
-                    .handle { _, _ -> it.close().queue() }
+                .submit()
+                .handle { _, _ -> it.close().queue() }
         }
     }
 

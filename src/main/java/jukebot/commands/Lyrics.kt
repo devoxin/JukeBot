@@ -20,7 +20,7 @@ class Lyrics : Command(ExecutionType.STANDARD) {
 
         if (JukeBot.kSoftAPI == null) {
             context.embed("Not Configured", "The Lyrics API has not been configured.\n" +
-                    "This feature is unavailable.")
+                "This feature is unavailable.")
             return
         }
 
@@ -44,11 +44,11 @@ class Lyrics : Command(ExecutionType.STANDARD) {
 
     private fun sendChunks(context: Context, title: String, chunks: Array<String>, index: Int = 0) {
         context.channel.sendMessage(EmbedBuilder()
-                .setColor(context.embedColor)
-                .setTitle(title)
-                .setDescription(chunks[index])
-                .setFooter("KSoft.Si API", null)
-                .build()
+            .setColor(context.embedColor)
+            .setTitle(title)
+            .setDescription(chunks[index])
+            .setFooter("KSoft.Si API", null)
+            .build()
         ).queue {
             if (chunks.size > index + 1) {
                 sendChunks(context, title, chunks, index + 1)

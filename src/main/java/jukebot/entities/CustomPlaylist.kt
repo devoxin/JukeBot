@@ -14,14 +14,14 @@ class CustomPlaylist(val title: String, val creator: Long, tracks: String) {
 
     init {
         this.tracks = tracks.split("\n")
-                .asSequence()
-                .filter { it.isNotEmpty() }
-                .map { decoder.decode(it) }
-                .map { ByteArrayInputStream(it) }
-                .map { MessageInput(it) }
-                .map { JukeBot.playerManager.decodeTrack(it) }
-                .map { it.decodedTrack }
-                .toMutableList()
+            .asSequence()
+            .filter { it.isNotEmpty() }
+            .map { decoder.decode(it) }
+            .map { ByteArrayInputStream(it) }
+            .map { MessageInput(it) }
+            .map { JukeBot.playerManager.decodeTrack(it) }
+            .map { it.decodedTrack }
+            .toMutableList()
     }
 
     private fun toMessage(audioTrack: AudioTrack): String {

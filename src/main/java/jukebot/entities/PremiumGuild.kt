@@ -5,8 +5,8 @@ import java.time.Duration
 import java.time.Instant
 
 class PremiumGuild(
-        val guildId: Long,
-        val added: Long
+    val guildId: Long,
+    val added: Long
 ) {
 
     fun daysSinceAdded(): Long {

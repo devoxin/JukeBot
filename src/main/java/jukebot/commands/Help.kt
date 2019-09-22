@@ -1,17 +1,17 @@
 package jukebot.commands
 
-import jukebot.listeners.CommandHandler
 import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
+import jukebot.listeners.CommandHandler
 
 @CommandProperties(description = "Displays all commands", aliases = ["commands", "cmds", "?"])
 class Help : Command(ExecutionType.STANDARD) {
 
     private val categories = CommandCategory.values()
-            .mapIndexed { i, e -> "`${i + 1}.` **`${pad(e.toTitleCase())}:`** ${e.description}" }
-            .joinToString("\n")
+        .mapIndexed { i, e -> "`${i + 1}.` **`${pad(e.toTitleCase())}:`** ${e.description}" }
+        .joinToString("\n")
 
     fun pad(s: String): String {
         return String.format("%-12s", s).replace(" ", " \u200B")
@@ -26,10 +26,10 @@ class Help : Command(ExecutionType.STANDARD) {
 
         if (menu <= 0 || menu > CommandCategory.values().size) {
             val cmd = CommandHandler.commands
-                    .filter { it.key == context.args[0] || it.value.properties().aliases.contains(context.args[0]) }
-                    .values
-                    .firstOrNull()
-                    ?: return sendDefaultHelp(context)
+                .filter { it.key == context.args[0] || it.value.properties().aliases.contains(context.args[0]) }
+                .values
+                .firstOrNull()
+                ?: return sendDefaultHelp(context)
 
             sendCommandHelp(context, cmd)
         } else {
@@ -38,10 +38,10 @@ class Help : Command(ExecutionType.STANDARD) {
 
             for (cmd in commandsByCategory(category)) {
                 builder.append("**`")
-                        .append(pad(cmd.name().toLowerCase()))
-                        .append(":`** ")
-                        .append(cmd.properties().description)
-                        .append("\n")
+                    .append(pad(cmd.name().toLowerCase()))
+                    .append(":`** ")
+                    .append(cmd.properties().description)
+                    .append("\n")
             }
 
             context.embed {
@@ -68,13 +68,13 @@ class Help : Command(ExecutionType.STANDARD) {
         val aliasString = if (aliases.isEmpty()) "None" else aliases.joinToString(", ")
 
         context.embed("Help for **${cmd.name()}**",
-                "**Aliases:** $aliasString\n**Description:** ${cmd.properties().description}")
+            "**Aliases:** $aliasString\n**Description:** ${cmd.properties().description}")
     }
 
     private fun commandsByCategory(category: CommandCategory) =
-            CommandHandler.commands
-                    .values
-                    .filter { it.properties().category == category }
-                    .sortedBy { it.name() }
+        CommandHandler.commands
+            .values
+            .filter { it.properties().category == category }
+            .sortedBy { it.name() }
 
 }

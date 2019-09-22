@@ -23,7 +23,7 @@ class Save : Command(ExecutionType.STANDARD) {
         }
 
         val playlist = Database.getPlaylist(context.author.idLong, context.argString)
-                ?: return context.embed("Save", "That playlist doesn't exist.")
+            ?: return context.embed("Save", "That playlist doesn't exist.")
 
         if (playlist.tracks.size >= CustomPlaylist.TRACK_LIMIT) {
             return context.embed("Save", "You've hit the maximum amount of tracks for this playlist! (${CustomPlaylist.TRACK_LIMIT})")

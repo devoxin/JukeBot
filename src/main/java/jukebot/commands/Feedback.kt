@@ -36,21 +36,21 @@ class Feedback : Command(ExecutionType.STANDARD) {
         val guild = "${context.guild.name}\n(${context.guild.id})"
 
         val fields = listOf(
-                WebhookEmbed.EmbedField(true, "Sender:", sender),
-                WebhookEmbed.EmbedField(true, "Guild:", guild),
-                WebhookEmbed.EmbedField(true, "\u200b", "\u200b")
+            WebhookEmbed.EmbedField(true, "Sender:", sender),
+            WebhookEmbed.EmbedField(true, "Guild:", guild),
+            WebhookEmbed.EmbedField(true, "\u200b", "\u200b")
         )
 
         val whe = WebhookEmbed(
-                OffsetDateTime.now(),
-                JukeBot.config.embedColour.rgb,
-                context.argString,
-                null,
-                null,
-                null,
-                WebhookEmbed.EmbedTitle("New Feedback", null),
-                null,
-                fields
+            OffsetDateTime.now(),
+            JukeBot.config.embedColour.rgb,
+            context.argString,
+            null,
+            null,
+            null,
+            WebhookEmbed.EmbedTitle("New Feedback", null),
+            null,
+            fields
         )
 
         webhookClient.send(whe)

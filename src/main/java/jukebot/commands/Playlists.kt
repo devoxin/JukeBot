@@ -22,8 +22,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
         if (!this.subcommands.containsKey(sc)) {
             return context.embed(
-                    "Custom Playlists",
-                    this.subcommands.map { "**`${Helpers.pad(it.key)}:`** ${it.value.description}" }.joinToString("\n")
+                "Custom Playlists",
+                this.subcommands.map { "**`${Helpers.pad(it.key)}:`** ${it.value.description}" }.joinToString("\n")
             )
         }
 
@@ -51,9 +51,9 @@ class Playlists : Command(ExecutionType.STANDARD) {
             return
         } else if (allPlaylists.size >= 5 && donorTier < 1) {
             ctx.embed(
-                    "Custom Playlists",
-                    "You've reached the maximum amount of custom playlists!\n" +
-                            "[Consider becoming a Patron](https://patreon.com/Devoxin) to get more!"
+                "Custom Playlists",
+                "You've reached the maximum amount of custom playlists!\n" +
+                    "[Consider becoming a Patron](https://patreon.com/Devoxin) to get more!"
             )
             return
         }
@@ -70,7 +70,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
             Database.createPlaylist(ctx.author.idLong, title)
 
             ctx.embed("Custom Playlists", ":fire: Any time you hear a song you like, you can add it to your new playlist " +
-                    "by running `${ctx.prefix}save $title`")
+                "by running `${ctx.prefix}save $title`")
         }
     }
 
@@ -83,7 +83,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         }
 
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
-                ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
+            ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
 
         val trackList = if (playlist.tracks.isEmpty()) {
             "`No tracks.`"
@@ -104,7 +104,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         }
 
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
-                ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
+            ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
 
         if (playlist.tracks.isEmpty()) {
             return ctx.embed("Custom Playlists", "No tracks to manage.")
@@ -123,11 +123,11 @@ class Playlists : Command(ExecutionType.STANDARD) {
             when (cmd) {
                 "help" -> {
                     ctx.embed(
-                            "Managing Playlist - ${playlist.title}",
-                            "**`remove:`** Removes the track at the given index.\n" +
-                                    "**`move \u200B \u200B:`** Moves a track to the specified index.\n" +
-                                    "**`page \u200B \u200B:`** Displays a different page.\n" +
-                                    "**`save \u200B \u200B:`** Saves any changes you've made to the database.")
+                        "Managing Playlist - ${playlist.title}",
+                        "**`remove:`** Removes the track at the given index.\n" +
+                            "**`move \u200B \u200B:`** Moves a track to the specified index.\n" +
+                            "**`page \u200B \u200B:`** Displays a different page.\n" +
+                            "**`save \u200B \u200B:`** Saves any changes you've made to the database.")
                     // u200B is a magical hack that allows our embeds to keep their formatting
                     // Don't tell Discord, though :>
                     manageMenu(ctx, dialog, playlist, page)
@@ -191,7 +191,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         }
 
         Database.getPlaylist(ctx.author.idLong, playlistName)
-                ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
+            ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
 
         Database.deletePlaylist(ctx.author.idLong, playlistName)
         ctx.embed("Custom Playlists", "Playlist deleted.")
@@ -206,7 +206,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         }
 
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
-                ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
+            ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
 
         if (!this.connectToChannel(ctx)) {
             return
@@ -229,11 +229,11 @@ class Playlists : Command(ExecutionType.STANDARD) {
         val page = Page.paginate(playlist.tracks, selectedPage)
 
         return EmbedBuilder()
-                .setColor(ctx.embedColor)
-                .setTitle("Managing Playlist - ${playlist.title}")
-                .setDescription(page.content)
-                .setFooter("Duration: ${page.duration} • Page ${page.page}/${page.maxPages} • Send \"help\" for management commands")
-                .build()
+            .setColor(ctx.embedColor)
+            .setTitle("Managing Playlist - ${playlist.title}")
+            .setDescription(page.content)
+            .setFooter("Duration: ${page.duration} • Page ${page.page}/${page.maxPages} • Send \"help\" for management commands")
+            .build()
     }
 
     // proper loading system

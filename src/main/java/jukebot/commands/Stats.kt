@@ -8,7 +8,6 @@ import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.utils.toTimeString
 import net.dv8tion.jda.api.JDA
-import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
 
@@ -43,22 +42,22 @@ class Stats : Command(ExecutionType.STANDARD) {
         val formattedCPS = dpFormatter.format(callsPerSecond)
 
         toSend.append("```ini\n")
-                .append("[ JVM ]\n")
-                .append("Uptime          = ").append((System.currentTimeMillis() - JukeBot.startTime).toTimeString()).append("\n")
-                .append("JVM_CPU_Usage   = ").append(procCpuUsage).append("%\n")
-                .append("System_CPU_Usage= ").append(sysCpuUsage).append("%\n")
-                .append("RAM_Usage       = ").append(usedMB).append("MB (").append(rPercent).append("%)\n")
-                .append("Threads         = ").append(Thread.activeCount()).append("\n\n")
-                .append("[ JukeBot ]\n")
-                .append("Guilds          = ").append(servers).append("\n")
-                .append("Users           = ").append(users).append("\n")
-                .append("Total_Players   = ").append(players).append("\n")
-                .append("  Playing       = ").append(playingPlayers).append("\n")
-                .append("  Encoding      = ").append(encodingPlayers).append("\n")
-                .append("Database_Calls  = ").append(Database.calls).append(" (").append(formattedCPS).append("/sec)").append("\n")
-                .append("Shards_Online   = ").append(shardsOnline).append("/").append(shards).append("\n")
-                .append("Average_Latency = ").append(averageShardLatency).append("ms\n")
-                .append("```")
+            .append("[ JVM ]\n")
+            .append("Uptime          = ").append((System.currentTimeMillis() - JukeBot.startTime).toTimeString()).append("\n")
+            .append("JVM_CPU_Usage   = ").append(procCpuUsage).append("%\n")
+            .append("System_CPU_Usage= ").append(sysCpuUsage).append("%\n")
+            .append("RAM_Usage       = ").append(usedMB).append("MB (").append(rPercent).append("%)\n")
+            .append("Threads         = ").append(Thread.activeCount()).append("\n\n")
+            .append("[ JukeBot ]\n")
+            .append("Guilds          = ").append(servers).append("\n")
+            .append("Users           = ").append(users).append("\n")
+            .append("Total_Players   = ").append(players).append("\n")
+            .append("  Playing       = ").append(playingPlayers).append("\n")
+            .append("  Encoding      = ").append(encodingPlayers).append("\n")
+            .append("Database_Calls  = ").append(Database.calls).append(" (").append(formattedCPS).append("/sec)").append("\n")
+            .append("Shards_Online   = ").append(shardsOnline).append("/").append(shards).append("\n")
+            .append("Average_Latency = ").append(averageShardLatency).append("ms\n")
+            .append("```")
 
         context.channel.sendMessage(toSend.toString()).queue()
     }

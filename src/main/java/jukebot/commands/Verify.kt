@@ -16,8 +16,8 @@ class Verify : Command(ExecutionType.STANDARD) {
 
         if (!this.subcommands.containsKey(sc)) {
             return context.embed(
-                    "Donation Management",
-                    this.subcommands.map { "**`${Helpers.pad(it.key)}:`** ${it.value.description}" }.joinToString("\n")
+                "Donation Management",
+                this.subcommands.map { "**`${Helpers.pad(it.key)}:`** ${it.value.description}" }.joinToString("\n")
             )
         }
 
@@ -34,13 +34,13 @@ class Verify : Command(ExecutionType.STANDARD) {
             }
 
             val pledge = users.firstOrNull { it.discordId != null && it.discordId == ctx.author.idLong }
-                    ?: return@thenAccept ctx.embed("Donor Verification",
-                            "No Discord account linked to your Patreon account. Link your discord and try again.\n" +
-                                    "If you continue to receive this error, please [join here](https://discord.gg/xvtH2Yn)")
+                ?: return@thenAccept ctx.embed("Donor Verification",
+                    "No Discord account linked to your Patreon account. Link your discord and try again.\n" +
+                        "If you continue to receive this error, please [join here](https://discord.gg/xvtH2Yn)")
 
             if (pledge.isDeclined) {
                 return@thenAccept ctx.embed("Donor Verification", "It appears your payment has been declined. Please resolve this issue and then try again.\n" +
-                        "If you believe this to be in error, please [join here](https://discord.gg/xvtH2Yn)")
+                    "If you believe this to be in error, please [join here](https://discord.gg/xvtH2Yn)")
             }
 
             val pledgeAmount = pledge.pledgeCents.toDouble() / 100
@@ -48,14 +48,14 @@ class Verify : Command(ExecutionType.STANDARD) {
 
             val note = if (calculatedTier == 3) {
                 "Apply your reward at any time by running `\$perks addserver` in the server you would like to " +
-                "enable your perks on."
+                    "enable your perks on."
             } else {
                 "Your perks have been automatically applied."
             }
 
             ctx.embed("Donor Perks", "Thanks for donating! **Your pledge: $${String.format("%1$,.2f", pledgeAmount)}** " +
-                    "(Tier $calculatedTier)\n\n" +
-                    "$note\nIf for some reason you encounter issues, please join https://discord.gg/xvtH2Yn")
+                "(Tier $calculatedTier)\n\n" +
+                "$note\nIf for some reason you encounter issues, please join https://discord.gg/xvtH2Yn")
 
             Database.setTier(ctx.author.idLong, calculatedTier)
         }
@@ -84,8 +84,8 @@ class Verify : Command(ExecutionType.STANDARD) {
 
         if (serverQuota == 0) {
             return ctx.embed(
-                    "Perks | Server Management",
-                    "Your donation does not meet the minimum amount required to access this reward."
+                "Perks | Server Management",
+                "Your donation does not meet the minimum amount required to access this reward."
             )
         }
 
@@ -94,25 +94,25 @@ class Verify : Command(ExecutionType.STANDARD) {
 
         if (remainingServers == 0) {
             return ctx.embed(
-                    "Perks | Server Management",
-                    "You cannot add more servers as you've reached your quota (**$serverQuota**)."
+                "Perks | Server Management",
+                "You cannot add more servers as you've reached your quota (**$serverQuota**)."
             )
         }
 
         if (Database.isPremiumServer(ctx.guild.idLong)) {
             return ctx.embed(
-                    "Perks | Server Management",
-                    "This server is already registered as a premium server."
+                "Perks | Server Management",
+                "This server is already registered as a premium server."
             )
         }
 
         Database.setPremiumServer(ctx.author.idLong, ctx.guild.idLong)
 
         ctx.embed(
-                "Perks | Server Management",
-                "This server has been registered as part of your perks!\n" +
-                        "All members will now have access to tier 2 rewards.\n\n" +
-                        "You may unregister this server after **28 days** from now."
+            "Perks | Server Management",
+            "This server has been registered as part of your perks!\n" +
+                "All members will now have access to tier 2 rewards.\n\n" +
+                "You may unregister this server after **28 days** from now."
         )
     }
 
@@ -139,9 +139,9 @@ class Verify : Command(ExecutionType.STANDARD) {
             }
 
             return ctx.channel.sendMessage(
-                    "**Perks | Server Management**\n" +
-                            "You need to specify the ID of the server you want to unregister.\n\n" +
-                            "```\n$sb```"
+                "**Perks | Server Management**\n" +
+                    "You need to specify the ID of the server you want to unregister.\n\n" +
+                    "```\n$sb```"
             ).queue()
         }
 
@@ -149,8 +149,8 @@ class Verify : Command(ExecutionType.STANDARD) {
 
         if (guildId == null || !allServers.any { it.guildId == guildId }) {
             return ctx.embed(
-                    "Perks | Server Management",
-                    "Invalid server ID. Run this command without arguments to view a list of registered servers."
+                "Perks | Server Management",
+                "Invalid server ID. Run this command without arguments to view a list of registered servers."
             )
         }
 
@@ -158,10 +158,10 @@ class Verify : Command(ExecutionType.STANDARD) {
 
         if (selectedGuild.daysSinceAdded() < 28) {
             return ctx.embed(
-                    "Perks | Server Management",
-                    "This server was registered less than 28 days ago. It cannot be unregistered " +
-                            "until at least 28 days have elapsed since registration to prevent abuse.\n\n" +
-                            "If you have a valid reason for early de-registration, contact `devoxin#0101`."
+                "Perks | Server Management",
+                "This server was registered less than 28 days ago. It cannot be unregistered " +
+                    "until at least 28 days have elapsed since registration to prevent abuse.\n\n" +
+                    "If you have a valid reason for early de-registration, contact `devoxin#0101`."
             )
         }
 

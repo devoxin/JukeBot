@@ -26,7 +26,7 @@ class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
         }
 
         val jumpTime = context.args.firstOrNull()?.toIntOrNull()
-                ?: return context.embed("Track Seeking", "You need to specify a valid amount of seconds to jump.")
+            ?: return context.embed("Track Seeking", "You need to specify a valid amount of seconds to jump.")
 
         val jumpTimeMs = jumpTime * 1000
 

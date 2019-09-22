@@ -52,19 +52,19 @@ abstract class Command(private val executionType: ExecutionType) {
 
             if (!voiceChannel.guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK)) {
                 context.embed(
-                        "Unable to Connect",
-                        "The VoiceChannel permissions prevent me from connecting.\n" +
-                                "Check that I have the `Connect` and `Speak` permissions."
+                    "Unable to Connect",
+                    "The VoiceChannel permissions prevent me from connecting.\n" +
+                        "Check that I have the `Connect` and `Speak` permissions."
                 )
                 return false
             }
 
             if (voiceChannel.userLimit > 0 && voiceChannel.members.size >= voiceChannel.userLimit &&
-                    !voiceChannel.guild.selfMember.hasPermission(Permission.VOICE_MOVE_OTHERS)) {
+                !voiceChannel.guild.selfMember.hasPermission(Permission.VOICE_MOVE_OTHERS)) {
                 context.embed(
-                        "Unable to Connect",
-                        "Your VoiceChannel is currently full.\n" +
-                                "Raise the user limit, or move to another channel."
+                    "Unable to Connect",
+                    "Your VoiceChannel is currently full.\n" +
+                        "Raise the user limit, or move to another channel."
                 )
                 return false
             }

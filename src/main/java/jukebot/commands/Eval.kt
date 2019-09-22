@@ -13,9 +13,9 @@ class Eval : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
         val bindings = mapOf(
-                "ctx" to context,
-                "jda" to context.jda,
-                "sm" to JukeBot.shardManager
+            "ctx" to context,
+            "jda" to context.jda,
+            "sm" to JukeBot.shardManager
         )
 
         val bindString = bindings.map { "val ${it.key} = bindings[\"${it.key}\"] as ${it.value.javaClass.kotlin.qualifiedName}" }.joinToString("\n")

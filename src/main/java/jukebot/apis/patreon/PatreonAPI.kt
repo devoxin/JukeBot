@@ -36,10 +36,10 @@ class PatreonAPI(private var accessToken: String) {
         }
 
         val request = Request.Builder()
-                .addHeader("Authorization", "Bearer $accessToken")
-                .url(url.build().toURL())
-                .get()
-                .build()
+            .addHeader("Authorization", "Bearer $accessToken")
+            .url(url.build().toURL())
+            .get()
+            .build()
 
         JukeBot.httpClient.makeRequest(request).queue({
             if (!it.isSuccessful) {
@@ -109,12 +109,12 @@ class PatreonAPI(private var accessToken: String) {
         }
 
         return PatreonUser(
-                userAttr.getString("first_name"),
-                userAttr.getString("last_name"),
-                userAttr.getString("email"),
-                pledgeAttr.getInt("amount_cents"),
-                !pledgeAttr.isNull("declined_since"),
-                discordId
+            userAttr.getString("first_name"),
+            userAttr.getString("last_name"),
+            userAttr.getString("email"),
+            pledgeAttr.getInt("amount_cents"),
+            !pledgeAttr.isNull("declined_since"),
+            discordId
         )
     }
 

@@ -8,9 +8,9 @@ import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
 @CommandProperties(
-        description = "Search YouTube and select from up to 5 tracks",
-        aliases = ["search", "sel", "s", "find", "add"],
-        category = CommandCategory.PLAYBACK
+    description = "Search YouTube and select from up to 5 tracks",
+    aliases = ["search", "sel", "s", "find", "add"],
+    category = CommandCategory.PLAYBACK
 )
 class Select : Command(ExecutionType.TRIGGER_CONNECT) {
 

@@ -28,9 +28,9 @@ class PlayerStats : Command(ExecutionType.REQUIRE_MUTUAL) {
         val framesDeficit = Math.abs(expectedPackets - totalPackets).toInt()
 
         context.channel.sendMessage(
-                "Dropped packets: ${player.trackPacketLost} ($packetLossPc%)\n" +
-                        "Deficit packets: $framesDeficit\n" +
-                        "Sent packets: ${player.trackPacketsSent}"
+            "Dropped packets: ${player.trackPacketLost} ($packetLossPc%)\n" +
+                "Deficit packets: $framesDeficit\n" +
+                "Sent packets: ${player.trackPacketsSent}"
         ).queue()
     }
 

@@ -20,7 +20,6 @@ import org.jsoup.Jsoup
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException
-import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.function.Consumer
@@ -95,8 +94,8 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
     private fun searchForVideos(query: String): AudioItem {
         val uri = URIBuilder("https://www.pornhub.com/video/search")
-                .addParameter("search", query)
-                .build()
+            .addParameter("search", query)
+            .build()
 
         makeHttpRequest(HttpGet(uri)).use {
             val statusCode = it.statusLine.statusCode
@@ -110,12 +109,12 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
             val document = Jsoup.parse(it.entity.content, StandardCharsets.UTF_8.name(), "https://pornhub.com")
             val videos = document.getElementsByClass("wrap")
-                    .filter { elem ->
-                        !elem.select("div.thumbnail-info-wrapper span.title a")
-                                .first()
-                                .attr("href")
-                                .contains("playlist")
-                    }
+                .filter { elem ->
+                    !elem.select("div.thumbnail-info-wrapper span.title a")
+                        .first()
+                        .attr("href")
+                        .contains("playlist")
+                }
 
             if (videos.isEmpty())
                 return AudioReference.NO_TRACK
@@ -158,8 +157,8 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
     private fun buildTrackObject(uri: String, identifier: String, title: String, uploader: String, isStream: Boolean, duration: Long): PornHubAudioTrack {
         return PornHubAudioTrack(
-                AudioTrackInfo(title, uploader, duration, identifier, isStream, uri),
-                this
+            AudioTrackInfo(title, uploader, duration, identifier, isStream, uri),
+            this
         )
     }
 

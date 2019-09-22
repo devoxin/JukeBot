@@ -34,10 +34,10 @@ class RequestUtil {
 
     fun makeRequest(method: String, url: String, body: RequestBody? = null, headers: Headers): PendingRequest {
         val request = Request.Builder()
-                .method(method.toUpperCase(), body)
-                .header("User-Agent", "JukeBot (https://github.com/Devoxin/JukeBot)")
-                .headers(headers)
-                .url(url)
+            .method(method.toUpperCase(), body)
+            .header("User-Agent", "JukeBot (https://github.com/Devoxin/JukeBot)")
+            .headers(headers)
+            .url(url)
 
         return PendingRequest(request.build())
     }

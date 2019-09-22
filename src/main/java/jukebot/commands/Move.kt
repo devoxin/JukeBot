@@ -4,7 +4,6 @@ import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
-import jukebot.utils.Helpers
 
 @CommandProperties(description = "Moves a track in the queue", aliases = ["m", "mv"], category = CommandCategory.QUEUE)
 class Move : Command(ExecutionType.STANDARD) {

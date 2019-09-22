@@ -15,12 +15,12 @@ class About : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
         val dependencies = "**JDA**: ${JDAInfo.VERSION}" +
-                "\n**Lavaplayer**: ${PlayerLibrary.VERSION}" +
-                "\n**SQLite**: ${SQLiteJDBCLoader.getVersion()}"
+            "\n**Lavaplayer**: ${PlayerLibrary.VERSION}" +
+            "\n**SQLite**: ${SQLiteJDBCLoader.getVersion()}"
 
         val fields = arrayOf(
-                MessageEmbed.Field("Dependencies", dependencies, true),
-                MessageEmbed.Field("Links", "[GitHub](https://github.com/Devoxin/JukeBot)\n[Website](https://jukebot.serux.pro)", true)
+            MessageEmbed.Field("Dependencies", dependencies, true),
+            MessageEmbed.Field("Links", "[GitHub](https://github.com/Devoxin/JukeBot)\n[Website](https://jukebot.serux.pro)", true)
         )
 
         context.embed {

@@ -43,8 +43,8 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
         val manager = member.guild.audioManager
 
         return (member.voiceState!!.channel != null
-                && manager.connectedChannel != null
-                && manager.connectedChannel!!.idLong == member.voiceState!!.channel!!.idLong)
+            && manager.connectedChannel != null
+            && manager.connectedChannel!!.idLong == member.voiceState!!.channel!!.idLong)
     }
 
     fun isDJ(allowLoneVC: Boolean): Boolean {
@@ -77,9 +77,9 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
         }
 
         val embed = EmbedBuilder()
-                .setColor(embedColor)
-                .apply(block)
-                .build()
+            .setColor(embedColor)
+            .apply(block)
+            .build()
 
         event.channel.sendMessage(embed).queue()
     }
@@ -90,10 +90,10 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
         }
 
         val embed = EmbedBuilder()
-                .setColor(embedColor)
-                .setTitle(title)
-                .setDescription(description)
-                .build()
+            .setColor(embedColor)
+            .setTitle(title)
+            .setDescription(description)
+            .build()
 
         event.channel.sendMessage(embed).queue { m ->
             JukeBot.waiter.waitForSelection(author.idLong, {

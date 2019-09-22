@@ -1,19 +1,13 @@
 package jukebot.listeners
 
 import com.google.common.reflect.ClassPath
-import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
 import jukebot.Database
 import jukebot.JukeBot
 import jukebot.framework.*
 import jukebot.utils.Helpers
 import jukebot.utils.separate
-import net.dv8tion.jda.api.entities.VoiceChannel
-import net.dv8tion.jda.api.events.ReadyEvent
-import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import java.util.concurrent.TimeUnit
 
 class CommandHandler : ListenerAdapter() {
 
@@ -58,7 +52,7 @@ class CommandHandler : ListenerAdapter() {
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
         if (!e.guild.isAvailable || e.author.isBot || e.author.isFake || !Helpers.canSendTo(e.channel)
-                || Database.getIsBlocked(e.author.idLong)) {
+            || Database.getIsBlocked(e.author.idLong)) {
             return
         }
 
@@ -78,8 +72,8 @@ class CommandHandler : ListenerAdapter() {
         val originalArgs = if (content.length >= command.length) content.substring(command.length).trim() else ""
 
         val foundCommand = commands[command]
-                ?: commands.values.firstOrNull { it.properties().aliases.contains(command) }
-                ?: return
+            ?: commands.values.firstOrNull { it.properties().aliases.contains(command) }
+            ?: return
 
         if (foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong) {
             return

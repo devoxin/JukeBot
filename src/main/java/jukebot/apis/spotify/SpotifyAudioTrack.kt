@@ -4,8 +4,8 @@ import jukebot.JukeBot
 import org.json.JSONObject
 
 data class SpotifyAudioTrack(
-        val title: String,
-        val artist: String
+    val title: String,
+    val artist: String
 ) {
     fun toYoutubeAudioTrack() = JukeBot.youTubeApi.search("$title $artist")
 

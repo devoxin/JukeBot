@@ -27,7 +27,7 @@ class Now : Command(ExecutionType.STANDARD) {
         val requesterInfo = if (requester != null) "• Queued by ${requester.asTag}" else ""
 
         val playbackSettings = "Shuffle: ${if (player.shuffle) "On" else "Off"}" +
-                " • Repeat: ${player.repeat.humanized()} $requesterInfo"
+            " • Repeat: ${player.repeat.humanized()} $requesterInfo"
 
         val isYouTubeTrack = current.sourceManager.sourceName == "youtube"
         val trackMarker = "${current.position.toTimeString()}/$duration"

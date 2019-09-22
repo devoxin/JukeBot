@@ -35,14 +35,14 @@ class Queue : Command(ExecutionType.STANDARD) {
         for (i in begin until end) {
             val track = queue[i]
             fQueue.append("`")
-                    .append(i + 1)
-                    .append(".` **[")
-                    .append(track.info.title)
-                    .append("](")
-                    .append(track.info.uri)
-                    .append(")** <@")
-                    .append(track.userData)
-                    .append(">\n")
+                .append(i + 1)
+                .append(".` **[")
+                .append(track.info.title)
+                .append("](")
+                .append(track.info.uri)
+                .append(")** <@")
+                .append(track.userData)
+                .append(">\n")
         }
 
         context.embed {

@@ -12,10 +12,10 @@ import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import java.util.concurrent.TimeUnit
 
 class SongResultHandler(
-        private val ctx: Context,
-        private val musicManager: AudioHandler,
-        private val useSelection: Boolean,
-        private val playNext: Boolean = false
+    private val ctx: Context,
+    private val musicManager: AudioHandler,
+    private val useSelection: Boolean,
+    private val playNext: Boolean = false
 ) : AudioLoadResultHandler {
 
     override fun trackLoaded(track: AudioTrack) {
@@ -41,8 +41,8 @@ class SongResultHandler(
                 val menu = StringBuilder()
 
                 val tracks = playlist.tracks
-                        .filter(::canQueueTrack)
-                        .take(5)
+                    .filter(::canQueueTrack)
+                    .take(5)
 
                 if (tracks.isEmpty()) {
                     return noMatches()
@@ -103,8 +103,8 @@ class SongResultHandler(
             }
         } else {
             val tracks = playlist.tracks
-                    .filter(::canQueueTrack)
-                    .take(playlistLimit(ctx.donorTier))
+                .filter(::canQueueTrack)
+                .take(playlistLimit(ctx.donorTier))
 
             var estPlay = musicManager.queue.sumByLong { it.duration }
 
@@ -171,7 +171,7 @@ class SongResultHandler(
         }
 
         val prefix = setOf(ctx.prefix, ctx.guild.selfMember.asMention, ctx.jda.selfUser.asMention)
-                .firstOrNull { s.startsWith(it) } ?: return false
+            .firstOrNull { s.startsWith(it) } ?: return false
 
         val ct = s.substring(prefix.length).trim()
         return commands.any { ct.startsWith(it) }
@@ -179,11 +179,11 @@ class SongResultHandler(
 
     companion object {
         private val commands = listOf(
-                "p", "play", "playrelated", "pr", "playnext", "pn",
-                "s", "sel", "select",
-                "sc", "scsearch",
-                "porn",
-                "spotify"
+            "p", "play", "playrelated", "pr", "playnext", "pn",
+            "s", "sel", "select",
+            "sc", "scsearch",
+            "porn",
+            "spotify"
         )
 
         fun playlistLimit(tier: Int): Int {

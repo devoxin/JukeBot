@@ -16,56 +16,56 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
 
     fun search(query: String): CompletableFuture<AudioTrack> {
         val request = Request.Builder()
-                .url("https://www.googleapis.com/youtube/v3/search?q=$query&key=$key&type=video&maxResults=3&part=id")
-                .addHeader("User-Agent", "JukeBot/v${JukeBot.VERSION} (https://www.jukebot.serux.pro)")
-                .get()
-                .build()
+            .url("https://www.googleapis.com/youtube/v3/search?q=$query&key=$key&type=video&maxResults=3&part=id")
+            .addHeader("User-Agent", "JukeBot/v${JukeBot.VERSION} (https://www.jukebot.serux.pro)")
+            .get()
+            .build()
 
         val fut = CompletableFuture<AudioTrack>()
 
         makeRequest(request)
-                .thenApply { it.getJSONArray("items").getJSONObject(0).getJSONObject("id").getString("videoId") }
-                .thenApply {
-                    getVideoInfo(it)
-                        .thenAccept { t -> fut.complete(t) }
-                        .exceptionally { e ->
-                            fut.completeExceptionally(e)
-                            return@exceptionally null
-                        }
-                }
-                .exceptionally {
-                    fut.completeExceptionally(it)
-                    return@exceptionally null
-                }
+            .thenApply { it.getJSONArray("items").getJSONObject(0).getJSONObject("id").getString("videoId") }
+            .thenApply {
+                getVideoInfo(it)
+                    .thenAccept { t -> fut.complete(t) }
+                    .exceptionally { e ->
+                        fut.completeExceptionally(e)
+                        return@exceptionally null
+                    }
+            }
+            .exceptionally {
+                fut.completeExceptionally(it)
+                return@exceptionally null
+            }
 
         return fut
     }
 
     fun getVideoInfo(id: String): CompletableFuture<AudioTrack> {
         val request = Request.Builder()
-                .url("https://www.googleapis.com/youtube/v3/videos?id=$id&key=$key&type=video&maxResults=3&part=snippet,contentDetails")
-                .addHeader("User-Agent", "JukeBot/v${JukeBot.VERSION} (https://www.jukebot.serux.pro)")
-                .get()
-                .build()
+            .url("https://www.googleapis.com/youtube/v3/videos?id=$id&key=$key&type=video&maxResults=3&part=snippet,contentDetails")
+            .addHeader("User-Agent", "JukeBot/v${JukeBot.VERSION} (https://www.jukebot.serux.pro)")
+            .get()
+            .build()
 
         val fut = CompletableFuture<AudioTrack>()
 
         makeRequest(request)
-                .thenAccept {
-                    val results = it.getJSONArray("items")
+            .thenAccept {
+                val results = it.getJSONArray("items")
 
-                    if (results.length() == 0) {
-                        fut.completeExceptionally(Exception("No tracks found related to the given query"))
-                        return@thenAccept
-                    }
+                if (results.length() == 0) {
+                    fut.completeExceptionally(Exception("No tracks found related to the given query"))
+                    return@thenAccept
+                }
 
-                    val yti = YoutubeTrackInformation.fromJson(results.getJSONObject(0))
-                    fut.complete(toYouTubeAudioTrack(yti))
-                }
-                .exceptionally {
-                    fut.completeExceptionally(it)
-                    return@exceptionally null
-                }
+                val yti = YoutubeTrackInformation.fromJson(results.getJSONObject(0))
+                fut.complete(toYouTubeAudioTrack(yti))
+            }
+            .exceptionally {
+                fut.completeExceptionally(it)
+                return@exceptionally null
+            }
 
         return fut
     }

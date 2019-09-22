@@ -5,11 +5,11 @@ import org.jsoup.Jsoup
 import java.time.Duration
 
 data class YoutubeTrackInformation(
-        val videoId: String,
-        val title: String,
-        val uploader: String,
-        val isStream: Boolean,
-        val duration: Long
+    val videoId: String,
+    val title: String,
+    val uploader: String,
+    val isStream: Boolean,
+    val duration: Long
 ) {
 
     companion object {

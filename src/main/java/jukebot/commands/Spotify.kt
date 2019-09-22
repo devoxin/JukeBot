@@ -20,9 +20,9 @@ class Spotify : Command(ExecutionType.TRIGGER_CONNECT) { // TODO: Consider movin
         }
 
         val url = context.args.firstOrNull()
-                ?.replace("<", "")
-                ?.replace(">", "")
-                ?: ""
+            ?.replace("<", "")
+            ?.replace(">", "")
+            ?: ""
 
         if (url.isEmpty()) {
             return context.embed("Spotify", "You need to specify a URL to a playlist")

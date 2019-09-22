@@ -6,9 +6,9 @@ import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
 @CommandProperties(
-        description = "Removes songs added by members absent from the VoiceChannel",
-        aliases = ["ra"],
-        category = CommandCategory.QUEUE
+    description = "Removes songs added by members absent from the VoiceChannel",
+    aliases = ["ra"],
+    category = CommandCategory.QUEUE
 )
 class RemoveAbsent : Command(ExecutionType.STANDARD) {
 
@@ -25,7 +25,7 @@ class RemoveAbsent : Command(ExecutionType.STANDARD) {
 
         val membersInVc = context.guild.audioManager.connectedChannel!!.members.map { it.idLong }
         val tracksToRemove = handler.queue
-                .filter { !membersInVc.contains(it.userData as Long) }
+            .filter { !membersInVc.contains(it.userData as Long) }
 
         handler.queue.removeAll(tracksToRemove)
         context.embed("Queue Cleaned", "Removed **${tracksToRemove.size}** tracks queued by absent members.")

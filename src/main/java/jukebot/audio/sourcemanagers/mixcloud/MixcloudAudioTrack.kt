@@ -59,7 +59,7 @@ class MixcloudAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: M
 
     private fun getPlaybackUrl(): String {
         val json = sourceManager.getTrackInfo(trackInfo.uri)
-                ?: throw FriendlyException("This track is unplayable", FriendlyException.Severity.SUSPICIOUS, null)
+            ?: throw FriendlyException("This track is unplayable", FriendlyException.Severity.SUSPICIOUS, null)
 
         val streamKey = sourceManager.getStreamKey(json)
         val streamInfo = json.get("streamInfo")

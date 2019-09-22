@@ -133,7 +133,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
                 announce("Queue Concluded", "Enable AutoPlay to keep the party going!")
             } else {
                 announce("Queue Concluded!",
-                        "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
+                    "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
             }
 
             setNick(null)
@@ -152,10 +152,10 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         }
 
         channel.sendMessage(EmbedBuilder()
-                .setColor(Database.getColour(channel.guild.idLong))
-                .setTitle(title)
-                .setDescription(Helpers.truncate(description, 1000))
-                .build()
+            .setColor(Database.getColour(channel.guild.idLong))
+            .setTitle(title)
+            .setDescription(Helpers.truncate(description, 1000))
+            .build()
         ).queue(null, { err -> JukeBot.LOG.error("Encountered an error while posting track announcement", err) })
     }
 
@@ -213,7 +213,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             repeat = RepeatMode.NONE
 
         announce("Playback Error", "Playback of **${track.info.title}** encountered an error!\n" +
-                exception.localizedMessage)
+            exception.localizedMessage)
     }
 
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long) {
