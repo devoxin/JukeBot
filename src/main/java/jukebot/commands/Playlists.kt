@@ -58,20 +58,28 @@ class Playlists : Command(ExecutionType.STANDARD) {
             return
         }
 
-        ctx.prompt("Custom Playlists", "What do you want to name the playlist?\n*Max. 32 characters*") { _, title ->
-            if (title == null) {
-                return@prompt ctx.embed("Custom Playlists", "Playlist creation cancelled.")
+        if (ctx.args.isEmpty()) {
+            ctx.prompt("Custom Playlists", "What do you want to name the playlist?\n*Max. 32 characters*") { _, title ->
+                if (title == null) {
+                    return@prompt ctx.embed("Custom Playlists", "Playlist creation cancelled.")
+                }
+
+                createPlaylistWithTitle(ctx, title)
             }
-
-            if (title.length > 32) {
-                return@prompt ctx.embed("Custom Playlists", "The playlist name cannot be longer than 32 characters!")
-            }
-
-            Database.createPlaylist(ctx.author.idLong, title)
-
-            ctx.embed("Custom Playlists", ":fire: Any time you hear a song you like, you can add it to your new playlist " +
-                "by running `${ctx.prefix}save $title`")
+        } else {
+            createPlaylistWithTitle(ctx, ctx.args.first())
         }
+    }
+
+    private fun createPlaylistWithTitle(ctx: Context, title: String) {
+        if (title.length > 32) {
+            return ctx.embed("Custom Playlists", "The playlist name cannot be longer than 32 characters!")
+        }
+
+        Database.createPlaylist(ctx.author.idLong, title)
+
+        ctx.embed("Custom Playlists", ":fire: Any time you hear a song you like, you can add it to your new playlist " +
+            "by running `${ctx.prefix}save $title`")
     }
 
     @SubCommand(trigger = "view", description = "Lists the tracks in a playlist.")

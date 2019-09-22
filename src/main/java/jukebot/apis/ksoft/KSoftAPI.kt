@@ -29,13 +29,18 @@ class KSoftAPI(private val key: String) {
         }
     }
 
-    fun getMusicRecommendations(vararg tracks: String): CompletableFuture<TrackRecommendation> {
-        val fut = CompletableFuture<TrackRecommendation>()
+    fun getMusicRecommendations(vararg tracks: String): CompletableFuture<String> {
+        val fut = CompletableFuture<String>()
 
         val obj = JSONObject()
-            .put("provider", "youtube_ids")
+            .put("provider", "youtube_titles")
             .put("tracks", tracks)
+            .put("type", "youtube_id")
             .put("limit", 1)
+
+        if (JukeBot.config.hasKey("youtube")) {
+            obj.put("youtube_token", JukeBot.config.getString("youtube"))
+        }
 
         makeRequest("/music/recommendations") {
             post(RequestBody.create(applicationJson, obj.toString()))
@@ -47,13 +52,14 @@ class KSoftAPI(private val key: String) {
                 return@thenAccept
             }
 
-            val selected = results.getJSONObject(0).getJSONObject("youtube")
-            val id = selected.getString("id")
-            val link = selected.getString("link")
-            val title = selected.getString("title")
-            val thumbnail = selected.getString("thumbnail")
-            val description = selected.getString("description")
-            fut.complete(TrackRecommendation(id, link, title, thumbnail, description))
+            val first = results.getJSONObject(0)
+            val youtube = first.get("youtube")
+
+            if (youtube is JSONObject) {
+                fut.complete(youtube.getString("id"))
+            } else {
+                fut.complete(youtube as String)
+            }
         }.exceptionally {
             fut.completeExceptionally(it)
             return@exceptionally null

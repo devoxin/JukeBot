@@ -60,7 +60,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.5.3";
+    public static final String VERSION = "6.5.4";
 
     public static final Long startTime = System.currentTimeMillis();
     public static boolean isReady = false;
@@ -96,6 +96,7 @@ public class JukeBot {
         loadApis();
 
         RestAction.setPassContext(false);
+        RestAction.setDefaultFailure((e) -> {});
 
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
                 .setToken(config.getToken())

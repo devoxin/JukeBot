@@ -7,26 +7,26 @@ import java.util.concurrent.CompletableFuture
 
 class AutoPlay(private val guildId: Long) {
 
-    val trackIds = mutableSetOf<String>()
+    private val trackTitles = mutableSetOf<String>()
 
     val enabled: Boolean
         get() = Database.isPremiumServer(guildId) && Database.getIsAutoPlayEnabled(guildId)
 
     val hasSufficientData: Boolean
-        get() = trackIds.size > 0
+        get() = trackTitles.size > 0
 
     fun store(identifier: String) {
-        if (trackIds.add(identifier) && trackIds.size > MAX_SET_SIZE) {
-            trackIds.remove(trackIds.first())
+        if (trackTitles.add(identifier) && trackTitles.size > MAX_SET_SIZE) {
+            trackTitles.remove(trackTitles.first())
         }
     }
 
     fun getRelatedTrack(): CompletableFuture<AudioTrack> {
         val fut = CompletableFuture<AudioTrack>()
 
-        JukeBot.kSoftAPI.getMusicRecommendations(*trackIds.toTypedArray())
-            .thenAccept { tr ->
-                JukeBot.youTubeApi.getVideoInfo(tr.id)
+        JukeBot.kSoftAPI.getMusicRecommendations(*trackTitles.toTypedArray())
+            .thenAccept { id ->
+                JukeBot.youTubeApi.getVideoInfo(id)
                     .thenAccept {
                         it.userData = JukeBot.selfId
                         fut.complete(it)
