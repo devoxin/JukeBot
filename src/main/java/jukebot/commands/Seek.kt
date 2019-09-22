@@ -63,21 +63,15 @@ class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
         val jumpTimeMs = when (parts.size) {
             4 -> { // DD:HH:MM:SS
                 val (days, hours, minutes, seconds) = partsInt
-                val total = (days * 86400) + (hours * 3600) + (minutes * 60) + seconds
-
-                total * 1000 // millis
+                (days * 86400) + (hours * 3600) + (minutes * 60) + seconds
             }
             3 -> { // HH:MM:SS
                 val (hours, minutes, seconds) = partsInt
-                val total = (hours * 3600) + (minutes * 60) + seconds
-
-                total * 1000
+                (hours * 3600) + (minutes * 60) + seconds
             }
             2 -> { // MM:SS
                 val (minutes, seconds) = partsInt
-                val total = (minutes * 60) + seconds
-
-                total * 1000
+                (minutes * 60) + seconds
             }
             else -> return ctx.embed("Track Seeking", "Invalid time.\nAcceptable formats: `mm:ss`, `hh:mm:ss`, `dd:hh:mm:ss`")
         }
@@ -86,7 +80,7 @@ class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
             return player.playNext()
         }
 
-        track.position = jumpTimeMs.toLong()
+        track.position = jumpTimeMs.toLong() * 1000
         ctx.embed("Track Seeking", "Seeked to **${track.position.toTimeString()}**/${track.info.length.toTimeString()}")
     }
 }
