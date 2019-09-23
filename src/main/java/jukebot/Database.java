@@ -324,6 +324,10 @@ public class Database {
     }
 
     public static boolean isPremiumServer(long guildId) {
+        if (JukeBot.isSelfHosted) {
+            return true;
+        }
+
         try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM premiumservers WHERE guildid = ?");
             statement.setLong(1, guildId);
