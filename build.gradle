@@ -46,7 +46,7 @@ dependencies {
 
     /* Database */
     compile 'org.xerial:sqlite-jdbc:3.28.0'
-    compile 'com.zaxxer:HikariCP:3.3.1'
+    compile 'com.zaxxer:HikariCP:3.4.1'
 
     /* Command Framework */
     compile 'com.google.guava:guava:27.1-jre'
