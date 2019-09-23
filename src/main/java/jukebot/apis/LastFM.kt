@@ -5,6 +5,7 @@ import jukebot.utils.json
 import okhttp3.Request
 import org.apache.http.client.utils.URIBuilder
 import java.util.concurrent.CompletableFuture
+import kotlin.math.min
 
 
 class LastFM(private val key: String) {
@@ -13,18 +14,12 @@ class LastFM(private val key: String) {
 
     fun findSimilar(title: String, artist: String): CompletableFuture<List<TrackMatch>?> {
         val url = URIBuilder("$baseUrl/?method=track.getsimilar&api_key=$key&format=json")
-
         url.addParameter("track", title)
         url.addParameter("artist", artist)
 
-        val req = Request.Builder()
-            .url(url.build().toURL())
-            .get()
-            .build()
-
         val future = CompletableFuture<List<TrackMatch>?>()
 
-        JukeBot.httpClient.makeRequest(req).queue({
+        JukeBot.httpClient.request { url(url.build().toURL()) }.queue({
             val json = it.json()
 
             if (json == null) {
@@ -41,7 +36,7 @@ class LastFM(private val key: String) {
 
             val tracks = mutableListOf<TrackMatch>()
 
-            for (i in 0..Math.min(3, obj.length())) {
+            for (i in 0..min(3, obj.length())) {
                 val tr = obj.getJSONObject(i)
 
                 val t = tr.getString("name")

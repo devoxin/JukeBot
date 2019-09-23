@@ -135,7 +135,7 @@ class SpotifyAPI(private val clientId: String, private val clientSecret: String)
     private fun makeRequest(request: Request): CompletableFuture<JSONObject> {
         val fut = CompletableFuture<JSONObject>()
 
-        JukeBot.httpClient.makeRequest(request).queue({
+        JukeBot.httpClient.request(request).queue({
             val json = it.json()
 
             if (json == null) {

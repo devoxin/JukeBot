@@ -71,15 +71,13 @@ class KSoftAPI(private val key: String) {
     fun makeRequest(endpoint: String, requestOptions: (Request.Builder.() -> Unit)? = null): CompletableFuture<JSONObject> {
         val fut = CompletableFuture<JSONObject>()
 
-        val req = Request.Builder()
-            .url(BASE_URL + endpoint)
-            .header("Authorization", "Bearer $key")
-
-        if (requestOptions != null) {
-            req.apply(requestOptions)
-        }
-
-        JukeBot.httpClient.makeRequest(req.build()).queue({
+        JukeBot.httpClient.request {
+            url(BASE_URL + endpoint)
+            header("Authorization", "Bearer $key")
+            requestOptions?.let {
+                apply(requestOptions)
+            }
+        }.queue({
             JukeBot.LOG.debug("Response from KSoft API: code=${it.code()} message=${it.message()}")
             val j = it.json()
 

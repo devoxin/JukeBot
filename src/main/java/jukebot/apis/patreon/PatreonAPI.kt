@@ -35,13 +35,10 @@ class PatreonAPI(private var accessToken: String) {
             url.addParameter("page[cursor]", offset)
         }
 
-        val request = Request.Builder()
-            .addHeader("Authorization", "Bearer $accessToken")
-            .url(url.build().toURL())
-            .get()
-            .build()
-
-        JukeBot.httpClient.makeRequest(request).queue({
+        JukeBot.httpClient.request {
+            url(url.build().toURL())
+            header("Authorization", "Bearer $accessToken")
+        }.queue({
             if (!it.isSuccessful) {
                 JukeBot.LOG.error("Unable to get list of pledges ({}): {}", it.code(), it.message())
                 it.close()
