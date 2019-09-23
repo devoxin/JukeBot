@@ -118,6 +118,10 @@ class Settings : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "autoplay", description = "Sets whether to autoplay once the queue is empty.")
     fun autoplay(ctx: Context, args: List<String>) {
+        if (!Database.isPremiumServer(ctx.guild.idLong)) {
+            return ctx.embed("Server Settings", "AutoPlay is only available for premium servers. Check `${ctx.prefix}patreon` for more info.")
+        }
+
         val opt = when (args.firstOrNull()) {
             "on" -> true
             "off" -> false
