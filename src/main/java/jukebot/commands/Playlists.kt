@@ -38,7 +38,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
             return ctx.embed("Custom Playlists", "You don't have any playlists :(")
         }
 
-        ctx.embed("Custom Playlists", userPlaylists.joinToString("\n") { it })
+        ctx.embed("Custom Playlists", userPlaylists.joinToString("\n"))
     }
 
     @SubCommand(trigger = "create", description = "Create a new custom playlist.")
