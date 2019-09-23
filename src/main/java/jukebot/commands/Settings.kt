@@ -119,7 +119,7 @@ class Settings : Command(ExecutionType.STANDARD) {
     @SubCommand(trigger = "autoplay", description = "Sets whether to autoplay once the queue is empty.")
     fun autoplay(ctx: Context, args: List<String>) {
         if (!Database.isPremiumServer(ctx.guild.idLong)) {
-            return ctx.embed("Server Settings", "AutoPlay is only available for premium servers. Check `${ctx.prefix}patreon` for more info.")
+            return ctx.embed("Server Settings", "This setting is only available for premium servers. Check `${ctx.prefix}patreon` for more info.")
         }
 
         val opt = when (args.firstOrNull()) {
@@ -134,6 +134,24 @@ class Settings : Command(ExecutionType.STANDARD) {
         ctx.embed("AutoPlay Updated", "AutoPlay is now `$human`")
     }
 
+    @SubCommand(trigger = "autodc", description = "Toggle whether the bot disconnects upon empty VC")
+    fun autodc(ctx: Context, args: List<String>) {
+        if (!Database.isPremiumServer(ctx.guild.idLong)) {
+            return ctx.embed("Server Settings", "This setting is only available for premium servers. Check `${ctx.prefix}patreon` for more info.")
+        }
+
+        val opt = when (args.firstOrNull()) {
+            "on" -> false
+            "off" -> true
+            else -> return ctx.embed("Invalid Option", "You need to specify a valid option (`on`/`off`)")
+        }
+
+        Database.setAutoDcDisabled(ctx.guild.idLong, opt)
+
+        val human = if (opt) "disabled" else "enabled"
+        ctx.embed("Auto-DC Updated", "Auto-DC is now `$human`")
+    }
+
     @SubCommand(trigger = "view", description = "Displays all settings and their values.")
     fun view(ctx: Context, args: List<String>) {
         val customDjRole: Long? = Database.getDjRole(ctx.guild.idLong)
@@ -143,6 +161,8 @@ class Settings : Command(ExecutionType.STANDARD) {
         val musicNick = if (Database.getIsMusicNickEnabled(ctx.guild.idLong)) "Enabled" else "Disabled"
         val autoPlay = if (Database.isPremiumServer(ctx.guild.idLong) &&
             Database.getIsAutoPlayEnabled(ctx.guild.idLong)) "Enabled" else "Disabled"
+        val autoDc = if (!Database.isPremiumServer(ctx.guild.idLong) ||
+            !Database.getIsAutoDcDisabled(ctx.guild.idLong)) "Enabled" else "Disabled"
 
         val fields = arrayOf(
             MessageEmbed.Field("Server Prefix", "`${ctx.prefix}`", true),
@@ -150,7 +170,10 @@ class Settings : Command(ExecutionType.STANDARD) {
             MessageEmbed.Field("Skip Vote Threshold", "$skipThreshold%", true),
             MessageEmbed.Field("Embed Colour", hex, true),
             MessageEmbed.Field("Music Nickname", musicNick, true),
-            MessageEmbed.Field("AutoPlay", autoPlay, true)
+            MessageEmbed.Field("AutoPlay", autoPlay, true),
+            MessageEmbed.Field("Auto-DC", autoDc, true),
+            MessageEmbed.Field("\u200b", "\u200b", true),
+            MessageEmbed.Field("\u200b", "\u200b", true)
         )
 
         ctx.embed {

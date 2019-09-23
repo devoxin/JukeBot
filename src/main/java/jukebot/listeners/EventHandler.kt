@@ -1,6 +1,7 @@
 package jukebot.listeners
 
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
+import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Helpers
 import net.dv8tion.jda.api.entities.VoiceChannel
@@ -25,7 +26,7 @@ class EventHandler : ListenerAdapter() {
 
                 if (JukeBot.isSelfHosted) {
                     CommandHandler.commands.remove("patreon")
-                    CommandHandler.commands.remove("verify")
+                    //CommandHandler.commands.remove("verify")
                     CommandHandler.commands.remove("feedback")?.destroy()
                 } else {
                     Helpers.monitor.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS)
@@ -61,8 +62,10 @@ class EventHandler : ListenerAdapter() {
         val listeners = connectedChannel.members.filter { !it.user.isBot }.size
 
         if (listeners == 0) {
-            JukeBot.removePlayer(channel.guild.idLong)
-            audioManager.closeAudioConnection()
+            if (!Database.isPremiumServer(channel.guild.idLong) || !Database.getIsAutoDcDisabled(channel.guild.idLong)) {
+                JukeBot.removePlayer(channel.guild.idLong)
+                audioManager.closeAudioConnection()
+            }
         }
     }
 

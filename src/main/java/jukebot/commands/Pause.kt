@@ -27,7 +27,7 @@ class Pause : Command(ExecutionType.REQUIRE_MUTUAL) {
         }
 
         player.player.isPaused = true
-
+        context.react("⏸")
     }
 
 }

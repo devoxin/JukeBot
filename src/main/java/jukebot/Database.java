@@ -37,6 +37,7 @@ public class Database {
             statement.addBatch("CREATE TABLE IF NOT EXISTS colours (id INTEGER PRIMARY KEY, rgb INTEGER NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS musicnick (id INTEGER PRIMARY KEY)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS autoplay (id INTEGER PRIMARY KEY)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS autodc (id INTEGER PRIMARY KEY)");
             // User Stuff
             statement.addBatch("CREATE TABLE IF NOT EXISTS customplaylists (title TEXT NOT NULL, creator INTEGER, tracks TEXT)");
             statement.executeBatch();
@@ -270,6 +271,14 @@ public class Database {
 
     public static void setAutoPlayEnabled(long id, boolean enable) {
         setEnabled("autoplay", id, enable, getIsAutoPlayEnabled(id));
+    }
+
+    public static boolean getIsAutoDcDisabled(long guildId) {
+        return tableContains("autodc", guildId);
+    }
+
+    public static void setAutoDcDisabled(long id, boolean enable) {
+        setEnabled("autodc", id, enable, getIsAutoDcDisabled(id));
     }
 
     public static void setMusicNickEnabled(long id, boolean enable) {

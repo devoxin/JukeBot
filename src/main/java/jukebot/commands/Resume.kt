@@ -27,7 +27,7 @@ class Resume : Command(ExecutionType.REQUIRE_MUTUAL) {
         }
 
         player.player.isPaused = false
-
+        context.react("▶")
     }
 
 }

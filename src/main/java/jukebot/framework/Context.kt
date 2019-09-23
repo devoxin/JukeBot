@@ -64,6 +64,10 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
         return isElevated
     }
 
+    fun react(emoji: String) {
+        message.addReaction(emoji).queue()
+    }
+
     fun embed(title: String, description: String) {
         embed {
             setTitle(title)
