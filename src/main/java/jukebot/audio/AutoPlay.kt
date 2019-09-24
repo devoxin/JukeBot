@@ -25,16 +25,10 @@ class AutoPlay(private val guildId: Long) {
         val fut = CompletableFuture<AudioTrack>()
 
         JukeBot.kSoftAPI.getMusicRecommendations(*trackTitles.toTypedArray())
-            .thenAccept { id ->
-                JukeBot.youTubeApi.getVideoInfo(id)
-                    .thenAccept {
-                        it.userData = JukeBot.selfId
-                        fut.complete(it)
-                    }
-                    .exceptionally {
-                        fut.completeExceptionally(it)
-                        return@exceptionally null
-                    }
+            .thenCompose(JukeBot.youTubeApi::getVideoInfo)
+            .thenAccept {
+                it.userData = JukeBot.selfId
+                fut.complete(it)
             }
             .exceptionally {
                 fut.completeExceptionally(it)

@@ -24,7 +24,7 @@ class Settings : Command(ExecutionType.STANDARD) {
         if (!this.subcommands.containsKey(sc)) {
             return context.embed(
                 "Server Settings",
-                this.subcommands.map { "**`${Helpers.pad(it.key)}:`** ${it.value.description}" }.joinToString("\n")
+                this.subcommands.map { "**`${Helpers.pad(it.key)}:`** ${it.value.description}" }.sorted().joinToString("\n")
             )
         }
 
