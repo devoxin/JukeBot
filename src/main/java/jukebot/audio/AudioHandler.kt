@@ -41,6 +41,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
     // Player Stuff
     val autoPlay = AutoPlay(guildId)
+    var previous: AudioTrack? = null
     var current: AudioTrack? = null
     val isPlaying: Boolean
         get() = player.playingTrack != null
@@ -200,9 +201,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         trackPacketLost = 0
         trackPacketsSent = 0
 
-//        if (track.sourceManager.sourceName == "youtube") {
-//            autoPlay.store(track.identifier)
-//        }
+        previous = track
 
         if (endReason.mayStartNext) {
             playNext()

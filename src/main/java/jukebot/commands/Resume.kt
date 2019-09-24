@@ -17,10 +17,6 @@ class Resume : Command(ExecutionType.REQUIRE_MUTUAL) {
             return
         }
 
-        if (!context.ensureMutualVoiceChannel()) {
-            return
-        }
-
         if (!context.isDJ(true)) {
             context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
             return

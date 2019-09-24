@@ -6,7 +6,7 @@ import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Vote to skip the track", category = CommandCategory.CONTROLS)
+@CommandProperties(aliases = ["next"], description = "Vote to skip the track", category = CommandCategory.CONTROLS)
 class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
@@ -15,10 +15,6 @@ class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {
 
         if (!player.isPlaying) {
             return context.embed("Not Playing", "Nothing is currently playing.")
-        }
-
-        if (!context.ensureMutualVoiceChannel()) {
-            return
         }
 
         val totalVotes = player.voteSkip(context.author.idLong)

@@ -1,12 +1,11 @@
 package jukebot.commands
 
 import jukebot.framework.Command
-import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Plays the queue in random order", category = CommandCategory.CONTROLS)
-class Shuffle : Command(ExecutionType.REQUIRE_MUTUAL) {
+@CommandProperties(aliases = ["prev", "back"], description = "Plays the last-played track")
+class Previous : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
@@ -21,7 +20,12 @@ class Shuffle : Command(ExecutionType.REQUIRE_MUTUAL) {
             return
         }
 
-        player.shuffle = !player.shuffle
-        context.embed("Player Shuffle", "Shuffle is now **${if (player.shuffle) "enabled" else "disabled"}**")
+        if (player.previous == null) {
+            context.embed("Previous", "There is no previous track stored.")
+            return
+        }
+
+        player.player.playTrack(player.previous!!.makeClone())
     }
+
 }
