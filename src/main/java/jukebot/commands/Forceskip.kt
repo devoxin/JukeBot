@@ -4,7 +4,7 @@ import jukebot.framework.*
 
 @CommandProperties(description = "Skip the track without voting", aliases = ["fs"], category = CommandCategory.CONTROLS)
 @CommandCheck(isPlaying = true)
-class Forceskip : Command(ExecutionType.STANDARD) {
+class Forceskip : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
