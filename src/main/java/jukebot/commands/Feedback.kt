@@ -5,7 +5,6 @@ import club.minnced.discord.webhook.WebhookClientBuilder
 import club.minnced.discord.webhook.send.WebhookEmbed
 import jukebot.JukeBot
 import jukebot.framework.Command
-import jukebot.framework.CommandInitializationError
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import java.time.OffsetDateTime
@@ -13,14 +12,10 @@ import java.time.OffsetDateTime
 @CommandProperties(description = "Send feedback to the developer")
 class Feedback : Command(ExecutionType.STANDARD) {
 
-    private val webhookClient: WebhookClient
-
-    init {
-        if (JukeBot.config.hasKey("feedback_webhook")) {
-            webhookClient = WebhookClientBuilder(JukeBot.config.getString("feedback_webhook")!!).build()
-        } else {
-            throw CommandInitializationError("feedback_webhook key is missing from config")
-        }
+    private val webhookClient: WebhookClient? = if (JukeBot.config.hasKey("feedback_webhook")) {
+        WebhookClientBuilder(JukeBot.config.getString("feedback_webhook")!!).build()
+    } else {
+        null
     }
 
     override fun execute(context: Context) {
@@ -53,12 +48,12 @@ class Feedback : Command(ExecutionType.STANDARD) {
             fields
         )
 
-        webhookClient.send(whe)
+        webhookClient?.send(whe)
         context.embed("Feedback sent!", "Thanks for your feedback! :)")
     }
 
     override fun destroy() {
-        webhookClient.close()
+        webhookClient?.close()
     }
 
 }

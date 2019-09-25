@@ -22,5 +22,4 @@ class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {
         context.embed("Player Volume", "${Helpers.createBar(vol, 250, 10)} `$vol`")
     }
 
-
 }

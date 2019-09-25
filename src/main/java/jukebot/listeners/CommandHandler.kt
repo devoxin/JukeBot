@@ -1,6 +1,5 @@
 package jukebot.listeners
 
-import com.google.common.reflect.ClassPath
 import jukebot.Database
 import jukebot.JukeBot
 import jukebot.framework.*
@@ -12,42 +11,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 class CommandHandler : ListenerAdapter() {
 
     init {
-        val classes = ClassPath.from(this::class.java.classLoader).getTopLevelClasses("jukebot.commands")
-
-        for (klass in classes) {
-            val clazz = klass.load()
-            var cmd: Command
-
-            try {
-                cmd = clazz.getDeclaredConstructor().newInstance() as Command
-            } catch (e: Exception) {
-                if (e.cause != null && e.cause!!::class.java.isAssignableFrom(CommandInitializationError::class.java)) {
-                    continue
-                }
-
-                JukeBot.LOG.warn("Command ${clazz.simpleName} failed to load", e)
-                continue
-            }
-
-            if (!cmd.properties().enabled || cmd.properties().nsfw && !JukeBot.config.nsfwEnabled) {
-                continue
-            }
-
-            val methods = clazz.methods.filter { it.isAnnotationPresent(SubCommand::class.java) }
-
-            for (meth in methods) {
-                val annotation = meth.getAnnotation(SubCommand::class.java)
-                val trigger = annotation.trigger.toLowerCase()
-                val description = annotation.description
-
-                val wrapper = MethodWrapper(description, meth, cmd)
-                cmd.subcommands[trigger] = wrapper
-            }
-
-            commands[cmd.name().toLowerCase()] = cmd
-        }
-
-        JukeBot.LOG.info("Loaded ${commands.size} commands!")
+        JukeBot.LOG.info("${commands.size} commands in registry")
     }
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
@@ -83,7 +47,7 @@ class CommandHandler : ListenerAdapter() {
     }
 
     companion object {
-        val commands = HashMap<String, Command>()
+        val commands = CommandScanner("jukebot.commands").scan().toMutableMap()
     }
 
 }

@@ -19,6 +19,7 @@ package jukebot;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
@@ -163,21 +164,14 @@ public class JukeBot {
     }
 
     private static void registerSourceManagers() {
-        final YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
-        yt.setPlaylistPageCount(Integer.MAX_VALUE);
+        playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
         if (config.getNsfwEnabled()) {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
         }
 
-        playerManager.registerSourceManager(new MixcloudAudioSourceManager());
-        playerManager.registerSourceManager(yt);
-        playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
-        playerManager.registerSourceManager(new BandcampAudioSourceManager());
-        playerManager.registerSourceManager(new VimeoAudioSourceManager());
-        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
-        playerManager.registerSourceManager(new BeamAudioSourceManager());
-        playerManager.registerSourceManager(new HttpAudioSourceManager());
+        AudioSourceManagers.registerRemoteSources(playerManager);
+        playerManager.source(YoutubeAudioSourceManager.class).setPlaylistPageCount(Integer.MAX_VALUE);
 
         playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
     }
