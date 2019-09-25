@@ -7,7 +7,7 @@ import jukebot.framework.*
     aliases = ["ra"],
     category = CommandCategory.QUEUE
 )
-@CommandCheck(dj = DjCheck.ROLE_ONLY)
+@CommandChecks.Dj(alone = false)
 class RemoveAbsent : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

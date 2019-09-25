@@ -5,7 +5,7 @@ import jukebot.entities.CustomPlaylist
 import jukebot.framework.*
 
 @CommandProperties(description = "Adds the current track to a custom playlist", category = CommandCategory.QUEUE)
-@CommandCheck(isPlaying = true)
+@CommandChecks.Playing
 class Save : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

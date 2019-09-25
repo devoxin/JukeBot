@@ -3,7 +3,8 @@ package jukebot.commands
 import jukebot.framework.*
 
 @CommandProperties(aliases = ["prev", "back"], description = "Plays the last-played track")
-@CommandCheck(dj = DjCheck.ROLE_OR_ALONE, isPlaying = true)
+@CommandChecks.Dj(alone = true)
+@CommandChecks.Playing
 class Previous : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {

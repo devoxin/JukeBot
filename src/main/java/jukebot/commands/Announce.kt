@@ -3,7 +3,7 @@ package jukebot.commands
 import jukebot.framework.*
 
 @CommandProperties(description = "Configure track announcements", category = CommandCategory.CONTROLS)
-@CommandCheck(dj = DjCheck.ROLE_ONLY)
+@CommandChecks.Dj(alone = false)
 class Announce : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

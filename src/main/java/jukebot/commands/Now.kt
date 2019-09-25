@@ -6,7 +6,7 @@ import jukebot.utils.Helpers
 import jukebot.utils.toTimeString
 
 @CommandProperties(description = "Displays the currently playing track", aliases = ["n", "np"], category = CommandCategory.QUEUE)
-@CommandCheck(isPlaying = true)
+@CommandChecks.Playing
 class Now : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

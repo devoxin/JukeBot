@@ -77,14 +77,8 @@ abstract class Command(private val executionType: ExecutionType) {
     }
 
     open fun runCommandPreChecks(context: Context): Boolean {
-        if (!this.javaClass.isAnnotationPresent(CommandCheck::class.java)) {
-            return true
-        }
-
-        val checks = this.javaClass.getAnnotation(CommandCheck::class.java)
-
-        if (checks.dj != DjCheck.NONE) {
-            val allowLone = checks.dj == DjCheck.ROLE_OR_ALONE
+        if (this.javaClass.isAnnotationPresent(CommandChecks.Dj::class.java)) {
+            val allowLone = this.javaClass.getAnnotation(CommandChecks.Dj::class.java).alone
 
             if (!context.isDJ(allowLone)) {
                 context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
@@ -92,18 +86,17 @@ abstract class Command(private val executionType: ExecutionType) {
             }
         }
 
-        if (checks.isPlaying) {
-            val ap = context.getAudioPlayer()
-
-            if (!ap.isPlaying) {
+        if (this.javaClass.isAnnotationPresent(CommandChecks.Playing::class.java)) {
+            if (!context.getAudioPlayer().isPlaying) {
                 context.embed("Not Playing", "Nothing is currently playing.")
                 return false
             }
         }
 
-        if (checks.donor > 0 && !JukeBot.isSelfHosted) {
-            if (checks.donor > context.donorTier) {
-                context.embed("Command Unavailable", "You must be a [donor in Tier ${checks.donor} or higher](https://patreon.com/devoxin)")
+        if (this.javaClass.isAnnotationPresent(CommandChecks.Donor::class.java) && !JukeBot.isSelfHosted) {
+            val requiredTier = this.javaClass.getAnnotation(CommandChecks.Donor::class.java).tier
+            if (requiredTier > context.donorTier) {
+                context.embed("Command Unavailable", "You must be a [donor in Tier $requiredTier or higher](https://patreon.com/devoxin)")
                 return false
             }
         }
@@ -116,21 +109,16 @@ abstract class Command(private val executionType: ExecutionType) {
             return
         }
 
-        when (executionType) {
-            //ExecutionType.STANDARD -> execute(context)
-            ExecutionType.REQUIRE_MUTUAL -> {
-                if (!checkVoiceState(context, true)) {
-                    return
-                }
+        if (executionType == ExecutionType.REQUIRE_MUTUAL &&
+            !checkVoiceState(context, true)) {
+            return
+        } else if (executionType == ExecutionType.TRIGGER_CONNECT) {
+            if (context.args.isEmpty() && context.message.attachments.size == 0) {
+                return context.embed(name, "You need to specify an identifier to lookup.")
             }
-            ExecutionType.TRIGGER_CONNECT -> {
-                if (context.args.isEmpty() && context.message.attachments.size == 0) {
-                    return context.embed(name(), "You need to specify an identifier to lookup.")
-                }
 
-                if (!connectToChannel(context)) {
-                    return
-                }
+            if (!connectToChannel(context)) {
+                return
             }
         }
 
@@ -141,9 +129,11 @@ abstract class Command(private val executionType: ExecutionType) {
 
     abstract fun execute(context: Context)
 
-    fun properties() = this.javaClass.getAnnotation(CommandProperties::class.java)
+    val properties: CommandProperties
+        get() = this.javaClass.getAnnotation(CommandProperties::class.java)
 
-    fun name() = this.javaClass.simpleName
+    val name: String
+        get() = this.javaClass.simpleName
 
     enum class ExecutionType {
         TRIGGER_CONNECT,

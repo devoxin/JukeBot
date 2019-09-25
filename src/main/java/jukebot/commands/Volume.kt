@@ -5,7 +5,8 @@ import jukebot.utils.Helpers
 import kotlin.math.min
 
 @CommandProperties(aliases = ["vol", "v"], description = "Adjust the player volume", category = CommandCategory.CONTROLS)
-@CommandCheck(dj = DjCheck.ROLE_ONLY, isPlaying = true)
+@CommandChecks.Dj(alone = false)
+@CommandChecks.Playing
 class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {

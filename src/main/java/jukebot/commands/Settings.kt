@@ -1,10 +1,7 @@
 package jukebot.commands
 
 import jukebot.Database
-import jukebot.framework.Command
-import jukebot.framework.CommandProperties
-import jukebot.framework.Context
-import jukebot.framework.SubCommand
+import jukebot.framework.*
 import jukebot.utils.Helpers
 import jukebot.utils.addFields
 import jukebot.utils.decodeColor
@@ -13,17 +10,13 @@ import java.text.DecimalFormat
 import java.util.regex.Pattern
 
 @CommandProperties(description = "Manage server-specific settings such as prefix etc", aliases = ["set", "config", "configure"])
+@CommandChecks.Dj(alone = false)
 class Settings : Command(ExecutionType.STANDARD) {
 
     private val mentionRegex = Pattern.compile("<@!?\\d{17,20}>")
     private val dpFormatter = DecimalFormat("0.00")
 
     override fun execute(context: Context) {
-        if (!context.isDJ(false)) {
-            context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
-            return
-        }
-
         val sc = context.args.firstOrNull()?.toLowerCase() ?: ""
 
         if (!this.subcommands.containsKey(sc)) {

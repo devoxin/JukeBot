@@ -3,7 +3,7 @@ package jukebot.commands
 import jukebot.framework.*
 
 @CommandProperties(description = "Removes all of the tracks from the queue", aliases = ["cq", "c", "clear", "empty"], category = CommandCategory.QUEUE)
-@CommandCheck(dj = DjCheck.ROLE_OR_ALONE)
+@CommandChecks.Dj(alone = true)
 class ClearQueue : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {

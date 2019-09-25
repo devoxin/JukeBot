@@ -13,14 +13,14 @@ class CommandScanner(private val pkg: String) {
             .asSequence()
             .map { it.load() }
             .map { it.getDeclaredConstructor().newInstance() as Command }
-            .filter { it.properties().enabled && (JukeBot.config.nsfwEnabled || !it.properties().nsfw) }
+            .filter { it.properties.enabled && (JukeBot.config.nsfwEnabled || !it.properties.nsfw) }
             .map(::loadSubCommands)
-            .associateBy { it.name().toLowerCase() }
+            .associateBy { it.name.toLowerCase() }
     }
 
     private fun loadSubCommands(cmd: Command): Command {
         val methods = cmd::class.java.methods.filter { it.isAnnotationPresent(SubCommand::class.java) }
-        JukeBot.LOG.debug("Discovered ${methods.size} subcommands for command ${cmd.name()}")
+        JukeBot.LOG.debug("Discovered ${methods.size} subcommands for command ${cmd.name}")
 
         for (meth in methods) {
             val annotation = meth.getAnnotation(SubCommand::class.java)

@@ -6,7 +6,8 @@ import jukebot.framework.*
 import jukebot.utils.toTimeString
 
 @CommandProperties(description = "Jump to a certain time, or by a specific amount of seconds", category = CommandCategory.CONTROLS, aliases = ["jump"])
-@CommandCheck(dj = DjCheck.ROLE_OR_ALONE, isPlaying = true)
+@CommandChecks.Dj(alone = true)
+@CommandChecks.Playing
 class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {

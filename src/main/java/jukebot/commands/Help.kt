@@ -23,7 +23,7 @@ class Help : Command(ExecutionType.STANDARD) {
 
         if (menu <= 0 || menu > CommandCategory.values().size) {
             val cmd = CommandHandler.commands
-                .filter { it.key == context.args[0] || it.value.properties().aliases.contains(context.args[0]) }
+                .filter { it.key == context.args[0] || it.value.properties.aliases.contains(context.args[0]) }
                 .values
                 .firstOrNull()
                 ?: return sendDefaultHelp(context)
@@ -35,9 +35,9 @@ class Help : Command(ExecutionType.STANDARD) {
 
             for (cmd in commandsByCategory(category)) {
                 builder.append("**`")
-                    .append(Helpers.pad(cmd.name().toLowerCase()))
+                    .append(Helpers.pad(cmd.name.toLowerCase()))
                     .append(":`** ")
-                    .append(cmd.properties().description)
+                    .append(cmd.properties.description)
                     .append("\n")
             }
 
@@ -61,17 +61,17 @@ class Help : Command(ExecutionType.STANDARD) {
     }
 
     fun sendCommandHelp(context: Context, cmd: Command) {
-        val aliases = cmd.properties().aliases
+        val aliases = cmd.properties.aliases
         val aliasString = if (aliases.isEmpty()) "None" else aliases.joinToString(", ")
 
-        context.embed("Help for **${cmd.name()}**",
-            "**Aliases:** $aliasString\n**Description:** ${cmd.properties().description}")
+        context.embed("Help for **${cmd.name}**",
+            "**Aliases:** $aliasString\n**Description:** ${cmd.properties.description}")
     }
 
     private fun commandsByCategory(category: CommandCategory) =
         CommandHandler.commands
             .values
-            .filter { it.properties().category == category }
-            .sortedBy { it.name() }
+            .filter { it.properties.category == category }
+            .sortedBy { it.name }
 
 }

@@ -4,7 +4,8 @@ import jukebot.audio.AudioHandler
 import jukebot.framework.*
 
 @CommandProperties(description = "Loop the queue, track or nothing", category = CommandCategory.CONTROLS, aliases = ["loop"])
-@CommandCheck(dj = DjCheck.ROLE_OR_ALONE, isPlaying = true)
+@CommandChecks.Dj(alone = true)
+@CommandChecks.Playing
 class Repeat : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {

@@ -7,7 +7,7 @@ import jukebot.framework.*
     description = "Removes all duplicate tracks from the queue",
     category = CommandCategory.QUEUE
 )
-@CommandCheck(dj = DjCheck.ROLE_OR_ALONE)
+@CommandChecks.Dj(alone = true)
 class DeDuplicate : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {

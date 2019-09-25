@@ -1,14 +1,11 @@
 package jukebot.commands
 
 import jukebot.audio.AudioHandler
-import jukebot.framework.Command
-import jukebot.framework.CommandCheck
-import jukebot.framework.CommandProperties
-import jukebot.framework.Context
+import jukebot.framework.*
 import java.text.DecimalFormat
 
 @CommandProperties(description = "Displays player statistics", aliases = ["ps"], developerOnly = true)
-@CommandCheck(isPlaying = true)
+@CommandChecks.Playing
 class PlayerStats : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     private val dpFormatter = DecimalFormat("0.00")

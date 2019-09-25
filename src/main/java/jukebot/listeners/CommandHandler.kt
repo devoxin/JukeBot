@@ -37,10 +37,10 @@ class CommandHandler : ListenerAdapter() {
         val originalArgs = if (content.length >= command.length) content.substring(command.length).trim() else ""
 
         val foundCommand = commands[command]
-            ?: commands.values.firstOrNull { it.properties().aliases.contains(command) }
+            ?: commands.values.firstOrNull { it.properties.aliases.contains(command) }
             ?: return
 
-        if (foundCommand.properties().developerOnly && JukeBot.botOwnerId != e.author.idLong) {
+        if (foundCommand.properties.developerOnly && JukeBot.botOwnerId != e.author.idLong) {
             return
         }
 

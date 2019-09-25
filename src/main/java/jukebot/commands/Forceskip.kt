@@ -3,7 +3,7 @@ package jukebot.commands
 import jukebot.framework.*
 
 @CommandProperties(description = "Skip the track without voting", aliases = ["fs"], category = CommandCategory.CONTROLS)
-@CommandCheck(isPlaying = true)
+@CommandChecks.Playing
 class Forceskip : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {

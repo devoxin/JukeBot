@@ -1,11 +1,9 @@
 package jukebot.commands
 
-import jukebot.framework.Command
-import jukebot.framework.CommandCategory
-import jukebot.framework.CommandProperties
-import jukebot.framework.Context
+import jukebot.framework.*
 
 @CommandProperties(description = "Moves a track in the queue", aliases = ["m", "mv"], category = CommandCategory.QUEUE)
+@CommandChecks.Dj(alone = true)
 class Move : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
@@ -29,10 +27,6 @@ class Move : Command(ExecutionType.STANDARD) {
         }
 
         val selectedTrack = player.queue[target - 1]
-
-        if (!context.isDJ(true)) {
-            return context.embed("Not a DJ", "You need the DJ role to move others' tracks. [See here on how to become a DJ](https://jukebot.serux.pro/faq)")
-        }
 
         player.queue.removeAt(target - 1)
         player.queue.add(dest - 1, selectedTrack)
