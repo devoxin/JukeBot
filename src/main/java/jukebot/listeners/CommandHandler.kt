@@ -2,7 +2,8 @@ package jukebot.listeners
 
 import jukebot.Database
 import jukebot.JukeBot
-import jukebot.framework.*
+import jukebot.framework.CommandScanner
+import jukebot.framework.Context
 import jukebot.utils.Helpers
 import jukebot.utils.separate
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent

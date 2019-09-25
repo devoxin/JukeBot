@@ -2,7 +2,6 @@ package jukebot.apis.patreon
 
 import jukebot.JukeBot
 import jukebot.utils.json
-import okhttp3.Request
 import org.apache.http.client.utils.URIBuilder
 import org.json.JSONObject
 import java.net.URI

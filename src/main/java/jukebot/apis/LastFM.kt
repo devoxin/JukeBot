@@ -2,7 +2,6 @@ package jukebot.apis
 
 import jukebot.JukeBot
 import jukebot.utils.json
-import okhttp3.Request
 import org.apache.http.client.utils.URIBuilder
 import java.util.concurrent.CompletableFuture
 import kotlin.math.min

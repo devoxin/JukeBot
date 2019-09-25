@@ -2,7 +2,6 @@ package jukebot.utils
 
 import jukebot.JukeBot
 import okhttp3.*
-import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
