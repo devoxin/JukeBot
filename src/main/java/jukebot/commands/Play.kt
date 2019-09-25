@@ -25,11 +25,11 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
         loadWithArgs(context, player)
     }
 
-    fun loadWithAttachment(ctx: Context, player: AudioHandler) {
+    private fun loadWithAttachment(ctx: Context, player: AudioHandler) {
         JukeBot.playerManager.loadItem(ctx.message.attachments[0].url, SongResultHandler(ctx, player, false))
     }
 
-    fun loadWithArgs(ctx: Context, player: AudioHandler) {
+    private fun loadWithArgs(ctx: Context, player: AudioHandler) {
         val manager = ctx.guild.audioManager
         val userQuery = ctx.argString.replace("[<>]".toRegex(), "")
 
@@ -40,6 +40,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                 if (!player.isPlaying) {
                     manager.closeAudioConnection()
                 }
+
                 return
             }
             if (userQuery.toLowerCase().contains("pornhub") && !ctx.channel.isNSFW) {
