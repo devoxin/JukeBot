@@ -103,7 +103,7 @@ abstract class Command(private val executionType: ExecutionType) {
 
         if (checks.donor > 0 && !JukeBot.isSelfHosted) {
             if (checks.donor > context.donorTier) {
-                context.embed("Spotify Unavailable", "You must be a [donor in Tier 2 or higher](https://patreon.com/devoxin)")
+                context.embed("Command Unavailable", "You must be a [donor in Tier ${checks.donor} or higher](https://patreon.com/devoxin)")
                 return false
             }
         }
@@ -112,6 +112,10 @@ abstract class Command(private val executionType: ExecutionType) {
     }
 
     open fun runChecks(context: Context) {
+        if (!runCommandPreChecks(context)) {
+            return
+        }
+
         when (executionType) {
             //ExecutionType.STANDARD -> execute(context)
             ExecutionType.REQUIRE_MUTUAL -> {
@@ -130,9 +134,7 @@ abstract class Command(private val executionType: ExecutionType) {
             }
         }
 
-        if (runCommandPreChecks(context)) {
-            execute(context)
-        }
+        execute(context)
     }
 
     open fun destroy() {}
