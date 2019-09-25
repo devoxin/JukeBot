@@ -77,27 +77,27 @@ abstract class Command(private val executionType: ExecutionType) {
     }
 
     open fun runCommandPreChecks(context: Context): Boolean {
-        if (this.javaClass.isAnnotationPresent(CommandChecks.Dj::class.java)) {
-            val allowLone = this.javaClass.getAnnotation(CommandChecks.Dj::class.java).alone
-
-            if (!context.isDJ(allowLone)) {
+        check(CommandChecks.Dj::class.java)?.let {
+            if (!context.isDJ(it.alone)) {
                 context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
                 return false
             }
         }
 
-        if (this.javaClass.isAnnotationPresent(CommandChecks.Playing::class.java)) {
+        check(CommandChecks.Playing::class.java)?.let {
             if (!context.getAudioPlayer().isPlaying) {
                 context.embed("Not Playing", "Nothing is currently playing.")
                 return false
             }
         }
 
-        if (this.javaClass.isAnnotationPresent(CommandChecks.Donor::class.java) && !JukeBot.isSelfHosted) {
-            val requiredTier = this.javaClass.getAnnotation(CommandChecks.Donor::class.java).tier
-            if (requiredTier > context.donorTier) {
-                context.embed("Command Unavailable", "You must be a [donor in Tier $requiredTier or higher](https://patreon.com/devoxin)")
-                return false
+        if (!JukeBot.isSelfHosted) {
+            check(CommandChecks.Donor::class.java)?.let {
+                val requiredTier = this.javaClass.getAnnotation(CommandChecks.Donor::class.java).tier
+                if (requiredTier > context.donorTier) {
+                    context.embed("Command Unavailable", "You must be a [donor in Tier $requiredTier or higher](https://patreon.com/devoxin)")
+                    return false
+                }
             }
         }
 
@@ -123,6 +123,14 @@ abstract class Command(private val executionType: ExecutionType) {
         }
 
         execute(context)
+    }
+
+    private fun <T : Annotation> check(klass: Class<T>): T? {
+        return if (this.javaClass.isAnnotationPresent(klass)) {
+            this.javaClass.getAnnotation(klass)
+        } else {
+            null
+        }
     }
 
     open fun destroy() {}
