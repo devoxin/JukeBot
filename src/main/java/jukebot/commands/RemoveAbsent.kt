@@ -1,15 +1,13 @@
 package jukebot.commands
 
-import jukebot.framework.Command
-import jukebot.framework.CommandCategory
-import jukebot.framework.CommandProperties
-import jukebot.framework.Context
+import jukebot.framework.*
 
 @CommandProperties(
     description = "Removes songs added by members absent from the VoiceChannel",
     aliases = ["ra"],
     category = CommandCategory.QUEUE
 )
+@CommandCheck(dj = DjCheck.ROLE_ONLY)
 class RemoveAbsent : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
@@ -17,10 +15,6 @@ class RemoveAbsent : Command(ExecutionType.STANDARD) {
 
         if (handler.queue.isEmpty()) {
             return context.embed("Queue Empty", "There are no tracks to remove.")
-        }
-
-        if (!context.isDJ(true)) {
-            return context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
         }
 
         val membersInVc = context.guild.audioManager.connectedChannel!!.members.map { it.idLong }

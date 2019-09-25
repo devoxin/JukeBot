@@ -5,17 +5,14 @@ import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.listeners.CommandHandler
+import jukebot.utils.Helpers
 
 @CommandProperties(description = "Displays all commands", aliases = ["commands", "cmds", "?"])
 class Help : Command(ExecutionType.STANDARD) {
 
     private val categories = CommandCategory.values()
-        .mapIndexed { i, e -> "`${i + 1}.` **`${pad(e.toTitleCase())}:`** ${e.description}" }
+        .mapIndexed { i, e -> "`${i + 1}.` **`${Helpers.pad(e.toTitleCase())}:`** ${e.description}" }
         .joinToString("\n")
-
-    fun pad(s: String): String {
-        return String.format("%-12s", s).replace(" ", " \u200B")
-    }
 
     override fun execute(context: Context) {
         if (context.args.isEmpty()) {
@@ -38,7 +35,7 @@ class Help : Command(ExecutionType.STANDARD) {
 
             for (cmd in commandsByCategory(category)) {
                 builder.append("**`")
-                    .append(pad(cmd.name().toLowerCase()))
+                    .append(Helpers.pad(cmd.name().toLowerCase()))
                     .append(":`** ")
                     .append(cmd.properties().description)
                     .append("\n")

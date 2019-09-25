@@ -1,5 +1,6 @@
 package jukebot.framework
 
+import jukebot.JukeBot
 import net.dv8tion.jda.api.Permission
 
 abstract class Command(private val executionType: ExecutionType) {
@@ -75,12 +76,47 @@ abstract class Command(private val executionType: ExecutionType) {
         return true
     }
 
+    open fun runCommandPreChecks(context: Context): Boolean {
+        if (!this.javaClass.isAnnotationPresent(CommandCheck::class.java)) {
+            return true
+        }
+
+        val checks = this.javaClass.getAnnotation(CommandCheck::class.java)
+
+        if (checks.dj != DjCheck.NONE) {
+            val allowLone = checks.dj == DjCheck.ROLE_OR_ALONE
+
+            if (!context.isDJ(allowLone)) {
+                context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
+                return false
+            }
+        }
+
+        if (checks.isPlaying) {
+            val ap = context.getAudioPlayer()
+
+            if (!ap.isPlaying) {
+                context.embed("Not Playing", "Nothing is currently playing.")
+                return false
+            }
+        }
+
+        if (checks.donor > 0 && !JukeBot.isSelfHosted) {
+            if (checks.donor > context.donorTier) {
+                context.embed("Spotify Unavailable", "You must be a [donor in Tier 2 or higher](https://patreon.com/devoxin)")
+                return false
+            }
+        }
+
+        return true
+    }
+
     open fun runChecks(context: Context) {
         when (executionType) {
-            ExecutionType.STANDARD -> execute(context)
+            //ExecutionType.STANDARD -> execute(context)
             ExecutionType.REQUIRE_MUTUAL -> {
-                if (checkVoiceState(context, true)) {
-                    execute(context)
+                if (!checkVoiceState(context, true)) {
+                    return
                 }
             }
             ExecutionType.TRIGGER_CONNECT -> {
@@ -88,10 +124,14 @@ abstract class Command(private val executionType: ExecutionType) {
                     return context.embed(name(), "You need to specify an identifier to lookup.")
                 }
 
-                if (connectToChannel(context)) {
-                    execute(context)
+                if (!connectToChannel(context)) {
+                    return
                 }
             }
+        }
+
+        if (runCommandPreChecks(context)) {
+            execute(context)
         }
     }
 

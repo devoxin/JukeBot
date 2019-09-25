@@ -1,23 +1,16 @@
 package jukebot.commands
 
 import jukebot.JukeBot
-import jukebot.framework.Command
-import jukebot.framework.CommandCategory
-import jukebot.framework.CommandProperties
-import jukebot.framework.Context
+import jukebot.framework.*
 import jukebot.utils.Helpers
 import jukebot.utils.toTimeString
 
 @CommandProperties(description = "Displays the currently playing track", aliases = ["n", "np"], category = CommandCategory.QUEUE)
+@CommandCheck(isPlaying = true)
 class Now : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
         val player = JukeBot.getPlayer(context.guild.idLong)
-
-        if (!player.isPlaying) {
-            context.embed("Not Playing", "Nothing is currently playing.")
-            return
-        }
 
         val current = player.player.playingTrack
         val duration = if (current.info.isStream) "LIVE" else current.duration.toTimeString()

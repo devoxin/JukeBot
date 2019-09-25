@@ -2,20 +2,14 @@ package jukebot.commands
 
 import jukebot.Database
 import jukebot.entities.CustomPlaylist
-import jukebot.framework.Command
-import jukebot.framework.CommandCategory
-import jukebot.framework.CommandProperties
-import jukebot.framework.Context
+import jukebot.framework.*
 
 @CommandProperties(description = "Adds all tracks in the queue to a custom playlist", category = CommandCategory.QUEUE)
+@CommandCheck(isPlaying = true)
 class SaveAll : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
-
-        if (!player.isPlaying) {
-            return context.embed("Not Playing", "Nothing is currently playing.")
-        }
 
         if (context.args.isEmpty()) {
             return context.embed("Save", "You need to provide the name of the playlist to add the track to.")

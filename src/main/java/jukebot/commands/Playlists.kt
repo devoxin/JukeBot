@@ -27,11 +27,11 @@ class Playlists : Command(ExecutionType.STANDARD) {
             )
         }
 
-        this.subcommands[sc]!!.invoke(context)
+        this.subcommands[sc]!!.invoke(context, withArgs = true)
     }
 
     @SubCommand(trigger = "list", description = "View your custom playlists.")
-    fun listPlaylists(ctx: Context) {
+    fun listPlaylists(ctx: Context, args: List<String>) {
         val userPlaylists = Database.getPlaylists(ctx.author.idLong)
 
         if (userPlaylists.isEmpty()) {
@@ -42,7 +42,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "create", description = "Create a new custom playlist.")
-    fun createPlaylist(ctx: Context) {
+    fun createPlaylist(ctx: Context, args: List<String>) {
         val allPlaylists = Database.getPlaylists(ctx.author.idLong)
         val donorTier = ctx.donorTier
 
@@ -57,8 +57,6 @@ class Playlists : Command(ExecutionType.STANDARD) {
             )
             return
         }
-
-        val args = ctx.args.drop(1)
 
         if (args.isEmpty()) {
             ctx.prompt("Custom Playlists", "What do you want to name the playlist?\n*Max. 32 characters*") { _, title ->
@@ -85,8 +83,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "view", description = "Lists the tracks in a playlist.")
-    fun viewPlaylist(ctx: Context) {
-        val playlistName = ctx.args.drop(1).joinToString(" ")
+    fun viewPlaylist(ctx: Context, args: List<String>) {
+        val playlistName = args.joinToString(" ")
 
         if (playlistName.isEmpty()) {
             return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to view.")
@@ -106,8 +104,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "manage", description = "Make modifications to a playlist.")
-    fun manage(ctx: Context) {
-        val playlistName = ctx.args.drop(1).joinToString(" ")
+    fun manage(ctx: Context, args: List<String>) {
+        val playlistName = args.joinToString(" ")
 
         if (playlistName.isEmpty()) {
             return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to load.")
@@ -193,8 +191,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "delete", description = "Deletes a custom playlist.")
-    fun delete(ctx: Context) {
-        val playlistName = ctx.args.drop(1).joinToString(" ")
+    fun delete(ctx: Context, args: List<String>) {
+        val playlistName = args.joinToString(" ")
 
         if (playlistName.isEmpty()) {
             return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to delete.")
@@ -208,8 +206,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "load", description = "Loads a playlist into the queue.")
-    fun load(ctx: Context) {
-        val playlistName = ctx.args.drop(1).joinToString(" ")
+    fun load(ctx: Context, args: List<String>) {
+        val playlistName = args.joinToString(" ")
 
         if (playlistName.isEmpty()) {
             return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to load.")

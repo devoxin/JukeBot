@@ -5,20 +5,14 @@ import jukebot.JukeBot
 import jukebot.apis.spotify.SpotifyAPI
 import jukebot.audio.AudioHandler
 import jukebot.audio.SongResultHandler
-import jukebot.framework.Command
-import jukebot.framework.CommandCategory
-import jukebot.framework.CommandProperties
-import jukebot.framework.Context
+import jukebot.framework.*
 import java.util.concurrent.CompletableFuture
 
 @CommandProperties(description = "Loads a playlist from Spotify", category = CommandCategory.PLAYBACK)
+@CommandCheck(donor = 2)
 class Spotify : Command(ExecutionType.TRIGGER_CONNECT) { // TODO: Consider moving this to `play` eventually
 
     override fun execute(context: Context) {
-        if (context.donorTier < 2 && !JukeBot.isSelfHosted) {
-            return context.embed("Spotify Unavailable", "You must be a [donor in Tier 2 or higher](https://patreon.com/Devoxin)")
-        }
-
         val url = context.args.firstOrNull()
             ?.replace("<", "")
             ?.replace(">", "")

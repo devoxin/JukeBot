@@ -2,22 +2,19 @@ package jukebot.commands
 
 import jukebot.audio.AudioHandler
 import jukebot.framework.Command
+import jukebot.framework.CommandCheck
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import java.text.DecimalFormat
 
 @CommandProperties(description = "Displays player statistics", aliases = ["ps"], developerOnly = true)
+@CommandCheck(isPlaying = true)
 class PlayerStats : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     private val dpFormatter = DecimalFormat("0.00")
 
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
-
-        if (!player.isPlaying) {
-            context.embed("Not Playing", "Nothing is currently playing.")
-            return
-        }
 
         val packetsLost = player.trackPacketLost.toDouble() / player.trackPacketsSent * 100
         val packetLossPc = dpFormatter.format(packetsLost)

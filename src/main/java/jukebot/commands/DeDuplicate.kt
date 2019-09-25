@@ -1,15 +1,13 @@
 package jukebot.commands
 
-import jukebot.framework.Command
-import jukebot.framework.CommandCategory
-import jukebot.framework.CommandProperties
-import jukebot.framework.Context
+import jukebot.framework.*
 
 @CommandProperties(
     aliases = ["dedupe", "dd"],
     description = "Removes all duplicate tracks from the queue",
     category = CommandCategory.QUEUE
 )
+@CommandCheck(dj = DjCheck.ROLE_OR_ALONE)
 class DeDuplicate : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
@@ -17,11 +15,6 @@ class DeDuplicate : Command(ExecutionType.REQUIRE_MUTUAL) {
 
         if (player.queue.isEmpty()) {
             return context.embed("Queue is empty", "There is nothing to de-duplicate.")
-        }
-
-        if (!context.isDJ(true)) {
-            context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
-            return
         }
 
         val originalSize = player.queue.size
