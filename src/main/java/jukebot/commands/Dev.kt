@@ -20,7 +20,7 @@ class Dev : Command(ExecutionType.STANDARD) {
                     return context.embed("Missing Required Arg", "You need to specify `key`")
                 }
 
-                JukeBot.patreonApi.setAccessToken(context.args[1])
+                JukeBot.patreonApi.accessToken = context.args[1]
                 context.message.addReaction("\uD83D\uDC4C").queue()
             }
             "block" -> {

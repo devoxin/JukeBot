@@ -2,17 +2,16 @@ package jukebot.apis.patreon
 
 import jukebot.JukeBot
 import jukebot.utils.json
+import jukebot.utils.separate
+import okhttp3.HttpUrl
+import okhttp3.Request
 import org.apache.http.client.utils.URIBuilder
 import org.json.JSONObject
 import java.net.URI
 import java.net.URLDecoder
 import java.util.concurrent.CompletableFuture
 
-class PatreonAPI(private var accessToken: String) {
-
-    fun setAccessToken(token: String) {
-        accessToken = token
-    }
+class PatreonAPI(var accessToken: String) {
 
     fun fetchPledgesOfCampaign(campaignId: String): CompletableFuture<List<PatreonUser>> {
         val future = CompletableFuture<List<PatreonUser>>()
@@ -26,18 +25,15 @@ class PatreonAPI(private var accessToken: String) {
 
     private fun getPageOfPledge(campaignId: String, offset: String? = null,
                                 users: MutableSet<PatreonUser> = mutableSetOf(), cb: (List<PatreonUser>) -> Unit) {
-        val url = URIBuilder("$BASE_URL/campaigns/$campaignId/pledges")
-
-        url.addParameter("include", "pledge,patron")
+        val req = RequestBuilder()
+            .path("campaigns/$campaignId/pledges")
+            .query("include", "pledge,patron")
 
         if (offset != null) {
-            url.addParameter("page[cursor]", offset)
+            req.query("page[cursor]", offset)
         }
 
-        JukeBot.httpClient.request {
-            url(url.build().toURL())
-            header("Authorization", "Bearer $accessToken")
-        }.queue({
+        JukeBot.httpClient.request { req.toRequest() }.queue({
             if (!it.isSuccessful) {
                 JukeBot.LOG.error("Unable to get list of pledges ({}): {}", it.code(), it.message())
                 it.close()
@@ -52,7 +48,8 @@ class PatreonAPI(private var accessToken: String) {
                 val obj = user as JSONObject
 
                 if (obj.getString("type") == "user") {
-                    users.add(buildUser(obj, pledges.getJSONObject(index)))
+                    val pledge = pledges.getJSONObject(index)
+                    users.add(PatreonUser.fromJsonObject(obj, pledge))
                 }
             }
 
@@ -72,50 +69,40 @@ class PatreonAPI(private var accessToken: String) {
         }
 
         return parseQueryString(links.getString("next"))["page[cursor]"]
-//
-//        val queryParams = URLEncodedUtils.parse(URI(links.getString("next")), Charset.forName("utf8"))
-//        return queryParams.firstOrNull { it.name == "page[cursor]" }?.value
     }
 
-    fun parseQueryString(url: String): HashMap<String, String> {
-        val query = URI(url).query
-        val pairs = query.split("&")
-        val map = hashMapOf<String, String>()
+    private fun parseQueryString(url: String): Map<String, String> {
+        val pairs = URI(url).query.split("&")
 
-        for (pair in pairs) {
-            val nameValue = pair.split("=")
-            val key = URLDecoder.decode(nameValue[0], CHARSET)
-            val value = URLDecoder.decode(nameValue[1], CHARSET)
-
-            map[key] = value
-        }
-
-        return map
+        return pairs
+            .map { it.split("=") }
+            .map { Pair(decode(it[0]), decode(it[1])) }
+            .toMap()
     }
 
-    private fun buildUser(user: JSONObject, pledge: JSONObject): PatreonUser {
-        val userAttr = user.getJSONObject("attributes")
-        val pledgeAttr = pledge.getJSONObject("attributes")
+    private fun decode(s: String) = URLDecoder.decode(s, Charsets.UTF_8)
 
-        val connections = userAttr.getJSONObject("social_connections")
-        val discordId = if (!connections.isNull("discord")) {
-            connections.getJSONObject("discord").getLong("user_id")
-        } else {
-            null
+    inner class RequestBuilder {
+        private val url = BASE_URL.newBuilder()
+
+        fun path(path: String): RequestBuilder {
+            url.addPathSegments(path)
+            return this
         }
 
-        return PatreonUser(
-            userAttr.getString("first_name"),
-            userAttr.getString("last_name"),
-            userAttr.getString("email"),
-            pledgeAttr.getInt("amount_cents"),
-            !pledgeAttr.isNull("declined_since"),
-            discordId
-        )
+        fun query(k: String, v: String): RequestBuilder {
+            url.addQueryParameter(k, v)
+            return this
+        }
+
+        fun toRequest(): Request = Request.Builder()
+            .url(url.build())
+            .header("Authorization", accessToken)
+            .build()
     }
 
     companion object {
-        private const val BASE_URL = "https://www.patreon.com/api/oauth2/api"
-        private val CHARSET = Charsets.UTF_8
+        private val BASE_URL = HttpUrl.get("https://www.patreon.com/api/oauth2/api")
     }
+
 }

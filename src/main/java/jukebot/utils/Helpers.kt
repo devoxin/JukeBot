@@ -65,22 +65,11 @@ object Helpers {
         }
     }
 
-    fun dm(userId: String, message: String) {
-        val user = JukeBot.shardManager.getUserById(userId) ?: return
-
-        user.openPrivateChannel().queue {
-            it.sendMessage(message)
-                .submit()
-                .handle { _, _ -> it.close().queue() }
-        }
-    }
-
     fun monitorPledges() {
         JukeBot.LOG.info("Checking pledges...")
 
         JukeBot.patreonApi.fetchPledgesOfCampaign("750822").thenAccept { users ->
             if (users.isEmpty()) {
-                dm("180093157554388993", "⚠  |  Unable to check pledges. Ensure key is valid!")
                 return@thenAccept JukeBot.LOG.warn("Scheduled pledge clean failed: No users to check")
             }
 
