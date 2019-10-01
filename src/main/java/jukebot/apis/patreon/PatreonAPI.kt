@@ -12,11 +12,7 @@ import java.util.concurrent.CompletableFuture
 class PatreonAPI(var accessToken: String) {
     fun fetchPledgesOfCampaign(campaignId: String): CompletableFuture<List<PatreonUser>> {
         val future = CompletableFuture<List<PatreonUser>>()
-
-        getPageOfPledge(campaignId) {
-            future.complete(it)
-        }
-
+        getPageOfPledge(campaignId) { future.complete(it) }
         return future
     }
 
@@ -76,10 +72,7 @@ class PatreonAPI(var accessToken: String) {
     private fun decode(s: String) = URLDecoder.decode(s, Charsets.UTF_8)
 
     private fun request(urlOpts: HttpUrl.Builder.() -> Unit): RequestUtil.PendingRequest {
-        val url = baseUrl.newBuilder()
-            .apply(urlOpts)
-            .build()
-
+        val url = baseUrl.newBuilder().apply(urlOpts).build()
         return JukeBot.httpClient.request {
             url(url)
             header("Authorization", "Bearer $accessToken")
