@@ -1,7 +1,10 @@
 package jukebot.commands
 
 import jukebot.audio.AudioHandler
-import jukebot.framework.*
+import jukebot.framework.Command
+import jukebot.framework.CommandChecks
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 import java.text.DecimalFormat
 
 @CommandProperties(description = "Displays player statistics", aliases = ["ps"], developerOnly = true)

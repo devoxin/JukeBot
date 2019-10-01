@@ -1,7 +1,10 @@
 package jukebot.commands
 
 import jukebot.JukeBot
-import jukebot.framework.*
+import jukebot.framework.Command
+import jukebot.framework.CommandChecks
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 import jukebot.utils.TextSplitter
 import net.dv8tion.jda.api.EmbedBuilder
 

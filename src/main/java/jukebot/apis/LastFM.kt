@@ -13,8 +13,8 @@ class LastFM(private val key: String) {
 
     fun findSimilar(title: String, artist: String): CompletableFuture<List<TrackMatch>?> {
         val url = URIBuilder("$baseUrl/?method=track.getsimilar&api_key=$key&format=json")
-        url.addParameter("track", title)
-        url.addParameter("artist", artist)
+            .addParameter("track", title)
+            .addParameter("artist", artist)
 
         val future = CompletableFuture<List<TrackMatch>?>()
 

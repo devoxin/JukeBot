@@ -1,6 +1,9 @@
 package jukebot.commands
 
-import jukebot.framework.*
+import jukebot.framework.Command
+import jukebot.framework.CommandChecks
+import jukebot.framework.CommandProperties
+import jukebot.framework.Context
 
 @CommandProperties(aliases = ["prev", "back"], description = "Plays the last-played track")
 @CommandChecks.Dj(alone = true)
