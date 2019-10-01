@@ -1,17 +1,15 @@
 package jukebot.apis.patreon
 
 import jukebot.JukeBot
-import jukebot.apis.Api
 import jukebot.utils.RequestUtil
 import jukebot.utils.json
 import okhttp3.HttpUrl
-import okhttp3.Request
 import org.json.JSONObject
 import java.net.URI
 import java.net.URLDecoder
 import java.util.concurrent.CompletableFuture
 
-class PatreonAPI(var accessToken: String) : Api("https://www.patreon.com/api/oauth2/api") {
+class PatreonAPI(var accessToken: String) {
     fun fetchPledgesOfCampaign(campaignId: String): CompletableFuture<List<PatreonUser>> {
         val future = CompletableFuture<List<PatreonUser>>()
 
@@ -25,9 +23,9 @@ class PatreonAPI(var accessToken: String) : Api("https://www.patreon.com/api/oau
     private fun getPageOfPledge(campaignId: String, offset: String? = null,
                                 users: MutableSet<PatreonUser> = mutableSetOf(), cb: (List<PatreonUser>) -> Unit) {
         request {
-            path("campaigns/$campaignId/pledges")
-            query("include", "pledge,patron")
-            offset?.let { query("page[cursor]", it) }
+            addPathSegments("campaigns/$campaignId/pledges")
+            setQueryParameter("include", "pledge,patron")
+            offset?.let { setQueryParameter("page[cursor]", it) }
         }.queue({
             if (!it.isSuccessful) {
                 JukeBot.LOG.error("Unable to get list of pledges ({}): {}", it.code(), it.body()?.string())
@@ -77,13 +75,18 @@ class PatreonAPI(var accessToken: String) : Api("https://www.patreon.com/api/oau
 
     private fun decode(s: String) = URLDecoder.decode(s, Charsets.UTF_8)
 
-    override fun request(req: RequestBuilder.() -> Unit): RequestUtil.PendingRequest {
-        val request = RequestBuilder()
-            .apply(req)
-            .toRequestBuilder()
-            .header("Authorization", "Bearer $accessToken")
+    private fun request(urlOpts: HttpUrl.Builder.() -> Unit): RequestUtil.PendingRequest {
+        val url = baseUrl.newBuilder()
+            .apply(urlOpts)
             .build()
 
-        return JukeBot.httpClient.request(request)
+        return JukeBot.httpClient.request {
+            url(url)
+            header("Authorization", "Bearer $accessToken")
+        }
+    }
+
+    companion object {
+        private val baseUrl = HttpUrl.get("https://www.patreon.com/api/oauth2/api")
     }
 }
