@@ -119,7 +119,7 @@ class PatreonAPI(private var accessToken: String) {
     }
 
     companion object {
-        private const val BASE_URL = "https://www.patreon.com/api/oauth2/api/"
+        private const val BASE_URL = "https://www.patreon.com/api/oauth2/api"
         private val CHARSET = Charsets.UTF_8
     }
 }
