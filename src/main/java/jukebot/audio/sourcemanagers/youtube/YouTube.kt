@@ -40,10 +40,11 @@ class YouTube : AudioSourceManager, HttpAudioSourceManager() {
             return null
         }
 
-        val out = IOUtils.toString(proc.inputStream, Charsets.UTF_8)
-        val (title, _, audio) = out.split("\n")
+        val out = IOUtils.toString(proc.inputStream, Charsets.UTF_8).split("\n")
+        val title = out[0]
+        val playbackUrl = if (out.size >= 2) out[2] else out[1]
 
-        val ref = AudioReference(audio, title)
+        val ref = AudioReference(playbackUrl, title)
         val httpReference = getAsHttpReference(ref)?: return null
 
         return if (httpReference.containerDescriptor != null) {
