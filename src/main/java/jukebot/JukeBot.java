@@ -36,6 +36,7 @@ import jukebot.listeners.EventHandler;
 import jukebot.utils.Config;
 import jukebot.utils.Helpers;
 import jukebot.utils.RequestUtil;
+import jukebot.utils.RoutePlanner;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -44,6 +45,10 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.apache.http.ConnectionReuseStrategy;
+import org.apache.http.HttpResponse;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
@@ -169,6 +174,16 @@ public class JukeBot {
         playerManager.source(YoutubeAudioSourceManager.class).setPlaylistPageCount(Integer.MAX_VALUE);
 
         playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
+
+        playerManager.source(YoutubeAudioSourceManager.class).configureBuilder(b -> {
+            b.setConnectionReuseStrategy((response, context) -> false);
+            b.disableAuthCaching();
+            b.disableCookieManagement();
+            //b.evictExpiredConnections();
+            //b.setUserAgent("Spotify 3.0");
+
+            b.setRoutePlanner(new RoutePlanner());
+        });
     }
 
     public static boolean hasPlayer(final long guildId) {

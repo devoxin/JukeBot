@@ -34,6 +34,7 @@ class Verify : Command(ExecutionType.STANDARD) {
             }
 
             val pledge = users.firstOrNull { it.discordId != null && it.discordId == ctx.author.idLong }
+                // TODO: Link to add account.
                 ?: return@thenAccept ctx.embed("Donor Verification",
                     "No Discord account linked to your Patreon account. Link your discord and try again.\n" +
                         "If you continue to receive this error, please [join here](https://discord.gg/xvtH2Yn)")

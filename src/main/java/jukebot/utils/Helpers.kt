@@ -18,6 +18,13 @@ object Helpers {
     private val timer: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
     val monitor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }
 
+    var rr = -1
+        get() {
+            field++
+            println(field)
+            return field
+        }
+
     fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC', link: String = "https://jukebot.serux.pro"): String {
         val percent = v.toFloat() / max
         val blocks = floor((barLength * percent).toDouble()).toInt()
