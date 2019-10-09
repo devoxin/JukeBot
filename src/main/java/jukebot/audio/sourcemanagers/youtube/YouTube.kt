@@ -31,6 +31,7 @@ class YouTube : AudioSourceManager, HttpAudioSourceManager() {
 
     override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
         if (!isValidIdentifier(reference.identifier)) {
+            println("no")
             return null
         }
 
@@ -40,20 +41,22 @@ class YouTube : AudioSourceManager, HttpAudioSourceManager() {
             return null
         }
 
-        val out = IOUtils.toString(proc.inputStream, Charsets.UTF_8).split("\n")
+        val out = IOUtils.toString(proc.inputStream, Charsets.UTF_8)
+            .split("\n")
+            .filter { it.isNotEmpty() }
         val title = out.first()
         val playbackUrl = out.last()
 
         val ref = AudioReference(playbackUrl, title)
-        val httpReference = getAsHttpReference(ref)?: return null
 
-        return if (httpReference.containerDescriptor != null) {
-            createTrack(AudioTrackInfoBuilder.create(ref, null).build(), httpReference.containerDescriptor)
+        return if (ref.containerDescriptor != null) {
+            createTrack(AudioTrackInfoBuilder.create(ref, null).build(), ref.containerDescriptor)
         } else {
             val container = detectContainer(ref)
+                ?: return null
             checkContainer(container)
 
-            val data = container!!.trackInfo
+            val data = container.trackInfo
 
             val trackInfo = AudioTrackInfo(title, data.author, data.length, data.identifier, data.isStream, data.uri)
             createTrack(trackInfo, container.containerDescriptor)
@@ -95,13 +98,11 @@ class YouTube : AudioSourceManager, HttpAudioSourceManager() {
         }
     }
 
-    fun checkContainer(result: MediaContainerDetectionResult?) {
-        if (result != null) {
-            if (!result.isContainerDetected) {
-                throw FriendlyException("Unknown file format.", FriendlyException.Severity.COMMON, null)
-            } else if (!result.isSupportedFile) {
-                throw FriendlyException(result.unsupportedReason, FriendlyException.Severity.COMMON, null)
-            }
+    fun checkContainer(result: MediaContainerDetectionResult) {
+        if (!result.isContainerDetected) {
+            throw FriendlyException("Unknown file format.", FriendlyException.Severity.COMMON, null)
+        } else if (!result.isSupportedFile) {
+            throw FriendlyException(result.unsupportedReason, FriendlyException.Severity.COMMON, null)
         }
     }
 
@@ -114,15 +115,12 @@ class YouTube : AudioSourceManager, HttpAudioSourceManager() {
     }
 
     companion object {
-        private val PROTOCOL_REGEX = "(?:http://|https://|)"
+        private val PROTOCOL_REGEX = "(?:https?://)"
         private val DOMAIN_REGEX = "(?:www\\.|m\\.|music\\.|)youtube\\.com"
         private val SHORT_DOMAIN_REGEX = "(?:www\\.|)youtu\\.be"
         private val VIDEO_ID_REGEX = "(?<v>[a-zA-Z0-9_-]{11})"
 
-        private val directVideoIdPattern = Pattern.compile("^$VIDEO_ID_REGEX$")
-
         private val validPatterns = listOf(
-            directVideoIdPattern,
             Pattern.compile("^$PROTOCOL_REGEX$DOMAIN_REGEX/.*"),
             Pattern.compile("^$PROTOCOL_REGEX$SHORT_DOMAIN_REGEX/.*")
         )

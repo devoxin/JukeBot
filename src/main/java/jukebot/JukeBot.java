@@ -20,6 +20,12 @@ import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
@@ -156,12 +162,12 @@ public class JukeBot {
             spotifyApi = new SpotifyAPI(client, secret);
         }
 
-        if (config.hasKey("youtube")) {
-            LOG.debug("Config has youtube key, loading youtube API...");
-            String key = Objects.requireNonNull(config.getString("youtube"));
-            YoutubeAudioSourceManager sm = playerManager.source(YoutubeAudioSourceManager.class);
-            youTubeApi = new YouTubeAPI(key, sm);
-        }
+//        if (config.hasKey("youtube")) {
+//            LOG.debug("Config has youtube key, loading youtube API...");
+//            String key = Objects.requireNonNull(config.getString("youtube"));
+//            YoutubeAudioSourceManager sm = playerManager.source(YoutubeAudioSourceManager.class);
+//            youTubeApi = new YouTubeAPI(key, sm);
+//        }
     }
 
     private static void registerSourceManagers() {
@@ -172,17 +178,17 @@ public class JukeBot {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
         }
 
-        AudioSourceManagers.registerRemoteSources(playerManager);
-        playerManager.source(YoutubeAudioSourceManager.class).setPlaylistPageCount(Integer.MAX_VALUE);
+        playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
+        playerManager.registerSourceManager(new BandcampAudioSourceManager());
+        playerManager.registerSourceManager(new VimeoAudioSourceManager());
+        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+        playerManager.registerSourceManager(new BeamAudioSourceManager());
+        playerManager.registerSourceManager(new HttpAudioSourceManager());
+
+        //AudioSourceManagers.registerRemoteSources(playerManager);
+        //playerManager.source(YoutubeAudioSourceManager.class).setPlaylistPageCount(Integer.MAX_VALUE);
 
         playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
-
-        playerManager.source(YoutubeAudioSourceManager.class).configureBuilder(b -> {
-            //b.setConnectionReuseStrategy((response, context) -> false);
-            //b.disableAuthCaching();
-            //b.disableCookieManagement();
-            b.setRoutePlanner(new RoutePlanner());
-        });
     }
 
     public static boolean hasPlayer(final long guildId) {
