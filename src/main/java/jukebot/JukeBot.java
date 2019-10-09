@@ -30,6 +30,7 @@ import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
+import jukebot.audio.sourcemanagers.youtube.YouTube;
 import jukebot.listeners.ActionWaiter;
 import jukebot.listeners.CommandHandler;
 import jukebot.listeners.EventHandler;
@@ -164,6 +165,7 @@ public class JukeBot {
     }
 
     private static void registerSourceManagers() {
+        playerManager.registerSourceManager(new YouTube());
         playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
         if (config.getNsfwEnabled()) {
