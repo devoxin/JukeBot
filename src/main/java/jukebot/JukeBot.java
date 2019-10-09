@@ -20,12 +20,6 @@ import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
-import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
@@ -36,14 +30,12 @@ import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
-import jukebot.audio.sourcemanagers.youtube.YouTube;
 import jukebot.listeners.ActionWaiter;
 import jukebot.listeners.CommandHandler;
 import jukebot.listeners.EventHandler;
 import jukebot.utils.Config;
 import jukebot.utils.Helpers;
 import jukebot.utils.RequestUtil;
-import jukebot.utils.RoutePlanner;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
@@ -52,10 +44,6 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.apache.http.ConnectionReuseStrategy;
-import org.apache.http.HttpResponse;
-import org.apache.http.conn.ConnectionKeepAliveStrategy;
-import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
@@ -162,31 +150,23 @@ public class JukeBot {
             spotifyApi = new SpotifyAPI(client, secret);
         }
 
-//        if (config.hasKey("youtube")) {
-//            LOG.debug("Config has youtube key, loading youtube API...");
-//            String key = Objects.requireNonNull(config.getString("youtube"));
-//            YoutubeAudioSourceManager sm = playerManager.source(YoutubeAudioSourceManager.class);
-//            youTubeApi = new YouTubeAPI(key, sm);
-//        }
+        if (config.hasKey("youtube")) {
+            LOG.debug("Config has youtube key, loading youtube API...");
+            String key = Objects.requireNonNull(config.getString("youtube"));
+            YoutubeAudioSourceManager sm = playerManager.source(YoutubeAudioSourceManager.class);
+            youTubeApi = new YouTubeAPI(key, sm);
+        }
     }
 
     private static void registerSourceManagers() {
-        playerManager.registerSourceManager(new YouTube());
         playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
         if (config.getNsfwEnabled()) {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
         }
 
-        playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
-        playerManager.registerSourceManager(new BandcampAudioSourceManager());
-        playerManager.registerSourceManager(new VimeoAudioSourceManager());
-        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
-        playerManager.registerSourceManager(new BeamAudioSourceManager());
-        playerManager.registerSourceManager(new HttpAudioSourceManager());
-
-        //AudioSourceManagers.registerRemoteSources(playerManager);
-        //playerManager.source(YoutubeAudioSourceManager.class).setPlaylistPageCount(Integer.MAX_VALUE);
+        AudioSourceManagers.registerRemoteSources(playerManager);
+        playerManager.source(YoutubeAudioSourceManager.class).setPlaylistPageCount(Integer.MAX_VALUE);
 
         playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
     }
