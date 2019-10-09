@@ -31,7 +31,6 @@ class YouTube : AudioSourceManager, HttpAudioSourceManager() {
 
     override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
         if (!isValidIdentifier(reference.identifier)) {
-            println("no")
             return null
         }
 
