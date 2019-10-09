@@ -43,6 +43,11 @@ class YouTube : AudioSourceManager, HttpAudioSourceManager() {
         val out = IOUtils.toString(proc.inputStream, Charsets.UTF_8)
             .split("\n")
             .filter { it.isNotEmpty() }
+
+        if (out.isEmpty()) {
+            return null
+        }
+
         val title = out.first()
         val playbackUrl = out.last()
 
