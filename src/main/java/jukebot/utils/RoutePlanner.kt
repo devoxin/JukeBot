@@ -10,6 +10,8 @@ class RoutePlanner : HttpRoutePlanner {
 
     override fun determineRoute(target: HttpHost, request: HttpRequest, context: HttpContext): HttpRoute {
         println(request.requestLine.uri)
+        request.params.setParameter("has_verified", 1)
+        println(request.requestLine.uri)
         return HttpRoute(target)
     }
 
