@@ -10,6 +10,7 @@ class RoutePlanner : HttpRoutePlanner {
 
     override fun determineRoute(target: HttpHost, request: HttpRequest, context: HttpContext): HttpRoute {
         println(request.requestLine.uri)
+        println("headers: ${request.allHeaders.map { "${it.name}: ${it.value}" }}")
         return HttpRoute(target)
     }
 
