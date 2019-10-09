@@ -176,12 +176,9 @@ public class JukeBot {
         playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
 
         playerManager.source(YoutubeAudioSourceManager.class).configureBuilder(b -> {
-            b.setConnectionReuseStrategy((response, context) -> false);
-            b.disableAuthCaching();
-            b.disableCookieManagement();
-            //b.evictExpiredConnections();
-            //b.setUserAgent("Spotify 3.0");
-
+            //b.setConnectionReuseStrategy((response, context) -> false);
+            //b.disableAuthCaching();
+            //b.disableCookieManagement();
             b.setRoutePlanner(new RoutePlanner());
         });
     }
