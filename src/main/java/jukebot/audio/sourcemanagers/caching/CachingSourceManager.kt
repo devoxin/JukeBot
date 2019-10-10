@@ -77,6 +77,10 @@ class CachingSourceManager : AudioSourceManager {
         private val TRACK_TTL = TimeUnit.HOURS.toMillis(12)
 
         fun cache(identifier: String, item: AudioItem) {
+            if (jedisPool.isClosed) {
+                return
+            }
+
             if (item is AudioTrack) {
                 jedisPool.resource.use {
                     val encoded = JukeBot.playerManager.toBase64String(item)
