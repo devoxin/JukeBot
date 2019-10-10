@@ -21,6 +21,6 @@ class Porn : Command(ExecutionType.TRIGGER_CONNECT) {
             player.channelId = context.channel.idLong
         }
 
-        JukeBot.playerManager.loadItem("phsearch:${context.argString}", SongResultHandler(context, player, true))
+        JukeBot.playerManager.loadIdentifier("phsearch:${context.argString}", context, player, true)
     }
 }

@@ -28,6 +28,7 @@ import jukebot.apis.patreon.PatreonAPI;
 import jukebot.apis.spotify.SpotifyAPI;
 import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
+import jukebot.audio.sourcemanagers.caching.CachingSourceManager;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.listeners.ActionWaiter;
@@ -75,7 +76,7 @@ public class JukeBot {
 
     public static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
-    public static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+    public static CustomAudioPlayerManager playerManager = new CustomAudioPlayerManager(); //new DefaultAudioPlayerManager();
     public static ShardManager shardManager;
 
 
@@ -159,6 +160,7 @@ public class JukeBot {
     }
 
     private static void registerSourceManagers() {
+        playerManager.registerSourceManager(new CachingSourceManager());
         playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
         if (config.getNsfwEnabled()) {

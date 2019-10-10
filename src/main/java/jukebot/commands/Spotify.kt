@@ -36,7 +36,7 @@ class Spotify : Command(ExecutionType.TRIGGER_CONNECT) { // TODO: Consider movin
     }
 
     private fun loadSpotifyPlaylist(ctx: Context, player: AudioHandler, url: String) {
-        val loadHandler = SongResultHandler(ctx, player, false)
+        val loadHandler = SongResultHandler(ctx, url, player, false)
         val match = SpotifyAPI.PLAYLIST_PATTERN.matcher(url)
 
         if (!match.matches()) {

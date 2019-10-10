@@ -21,6 +21,6 @@ class Select : Command(ExecutionType.TRIGGER_CONNECT) {
             player.channelId = context.channel.idLong
         }
 
-        JukeBot.playerManager.loadItem("ytsearch:${context.argString}", SongResultHandler(context, player, true))
+        JukeBot.playerManager.loadIdentifier("ytsearch:${context.argString}", context, player, true)
     }
 }

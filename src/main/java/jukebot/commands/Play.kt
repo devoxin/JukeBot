@@ -26,7 +26,8 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
     }
 
     private fun loadWithAttachment(ctx: Context, player: AudioHandler) {
-        JukeBot.playerManager.loadItem(ctx.message.attachments[0].url, SongResultHandler(ctx, player, false))
+        val identifier = ctx.message.attachments[0].url
+        JukeBot.playerManager.loadIdentifier(identifier, ctx, player, false)
     }
 
     private fun loadWithArgs(ctx: Context, player: AudioHandler) {
@@ -52,9 +53,9 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
 
                 return
             }
-            JukeBot.playerManager.loadItem(userQuery, SongResultHandler(ctx, player, false))
+            JukeBot.playerManager.loadIdentifier(userQuery, ctx, player, false)
         } else {
-            JukeBot.playerManager.loadItem("ytsearch:$userQuery", SongResultHandler(ctx, player, false))
+            JukeBot.playerManager.loadIdentifier("ytsearch:$userQuery", ctx, player, false)
         }
     }
 }
