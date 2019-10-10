@@ -1,18 +1,12 @@
 package jukebot.utils
 
 
-import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput
-import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.Database
 import jukebot.JukeBot
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit

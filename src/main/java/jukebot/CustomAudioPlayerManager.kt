@@ -2,10 +2,11 @@ package jukebot
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
-import com.sedmelluq.discord.lavaplayer.tools.DataFormatTools
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput
-import com.sedmelluq.discord.lavaplayer.track.*
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
 import jukebot.audio.AudioHandler
 import jukebot.audio.SongResultHandler
 import jukebot.framework.Context
@@ -15,7 +16,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.*
 
-class CustomAudioPlayerManager(dapm: DefaultAudioPlayerManager): AudioPlayerManager by dapm {
+class CustomAudioPlayerManager(dapm: DefaultAudioPlayerManager) : AudioPlayerManager by dapm {
 
     constructor() : this(DefaultAudioPlayerManager())
 

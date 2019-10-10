@@ -1,7 +1,6 @@
 package jukebot.commands
 
 import jukebot.JukeBot
-import jukebot.audio.SongResultHandler
 import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
