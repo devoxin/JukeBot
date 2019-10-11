@@ -143,11 +143,21 @@ class SongResultHandler(
     }
 
     override fun loadFailed(ex: FriendlyException) {
-        ctx.embed("Track Unavailable", ex.localizedMessage)
+        ctx.embed("Track Unavailable", rootCauseOf(ex).localizedMessage)
 
         if (!musicManager.isPlaying) {
             ctx.guild.audioManager.closeAudioConnection()
         }
+    }
+
+    private fun rootCauseOf(ex: Throwable): Throwable {
+        val cause = ex.cause
+
+        if (cause != null) {
+            return rootCauseOf(cause)
+        }
+
+        return ex
     }
 
     private fun calculateEstimatedPlayTime(): Long {
