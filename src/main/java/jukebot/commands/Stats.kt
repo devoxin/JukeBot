@@ -45,7 +45,7 @@ class Stats : Command(ExecutionType.STANDARD) {
 
         val totalHits = CachingSourceManager.totalHits
         val successfulHits = CachingSourceManager.successfulHits
-        val pcCached = max(1, successfulHits).toDouble() / max(1, totalHits).toDouble()
+        val pcCached = successfulHits.toDouble() / max(1, totalHits).toDouble()
         val pcCachedFormatted = dpFormatter.format(pcCached * 100)
 
         toSend.append("```prolog\n")

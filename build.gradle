@@ -22,7 +22,6 @@ apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility = 10
 mainClassName = 'jukebot.JukeBot'
 
 repositories {
@@ -40,8 +39,8 @@ dependencies {
     compile 'club.minnced:discord-webhooks:0.1.7'
 
     /* Audio */
-    compile 'com.sedmelluq:lavaplayer:1.3.22.pbjtest3'
-    //compile 'com.github.Devoxin:lavaplayer:4145fed'
+    //compile 'com.sedmelluq:lavaplayer:1.3.22.pbjtest3'
+    compile 'com.github.Devoxin:lavaplayer:461d4a6'
     compile 'com.sedmelluq:jda-nas:1.1.0'
 
     /* Database */
