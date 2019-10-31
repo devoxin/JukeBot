@@ -33,14 +33,14 @@ repositories {
 }
 
 dependencies {
-    compile ('com.github.DV8FromTheWorld:JDA:f0e9ecc') {
+    compile ('com.github.DV8FromTheWorld:JDA:acaf4b6') {
         exclude module: 'opus-java'
     }
     compile 'club.minnced:discord-webhooks:0.1.7'
 
     /* Audio */
     //compile 'com.sedmelluq:lavaplayer:1.3.22.pbjtest3'
-    compile 'com.github.Devoxin:lavaplayer:396f15a'
+    compile 'com.github.Devoxin:lavaplayer:b0a194c'
     compile 'com.sedmelluq:jda-nas:1.1.0'
 
     /* Database */
