@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.JukeBot
 import jukebot.audio.sourcemanagers.caching.CachingSourceManager
 import jukebot.framework.Context
+import jukebot.utils.Helpers
 import jukebot.utils.editEmbed
 import jukebot.utils.toTimeString
 import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
@@ -143,21 +144,11 @@ class SongResultHandler(
     }
 
     override fun loadFailed(ex: FriendlyException) {
-        ctx.embed("Track Unavailable", rootCauseOf(ex).localizedMessage)
+        ctx.embed("Track Unavailable", Helpers.rootCauseOf(ex).localizedMessage)
 
         if (!musicManager.isPlaying) {
             ctx.guild.audioManager.closeAudioConnection()
         }
-    }
-
-    private fun rootCauseOf(ex: Throwable): Throwable {
-        val cause = ex.cause
-
-        if (cause != null) {
-            return rootCauseOf(cause)
-        }
-
-        return ex
     }
 
     private fun calculateEstimatedPlayTime(): Long {

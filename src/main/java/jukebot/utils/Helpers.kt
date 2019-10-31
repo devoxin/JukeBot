@@ -118,4 +118,14 @@ object Helpers {
         }
     }
 
+    fun rootCauseOf(ex: Throwable): Throwable {
+        val cause = ex.cause
+
+        if (cause != null) {
+            return rootCauseOf(cause)
+        }
+
+        return ex
+    }
+
 }

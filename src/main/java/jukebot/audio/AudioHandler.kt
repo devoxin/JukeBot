@@ -1,5 +1,6 @@
 package jukebot.audio
 
+import com.fasterxml.jackson.core.JsonParseException
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
@@ -41,6 +42,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
     // Player Stuff
     val autoPlay = AutoPlay(guildId)
+    var youtubeBannedUs = false
     var previous: AudioTrack? = null
     var current: AudioTrack? = null
     val isPlaying: Boolean
@@ -103,7 +105,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             return player.playTrack(nextTrack)
         }
 
-        if (shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
+        if (!youtubeBannedUs && shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
             autoPlay.getRelatedTrack()
                 .thenAccept(player::playTrack)
                 .exceptionally {
@@ -212,8 +214,13 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         if (repeat != RepeatMode.NONE)
             repeat = RepeatMode.NONE
 
+        val problem = Helpers.rootCauseOf(exception)
+        youtubeBannedUs = problem is JsonParseException
+
+        val append = if (youtubeBannedUs) "\nYouTube banned the bot lol. This problem should be resolved soon." else ""
+
         announce("Playback Error", "Playback of **${track.info.title}** encountered an error!\n" +
-            exception.localizedMessage)
+            problem.localizedMessage + append)
     }
 
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long) {
