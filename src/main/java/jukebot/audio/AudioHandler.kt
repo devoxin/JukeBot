@@ -42,7 +42,6 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
     // Player Stuff
     val autoPlay = AutoPlay(guildId)
-    var youtubeBannedUs = false
     var previous: AudioTrack? = null
     var current: AudioTrack? = null
     val isPlaying: Boolean
@@ -105,7 +104,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             return player.playTrack(nextTrack)
         }
 
-        if (!youtubeBannedUs && shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
+        if (shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
             autoPlay.getRelatedTrack()
                 .thenAccept(player::playTrack)
                 .exceptionally {
@@ -215,9 +214,13 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             repeat = RepeatMode.NONE
 
         val problem = Helpers.rootCauseOf(exception)
-        youtubeBannedUs = problem is JsonParseException
+        val banned = problem is JsonParseException
 
-        val append = if (youtubeBannedUs) "\nYouTube banned the bot lol. This problem should be resolved soon." else ""
+        if (banned && Database.getIsAutoPlayEnabled(guildId)) {
+            Database.setAutoPlayEnabled(guildId, false)
+        }
+
+        val append = if (banned) "\n\n**YouTube banned the bot's IP. This problem should be resolved soon.**" else ""
 
         announce("Playback Error", "Playback of **${track.info.title}** encountered an error!\n" +
             problem.localizedMessage + append)
