@@ -6,7 +6,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 class Page(val content: String, val duration: String, val page: Int, val maxPages: Int) {
-
     companion object {
         fun paginate(tracks: List<AudioTrack>, selectedPage: Int = 1): Page {
             val queueDuration = tracks.map { it.duration }.sum().toTimeString()
@@ -30,5 +29,4 @@ class Page(val content: String, val duration: String, val page: Int, val maxPage
             return Page(content.toString(), queueDuration, page, maxPages)
         }
     }
-
 }
