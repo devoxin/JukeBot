@@ -16,8 +16,9 @@ public class Database {
     private final static HikariDataSource pool = new HikariDataSource();
 
     private static Connection getConnection() throws SQLException {
-        if (!pool.isRunning())
+        if (!pool.isRunning()) {
             pool.setJdbcUrl("jdbc:sqlite:jukebot.db");
+        }
 
         calls++;
         return pool.getConnection();

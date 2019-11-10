@@ -49,7 +49,8 @@ class PornHubAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: Po
         return info.get("mediaDefinitions").values().stream()
             .filter { format -> format.get("videoUrl").text().isNotEmpty() }
             .findFirst()
-            .orElse(null)!!.get("videoUrl").text() ?: null
+            .orElse(null)?.get("videoUrl")?.text()
+            ?: throw FriendlyException("This track is unplayable", FriendlyException.Severity.SUSPICIOUS, null)
     }
 
     private fun getPageConfig(httpInterface: HttpInterface): JsonBrowser? {

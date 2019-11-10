@@ -74,7 +74,7 @@ public class JukeBot {
 
     public static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
-    public static CustomAudioPlayerManager playerManager = new CustomAudioPlayerManager(); //new DefaultAudioPlayerManager();
+    public static CustomAudioPlayerManager playerManager = new CustomAudioPlayerManager();
     public static ShardManager shardManager;
 
     public static void main(final String[] args) throws Exception {
