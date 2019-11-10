@@ -77,16 +77,12 @@ public class JukeBot {
     public static CustomAudioPlayerManager playerManager = new CustomAudioPlayerManager(); //new DefaultAudioPlayerManager();
     public static ShardManager shardManager;
 
-
     public static void main(final String[] args) throws Exception {
         Thread.currentThread().setName("JukeBot-Main");
         printBanner();
 
-        playerManager.setPlayerCleanupThreshold(30000);
-        playerManager.getConfiguration().setFilterHotSwapEnabled(true);
-
         Database.setupDatabase();
-        registerSourceManagers();
+        setupAudioSystem();
         loadApis();
 
         RestAction.setPassContext(false);
@@ -157,6 +153,24 @@ public class JukeBot {
         }
     }
 
+    /**
+     * Audio System
+     */
+
+    private static void setupAudioSystem() {
+        playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
+        playerManager.setPlayerCleanupThreshold(30000);
+        playerManager.getConfiguration().setFilterHotSwapEnabled(true);
+
+        registerSourceManagers();
+
+        YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
+        sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
+
+        CachingSourceManager cachingSourceManager = playerManager.source(CachingSourceManager.class);
+        sourceManager.setCacheProvider(cachingSourceManager);
+    }
+
     private static void registerSourceManagers() {
         playerManager.registerSourceManager(new CachingSourceManager());
         playerManager.registerSourceManager(new MixcloudAudioSourceManager());
@@ -166,9 +180,6 @@ public class JukeBot {
         }
 
         AudioSourceManagers.registerRemoteSources(playerManager);
-        playerManager.source(YoutubeAudioSourceManager.class).setPlaylistPageCount(Integer.MAX_VALUE);
-
-        playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
     }
 
     public static boolean hasPlayer(final long guildId) {

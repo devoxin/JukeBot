@@ -2,6 +2,8 @@ package jukebot.audio.sourcemanagers.caching
 
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.youtube.CacheProvider
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.*
 import jukebot.JukeBot
 import redis.clients.jedis.JedisPool
@@ -12,7 +14,7 @@ import java.io.DataInput
 import java.io.DataOutput
 import java.util.concurrent.TimeUnit
 
-class CachingSourceManager : AudioSourceManager {
+class CachingSourceManager : AudioSourceManager, CacheProvider {
 
     init {
         try {
@@ -56,6 +58,36 @@ class CachingSourceManager : AudioSourceManager {
             }
 
             return JukeBot.playerManager.toAudioTrack(encoded)
+        }
+    }
+
+    override fun cacheVideoFormat(identifier: String, format: YoutubeAudioTrack.FormatWithUrl, ttl: Long) {
+    }
+
+    override fun removeVideoFormat(identifier: String) {
+    }
+
+    override fun getVideoFormat(identifier: String): YoutubeAudioTrack.FormatWithUrl? {
+        return null
+    }
+
+    override fun cacheUnavailableVideo(identifier: String, unavailableReason: String) {
+        if (jedisPool.isClosed) {
+            return
+        }
+
+        jedisPool.resource.use {
+            it.set(identifier, unavailableReason)
+        }
+    }
+
+    override fun checkUnavailable(identifier: String): String? {
+        if (jedisPool.isClosed) {
+            return null
+        }
+
+        return jedisPool.resource.use {
+            it.get(identifier)
         }
     }
 
