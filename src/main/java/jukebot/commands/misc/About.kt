@@ -12,20 +12,26 @@ import org.sqlite.SQLiteJDBCLoader
 
 @CommandProperties(aliases = ["info"], description = "Displays some information about the bot")
 class About : Command(ExecutionType.STANDARD) {
+    private val dependencies = mapOf(
+        "JDA" to JDAInfo.VERSION,
+        "Lavaplayer" to PlayerLibrary.VERSION,
+        "SQLite" to SQLiteJDBCLoader.getVersion()
+    )
+
+    private val links = mapOf(
+        "GitHub" to "https://github.com/Devoxin/JukeBot",
+        "Website" to "https://jukebot.serux.pro"
+    )
 
     override fun execute(context: Context) {
-        val dependencies = "**JDA**: ${JDAInfo.VERSION}" +
-            "\n**Lavaplayer**: ${PlayerLibrary.VERSION}" +
-            "\n**SQLite**: ${SQLiteJDBCLoader.getVersion()}"
-
         val fields = arrayOf(
-            MessageEmbed.Field("Dependencies", dependencies, true),
-            MessageEmbed.Field("Links", "[GitHub](https://github.com/Devoxin/JukeBot)\n[Website](https://jukebot.serux.pro)", true)
+            *dependencies.map { MessageEmbed.Field(it.key, it.value, true) }.toTypedArray(),
+            MessageEmbed.Field("Links", links.map { "[${it.key}](${it.value})"}.joinToString(" | "), true)
         )
 
         context.embed {
             setTitle("JukeBot ${JukeBot.VERSION}")
-            setDescription("Developer: **devoxin#0101**")
+            setDescription("Developed by **devoxin#0101**")
             addFields(fields)
         }
     }
