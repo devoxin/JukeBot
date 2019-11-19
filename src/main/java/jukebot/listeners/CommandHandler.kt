@@ -16,7 +16,7 @@ class CommandHandler : ListenerAdapter() {
     }
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
-        if (!e.guild.isAvailable || e.author.isBot || e.author.isFake || !Helpers.canSendTo(e.channel)
+        if (e.author.isBot || e.author.isFake || !Helpers.canSendTo(e.channel)
             || Database.getIsBlocked(e.author.idLong)) {
             return
         }

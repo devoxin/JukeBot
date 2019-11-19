@@ -133,7 +133,7 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
             val json = JsonBrowser.parse(matcher.group(1).replace("&quot;", "\""))
 
             for (node in json.values()) {
-                val info = node.safeGet("cloudcast").safeGet("data").safeGet("cloudcastLookup")
+                val info = node.get("cloudcast").get("data").get("cloudcastLookup")
 
                 if (!info.isNull && !info.get("streamInfo").isNull) {
                     val jsMatcher = JS_REGEX.matcher(content)

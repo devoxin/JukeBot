@@ -3,6 +3,7 @@ package jukebot.apis.youtube
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
 import jukebot.JukeBot
 import jukebot.utils.json
 import okhttp3.*
@@ -79,7 +80,6 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
             }
 
             override fun onResponse(call: Call, response: Response) {
-
                 val json = response.json()
 
                 if (json == null) {
@@ -96,7 +96,8 @@ class YouTubeAPI(private val key: String, private val source: YoutubeAudioSource
 
     private fun toYouTubeAudioTrack(trackInformation: YoutubeTrackInformation): YoutubeAudioTrack {
         val (videoId, title, uploader, isStream, duration) = trackInformation
-        return source.buildTrackObject(videoId, title, uploader, isStream, duration)
+        val trackInfo = AudioTrackInfo(title, uploader, duration, videoId, isStream, "https://www.youtube.com/watch?v=$videoId")
+        return YoutubeAudioTrack(trackInfo, source)
     }
 
 }
