@@ -26,7 +26,6 @@ import jukebot.apis.patreon.PatreonAPI;
 import jukebot.apis.spotify.SpotifyAPI;
 import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
-import jukebot.audio.sourcemanagers.caching.CachingSourceManager;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.listeners.ActionWaiter;
