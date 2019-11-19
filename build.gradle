@@ -40,7 +40,7 @@ dependencies {
 
     /* Audio */
     //compile 'com.sedmelluq:lavaplayer:1.3.22.pbjtest3'
-    compile 'com.github.Devoxin:lavaplayer:51d698e'
+    compile 'com.github.Devoxin:lavaplayer:d9d02da'
     compile 'com.sedmelluq:jda-nas:1.1.0'
 
     /* Database */
