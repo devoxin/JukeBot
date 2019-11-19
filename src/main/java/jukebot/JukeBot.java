@@ -167,12 +167,12 @@ public class JukeBot {
         YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
         sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
 
-        CachingSourceManager cachingSourceManager = playerManager.source(CachingSourceManager.class);
-        sourceManager.setCacheProvider(cachingSourceManager);
+        //CachingSourceManager cachingSourceManager = playerManager.source(CachingSourceManager.class);
+        //sourceManager.setCacheProvider(cachingSourceManager);
     }
 
     private static void registerSourceManagers() {
-        playerManager.registerSourceManager(new CachingSourceManager());
+        //playerManager.registerSourceManager(new CachingSourceManager());
         playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
         if (config.getNsfwEnabled()) {
