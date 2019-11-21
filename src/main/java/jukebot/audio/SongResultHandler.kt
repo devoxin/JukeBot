@@ -2,9 +2,11 @@ package jukebot.audio
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
+import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.JukeBot
+import jukebot.audio.sourcemanagers.caching.CachingSourceManager
 import jukebot.framework.Context
 import jukebot.utils.Helpers
 import jukebot.utils.editEmbed
@@ -21,7 +23,7 @@ class SongResultHandler(
 ) : AudioLoadResultHandler {
 
     override fun trackLoaded(track: AudioTrack) {
-        //cache(track)
+        cache(track)
 
         if (!canQueueTrack(track)) {
             ctx.embed("Track Unavailable", "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
@@ -40,7 +42,7 @@ class SongResultHandler(
     }
 
     override fun playlistLoaded(playlist: AudioPlaylist) {
-        //cache(playlist)
+        cache(playlist)
 
         if (playlist.isSearchResult) {
             if (useSelection) {
@@ -183,7 +185,7 @@ class SongResultHandler(
         return commands.any { ct.startsWith(it) }
     }
 
-    //fun cache(item: AudioItem) = CachingSourceManager.cache(identifier, item)
+    fun cache(item: AudioItem) = CachingSourceManager.cache(identifier, item)
 
     companion object {
         private val commands = listOf(

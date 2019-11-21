@@ -23,11 +23,12 @@ import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
 import jukebot.apis.ksoft.KSoftAPI;
 import jukebot.apis.patreon.PatreonAPI;
-import jukebot.apis.spotify.SpotifyAPI;
 import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
+import jukebot.audio.sourcemanagers.caching.CachingSourceManager;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
+import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
 import jukebot.listeners.ActionWaiter;
 import jukebot.listeners.CommandHandler;
 import jukebot.listeners.EventHandler;
@@ -67,7 +68,6 @@ public class JukeBot {
     /* Operation-Related */
     public static final RequestUtil httpClient = new RequestUtil();
     public static PatreonAPI patreonApi;
-    public static SpotifyAPI spotifyApi;
     public static YouTubeAPI youTubeApi;
     public static KSoftAPI kSoftAPI;
 
@@ -137,13 +137,6 @@ public class JukeBot {
             kSoftAPI = new KSoftAPI(key);
         }
 
-        if (config.hasKey("spotify_client") && config.hasKey("spotify_secret")) {
-            LOG.debug("Config has spotify keys, loading spotify API...");
-            String client = Objects.requireNonNull(config.getString("spotify_client"));
-            String secret = Objects.requireNonNull(config.getString("spotify_secret"));
-            spotifyApi = new SpotifyAPI(client, secret);
-        }
-
         if (config.hasKey("youtube")) {
             LOG.debug("Config has youtube key, loading youtube API...");
             String key = Objects.requireNonNull(config.getString("youtube"));
@@ -171,11 +164,17 @@ public class JukeBot {
     }
 
     private static void registerSourceManagers() {
-        //playerManager.registerSourceManager(new CachingSourceManager());
+        playerManager.registerSourceManager(new CachingSourceManager());
         playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
         if (config.getNsfwEnabled()) {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
+        }
+
+        if (config.hasKey("spotify_client") && config.hasKey("spotify_secret")) {
+            String client = Objects.requireNonNull(config.getString("spotify_client"));
+            String secret = Objects.requireNonNull(config.getString("spotify_secret"));
+            playerManager.registerSourceManager(new SpotifyAudioSourceManager(client, secret));
         }
 
         AudioSourceManagers.registerRemoteSources(playerManager);
