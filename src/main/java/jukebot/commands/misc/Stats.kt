@@ -10,7 +10,6 @@ import jukebot.utils.toTimeString
 import net.dv8tion.jda.api.JDA
 import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
-import kotlin.math.max
 
 @CommandProperties(description = "Displays JukeBot statistics")
 class Stats : Command(ExecutionType.STANDARD) {

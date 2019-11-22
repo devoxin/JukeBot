@@ -26,7 +26,7 @@ class About : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
         val fields = arrayOf(
             *dependencies.map { MessageEmbed.Field(it.key, it.value, true) }.toTypedArray(),
-            MessageEmbed.Field("Links", links.map { "[${it.key}](${it.value})"}.joinToString(" | "), true)
+            MessageEmbed.Field("Links", links.map { "[${it.key}](${it.value})" }.joinToString(" | "), true)
         )
 
         context.embed {

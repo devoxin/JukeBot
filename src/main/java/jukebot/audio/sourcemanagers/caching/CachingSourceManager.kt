@@ -1,9 +1,8 @@
 package jukebot.audio.sourcemanagers.caching
 
+//import com.sedmelluq.discord.lavaplayer.source.youtube.CacheProvider
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
-//import com.sedmelluq.discord.lavaplayer.source.youtube.CacheProvider
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.*
 import jukebot.JukeBot
 import redis.clients.jedis.JedisPool

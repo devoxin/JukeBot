@@ -8,20 +8,19 @@ import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioReference
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
-import jukebot.Database
-import jukebot.JukeBot
 import jukebot.audio.sourcemanagers.spotify.loaders.SpotifyPlaylistLoader
 import jukebot.utils.Helpers
 import org.apache.http.HttpStatus
-import org.apache.http.client.methods.*
+import org.apache.http.client.methods.CloseableHttpResponse
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.RequestBuilder
 import org.apache.http.entity.StringEntity
 import org.apache.http.util.EntityUtils
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.DataInput
 import java.io.DataOutput
-import java.net.URI
-import java.net.URISyntaxException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
