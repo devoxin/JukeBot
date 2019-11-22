@@ -63,14 +63,12 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
         val parts = reference.identifier.split("!")
 
         if (parts.size != 3) {
-            println("not enough parts")
             return null
         }
 
         val (source, identifier, donorTier) = parts
 
         if (donorTier.toInt() < 2) {
-            println("and i oop")
             return null
         }
 
