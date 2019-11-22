@@ -2,6 +2,7 @@ package jukebot.commands.playback
 
 import jukebot.JukeBot
 import jukebot.audio.AudioHandler
+import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager
 import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
@@ -43,6 +44,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
 
                 return
             }
+
             if (userQuery.toLowerCase().contains("pornhub") && !ctx.channel.isNSFW) {
                 ctx.embed("PornHub Tracks", "PornHub tracks can only be loaded from NSFW channels!")
 
@@ -52,7 +54,13 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
 
                 return
             }
-            JukeBot.playerManager.loadIdentifier(userQuery, ctx, player, false)
+
+            if (SpotifyAudioSourceManager.isSpotifyMedia(userQuery)) {
+                val customIdentifier = "s!$userQuery!${ctx.donorTier}"
+                JukeBot.playerManager.loadIdentifier(customIdentifier, userQuery, ctx, player, false)
+            } else {
+                JukeBot.playerManager.loadIdentifier(userQuery, ctx, player, false)
+            }
         } else {
             JukeBot.playerManager.loadIdentifier("ytsearch:$userQuery", ctx, player, false)
         }

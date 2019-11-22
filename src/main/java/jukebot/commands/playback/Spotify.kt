@@ -6,7 +6,6 @@ import jukebot.framework.*
 @CommandChecks.Donor(tier = 2)
 class Spotify : Command(ExecutionType.TRIGGER_CONNECT) { // TODO: Consider moving this to `play` eventually
 
-    @Suppress("UNREACHABLE_CODE")
     override fun execute(context: Context) {
         context.embed("Command Deprecated", "This feature has been integrated into the `\$play` command.")
     }

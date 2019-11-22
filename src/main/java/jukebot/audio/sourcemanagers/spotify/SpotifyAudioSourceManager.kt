@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioReference
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
+import jukebot.Database
 import jukebot.JukeBot
 import jukebot.audio.sourcemanagers.spotify.loaders.SpotifyPlaylistLoader
 import jukebot.utils.Helpers
@@ -60,21 +61,35 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
             return null
         }
 
+        val parts = reference.identifier.split("!")
+
+        if (parts.size != 3) {
+            println("not enough parts")
+            return null
+        }
+
+        val (source, identifier, donorTier) = parts
+
+        if (donorTier.toInt() < 2) {
+            println("and i oop")
+            return null
+        }
+
         return try {
-            loadItemOnce(reference)
+            loadItemOnce(identifier)
         } catch (exception: FriendlyException) {
             // In case of a connection reset exception, try once more.
             if (HttpClientTools.isRetriableNetworkException(exception.cause)) {
-                loadItemOnce(reference)
+                loadItemOnce(identifier)
             } else {
                 throw exception
             }
         }
     }
 
-    private fun loadItemOnce(reference: AudioReference): AudioItem? {
+    private fun loadItemOnce(identifier: String): AudioItem? {
         for (loader in loaders) {
-            val matcher = loader.pattern().matcher(reference.identifier)
+            val matcher = loader.pattern().matcher(identifier)
 
             if (matcher.matches()) {
                 return loader.load(this, matcher)
@@ -139,6 +154,11 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
         private val loaders = listOf(
             SpotifyPlaylistLoader()
         )
+
+        fun isSpotifyMedia(identifier: String): Boolean {
+            return identifier.startsWith("http") && identifier.contains("spotify.com")
+                && loaders.any { it.pattern().matcher(identifier).matches() }
+        }
     }
 
 }

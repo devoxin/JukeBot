@@ -73,4 +73,9 @@ class CustomAudioPlayerManager(dapm: DefaultAudioPlayerManager) : AudioPlayerMan
         loadItem(identifier, SongResultHandler(ctx, identifier, handler, useSelection, playNext))
     }
 
+    fun loadIdentifier(customIdentifier: String, originalIdentifier: String, ctx: Context,
+                       handler: AudioHandler, useSelection: Boolean, playNext: Boolean = false) {
+        loadItem(customIdentifier, SongResultHandler(ctx, originalIdentifier, handler, useSelection, playNext))
+    }
+
 }

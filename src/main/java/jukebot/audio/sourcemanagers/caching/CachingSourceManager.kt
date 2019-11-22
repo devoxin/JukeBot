@@ -47,8 +47,20 @@ class CachingSourceManager : AudioSourceManager/*, CacheProvider*/ {
 
         totalHits++
 
+        if (reference.identifier.startsWith("s!")) {
+            if (reference.identifier.split("!")[2].toInt() < 2) {
+                return null
+            }
+        }
+
+        val identifier = if (reference.identifier.startsWith("s!")) {
+            reference.identifier.split("!")[1]
+        } else {
+            reference.identifier
+        }
+
         jedisPool.resource.use {
-            val encoded = it.get(reference.identifier)
+            val encoded = it.get(identifier)
                 ?: return null
 
             successfulHits++
