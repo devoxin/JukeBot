@@ -139,9 +139,9 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
         return request(HttpGet.METHOD_NAME, url, requestBuilder)
     }
 
-    internal fun request(methhead: String, url: String, requestBuilder: RequestBuilder.() -> Unit): CloseableHttpResponse {
+    internal fun request(method: String, url: String, requestBuilder: RequestBuilder.() -> Unit): CloseableHttpResponse {
         return httpInterfaceManager.`interface`.use {
-            it.execute(RequestBuilder.create(methhead).setUri(url).apply(requestBuilder).build())
+            it.execute(RequestBuilder.create(method).setUri(url).apply(requestBuilder).build())
         }
     }
 
