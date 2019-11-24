@@ -17,6 +17,7 @@
 package jukebot;
 
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
@@ -29,6 +30,7 @@ import jukebot.audio.sourcemanagers.caching.CachingSourceManager;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
+import jukebot.framework.Command;
 import jukebot.listeners.ActionWaiter;
 import jukebot.listeners.CommandHandler;
 import jukebot.listeners.EventHandler;
@@ -37,6 +39,7 @@ import jukebot.utils.Helpers;
 import jukebot.utils.RequestUtil;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -48,16 +51,17 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.5.6";
+    public static final String VERSION = "6.5.7";
 
     public static final Long startTime = System.currentTimeMillis();
-    public static boolean isReady = false;
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
     public static Config config = new Config("config.properties");
 
@@ -109,6 +113,7 @@ public class JukeBot {
         }
 
         shardManager = shardManagerBuilder.build();
+        setupSelf();
     }
 
     private static void printBanner() {
@@ -178,6 +183,31 @@ public class JukeBot {
         }
 
         AudioSourceManagers.registerRemoteSources(playerManager);
+    }
+
+    private static void setupSelf() {
+        ApplicationInfo appInfo = shardManager.retrieveApplicationInfo().complete();
+        selfId = appInfo.getIdLong();
+        botOwnerId = appInfo.getOwner().getIdLong();
+        isSelfHosted = appInfo.getIdLong() != 249303797371895820L
+                && appInfo.getIdLong() != 314145804807962634L;
+
+        if (isSelfHosted || selfId == 314145804807962634L) {
+            playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
+        }
+
+        if (isSelfHosted) {
+            Map<String, Command> commandRegistry = CommandHandler.Companion.getCommands();
+            commandRegistry.remove("patreon");
+            commandRegistry.remove("verify");
+            Command feedback = commandRegistry.remove("feedback");
+
+            if (feedback != null) {
+                feedback.destroy();
+            }
+        } else {
+            Helpers.INSTANCE.getMonitor().scheduleAtFixedRate(Helpers.INSTANCE::monitorPledges, 0, 1, TimeUnit.DAYS);
+        }
     }
 
     public static boolean hasPlayer(final long guildId) {
