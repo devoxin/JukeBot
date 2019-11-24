@@ -21,7 +21,7 @@ class PatreonUser(
 
             return PatreonUser(
                 userAttr.getString("first_name"),
-                userAttr.getString("last_name"),
+                userAttr.optString("last_name", ""),
                 userAttr.getString("email"),
                 pledgeAttr.getInt("amount_cents"),
                 !pledgeAttr.isNull("declined_since"),

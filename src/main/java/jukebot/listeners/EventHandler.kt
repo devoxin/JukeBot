@@ -26,7 +26,7 @@ class EventHandler : ListenerAdapter() {
 
                 if (JukeBot.isSelfHosted) {
                     CommandHandler.commands.remove("patreon")
-                    CommandHandler.commands.remove("verify")
+                    //CommandHandler.commands.remove("verify")
                     CommandHandler.commands.remove("feedback")?.destroy()
                 } else {
                     Helpers.monitor.scheduleAtFixedRate(Helpers::monitorPledges, 0, 1, TimeUnit.DAYS)
