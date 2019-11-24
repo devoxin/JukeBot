@@ -1,30 +1,16 @@
 package jukebot.listeners
 
-import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
 import jukebot.Database
 import jukebot.JukeBot
-import jukebot.utils.Helpers
 import net.dv8tion.jda.api.entities.VoiceChannel
-import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import java.util.concurrent.TimeUnit
 
 class EventHandler : ListenerAdapter() {
 
-    private var readyFired = false
-
     override fun onGuildLeave(event: GuildLeaveEvent) {
         JukeBot.removePlayer(event.guild.idLong)
-    }
-
-    override fun onReady(e: ReadyEvent) {
-        if (!readyFired) {
-
-
-            readyFired = true
-        }
     }
 
     override fun onGuildVoiceLeave(e: GuildVoiceLeaveEvent) {
