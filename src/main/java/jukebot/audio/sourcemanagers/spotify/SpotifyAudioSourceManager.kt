@@ -68,6 +68,10 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
 
         val (source, identifier, donorTier) = parts
 
+        if (source != "s") {
+            return null
+        }
+
         if (donorTier.toInt() < 2) {
             return null
         }
