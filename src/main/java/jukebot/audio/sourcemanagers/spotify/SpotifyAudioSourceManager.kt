@@ -113,7 +113,7 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
             entity = StringEntity("grant_type=client_credentials")
         }.use {
             if (it.statusLine.statusCode != HttpStatus.SC_OK) {
-                log.warn("Spotify returned a non-OK status code while refreshing access token!")
+                log.warn("Received code ${it.statusLine.statusCode} while querying Spotify!")
                 Helpers.schedule(::refreshAccessToken, 1, TimeUnit.MINUTES)
                 return
             }
