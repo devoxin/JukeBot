@@ -28,7 +28,9 @@ class SpotifyPlaylistLoader : Loader {
         return sourceManager.request("https://api.spotify.com/v1/playlists/$playlistId") {
             addHeader("Authorization", "Bearer ${sourceManager.accessToken}")
         }.use {
-            check(it.statusLine.statusCode == HttpStatus.SC_OK) { "Received code ${it.statusLine.statusCode} while fetching playlist information" }
+            check(it.statusLine.statusCode == HttpStatus.SC_OK) {
+                "Received code ${it.statusLine.statusCode} from Spotify while fetching playlist information"
+            }
 
             val content = EntityUtils.toString(it.entity)
             JSONObject(content)
@@ -39,7 +41,9 @@ class SpotifyPlaylistLoader : Loader {
         return sourceManager.request("https://api.spotify.com/v1/playlists/$playlistId/tracks") {
             addHeader("Authorization", "Bearer ${sourceManager.accessToken}")
         }.use {
-            check(it.statusLine.statusCode == HttpStatus.SC_OK) { "Received code ${it.statusLine.statusCode} while fetching playlist tracks" }
+            check(it.statusLine.statusCode == HttpStatus.SC_OK) {
+                "Received code ${it.statusLine.statusCode} from Spotify while fetching playlist tracks"
+            }
 
             val content = EntityUtils.toString(it.entity)
             val json = JSONObject(content)
