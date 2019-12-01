@@ -146,7 +146,7 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 }
             }
 
-            throw IllegalStateException("Missing cloudcast.data.cloudcastLookup node")
+            throw IllegalStateException("No nodes found matching path cloudcastLookup.data.cloudcastLookup")
         }
     }
 
