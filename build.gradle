@@ -36,7 +36,7 @@ repositories {
 }
 
 dependencies {
-    compile ('com.github.DV8FromTheWorld:JDA:d55ba1b') {
+    compile ('com.github.DV8FromTheWorld:JDA:810f0d0') {
         exclude module: 'opus-java'
     }
     compile 'club.minnced:discord-webhooks:0.1.7'
