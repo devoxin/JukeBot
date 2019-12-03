@@ -85,7 +85,7 @@ abstract class Command(private val executionType: ExecutionType) {
         }
 
         check(CommandChecks.Playing::class.java)?.let {
-            if (!context.getAudioPlayer().isPlaying) {
+            if (!context.guild.audioManager.isConnected || !context.getAudioPlayer().isPlaying) {
                 context.embed("Not Playing", "Nothing is currently playing.")
                 return false
             }
