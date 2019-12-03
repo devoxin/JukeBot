@@ -116,8 +116,9 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                         .contains("playlist")
                 }
 
-            if (videos.isEmpty())
+            if (videos.isEmpty()) {
                 return AudioReference.NO_TRACK
+            }
 
             val tracks = ArrayList<AudioTrack>()
 
@@ -170,10 +171,8 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
         return mins + secs
     }
 
-    private fun makeHttpRequest(request: HttpUriRequest): CloseableHttpResponse {
-        return httpInterfaceManager.`interface`.use {
-            it.execute(request)
-        }
+    private fun makeHttpRequest(request: HttpUriRequest) = httpInterfaceManager.`interface`.use {
+        it.execute(request)
     }
 
     companion object {
