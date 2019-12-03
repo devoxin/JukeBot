@@ -29,6 +29,7 @@ import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.caching.CachingSourceManager;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
+import jukebot.audio.sourcemanagers.pornhub.Utils;
 import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
 import jukebot.framework.Command;
 import jukebot.listeners.ActionWaiter;

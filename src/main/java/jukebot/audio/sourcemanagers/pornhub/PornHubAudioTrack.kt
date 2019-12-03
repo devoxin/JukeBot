@@ -13,6 +13,11 @@ import com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor
 import org.apache.commons.io.IOUtils
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.client.protocol.HttpClientContext
+import org.apache.http.impl.client.BasicCookieStore
+import org.apache.http.impl.cookie.BasicClientCookie
+import org.apache.http.protocol.BasicHttpContext
+import java.io.IOException
 import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
@@ -40,29 +45,14 @@ class PornHubAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: Po
     }
 
     private fun getPlaybackUrl(httpInterface: HttpInterface): String {
-        val info = getPageConfig(httpInterface)
-            ?: throw FriendlyException("Failed to extract config from page", FriendlyException.Severity.SUSPICIOUS, null)
-
-        return info.get("mediaDefinitions").values().stream()
-            .filter { format -> format.get("videoUrl").text().isNotEmpty() }
-            .findFirst()
-            .orElseThrow { FriendlyException("No available stream formats", FriendlyException.Severity.SUSPICIOUS, null) }
-            .get("videoUrl")
-            .text()
-    }
-
-    private fun getPageConfig(httpInterface: HttpInterface): JsonBrowser? {
         httpInterface.execute(HttpGet(trackInfo.uri)).use { response ->
             val statusCode = response.statusLine.statusCode
 
             if (!HttpClientTools.isSuccessWithContent(statusCode)) {
-                return null
+                throw IOException("Invalid status code for response: $statusCode")
             }
 
-            val html = IOUtils.toString(response.entity.content, StandardCharsets.UTF_8)
-            val match = VIDEO_INFO_REGEX.matcher(html)
-
-            return if (match.find()) JsonBrowser.parse(match.group(1)) else null
+            return Utils.extractMediaString(IOUtils.toString(response.entity.content, StandardCharsets.UTF_8))
         }
     }
 
