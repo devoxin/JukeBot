@@ -61,7 +61,7 @@ abstract class Command(private val executionType: ExecutionType) {
             }
 
             if (voiceChannel.userLimit > 0 && voiceChannel.members.size >= voiceChannel.userLimit &&
-                !voiceChannel.guild.selfMember.hasPermission(Permission.VOICE_MOVE_OTHERS)) {
+                !voiceChannel.guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_MOVE_OTHERS)) {
                 context.embed(
                     "Unable to Connect",
                     "Your VoiceChannel is currently full.\n" +
