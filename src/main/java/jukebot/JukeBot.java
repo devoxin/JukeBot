@@ -168,8 +168,8 @@ public class JukeBot {
 
         registerSourceManagers();
 
-        YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
-        sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
+        //YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
+        //sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
 
         //CachingSourceManager cachingSourceManager = playerManager.source(CachingSourceManager.class);
         //sourceManager.setCacheProvider(cachingSourceManager);
