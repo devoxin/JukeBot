@@ -55,7 +55,7 @@ class Help : Command(ExecutionType.STANDARD) {
             setTitle("JukeBot Help Menu")
             setDescription("Get started by joining a voicechannel and sending `${ctx.prefix}play <query>`!")
             addField("Categories", categories, true)
-            addField("Links", "[Discord](https://discord.gg/xvtH2Yn) | [Website](https://jukebot.serux.pro)", true)
+            addField("Links", "[Discord](https://discord.gg/xvtH2Yn) | [Website](https://jukebot.serux.pro)", false)
             setFooter("Select a category with ${ctx.prefix}help <number>", null)
         }
     }
