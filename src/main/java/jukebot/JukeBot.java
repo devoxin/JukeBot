@@ -18,7 +18,6 @@ package jukebot;
 
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
@@ -36,7 +35,6 @@ import jukebot.audio.sourcemanagers.caching.CachingSourceManager;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
-import jukebot.audio.sourcemanagers.youtube.YoutubeCvFilter;
 import jukebot.framework.Command;
 import jukebot.listeners.ActionWaiter;
 import jukebot.listeners.CommandHandler;
@@ -75,6 +73,7 @@ public class JukeBot {
     public static Long selfId = 0L;
     public static Long botOwnerId = 0L;
     public static boolean isSelfHosted = false;
+    public static boolean isYoutubeEnabled = false;
 
     /* Operation-Related */
     public static final RequestUtil httpClient = new RequestUtil();
@@ -92,8 +91,6 @@ public class JukeBot {
         printBanner();
 
         Database.setupDatabase();
-        setupAudioSystem();
-        loadApis();
 
         RestAction.setPassContext(false);
         RestAction.setDefaultFailure((e) -> {
@@ -121,6 +118,8 @@ public class JukeBot {
 
         shardManager = shardManagerBuilder.build();
         setupSelf();
+        setupAudioSystem();
+        loadApis();
     }
 
     private static void printBanner() {
@@ -149,7 +148,7 @@ public class JukeBot {
             kSoftAPI = new KSoftAPI(key);
         }
 
-        if (config.hasKey("youtube")) {
+        if (isYoutubeEnabled && config.hasKey("youtube")) {
             LOG.debug("Config has youtube key, loading youtube API...");
             String key = Objects.requireNonNull(config.getString("youtube"));
             YoutubeAudioSourceManager sm = playerManager.source(YoutubeAudioSourceManager.class);
@@ -168,8 +167,10 @@ public class JukeBot {
 
         registerSourceManagers();
 
-        YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
-        sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
+        if (isYoutubeEnabled) {
+            YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
+            sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
+        }
 
         //CachingSourceManager cachingSourceManager = playerManager.source(CachingSourceManager.class);
         //sourceManager.setCacheProvider(cachingSourceManager);
@@ -183,17 +184,22 @@ public class JukeBot {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
         }
 
-        if (config.hasKey("spotify_client") && config.hasKey("spotify_secret")) {
+        if (isYoutubeEnabled && config.hasKey("spotify_client") && config.hasKey("spotify_secret")) {
             String client = Objects.requireNonNull(config.getString("spotify_client"));
             String secret = Objects.requireNonNull(config.getString("spotify_secret"));
             playerManager.registerSourceManager(new SpotifyAudioSourceManager(client, secret));
         }
 
-        AudioSourceManagers.registerRemoteSources(playerManager);
-
-        playerManager.source(YoutubeAudioSourceManager.class)
-                .getMainHttpConfiguration()
-                .setHttpContextFilter(new YoutubeCvFilter());
+        if (isYoutubeEnabled) {
+            playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+        }
+        playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
+        playerManager.registerSourceManager(new BandcampAudioSourceManager());
+        playerManager.registerSourceManager(new VimeoAudioSourceManager());
+        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+        playerManager.registerSourceManager(new BeamAudioSourceManager());
+        playerManager.registerSourceManager(new HttpAudioSourceManager());
+        //AudioSourceManagers.registerRemoteSources(playerManager);
     }
 
     private static void setupSelf() {
@@ -202,6 +208,7 @@ public class JukeBot {
         botOwnerId = appInfo.getOwner().getIdLong();
         isSelfHosted = appInfo.getIdLong() != 249303797371895820L
                 && appInfo.getIdLong() != 314145804807962634L;
+        isYoutubeEnabled = isSelfHosted;
 
         if (isSelfHosted || selfId == 314145804807962634L) {
             playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);

@@ -10,7 +10,8 @@ class AutoPlay(private val guildId: Long) {
     private val trackTitles = mutableSetOf<String>()
 
     val enabled: Boolean
-        get() = Database.isPremiumServer(guildId) && Database.getIsAutoPlayEnabled(guildId)
+        get() = JukeBot.isYoutubeEnabled &&
+            Database.isPremiumServer(guildId) && Database.getIsAutoPlayEnabled(guildId)
 
     val hasSufficientData: Boolean
         get() = trackTitles.size > 0

@@ -62,7 +62,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                 JukeBot.playerManager.loadIdentifier(userQuery, ctx, player, false)
             }
         } else {
-            JukeBot.playerManager.loadIdentifier("ytsearch:$userQuery", ctx, player, false)
+            JukeBot.playerManager.loadIdentifier("scsearch:$userQuery", ctx, player, false)
         }
     }
 }
