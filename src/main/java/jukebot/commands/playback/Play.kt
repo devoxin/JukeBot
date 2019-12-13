@@ -45,6 +45,13 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                 return
             }
 
+            if (userQuery.toLowerCase().contains("youtube") || userQuery.toLowerCase().contains("youtu.be")) {
+                ctx.embed("YouTube Support", "YouTube support is disabled until further notice due " +
+                    "to YouTube automatically banning JukeBot's IP. There is no known way to fix this.\n" +
+                    "Apologies for any inconvenience caused.")
+                return
+            }
+
             if (userQuery.toLowerCase().contains("pornhub") && !ctx.channel.isNSFW) {
                 ctx.embed("PornHub Tracks", "PornHub tracks can only be loaded from NSFW channels!")
 
