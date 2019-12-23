@@ -22,7 +22,8 @@ class CommandHandler : ListenerAdapter() {
         }
 
         val guildPrefix = Database.getPrefix(e.guild.idLong)
-        val wasMentioned = e.message.contentRaw.startsWith(e.guild.selfMember.asMention)
+        val wasMentioned = e.message.contentRaw.startsWith("<@${e.guild.selfMember.id}>")
+            || e.message.contentRaw.startsWith("<@!${e.guild.selfMember.id}>")
         val triggerLength = if (wasMentioned) e.guild.selfMember.asMention.length + 1 else guildPrefix.length
 
         if (!e.message.contentRaw.startsWith(guildPrefix) && !wasMentioned)
