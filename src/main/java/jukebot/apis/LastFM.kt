@@ -2,21 +2,24 @@ package jukebot.apis
 
 import jukebot.JukeBot
 import jukebot.utils.json
+import okhttp3.HttpUrl
 import org.apache.http.client.utils.URIBuilder
 import java.util.concurrent.CompletableFuture
 import kotlin.math.min
 
 class LastFM(private val key: String) {
-    private val baseUrl = "http://ws.audioscrobbler.com/2.0"
+    private val baseUrl = HttpUrl.get("http://ws.audioscrobbler.com/2.0")
 
     fun findSimilar(title: String, artist: String): CompletableFuture<List<TrackMatch>> {
-        val url = URIBuilder("$baseUrl/?method=track.getsimilar&api_key=$key&format=json")
-            .addParameter("track", title)
-            .addParameter("artist", artist)
+        val url = baseUrl.newBuilder()
+            .setQueryParameter("method", "track.getsimilar")
+            .setQueryParameter("api_key", key)
+            .setQueryParameter("format", "json")
+            .setQueryParameter("track", title)
+            .setQueryParameter("artist", artist)
+            .build()
 
-        val future = CompletableFuture<List<TrackMatch>?>()
-
-        return JukeBot.httpClient.request { url(url.build().toURL()) }
+        return JukeBot.httpClient.request { url(url) }
             .submit()
             .thenApply {
                 it.json() ?: throw IllegalStateException("Response was not successful, or was not a json object!")
