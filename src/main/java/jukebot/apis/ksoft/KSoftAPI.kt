@@ -2,7 +2,6 @@ package jukebot.apis.ksoft
 
 import jukebot.JukeBot
 import jukebot.utils.json
-import jukebot.utils.whenSuccess
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
