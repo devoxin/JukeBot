@@ -58,12 +58,12 @@ class BassBooster(private val player: AudioPlayer) : EqualizerFactory() {
         private val dpFormatter = DecimalFormat("0.00")
 
         private val freqGains = mapOf(
-                0 to -0.05f,  // 25 Hz
-                1 to 0.07f,   // 40 Hz
-                2 to 0.16f,   // 63 Hz
-                3 to 0.03f,   // 100 Hz
-                4 to -0.05f,  // 160 Hz
-                5 to -0.11f   // 250 Hz
+            0 to -0.05f,  // 25 Hz
+            1 to 0.07f,   // 40 Hz
+            2 to 0.16f,   // 63 Hz
+            3 to 0.03f,   // 100 Hz
+            4 to -0.05f,  // 160 Hz
+            5 to -0.11f   // 250 Hz
         )
 
 //        OFF(0F, 0F, 0F),

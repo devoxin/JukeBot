@@ -1,17 +1,15 @@
 package jukebot.utils
 
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.entities.Message
-import net.dv8tion.jda.core.entities.MessageEmbed
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.MessageEmbed
 import okhttp3.Response
 import org.json.JSONObject
 import java.awt.Color
 
 fun Response.json(): JSONObject? {
-    val body = body()
-
-    body.use {
-        return if (isSuccessful && body != null) JSONObject(body.string()) else null
+    body().use {
+        return if (isSuccessful && it != null) JSONObject(it.string()) else null
     }
 }
 
@@ -50,3 +48,4 @@ fun decodeColor(nm: String): Color? {
     }
 }
 
+fun <T> List<T>.separate(): Pair<T, List<T>> = Pair(first(), drop(1))

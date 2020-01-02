@@ -1,48 +1,60 @@
 package jukebot.utils
 
+import jukebot.JukeBot
 import okhttp3.*
 import org.slf4j.LoggerFactory
 import java.io.IOException
+import java.util.concurrent.CompletableFuture
 
 class RequestUtil {
     private val httpClient = OkHttpClient()
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     inner class PendingRequest(private val request: Request) {
+        fun submit(): CompletableFuture<Response> {
+            val fut = CompletableFuture<Response>()
 
-        fun block(): Response {
-            return httpClient.newCall(request).execute()
-        }
-
-        fun queue(success: (Response) -> Unit, failure: (IOException) -> Unit) {
             httpClient.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     logger.error("An error occurred during a HTTP request to ${call.request().url()}", e)
-                    failure(e)
+                    fut.completeExceptionally(e)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    success(response)
+                    JukeBot.LOG.debug("Response: code=${response.code()} message=${response.message()}")
+                    fut.complete(response)
                 }
             })
+
+            return fut
+        }
+
+        fun queue(success: (Response) -> Unit, failure: (IOException) -> Unit) {
+            submit()
+                .thenAccept(success)
+                .exceptionally {
+                    failure(it as IOException)
+                    null
+                }
         }
     }
 
-    public fun get(url: String, headers: Headers = Headers.of()): PendingRequest {
-        return makeRequest("GET", url, null, headers)
+    fun get(url: String, headers: Headers = Headers.of()): PendingRequest {
+        return request {
+            get()
+            url(url)
+            headers(headers)
+        }
     }
 
-    public fun makeRequest(method: String, url: String, body: RequestBody? = null, headers: Headers): PendingRequest {
-        val request = Request.Builder()
-                .method(method.toUpperCase(), body)
-                .header("User-Agent", "JukeBot (https://github.com/Devoxin/JukeBot)")
-                .headers(headers)
-                .url(url)
+    fun request(opts: Request.Builder.() -> Unit): PendingRequest {
+        val req = Request.Builder()
+            .header("User-Agent", "JukeBot (https://github.com/Devoxin/JukeBot)")
+            .apply(opts)
+            .build()
 
-        return PendingRequest(request.build())
+        return PendingRequest(req)
     }
 
-    public fun makeRequest(request: Request): PendingRequest {
-        return PendingRequest(request)
-    }
+    fun request(request: Request) = PendingRequest(request)
 }

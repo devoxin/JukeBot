@@ -16,10 +16,8 @@
 
 package jukebot;
 
-import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
@@ -28,73 +26,87 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
-import jukebot.apis.KSoftAPI;
-import jukebot.apis.PatreonAPI;
-import jukebot.apis.SpotifyAPI;
-import jukebot.apis.YouTubeAPI;
+import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
+import jukebot.apis.ksoft.KSoftAPI;
+import jukebot.apis.patreon.PatreonAPI;
+import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
+import jukebot.audio.sourcemanagers.caching.CachingSourceManager;
+import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
+import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
+import jukebot.framework.Command;
+import jukebot.listeners.ActionWaiter;
+import jukebot.listeners.CommandHandler;
+import jukebot.listeners.EventHandler;
 import jukebot.utils.Config;
 import jukebot.utils.Helpers;
 import jukebot.utils.RequestUtil;
-import net.dv8tion.jda.bot.sharding.DefaultShardManagerBuilder;
-import net.dv8tion.jda.bot.sharding.ShardManager;
-import net.dv8tion.jda.core.JDAInfo;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.managers.AudioManager;
-import net.dv8tion.jda.core.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.JDAInfo;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.ApplicationInfo;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.4.6";
+    public static final String VERSION = "6.5.8";
 
     public static final Long startTime = System.currentTimeMillis();
-    public static boolean isReady = false;
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
     public static Config config = new Config("config.properties");
 
+    public static Long selfId = 0L;
     public static Long botOwnerId = 0L;
     public static boolean isSelfHosted = false;
+    public static boolean isYoutubeEnabled = false;
 
     /* Operation-Related */
     public static final RequestUtil httpClient = new RequestUtil();
     public static PatreonAPI patreonApi;
-    public static SpotifyAPI spotifyApi;
     public static YouTubeAPI youTubeApi;
     public static KSoftAPI kSoftAPI;
-    //public static LastFM lastFM;
 
     public static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
-    public static AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+    public static CustomAudioPlayerManager playerManager = new CustomAudioPlayerManager();
     public static ShardManager shardManager;
-
 
     public static void main(final String[] args) throws Exception {
         Thread.currentThread().setName("JukeBot-Main");
         printBanner();
 
-        playerManager.setPlayerCleanupThreshold(30000);
-        playerManager.getConfiguration().setFilterHotSwapEnabled(true);
-
         Database.setupDatabase();
-        registerSourceManagers();
-        loadApis();
+
+        RestAction.setPassContext(false);
+        RestAction.setDefaultFailure((e) -> {
+        });
 
         DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
                 .setToken(config.getToken())
                 .setShardsTotal(-1)
-                .addEventListeners(new CommandHandler(), waiter)
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.EMOTE, CacheFlag.GAME))
-                .setGame(Game.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"));
+                .addEventListeners(new CommandHandler(), new EventHandler(), waiter)
+                .setDisabledCacheFlags(EnumSet.of(
+                        CacheFlag.EMOTE,
+                        CacheFlag.ACTIVITY,
+                        CacheFlag.CLIENT_STATUS
+                ))
+                .setGuildSubscriptionsEnabled(false)
+                .setActivity(Activity.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"));
 
         final String os = System.getProperty("os.name").toLowerCase();
         final String arch = System.getProperty("os.arch");
@@ -105,12 +117,15 @@ public class JukeBot {
         }
 
         shardManager = shardManagerBuilder.build();
+        setupSelf();
+        setupAudioSystem();
+        loadApis();
     }
 
     private static void printBanner() {
         String os = System.getProperty("os.name");
         String arch = System.getProperty("os.arch");
-        String banner = Helpers.Companion.readFile("banner.txt", "");
+        String banner = Helpers.INSTANCE.readFile("banner.txt", "");
 
         LOG.info("\n" + banner + "\n" +
                 "JukeBot v" + VERSION +
@@ -133,14 +148,7 @@ public class JukeBot {
             kSoftAPI = new KSoftAPI(key);
         }
 
-        if (config.hasKey("spotify_client") && config.hasKey("spotify_secret")) {
-            LOG.debug("Config has spotify keys, loading spotify API...");
-            String client = Objects.requireNonNull(config.getString("spotify_client"));
-            String secret = Objects.requireNonNull(config.getString("spotify_secret"));
-            spotifyApi = new SpotifyAPI(client, secret);
-        }
-
-        if (config.hasKey("youtube")) {
+        if (isYoutubeEnabled && config.hasKey("youtube")) {
             LOG.debug("Config has youtube key, loading youtube API...");
             String key = Objects.requireNonNull(config.getString("youtube"));
             YoutubeAudioSourceManager sm = playerManager.source(YoutubeAudioSourceManager.class);
@@ -148,33 +156,93 @@ public class JukeBot {
         }
     }
 
+    /**
+     * Audio System
+     */
+
+    private static void setupAudioSystem() {
+        playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
+        playerManager.setPlayerCleanupThreshold(30000);
+        playerManager.getConfiguration().setFilterHotSwapEnabled(true);
+
+        registerSourceManagers();
+
+        if (isYoutubeEnabled) {
+            YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
+            sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
+        }
+
+        //CachingSourceManager cachingSourceManager = playerManager.source(CachingSourceManager.class);
+        //sourceManager.setCacheProvider(cachingSourceManager);
+    }
+
     private static void registerSourceManagers() {
-        final YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
-        yt.setPlaylistPageCount(Integer.MAX_VALUE);
+        playerManager.registerSourceManager(new CachingSourceManager());
+        playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
         if (config.getNsfwEnabled()) {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
         }
 
-        playerManager.registerSourceManager(yt);
-        playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
+        if (isYoutubeEnabled && config.hasKey("spotify_client") && config.hasKey("spotify_secret")) {
+            String client = Objects.requireNonNull(config.getString("spotify_client"));
+            String secret = Objects.requireNonNull(config.getString("spotify_secret"));
+            playerManager.registerSourceManager(new SpotifyAudioSourceManager(client, secret));
+        }
+
+        if (isYoutubeEnabled) {
+            playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+        }
+        playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
         playerManager.registerSourceManager(new BandcampAudioSourceManager());
         playerManager.registerSourceManager(new VimeoAudioSourceManager());
         playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
         playerManager.registerSourceManager(new BeamAudioSourceManager());
         playerManager.registerSourceManager(new HttpAudioSourceManager());
+        //AudioSourceManagers.registerRemoteSources(playerManager);
+    }
+
+    private static void setupSelf() {
+        ApplicationInfo appInfo = shardManager.retrieveApplicationInfo().complete();
+        selfId = appInfo.getIdLong();
+        botOwnerId = appInfo.getOwner().getIdLong();
+        isSelfHosted = appInfo.getIdLong() != 249303797371895820L
+                && appInfo.getIdLong() != 314145804807962634L;
+        isYoutubeEnabled = isSelfHosted;
+
+        if (isSelfHosted || selfId == 314145804807962634L) {
+            playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
+        }
+
+        if (isSelfHosted) {
+            Map<String, Command> commandRegistry = CommandHandler.Companion.getCommands();
+            commandRegistry.remove("patreon");
+            commandRegistry.remove("verify");
+            Command feedback = commandRegistry.remove("feedback");
+
+            if (feedback != null) {
+                feedback.destroy();
+            }
+        } else {
+            Helpers.INSTANCE.getMonitor().scheduleAtFixedRate(Helpers.INSTANCE::monitorPledges, 0, 1, TimeUnit.DAYS);
+        }
     }
 
     public static boolean hasPlayer(final long guildId) {
         return players.containsKey(guildId);
     }
 
-    public static AudioHandler getPlayer(final AudioManager manager) {
-        AudioHandler handler = players.computeIfAbsent(manager.getGuild().getIdLong(),
-                v -> new AudioHandler(manager.getGuild().getIdLong(), playerManager.createPlayer()));
+    public static AudioHandler getPlayer(final long guildId) {
+        Guild g = shardManager.getGuildById(guildId);
+        Objects.requireNonNull(g, "getPlayer was given an invalid guildId!");
 
-        if (manager.getSendingHandler() == null)
-            manager.setSendingHandler(handler);
+        AudioHandler handler = players.computeIfAbsent(guildId,
+                v -> new AudioHandler(guildId, playerManager.createPlayer()));
+
+        AudioManager audioManager = g.getAudioManager();
+
+        if (audioManager.getSendingHandler() == null)
+            audioManager.setSendingHandler(handler);
 
         return handler;
     }

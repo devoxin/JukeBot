@@ -1,9 +1,14 @@
 package jukebot;
 
 import com.zaxxer.hikari.HikariDataSource;
+import jukebot.entities.CustomPlaylist;
+import jukebot.entities.PremiumGuild;
 
+import javax.annotation.Nullable;
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Database {
 
@@ -11,8 +16,9 @@ public class Database {
     private final static HikariDataSource pool = new HikariDataSource();
 
     private static Connection getConnection() throws SQLException {
-        if (!pool.isRunning())
+        if (!pool.isRunning()) {
             pool.setJdbcUrl("jdbc:sqlite:jukebot.db");
+        }
 
         calls++;
         return pool.getConnection();
@@ -21,16 +27,98 @@ public class Database {
     public static void setupDatabase() {
         try (Connection connection = getConnection()) {
             Statement statement = connection.createStatement();
+            // Dev/Bot stuff
             statement.addBatch("CREATE TABLE IF NOT EXISTS blocked (id INTEGER PRIMARY KEY)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS donators (id INTEGER PRIMARY KEY, tier TEXT NOT NULL)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS premiumservers (guildid INTEGER PRIMARY KEY, userid INTEGER, added INTEGER)");
+            // Guild Settings
             statement.addBatch("CREATE TABLE IF NOT EXISTS prefixes (id INTEGER PRIMARY KEY, prefix TEXT NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS djroles (guildid INTEGER PRIMARY KEY, roleid INTEGER NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS skipthres (id INTEGER PRIMARY KEY, threshold REAL NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS colours (id INTEGER PRIMARY KEY, rgb INTEGER NOT NULL)");
             statement.addBatch("CREATE TABLE IF NOT EXISTS musicnick (id INTEGER PRIMARY KEY)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS autoplay (id INTEGER PRIMARY KEY)");
+            statement.addBatch("CREATE TABLE IF NOT EXISTS autodc (id INTEGER PRIMARY KEY)");
+            // User Stuff
+            statement.addBatch("CREATE TABLE IF NOT EXISTS customplaylists (title TEXT NOT NULL, creator INTEGER, tracks TEXT)");
             statement.executeBatch();
         } catch (SQLException e) {
             JukeBot.LOG.error("There was an error setting up the SQL database!", e);
+        }
+    }
+
+    public static LinkedList<String> getPlaylists(final long creator) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM customplaylists WHERE creator = ?");
+            statement.setLong(1, creator);
+            ResultSet results = statement.executeQuery();
+
+            LinkedList<String> playlists = new LinkedList<>();
+
+            while (results.next()) {
+                playlists.add(results.getString("title"));
+            }
+
+            return playlists;
+        } catch (SQLException e) {
+            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            return null;
+        }
+    }
+
+    @Nullable
+    public static CustomPlaylist getPlaylist(final long creator, final String title) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM customplaylists WHERE creator = ? AND title = ?");
+            statement.setLong(1, creator);
+            statement.setString(2, title);
+
+            ResultSet results = statement.executeQuery();
+
+            return results.next()
+                    ? new CustomPlaylist(results.getString("title"), creator, results.getString("tracks"))
+                    : null;
+        } catch (SQLException e) {
+            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            return null;
+        }
+    }
+
+    public static boolean createPlaylist(final long creator, final String title) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement update = connection.prepareStatement("INSERT INTO customplaylists VALUES (?, ?, ?)");
+            update.setString(1, title);
+            update.setLong(2, creator);
+            update.setString(3, "");
+
+            return update.executeUpdate() == 1;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static boolean updatePlaylist(final long creator, final String title, final String tracks) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement update = connection.prepareStatement("UPDATE customplaylists SET tracks = ? WHERE creator = ? AND title = ?");
+            update.setString(1, tracks);
+            update.setLong(2, creator);
+            update.setString(3, title);
+
+            return update.executeUpdate() == 1;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static boolean deletePlaylist(final long creator, final String title) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement update = connection.prepareStatement("DELETE FROM customplaylists WHERE creator = ? AND title = ?");
+            update.setLong(1, creator);
+            update.setString(2, title);
+
+            return update.executeUpdate() == 1;
+        } catch (SQLException e) {
+            return false;
         }
     }
 
@@ -170,44 +258,32 @@ public class Database {
         return donors;
     }
 
-    public static void blockUser(long id) {
-        try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO blocked VALUES (?);");
-            statement.setLong(1, id);
-            statement.execute();
-        } catch (SQLException ignored) {
-        }
+    public static void setIsBlocked(long id, boolean block) {
+        setEnabled("blocked", id, block, getIsBlocked(id));
     }
 
-    public static void unblockUser(long id) {
-        try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("DELETE FROM blocked WHERE id = ?");
-            statement.setLong(1, id);
-            statement.execute();
-        } catch (SQLException unused) {
-        }
-    }
-
-    public static boolean isBlocked(long id) {
+    public static boolean getIsBlocked(long id) {
         return tableContains("blocked", id);
     }
 
+    public static boolean getIsAutoPlayEnabled(long guildId) {
+        return tableContains("autoplay", guildId);
+    }
+
+    public static void setAutoPlayEnabled(long id, boolean enable) {
+        setEnabled("autoplay", id, enable, getIsAutoPlayEnabled(id));
+    }
+
+    public static boolean getIsAutoDcDisabled(long guildId) {
+        return tableContains("autodc", guildId);
+    }
+
+    public static void setAutoDcDisabled(long id, boolean enable) {
+        setEnabled("autodc", id, enable, getIsAutoDcDisabled(id));
+    }
+
     public static void setMusicNickEnabled(long id, boolean enable) {
-        try (Connection connection = getConnection()) {
-            boolean currentlyEnabled = getIsMusicNickEnabled(id);
-
-            if (!enable && !currentlyEnabled || enable && currentlyEnabled) {
-                return;
-            }
-
-            PreparedStatement statement = enable
-                    ? connection.prepareStatement("INSERT INTO musicnick VALUES (?);")
-                    : connection.prepareStatement("DELETE FROM musicnick WHERE id = ?");
-
-            statement.setLong(1, id);
-            statement.execute();
-        } catch (SQLException ignored) {
-        }
+        setEnabled("musicnick", id, enable, getIsMusicNickEnabled(id));
     }
 
     public static boolean getIsMusicNickEnabled(long id) {
@@ -247,6 +323,99 @@ public class Database {
             return JukeBot.config.getEmbedColour().getRGB();
         }
     }
+
+    public static boolean isPremiumServer(long guildId) {
+        if (JukeBot.isSelfHosted) {
+            return true;
+        }
+
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM premiumservers WHERE guildid = ?");
+            statement.setLong(1, guildId);
+            ResultSet results = statement.executeQuery();
+            return results.next();
+        } catch (SQLException e) {
+            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            return false;
+        }
+    }
+
+    public static void setPremiumServer(long userId, long guildId) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO premiumservers VALUES (?, ?, ?);");
+            statement.setLong(1, guildId);
+            statement.setLong(2, userId);
+            statement.setLong(3, Instant.now().toEpochMilli());
+            statement.execute();
+        } catch (SQLException ignored) {
+        }
+    }
+
+    public static boolean removePremiumServer(final long guildId) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement update = connection.prepareStatement("DELETE FROM premiumservers WHERE guildid = ?");
+            update.setLong(1, guildId);
+
+            return update.executeUpdate() == 1;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static boolean removePremiumServersOf(final long userId) {
+        try (Connection connection = getConnection()) {
+            PreparedStatement update = connection.prepareStatement("DELETE FROM premiumservers WHERE userid = ?");
+            update.setLong(1, userId);
+
+            return update.executeUpdate() > 0;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static ArrayList<PremiumGuild> getPremiumServersOf(long userId) {
+        ArrayList<PremiumGuild> premiumGuilds = new ArrayList<>();
+
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM premiumservers WHERE userid = ?");
+            statement.setLong(1, userId);
+            ResultSet results = statement.executeQuery();
+
+            while (results.next()) {
+                premiumGuilds.add(new PremiumGuild(
+                        results.getLong("guildid"),
+                        results.getLong("added")
+                ));
+            }
+        } catch (SQLException ignored) {
+        }
+
+        return premiumGuilds;
+    }
+
+    public static void setEnabled(String table, long id, boolean enable, boolean currentlyEnabled) {
+        try (Connection connection = getConnection()) {
+            if (!enable && !currentlyEnabled || enable && currentlyEnabled) {
+                return;
+            }
+
+            PreparedStatement statement = enable
+                    ? connection.prepareStatement("INSERT INTO " + table + " VALUES (?);")
+                    : connection.prepareStatement("DELETE FROM " + table + " WHERE id = ?");
+
+            statement.setLong(1, id);
+            statement.execute();
+        } catch (SQLException ignored) {
+            ignored.printStackTrace();
+        }
+    }
+
+
+    /*
+     * +=================================================+
+     * |                IGNORE BELOW THIS                |
+     * +=================================================+
+     */
 
     @SuppressWarnings("unchecked")
     private static String getFromDatabase(String table, long id, String columnId) {

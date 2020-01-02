@@ -1,25 +1,28 @@
 package jukebot.audio
 
+import com.fasterxml.jackson.core.JsonParseException
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
-import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame
+import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
 import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Helpers
 import jukebot.utils.toTimeString
 import jukebot.utils.toTitleCase
-import net.dv8tion.jda.core.EmbedBuilder
-import net.dv8tion.jda.core.Permission
-import net.dv8tion.jda.core.audio.AudioSendHandler
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.audio.AudioSendHandler
+import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEventAdapter(), AudioSendHandler {
-
-    private var lastFrame: AudioFrame? = null
+    private val mutableFrame = MutableAudioFrame()
+    private val buffer = ByteBuffer.allocate(1024)
+    // ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize())
 
     // Playback Settings
     val bassBooster = BassBooster(player)
@@ -38,12 +41,15 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     var trackPacketsSent = 0
 
     // Player Stuff
+    val autoPlay = AutoPlay(guildId)
+    var previous: AudioTrack? = null
     var current: AudioTrack? = null
     val isPlaying: Boolean
         get() = player.playingTrack != null
 
     init {
         player.addListener(this)
+        this.mutableFrame.setBuffer(buffer)
     }
 
     fun enqueue(track: AudioTrack, userID: Long, playNext: Boolean): Boolean { // boolean: shouldAnnounce
@@ -66,14 +72,20 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         return skips.size
     }
 
-    fun playNext() {
+    fun playNext(shouldAutoPlay: Boolean = true) {
         var nextTrack: AudioTrack? = null
+
+        current?.let {
+            if (it.sourceManager.sourceName == "youtube") {
+                autoPlay.store(it.info.title)
+            }
+        }
 
         if (current != null) {
             if (repeat == RepeatMode.ALL) {
-                    val r = current!!.makeClone()
-                    r.userData = current!!.userData
-                    queue.offer(r)
+                val r = current!!.makeClone()
+                r.userData = current!!.userData
+                queue.offer(r)
             } else if (repeat == RepeatMode.SINGLE) {
                 nextTrack = current!!.makeClone()
                 nextTrack.userData = current!!.userData
@@ -89,7 +101,18 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         }
 
         if (nextTrack != null) {
-            player.startTrack(nextTrack, false)
+            return player.playTrack(nextTrack)
+        }
+
+        if (shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
+            autoPlay.getRelatedTrack()
+                .thenAccept(player::playTrack)
+                .exceptionally {
+                    playNext(false)
+                    announce("AutoPlay", "AutoPlay encountered an error.\nWe're sorry for any inconvenience caused!")
+                    JukeBot.LOG.error("AutoPlay Error", it)
+                    return@exceptionally null
+                }
             return
         }
 
@@ -109,8 +132,12 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         if (audioManager.isConnected || audioManager.isAttemptingToConnect) {
             Helpers.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS)
 
-            announce("Queue Concluded!",
-                    "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)\nSuggest features with the `feedback` command!")
+            if (Database.isPremiumServer(guildId)) {
+                announce("Queue Concluded", "Enable AutoPlay to keep the party going!")
+            } else {
+                announce("Queue Concluded!",
+                    "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
+            }
 
             setNick(null)
         }
@@ -128,18 +155,18 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         }
 
         channel.sendMessage(EmbedBuilder()
-                .setColor(Database.getColour(channel.guild.idLong))
-                .setTitle(title)
-                .setDescription(Helpers.truncate(description, 1000))
-                .build()
-        ).queue(null, { err -> JukeBot.LOG.error("Encountered an error while posting track announcement", err) })
+            .setColor(Database.getColour(channel.guild.idLong))
+            .setTitle(title)
+            .setDescription(Helpers.truncate(description, 1000))
+            .build()
+        ).queue()
     }
 
-    fun setNick(nick: String?) {
+    private fun setNick(nick: String?) {
         val guild = JukeBot.shardManager.getGuildById(guildId) ?: return
 
         if (guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guild.idLong)) {
-            guild.controller.setNickname(guild.selfMember, nick).queue()
+            guild.selfMember.modifyNickname(nick).queue()
         }
     }
 
@@ -152,15 +179,17 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     /*
-     * Player Events
+     *  +===================+
+     *  |   Player Events   |
+     *  +===================+
      */
-
     override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
         player.isPaused = false
 
         if (current == null || current!!.identifier != track.identifier) {
             current = track
-            announce("Now Playing", "${track.info.title} - `${track.info.length.toTimeString()}`")
+            val durString = if (track.info.isStream) "LIVE" else track.info.length.toTimeString()
+            announce("Now Playing", "${track.info.title} - `$durString`")
 
             val title = track.info.title
             val nick = if (title.length > 32) "${title.substring(0, 29)}..." else title
@@ -173,6 +202,8 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         trackPacketLost = 0
         trackPacketsSent = 0
 
+        previous = track
+
         if (endReason.mayStartNext) {
             playNext()
         }
@@ -182,8 +213,17 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         if (repeat != RepeatMode.NONE)
             repeat = RepeatMode.NONE
 
+        val problem = Helpers.rootCauseOf(exception)
+        val banned = problem is JsonParseException
+
+        if (banned && Database.getIsAutoPlayEnabled(guildId)) {
+            Database.setAutoPlayEnabled(guildId, false)
+        }
+
+        val append = if (banned) "\n\n**YouTube banned the bot's IP. This problem should be resolved soon.**" else ""
+
         announce("Playback Error", "Playback of **${track.info.title}** encountered an error!\n" +
-                exception.localizedMessage)
+            problem.localizedMessage + append)
     }
 
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long) {
@@ -195,25 +235,26 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     /*
-     * Packet Sending Events
+     *  +=======================+
+     *  |   JDA Audio Sending   |
+     *  +=======================+
      */
-
     override fun canProvide(): Boolean {
-        lastFrame = player.provide()
+        val frameProvided = player.provide(mutableFrame)
 
         if (!player.isPaused) {
-            if (lastFrame == null) {
+            if (!frameProvided) {
                 trackPacketLost++
             } else {
                 trackPacketsSent++
             }
         }
 
-        return lastFrame != null
+        return frameProvided
     }
 
-    override fun provide20MsAudio(): ByteArray {
-        return lastFrame!!.data
+    override fun provide20MsAudio(): ByteBuffer {
+        return buffer.flip()
     }
 
     override fun isOpus(): Boolean {
@@ -231,7 +272,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     companion object {
-        val EXPECTED_PACKET_COUNT_PER_MIN = ((60 * 1000) / 20).toDouble()
+        const val EXPECTED_PACKET_COUNT_PER_MIN = ((60 * 1000) / 20).toDouble()
     }
 
 }
