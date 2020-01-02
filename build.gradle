@@ -36,7 +36,7 @@ repositories {
 }
 
 dependencies {
-    implementation ('net.dv8tion:JDA:4.1.0_91') {
+    implementation ('net.dv8tion:JDA:4.1.0_92') {
         exclude module: 'opus-java'
     }
     implementation 'club.minnced:discord-webhooks:0.1.8'
