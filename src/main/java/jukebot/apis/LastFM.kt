@@ -6,50 +6,38 @@ import org.apache.http.client.utils.URIBuilder
 import java.util.concurrent.CompletableFuture
 import kotlin.math.min
 
-
 class LastFM(private val key: String) {
-
     private val baseUrl = "http://ws.audioscrobbler.com/2.0"
 
-    fun findSimilar(title: String, artist: String): CompletableFuture<List<TrackMatch>?> {
+    fun findSimilar(title: String, artist: String): CompletableFuture<List<TrackMatch>> {
         val url = URIBuilder("$baseUrl/?method=track.getsimilar&api_key=$key&format=json")
             .addParameter("track", title)
             .addParameter("artist", artist)
 
         val future = CompletableFuture<List<TrackMatch>?>()
 
-        JukeBot.httpClient.request { url(url.build().toURL()) }.queue({
-            val json = it.json()
-
-            if (json == null) {
-                future.complete(null)
-                return@queue
+        return JukeBot.httpClient.request { url(url.build().toURL()) }
+            .submit()
+            .thenApply {
+                it.json() ?: throw IllegalStateException("Response was not successful, or was not a json object!")
             }
+            .thenApply {
+                val tracks = mutableListOf<TrackMatch>()
+                val obj = it.getJSONObject("similartracks").getJSONArray("track")
 
-            val obj = json.getJSONObject("similartracks").getJSONArray("track")
+                if (obj.length() > 0) {
+                    for (i in 0..min(3, obj.length())) {
+                        val tr = obj.getJSONObject(i)
 
-            if (obj.length() == 0) {
-                future.complete(null)
-                return@queue
+                        val t = tr.getString("name")
+                        val a = tr.getJSONObject("artist").getString("name")
+                        tracks.add(TrackMatch(a, t))
+                    }
+                }
+
+                tracks
             }
-
-            val tracks = mutableListOf<TrackMatch>()
-
-            for (i in 0..min(3, obj.length())) {
-                val tr = obj.getJSONObject(i)
-
-                val t = tr.getString("name")
-                val a = tr.getJSONObject("artist").getString("name")
-                tracks.add(TrackMatch(a, t))
-            }
-
-            future.complete(tracks)
-        }, {
-            future.complete(null)
-        })
-
-        return future
     }
 
-    class TrackMatch(val artist: String, val title: String)
+    inner class TrackMatch(val artist: String, val title: String)
 }

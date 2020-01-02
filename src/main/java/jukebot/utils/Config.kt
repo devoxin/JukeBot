@@ -5,7 +5,6 @@ import java.io.FileReader
 import java.util.*
 
 class Config(file: String) {
-
     private val _conf = Properties()
 
     init {
@@ -26,5 +25,4 @@ class Config(file: String) {
     fun getString(key: String, default: String): String = _conf.getProperty(key, default)
 
     fun getBoolean(key: String): Boolean = getString(key)?.toBoolean() ?: false
-
 }

@@ -11,30 +11,31 @@ class RequestUtil {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     inner class PendingRequest(private val request: Request) {
-        fun queue(success: (Response) -> Unit, failure: (IOException) -> Unit) {
+        fun submit(): CompletableFuture<Response> {
+            val fut = CompletableFuture<Response>()
+
             httpClient.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     logger.error("An error occurred during a HTTP request to ${call.request().url()}", e)
-                    failure(e)
+                    fut.completeExceptionally(e)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     JukeBot.LOG.debug("Response: code=${response.code()} message=${response.message()}")
-                    success(response)
+                    fut.complete(response)
                 }
-            })
-        }
-
-        fun submit(): CompletableFuture<Response> {
-            val fut = CompletableFuture<Response>()
-
-            queue({
-                fut.complete(it)
-            }, {
-                fut.completeExceptionally(it)
             })
 
             return fut
+        }
+
+        fun queue(success: (Response) -> Unit, failure: (IOException) -> Unit) {
+            submit()
+                .thenAccept(success)
+                .exceptionally {
+                    failure(it as IOException)
+                    null
+                }
         }
     }
 

@@ -2,6 +2,7 @@ package jukebot.apis.ksoft
 
 import jukebot.JukeBot
 import jukebot.utils.json
+import jukebot.utils.whenSuccess
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -69,29 +70,20 @@ class KSoftAPI(private val key: String) {
     }
 
     fun makeRequest(endpoint: String, requestOptions: (Request.Builder.() -> Unit)? = null): CompletableFuture<JSONObject> {
-        val fut = CompletableFuture<JSONObject>()
-
-        JukeBot.httpClient.request {
-            url(BASE_URL + endpoint)
-            header("Authorization", "Bearer $key")
-            requestOptions?.let {
-                apply(requestOptions)
+        return JukeBot.httpClient
+            .request {
+                url(BASE_URL + endpoint)
+                header("Authorization", "Bearer $key")
+                requestOptions?.let {
+                    apply(requestOptions)
+                }
             }
-        }.queue({
-            JukeBot.LOG.debug("Response from KSoft API: code=${it.code()} message=${it.message()}")
-            val j = it.json()
-
-            if (j == null) {
-                fut.completeExceptionally(Error("Expected json response, got null!"))
-                return@queue
+            .submit()
+            .thenApply {
+                it.json()
+                    ?: throw IllegalStateException("KSoft.Si didn't respond with valid status code and/or JSON, " +
+                        "code=${it.code()}, message=${it.message()}")
             }
-
-            fut.complete(j)
-        }, {
-            fut.completeExceptionally(it)
-        })
-
-        return fut
     }
 
     companion object {
