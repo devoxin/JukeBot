@@ -1,5 +1,6 @@
 package jukebot.audio.sourcemanagers.spotify
 
+import com.grack.nanojson.JsonParser
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
@@ -8,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioReference
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
+import jukebot.JukeBot
 import jukebot.audio.sourcemanagers.spotify.loaders.SpotifyPlaylistLoader
 import jukebot.utils.Helpers
 import org.apache.http.HttpStatus
@@ -72,7 +74,7 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
             return null
         }
 
-        if (donorTier.toInt() < 2) {
+        if (!JukeBot.isSelfHosted && donorTier.toInt() < 2) {
             return null
         }
 
@@ -118,8 +120,7 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
                 return
             }
 
-            val content = EntityUtils.toString(it.entity)
-            val json = JSONObject(content)
+            val json = JsonParser.`object`().from(it.entity.content)
 
             if (json.has("error") && json.getString("error").startsWith("invalid_")) {
                 log.error("Spotify API access disabled (${json.getString("error")})")

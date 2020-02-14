@@ -36,7 +36,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
 
         if (userQuery.startsWith("http")) {
             if (userQuery.toLowerCase().contains("soundcloud.com/you/")) {
-                ctx.embed("SoundCloud Liked Tracks", "JukeBot doesn't implement oauth and as a result\ncannot access your tracks when referenced as `you`")
+                ctx.embed("SoundCloud Liked Tracks", "Loading SoundCloud tracks requires username.")
 
                 if (!player.isPlaying) {
                     manager.closeAudioConnection()
@@ -45,10 +45,9 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                 return
             }
 
-            if (userQuery.toLowerCase().contains("youtube") || userQuery.toLowerCase().contains("youtu.be")) {
-                ctx.embed("YouTube Support", "YouTube support is disabled until further notice due " +
-                    "to YouTube automatically banning JukeBot's IP. There is no known way to fix this.\n" +
-                    "Apologies for any inconvenience caused.")
+            if (!JukeBot.isYoutubeEnabled &&
+                userQuery.toLowerCase().contains("youtube") || userQuery.toLowerCase().contains("youtu.be")) {
+                ctx.embed("YouTube Support", "YouTube support is unavailable.")
                 return
             }
 
@@ -69,7 +68,11 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                 JukeBot.playerManager.loadIdentifier(userQuery, ctx, player, false)
             }
         } else {
-            JukeBot.playerManager.loadIdentifier("scsearch:$userQuery", ctx, player, false)
+            JukeBot.playerManager.loadIdentifier(SEARCH_TYPE + userQuery, ctx, player, false)
         }
+    }
+
+    companion object {
+        val SEARCH_TYPE = if (JukeBot.isYoutubeEnabled) "ytsearch:" else "scsearch:"
     }
 }

@@ -36,7 +36,7 @@ repositories {
 }
 
 dependencies {
-    implementation ('net.dv8tion:JDA:4.1.0_100') {
+    implementation ('net.dv8tion:JDA:4.1.1_101') {
         exclude module: 'opus-java'
     }
     implementation 'club.minnced:discord-webhooks:0.1.8'
@@ -70,6 +70,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-scripting-jsr223-embeddable:$kotlin_version"
 
     implementation 'org.json:json:20180813'
+    implementation 'com.grack:nanojson:1.4'
 }
 
 shadowJar {

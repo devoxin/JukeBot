@@ -1,5 +1,7 @@
 package jukebot
 
+import com.grack.nanojson.JsonParser
+import com.grack.nanojson.JsonWriter
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput
@@ -10,7 +12,6 @@ import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
 import jukebot.audio.AudioHandler
 import jukebot.audio.SongResultHandler
 import jukebot.framework.Context
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -33,31 +34,26 @@ class CustomAudioPlayerManager(dapm: DefaultAudioPlayerManager) : AudioPlayerMan
     }
 
     fun toJsonString(playlist: AudioPlaylist): String {
-        val obj = JSONObject()
-        val tracks = JSONArray()
+        val selectedIndex = playlist.selectedTrack?.let {
+            playlist.tracks.indexOf(playlist.selectedTrack)
+        } ?: -1
 
-        playlist.tracks.map(::toBase64String).map(tracks::put)
-
-        obj.put("name", playlist.name)
-        obj.put("tracks", tracks)
-        obj.put("search", playlist.isSearchResult)
-
-        if (playlist.selectedTrack != null) {
-            obj.put("selected", playlist.tracks.indexOf(playlist.selectedTrack))
-        } else {
-            obj.put("selected", -1)
-        }
-
-        return obj.toString()
+        return JsonWriter.string()
+            .`object`()
+            .value("name", playlist.name)
+            .value("search", playlist.isSearchResult)
+            .value("selected", selectedIndex)
+            .array("tracks", playlist.tracks.map(::toBase64String))
+            .done()
     }
 
     fun toPlaylist(encoded: String): BasicAudioPlaylist {
-        val obj = JSONObject(encoded)
+        val obj = JsonParser.`object`().from(encoded)
 
         val name = obj.getString("name")
         val tracks = mutableListOf<AudioTrack>()
 
-        for (track in obj.getJSONArray("tracks")) {
+        for (track in obj.getArray("tracks")) {
             tracks.add(toAudioTrack(track as String))
         }
 
