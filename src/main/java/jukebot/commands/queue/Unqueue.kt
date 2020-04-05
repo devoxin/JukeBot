@@ -25,7 +25,7 @@ class Unqueue : Command(ExecutionType.STANDARD) {
 
         val selectedTrack = player.queue[selected - 1]
 
-        if (selectedTrack.getUserData(Long::class.java) != context.author.idLong && !context.isDJ(false)) {
+        if (selectedTrack.userData as Long != context.author.idLong && !context.isDJ(false)) {
             return context.embed("Not a DJ", "You need the DJ role to unqueue others' tracks. [See here on how to become a DJ](https://jukebot.serux.pro/faq)")
         }
 

@@ -18,7 +18,7 @@ class RemoveAbsent : Command(ExecutionType.STANDARD) {
         }
 
         val membersInVc = context.guild.audioManager.connectedChannel!!.members.map { it.idLong }
-        val tracksToRemove = handler.queue.filter { it.getUserData(Long::class.java) !in membersInVc }
+        val tracksToRemove = handler.queue.filter { it.userData as Long !in membersInVc }
 
         handler.queue.removeAll(tracksToRemove)
         context.embed("Queue Cleaned", "Removed **${tracksToRemove.size}** tracks queued by absent members.")

@@ -1,6 +1,5 @@
 package jukebot.commands.queue
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
@@ -20,8 +19,8 @@ class Undo : Command(ExecutionType.REQUIRE_MUTUAL) {
         val i = queue.descendingIterator()
 
         while (i.hasNext()) {
-            val t = i.next() as AudioTrack
-            val requester = t.getUserData(Long::class.java)
+            val t = i.next()
+            val requester = t.userData as Long
 
             if (requester == context.author.idLong) {
                 i.remove()
