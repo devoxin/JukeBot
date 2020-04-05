@@ -73,6 +73,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
     }
 
     companion object {
-        val SEARCH_TYPE = if (JukeBot.isYoutubeEnabled) "ytsearch:" else "scsearch:"
+        val SEARCH_TYPE: String
+            get() = if (JukeBot.isYoutubeEnabled) "ytsearch:" else "scsearch:"
     }
 }
