@@ -5,7 +5,6 @@ import jukebot.framework.*
 @CommandProperties(description = "Moves a track in the queue", aliases = ["m", "mv"], category = CommandCategory.QUEUE)
 @CommandChecks.Dj(alone = true)
 class Move : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 
@@ -19,19 +18,15 @@ class Move : Command(ExecutionType.STANDARD) {
             return context.embed("Specify track index", "You need to specify the index of the track in the queue.")
         }
 
-        val target = args[0].toIntOrNull() ?: 0
-        val dest = args[1].toIntOrNull() ?: 0
-
-        if (target < 1 || dest < 1 || target == dest || target > player.queue.size || dest > player.queue.size) {
-            return context.embed("Invalid position(s) specified!", "You need to specify a valid target track, and a valid target position.")
-        }
+        val target = args[0].toIntOrNull()?.takeIf { it > 0 && it <= player.queue.size }
+            ?: return context.embed("Move Tracks", "Invalid target track. Example: `move 3 1`")
+        val dest = args[0].toIntOrNull()?.takeIf { it > 0 && it <= player.queue.size && it != target }
+            ?: return context.embed("Move Tracks", "Invalid destination position. Example: `move 3 1`")
 
         val selectedTrack = player.queue[target - 1]
 
         player.queue.removeAt(target - 1)
         player.queue.add(dest - 1, selectedTrack)
-
         context.embed("Track Moved", "**${selectedTrack.info.title}** is now at position **$dest** in the queue")
-
     }
 }

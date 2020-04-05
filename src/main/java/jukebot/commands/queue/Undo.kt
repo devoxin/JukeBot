@@ -21,7 +21,7 @@ class Undo : Command(ExecutionType.REQUIRE_MUTUAL) {
 
         while (i.hasNext()) {
             val t = i.next() as AudioTrack
-            val requester = t.userData as Long
+            val requester = t.getUserData(Long::class.java)
 
             if (requester == context.author.idLong) {
                 i.remove()
