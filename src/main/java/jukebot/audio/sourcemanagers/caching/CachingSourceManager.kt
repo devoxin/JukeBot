@@ -40,36 +40,37 @@ class CachingSourceManager : AudioSourceManager/*, CacheProvider*/ {
     override fun isTrackEncodable(track: AudioTrack) = false
 
     override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
-        if (jedisPool.isClosed) {
-            return null
-        }
-
-        totalHits++
-
-        if (reference.identifier.startsWith("s!")) {
-            if (reference.identifier.split("!")[2].toInt() < 2) {
-                return null
-            }
-        }
-
-        val identifier = if (reference.identifier.startsWith("s!")) {
-            reference.identifier.split("!")[1]
-        } else {
-            reference.identifier
-        }
-
-        jedisPool.resource.use {
-            val encoded = it.get(identifier)
-                ?: return null
-
-            successfulHits++
-
-            if (encoded.startsWith('{')) {
-                return JukeBot.playerManager.toPlaylist(encoded)
-            }
-
-            return JukeBot.playerManager.toAudioTrack(encoded)
-        }
+        return null
+//        if (jedisPool.isClosed) {
+//            return null
+//        }
+//
+//        totalHits++
+//
+//        if (reference.identifier.startsWith("s!")) {
+//            if (reference.identifier.split("!")[2].toInt() < 2) {
+//                return null
+//            }
+//        }
+//
+//        val identifier = if (reference.identifier.startsWith("s!")) {
+//            reference.identifier.split("!")[1]
+//        } else {
+//            reference.identifier
+//        }
+//
+//        jedisPool.resource.use {
+//            val encoded = it.get(identifier)
+//                ?: return null
+//
+//            successfulHits++
+//
+//            if (encoded.startsWith('{')) {
+//                return JukeBot.playerManager.toPlaylist(encoded)
+//            }
+//
+//            return JukeBot.playerManager.toAudioTrack(encoded)
+//        }
     }
 
 //    override fun cacheVideoFormat(identifier: String, format: YoutubeAudioTrack.FormatWithUrl, ttl: Long) {
