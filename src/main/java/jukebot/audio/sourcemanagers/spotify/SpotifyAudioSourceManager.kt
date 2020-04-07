@@ -12,6 +12,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
 import jukebot.JukeBot
 import jukebot.audio.sourcemanagers.spotify.loaders.SpotifyPlaylistLoader
+import jukebot.audio.sourcemanagers.spotify.loaders.SpotifyTrackLoader
 import jukebot.utils.Helpers
 import org.apache.http.HttpStatus
 import org.apache.http.client.methods.CloseableHttpResponse
@@ -71,28 +72,12 @@ class SpotifyAudioSourceManager(
             return null
         }
 
-        val parts = reference.identifier.split("!")
-
-        if (parts.size != 3) {
-            return null
-        }
-
-        val (source, identifier, donorTier) = parts
-
-        if (source != "s") {
-            return null
-        }
-
-        if (!JukeBot.isSelfHosted && donorTier.toInt() < 2) {
-            return null
-        }
-
         return try {
-            loadItemOnce(identifier)
+            loadItemOnce(reference.identifier)
         } catch (exception: FriendlyException) {
             // In case of a connection reset exception, try once more.
             if (HttpClientTools.isRetriableNetworkException(exception.cause)) {
-                loadItemOnce(identifier)
+                loadItemOnce(reference.identifier)
             } else {
                 throw exception
             }
@@ -186,13 +171,9 @@ class SpotifyAudioSourceManager(
         private val log = LoggerFactory.getLogger(SpotifyAudioSourceManager::class.java)
 
         private val loaders = listOf(
+            SpotifyTrackLoader(),
             SpotifyPlaylistLoader()
         )
-
-        fun isSpotifyMedia(identifier: String): Boolean {
-            return identifier.startsWith("http") && identifier.contains("spotify.com")
-                && loaders.any { it.pattern().matcher(identifier).matches() }
-        }
     }
 
 }

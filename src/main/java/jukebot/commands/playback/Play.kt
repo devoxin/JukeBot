@@ -55,12 +55,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                 return
             }
 
-            if (SpotifyAudioSourceManager.isSpotifyMedia(userQuery)) {
-                val customIdentifier = "s!$userQuery!${ctx.donorTier}"
-                JukeBot.playerManager.loadIdentifier(customIdentifier, userQuery, ctx, player, false)
-            } else {
-                JukeBot.playerManager.loadIdentifier(userQuery, ctx, player, false)
-            }
+            JukeBot.playerManager.loadIdentifier(userQuery, ctx, player, false)
         } else {
             JukeBot.playerManager.loadIdentifier("ytsearch:$userQuery", ctx, player, false)
         }

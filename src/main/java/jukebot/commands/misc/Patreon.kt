@@ -31,7 +31,7 @@ class Patreon : Command(ExecutionType.STANDARD) {
                 "• **Everything in Tier 1 and...**\n" +
                     "• Unlimited song duration\n" +
                     "• Unlimited tracks from a playlist\n" +
-                    "• Spotify playlist support\n" +
+                    "• Up to 100 custom playlists\n" +
                     "[Join Tier]($BASE_URL$TIER_2)\n\u200b", false),
             MessageEmbed.Field("Tier 3 ($3)",
                 "• **Everything in Tier 2 and...**\n" +

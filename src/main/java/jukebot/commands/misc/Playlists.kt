@@ -46,16 +46,19 @@ class Playlists : Command(ExecutionType.STANDARD) {
         val allPlaylists = Database.getPlaylists(ctx.author.idLong)
         val donorTier = ctx.donorTier
 
-        if (allPlaylists.size >= 50) {
-            ctx.embed("Custom Playlists", "You've reached the maximum amount of playlists!")
-            return
-        } else if (allPlaylists.size >= 5 && donorTier < 1) {
-            ctx.embed(
-                "Custom Playlists",
-                "You've reached the maximum amount of custom playlists!\n" +
-                    "[Consider becoming a Patron](https://patreon.com/Devoxin) to get more!"
-            )
-            return
+        when {
+            donorTier < 1 && allPlaylists.size >= 5 -> {
+                ctx.embed(
+                    "Custom Playlists",
+                    "You've reached the maximum amount of custom playlists!\n" +
+                        "[Consider becoming a Patron](https://patreon.com/Devoxin) to get more!"
+                )
+                return
+            }
+            allPlaylists.size >= 50 && donorTier < 2 || allPlaylists.size >= 100 -> {
+                ctx.embed("Custom Playlists", "You've reached the maximum amount of playlists!")
+                return
+            }
         }
 
         if (args.isEmpty()) {
