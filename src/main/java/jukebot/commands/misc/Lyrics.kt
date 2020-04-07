@@ -10,7 +10,7 @@ import jukebot.utils.json
 import net.dv8tion.jda.api.EmbedBuilder
 import java.net.URLEncoder
 
-@CommandProperties(description = "Displays lyrics for the currently playing song")
+@CommandProperties(description = "Searches for lyrics.")
 class Lyrics : Command(ExecutionType.STANDARD) {
 
     override fun execute(context: Context) {
