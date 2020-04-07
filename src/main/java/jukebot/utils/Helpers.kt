@@ -95,7 +95,7 @@ object Helpers {
 
                 if (tier != calculatedTier) {
                     if (calculatedTier < tier) {
-                        val calculatedServerQuota = if (calculatedTier < 3) 0 else ((calculatedTier - 3) / 1.5).toInt() + 1
+                        val calculatedServerQuota = if (calculatedTier < 3) 0 else ((calculatedTier - 3) / 1) + 1
                         val allServers = Database.getPremiumServersOf(id)
 
                         if (allServers.size > calculatedServerQuota) {

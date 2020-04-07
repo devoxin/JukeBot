@@ -76,7 +76,7 @@ class Verify : Command(ExecutionType.STANDARD) {
             return 0
         }
 
-        return ((pledge - 3) / 1.5).toInt() + 1
+        return ((pledge - 3) / 1) + 1
     }
 
     @SubCommand(trigger = "addserver", description = "Registers the current server to receive perks")
