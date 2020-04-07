@@ -165,6 +165,7 @@ public class JukeBot {
         sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
 
         if (!config.getIpv6block().isEmpty()) {
+            LOG.info("Using IPv6 block with RotatingNanoIpRoutePlanner!");
             List<IpBlock> blocks = Collections.singletonList(new Ipv6Block(config.getIpv6block()));
             RotatingNanoIpRoutePlanner planner = new RotatingNanoIpRoutePlanner(blocks);
             new YoutubeIpRotatorSetup(planner).forSource(sourceManager).setup();
