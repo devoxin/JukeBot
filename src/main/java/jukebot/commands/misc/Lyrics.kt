@@ -51,7 +51,6 @@ class Lyrics : Command(ExecutionType.STANDARD) {
             .setColor(context.embedColor)
             .setTitle(title)
             .setDescription(chunks[index])
-            .setFooter("KSoft.Si API", null)
             .build()
         ).queue {
             if (chunks.size > index + 1) {
