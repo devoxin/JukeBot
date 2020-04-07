@@ -9,7 +9,7 @@ import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import java.time.OffsetDateTime
 
-@CommandProperties(description = "Send feedback to the developer")
+@CommandProperties(aliases = ["suggest"], description = "Send feedback to the developer")
 class Feedback : Command(ExecutionType.STANDARD) {
 
     private val webhookClient: WebhookClient? = if (JukeBot.config.hasKey("feedback_webhook")) {
