@@ -23,7 +23,7 @@ class Feedback : Command(ExecutionType.STANDARD) {
             return context.embed {
                 setTitle("Missing Feedback")
                 setDescription("You need to specify feedback for the developer.")
-                setFooter("Please note that misusing this command will see you blacklisted.", null)
+                setFooter("Misuse of this command will revoke your access.", null)
             }
         }
 
