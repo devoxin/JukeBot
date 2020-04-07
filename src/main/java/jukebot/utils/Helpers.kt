@@ -26,11 +26,12 @@ object Helpers {
     fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC', link: String = "https://jukebot.serux.pro"): String {
         val percent = v.toFloat() / max
         val blocks = floor((barLength * percent).toDouble()).toInt()
+        val barChar = bar.toString()
 
         return buildString {
             append("[")
             val hasTerminator = (0 until barLength).any { it == blocks }
-            val segments = (0 until barLength).map<Int, Any> { if (it == blocks) "]($link)" else bar }
+            val segments = (0 until barLength).map { if (it == blocks) "]($link)" else barChar }
 
             for (segment in segments) {
                 append(segment)
