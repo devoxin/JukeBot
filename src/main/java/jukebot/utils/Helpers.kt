@@ -27,21 +27,19 @@ object Helpers {
         val percent = v.toFloat() / max
         val blocks = floor((barLength * percent).toDouble()).toInt()
 
-        val sb = StringBuilder("[")
+        return buildString {
+            append("[")
+            val hasTerminator = (0 until barLength).any { it == blocks }
+            val segments = (0 until barLength).map<Int, Any> { if (it == blocks) "]($link)" else bar }
 
-        for (i in 0 until barLength) {
-            if (i == blocks) {
-                sb.append("]($link)")
+            for (segment in segments) {
+                append(segment)
             }
 
-            sb.append(bar)
+            if (!hasTerminator) {
+                append("]($link)")
+            }
         }
-
-        if (blocks == barLength) {
-            sb.append("]($link)")
-        }
-
-        return sb.toString()
     }
 
     fun pad(s: String): String {
