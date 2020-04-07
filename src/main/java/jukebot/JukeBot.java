@@ -67,8 +67,6 @@ import java.util.concurrent.TimeUnit;
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.6.0";
-
     public static final long startTime = System.currentTimeMillis();
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
     public static Config config = new Config("config.properties");
@@ -127,14 +125,21 @@ public class JukeBot {
         String os = System.getProperty("os.name");
         String arch = System.getProperty("os.arch");
         String banner = Helpers.INSTANCE.readFile("banner.txt", "");
+        String version = Helpers.INSTANCE.getVersion();
+        String commitUrl = "https://github.com/devoxin/JukeBot/commit/" + version;
 
-        LOG.info("\n" + banner + "\n" +
-                "JukeBot v" + VERSION +
-                " | JDA " + JDAInfo.VERSION +
-                " | Lavaplayer " + PlayerLibrary.VERSION +
-                " | SQLite " + SQLiteJDBCLoader.getVersion() +
-                " | " + System.getProperty("sun.arch.data.model") + "-bit JVM" +
-                " | " + os + " " + arch + "\n");
+        LOG.info(
+                "\n{}\nJukeBot (Revision {}) | JDA {} | Lavaplayer {} | SQLite {} | {}-bit JVM | {} {} \n{}\n",
+                banner,
+                version,
+                JDAInfo.VERSION,
+                PlayerLibrary.VERSION,
+                SQLiteJDBCLoader.getVersion(),
+                System.getProperty("sun.arch.data.model"),
+                os,
+                arch,
+                commitUrl
+        );
     }
 
     private static void loadApis() {

@@ -81,3 +81,26 @@ wrapper {
     gradleVersion = '4.10.2'
 }
 
+def getBuildVersion() {
+    def gitVersion = new ByteArrayOutputStream()
+    exec {
+        commandLine("git", "rev-parse", "--short", "HEAD")
+        standardOutput = gitVersion
+    }
+    return gitVersion.toString().trim()
+}
+
+task writeVersion() {
+    def resourcePath = sourceSets.main.resources.srcDirs[0]
+    def resources = file(resourcePath)
+
+    if (!resources.exists()) {
+        resources.mkdirs()
+    }
+
+    file("$resourcePath/version.txt").text = getBuildVersion()
+}
+
+build {
+    dependsOn writeVersion
+}

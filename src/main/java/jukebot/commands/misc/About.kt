@@ -5,6 +5,7 @@ import jukebot.JukeBot
 import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
+import jukebot.utils.Helpers
 import jukebot.utils.addFields
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -29,8 +30,11 @@ class About : Command(ExecutionType.STANDARD) {
             MessageEmbed.Field("Links", links.map { "[${it.key}](${it.value})" }.joinToString(" | "), true)
         )
 
+        val commitHash = Helpers.version
+        val commitUrl = "https://github.com/devoxin/JukeBot/commit/$commitHash"
+
         context.embed {
-            setTitle("JukeBot ${JukeBot.VERSION}")
+            setTitle("JukeBot (Revision $commitHash)", commitUrl)
             setDescription("Developed by **devoxin#0101**")
             addFields(fields)
         }

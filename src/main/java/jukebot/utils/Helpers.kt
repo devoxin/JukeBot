@@ -5,6 +5,7 @@ import jukebot.Database
 import jukebot.JukeBot
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
+import org.apache.commons.io.IOUtils
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Executors
@@ -15,6 +16,10 @@ import kotlin.math.floor
 import kotlin.math.round
 
 object Helpers {
+    val version by lazy {
+        val stream = Helpers::class.java.classLoader.getResourceAsStream("version.txt")
+        IOUtils.toString(stream, Charsets.UTF_8)
+    }
     private val timer: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
     val monitor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }
 
