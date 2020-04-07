@@ -10,26 +10,6 @@ import okhttp3.RequestBody
 import java.util.concurrent.CompletableFuture
 
 class KSoftAPI(private val key: String) {
-    fun getLyrics(title: String, callback: (LyricResult?) -> Unit) {
-        makeRequest("/lyrics/search?q=$title&limit=1&clean_up=true").thenAccept {
-            val results = it.getArray("data")
-
-            if (results.size == 0) {
-                return@thenAccept callback(null)
-            }
-
-            val selected = results.getObject(0)
-            val lyrics = selected.getString("lyrics")
-            val artist = selected.getString("artist")
-            val track = selected.getString("name")
-            val score = selected.getDouble("search_score")
-            callback(LyricResult(lyrics, artist, track, score))
-        }.exceptionally {
-            callback(null)
-            return@exceptionally null
-        }
-    }
-
     fun getMusicRecommendations(vararg tracks: String): CompletableFuture<String> {
         val fut = CompletableFuture<String>()
 
