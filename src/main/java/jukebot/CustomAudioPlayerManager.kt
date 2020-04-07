@@ -17,7 +17,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.*
 
-class CustomAudioPlayerManager(dapm: DefaultAudioPlayerManager) : AudioPlayerManager by dapm {
+class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlayerManager by dapm {
 
     constructor() : this(DefaultAudioPlayerManager())
 

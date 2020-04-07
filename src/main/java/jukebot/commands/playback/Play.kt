@@ -32,7 +32,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
 
     private fun loadWithArgs(ctx: Context, player: AudioHandler) {
         val manager = ctx.guild.audioManager
-        val userQuery = ctx.argString.replace("[<>]".toRegex(), "")
+        val userQuery = ctx.argString.removePrefix("<").removeSuffix(">")
 
         if (userQuery.startsWith("http")) {
             if (userQuery.toLowerCase().contains("soundcloud.com/you/")) {
@@ -42,12 +42,6 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                     manager.closeAudioConnection()
                 }
 
-                return
-            }
-
-            if (!JukeBot.isYoutubeEnabled &&
-                userQuery.toLowerCase().contains("youtube") || userQuery.toLowerCase().contains("youtu.be")) {
-                ctx.embed("YouTube Support", "YouTube support is unavailable.")
                 return
             }
 
@@ -68,11 +62,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                 JukeBot.playerManager.loadIdentifier(userQuery, ctx, player, false)
             }
         } else {
-            JukeBot.playerManager.loadIdentifier(SEARCH_TYPE + userQuery, ctx, player, false)
+            JukeBot.playerManager.loadIdentifier("ytsearch:$userQuery", ctx, player, false)
         }
-    }
-
-    companion object {
-        val SEARCH_TYPE by lazy { if (JukeBot.isYoutubeEnabled) "ytsearch:" else "scsearch:" }
     }
 }

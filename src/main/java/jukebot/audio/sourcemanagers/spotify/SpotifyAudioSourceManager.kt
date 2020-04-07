@@ -3,6 +3,7 @@ package jukebot.audio.sourcemanagers.spotify
 import com.grack.nanojson.JsonParser
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
@@ -24,9 +25,17 @@ import org.slf4j.LoggerFactory
 import java.io.DataInput
 import java.io.DataOutput
 import java.util.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class SpotifyAudioSourceManager(private val clientId: String, private val clientSecret: String) : AudioSourceManager {
+class SpotifyAudioSourceManager(
+    private val clientId: String,
+    private val clientSecret: String,
+    private val youtubeAudioSourceManager: YoutubeAudioSourceManager
+) : AudioSourceManager {
+    private val trackLoaderPool = Executors.newFixedThreadPool(10)
+
     private val httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager()!!
     internal var accessToken: String = ""
         private set
@@ -100,6 +109,28 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
         }
 
         return null
+    }
+
+    internal fun doYoutubeSearch(identifier: String): AudioItem? {
+        val reference = AudioReference(identifier, null)
+        return youtubeAudioSourceManager.loadItem(JukeBot.playerManager.dapm, reference)
+    }
+
+    internal fun queueYoutubeSearch(identifier: String): CompletableFuture<AudioItem?> {
+        val future = CompletableFuture<AudioItem?>()
+
+        trackLoaderPool.submit {
+            val reference = AudioReference(identifier, null)
+
+            try {
+                val result = youtubeAudioSourceManager.loadItem(JukeBot.playerManager.dapm, reference)
+                future.complete(result)
+            } catch (e: Exception) {
+                future.completeExceptionally(e)
+            }
+        }
+
+        return future
     }
 
 

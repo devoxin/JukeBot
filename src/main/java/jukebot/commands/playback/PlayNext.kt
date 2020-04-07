@@ -16,7 +16,7 @@ class PlayNext : Command(ExecutionType.REQUIRE_MUTUAL) {
             return context.embed("Not Playing", "Nothing is currently playing. Use the `play` command to start a song.")
         }
 
-        JukeBot.playerManager.loadIdentifier(Play.SEARCH_TYPE + context.argString, context, player, useSelection = false, playNext = true)
+        JukeBot.playerManager.loadIdentifier("ytsearch:${context.argString}", context, player, useSelection = false, playNext = true)
     }
 
 }

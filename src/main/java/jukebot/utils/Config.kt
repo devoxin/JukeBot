@@ -17,6 +17,7 @@ class Config(file: String) {
     val defaultPrefix = getString("prefix", "$")
     val embedColour: Color = decodeColor(getString("color", "")) ?: Color.decode("#1E90FF")
     val nsfwEnabled = getBoolean("nsfw")
+    val ipv6block = getString("ipv6", "")
 
     fun hasKey(key: String) = getString(key)?.isNotEmpty() ?: false
 

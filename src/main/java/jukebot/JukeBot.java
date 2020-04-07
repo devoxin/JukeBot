@@ -28,9 +28,13 @@ import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
+import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
+import com.sedmelluq.lava.extensions.youtuberotator.planner.NanoIpRoutePlanner;
+import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRoutePlanner;
+import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
+import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
 import jukebot.apis.ksoft.KSoftAPI;
 import jukebot.apis.patreon.PatreonAPI;
-import jukebot.apis.youtube.YouTubeAPI;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.caching.CachingSourceManager;
 import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
@@ -56,9 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -67,19 +69,17 @@ public class JukeBot {
     /* Bot-Related*/
     public static final String VERSION = "6.5.8";
 
-    public static final Long startTime = System.currentTimeMillis();
+    public static final long startTime = System.currentTimeMillis();
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
     public static Config config = new Config("config.properties");
 
-    public static Long selfId = 0L;
-    public static Long botOwnerId = 0L;
+    public static long selfId = 0L;
+    public static long botOwnerId = 0L;
     public static boolean isSelfHosted = false;
-    public static boolean isYoutubeEnabled = false;
 
     /* Operation-Related */
     public static final RequestUtil httpClient = new RequestUtil();
     public static PatreonAPI patreonApi;
-    public static YouTubeAPI youTubeApi;
     public static KSoftAPI kSoftAPI;
 
     public static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
@@ -148,13 +148,6 @@ public class JukeBot {
             String key = Objects.requireNonNull(config.getString("ksoft"));
             kSoftAPI = new KSoftAPI(key);
         }
-
-        if (isYoutubeEnabled && config.hasKey("youtube")) {
-            LOG.debug("Config has youtube key, loading youtube API...");
-            String key = Objects.requireNonNull(config.getString("youtube"));
-            YoutubeAudioSourceManager sm = playerManager.source(YoutubeAudioSourceManager.class);
-            youTubeApi = new YouTubeAPI(key, sm);
-        }
     }
 
     /**
@@ -168,13 +161,17 @@ public class JukeBot {
 
         registerSourceManagers();
 
-        if (isYoutubeEnabled) {
-            YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
-            sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
+        YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
+        sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
+
+        if (!config.getIpv6block().isEmpty()) {
+            List<IpBlock> blocks = Collections.singletonList(new Ipv6Block(config.getIpv6block()));
+            RotatingNanoIpRoutePlanner planner = new RotatingNanoIpRoutePlanner(blocks);
+            new YoutubeIpRotatorSetup(planner).forSource(sourceManager).setup();
         }
 
         //CachingSourceManager cachingSourceManager = playerManager.source(CachingSourceManager.class);
-        //sourceManager.setCacheProvider(cachingSourceManager);
+        ///sourceManager.setCacheProvider(cachingSourceManager);
     }
 
     private static void registerSourceManagers() {
@@ -185,23 +182,22 @@ public class JukeBot {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
         }
 
-        if (isYoutubeEnabled && config.hasKey("spotify_client") && config.hasKey("spotify_secret")) {
+        YoutubeAudioSourceManager ytasm = new YoutubeAudioSourceManager();
+
+        if (config.hasKey("spotify_client") && config.hasKey("spotify_secret")) {
             String client = Objects.requireNonNull(config.getString("spotify_client"));
             String secret = Objects.requireNonNull(config.getString("spotify_secret"));
-            playerManager.registerSourceManager(new SpotifyAudioSourceManager(client, secret));
+            playerManager.registerSourceManager(new SpotifyAudioSourceManager(client, secret, ytasm));
         }
 
-        if (isYoutubeEnabled) {
-            playerManager.registerSourceManager(new YoutubeAudioSourceManager());
-        }
+        playerManager.registerSourceManager(ytasm);
         playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
-        playerManager.registerSourceManager(new GetyarnAudioSourceManager());
         playerManager.registerSourceManager(new BandcampAudioSourceManager());
         playerManager.registerSourceManager(new VimeoAudioSourceManager());
         playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
         playerManager.registerSourceManager(new BeamAudioSourceManager());
+        playerManager.registerSourceManager(new GetyarnAudioSourceManager());
         playerManager.registerSourceManager(new HttpAudioSourceManager());
-        //AudioSourceManagers.registerRemoteSources(playerManager);
     }
 
     private static void setupSelf() {
@@ -210,7 +206,6 @@ public class JukeBot {
         botOwnerId = appInfo.getOwner().getIdLong();
         isSelfHosted = appInfo.getIdLong() != 249303797371895820L
                 && appInfo.getIdLong() != 314145804807962634L;
-        isYoutubeEnabled = isSelfHosted;
 
         if (isSelfHosted || selfId == 314145804807962634L) {
             playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);

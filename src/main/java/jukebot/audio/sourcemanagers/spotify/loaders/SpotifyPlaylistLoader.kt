@@ -1,6 +1,7 @@
 package jukebot.audio.sourcemanagers.spotify.loaders
 
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
 import jukebot.JukeBot
@@ -15,7 +16,7 @@ class SpotifyPlaylistLoader : Loader {
 
     override fun pattern() = PLAYLIST_PATTERN
 
-    override fun load(sourceManager: SpotifyAudioSourceManager, matcher: Matcher): AudioItem {
+    override fun load(sourceManager: SpotifyAudioSourceManager, matcher: Matcher): AudioItem? {
         val playlistId = matcher.group(1)
         val playlistInfo = fetchPlaylistInfo(sourceManager, playlistId)
         val playlistTracks = fetchPlaylistTracks(sourceManager, playlistId)
@@ -59,7 +60,9 @@ class SpotifyPlaylistLoader : Loader {
                 val track = (jTrack as JSONObject).getJSONObject("track")
                 val title = track.getString("name")
                 val artist = track.getJSONArray("artists").getJSONObject(0).getString("name")
-                tasks.add(JukeBot.youTubeApi.search("$title $artist"))
+                val task = sourceManager.queueYoutubeSearch("ytsearch:$title $artist")
+                    .thenApply { ai -> if (ai is AudioPlaylist) ai.tracks.first() else ai as AudioTrack }
+                tasks.add(task)
             }
 
             try {

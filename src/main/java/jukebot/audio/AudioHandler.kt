@@ -77,7 +77,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
         current?.let {
             if (it.sourceManager.sourceName == "youtube") {
-                autoPlay.store(it.info.title)
+                //autoPlay.store(it.info.title)
             }
         }
 
@@ -104,17 +104,17 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             return player.playTrack(nextTrack)
         }
 
-        if (shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
-            autoPlay.getRelatedTrack()
-                .thenAccept(player::playTrack)
-                .exceptionally {
-                    playNext(false)
-                    announce("AutoPlay", "AutoPlay encountered an error.\nWe're sorry for any inconvenience caused!")
-                    JukeBot.LOG.error("AutoPlay Error", it)
-                    return@exceptionally null
-                }
-            return
-        }
+//        if (shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
+//            autoPlay.getRelatedTrack()
+//                .thenAccept(player::playTrack)
+//                .exceptionally {
+//                    playNext(false)
+//                    announce("AutoPlay", "AutoPlay encountered an error.\nWe're sorry for any inconvenience caused!")
+//                    JukeBot.LOG.error("AutoPlay Error", it)
+//                    return@exceptionally null
+//                }
+//            return
+//        }
 
         current = null
         player.stopTrack()
@@ -132,12 +132,12 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         if (audioManager.isConnected || audioManager.isAttemptingToConnect) {
             Helpers.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS)
 
-            if (Database.isPremiumServer(guildId)) {
-                announce("Queue Concluded", "Enable AutoPlay to keep the party going!")
-            } else {
+            //if (Database.isPremiumServer(guildId)) {
+            //    announce("Queue Concluded", "Enable AutoPlay to keep the party going!")
+            //} else {
                 announce("Queue Concluded!",
                     "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
-            }
+            //}
 
             setNick(null)
         }
