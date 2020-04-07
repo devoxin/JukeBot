@@ -176,7 +176,7 @@ public class JukeBot {
     }
 
     private static void registerSourceManagers() {
-        playerManager.registerSourceManager(new CachingSourceManager());
+        //playerManager.registerSourceManager(new CachingSourceManager());
         playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
         if (config.getNsfwEnabled()) {
