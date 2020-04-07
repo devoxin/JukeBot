@@ -20,8 +20,6 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.methods.RequestBuilder
 import org.apache.http.entity.StringEntity
-import org.apache.http.util.EntityUtils
-import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.io.DataInput
 import java.io.DataOutput

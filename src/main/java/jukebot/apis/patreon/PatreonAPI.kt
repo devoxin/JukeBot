@@ -1,10 +1,10 @@
 package jukebot.apis.patreon
 
+import com.grack.nanojson.JsonObject
 import jukebot.JukeBot
 import jukebot.utils.RequestUtil
 import jukebot.utils.json
 import okhttp3.HttpUrl
-import org.json.JSONObject
 import java.net.URI
 import java.net.URLDecoder
 import java.util.concurrent.CompletableFuture
@@ -31,13 +31,13 @@ class PatreonAPI(var accessToken: String) {
             }
 
             val json = it.json() ?: return@queue cb(users.toList())
-            val pledges = json.getJSONArray("data")
+            val pledges = json.getArray("data")
 
-            json.getJSONArray("included").forEachIndexed { index, user ->
-                val obj = user as JSONObject
+            json.getArray("included").forEachIndexed { index, user ->
+                val obj = user as JsonObject
 
                 if (obj.getString("type") == "user") {
-                    val pledge = pledges.getJSONObject(index)
+                    val pledge = pledges.getObject(index)
                     users.add(PatreonUser.fromJsonObject(obj, pledge))
                 }
             }
@@ -50,8 +50,8 @@ class PatreonAPI(var accessToken: String) {
         })
     }
 
-    private fun getNextPage(json: JSONObject): String? {
-        val links = json.getJSONObject("links")
+    private fun getNextPage(json: JsonObject): String? {
+        val links = json.getObject("links")
 
         if (!links.has("next")) {
             return null

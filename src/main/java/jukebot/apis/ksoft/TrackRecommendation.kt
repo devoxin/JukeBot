@@ -1,6 +1,6 @@
 package jukebot.apis.ksoft
 
-import org.json.JSONObject
+import com.grack.nanojson.JsonObject
 
 class TrackRecommendation(
     val id: String,
@@ -11,7 +11,7 @@ class TrackRecommendation(
 ) {
 
     companion object {
-        fun fromJsonObject(jsonObject: JSONObject): TrackRecommendation {
+        fun fromJsonObject(jsonObject: JsonObject): TrackRecommendation {
             val id = jsonObject.getString("id")
             val link = jsonObject.getString("link")
             val title = jsonObject.getString("title")

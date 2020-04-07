@@ -3,7 +3,6 @@ package jukebot.apis
 import jukebot.JukeBot
 import jukebot.utils.json
 import okhttp3.HttpUrl
-import org.apache.http.client.utils.URIBuilder
 import java.util.concurrent.CompletableFuture
 import kotlin.math.min
 
@@ -26,14 +25,14 @@ class LastFM(private val key: String) {
             }
             .thenApply {
                 val tracks = mutableListOf<TrackMatch>()
-                val obj = it.getJSONObject("similartracks").getJSONArray("track")
+                val obj = it.getObject("similartracks").getArray("track")
 
-                if (obj.length() > 0) {
-                    for (i in 0..min(3, obj.length())) {
-                        val tr = obj.getJSONObject(i)
+                if (obj.size > 0) {
+                    for (i in 0..min(3, obj.size)) {
+                        val tr = obj.getObject(i)
 
                         val t = tr.getString("name")
-                        val a = tr.getJSONObject("artist").getString("name")
+                        val a = tr.getObject("artist").getString("name")
                         tracks.add(TrackMatch(a, t))
                     }
                 }

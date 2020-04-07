@@ -1,6 +1,6 @@
 package jukebot.apis.patreon
 
-import org.json.JSONObject
+import com.grack.nanojson.JsonObject
 
 class PatreonUser(
     val firstName: String,
@@ -11,17 +11,17 @@ class PatreonUser(
     val discordId: Long?
 ) {
     companion object {
-        fun fromJsonObject(userObj: JSONObject, pledgeObj: JSONObject): PatreonUser {
-            val userAttr = userObj.getJSONObject("attributes")
-            val pledgeAttr = pledgeObj.getJSONObject("attributes")
+        fun fromJsonObject(userObj: JsonObject, pledgeObj: JsonObject): PatreonUser {
+            val userAttr = userObj.getObject("attributes")
+            val pledgeAttr = pledgeObj.getObject("attributes")
 
-            val connections = userAttr.getJSONObject("social_connections")
-            val discordId = connections.optJSONObject("discord")
+            val connections = userAttr.getObject("social_connections")
+            val discordId = connections.getObject("discord")
                 ?.getLong("user_id")
 
             return PatreonUser(
                 userAttr.getString("first_name"),
-                userAttr.optString("last_name", ""),
+                userAttr.getString("last_name", ""),
                 userAttr.getString("email"),
                 pledgeAttr.getInt("amount_cents"),
                 !pledgeAttr.isNull("declined_since"),

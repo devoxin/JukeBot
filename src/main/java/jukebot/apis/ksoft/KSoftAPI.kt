@@ -1,23 +1,24 @@
 package jukebot.apis.ksoft
 
+import com.grack.nanojson.JsonObject
+import com.grack.nanojson.JsonWriter
 import jukebot.JukeBot
 import jukebot.utils.json
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
-import org.json.JSONObject
 import java.util.concurrent.CompletableFuture
 
 class KSoftAPI(private val key: String) {
     fun getLyrics(title: String, callback: (LyricResult?) -> Unit) {
         makeRequest("/lyrics/search?q=$title&limit=1&clean_up=true").thenAccept {
-            val results = it.getJSONArray("data")
+            val results = it.getArray("data")
 
-            if (results.length() == 0) {
+            if (results.size == 0) {
                 return@thenAccept callback(null)
             }
 
-            val selected = results.getJSONObject(0)
+            val selected = results.getObject(0)
             val lyrics = selected.getString("lyrics")
             val artist = selected.getString("artist")
             val track = selected.getString("name")
@@ -32,30 +33,33 @@ class KSoftAPI(private val key: String) {
     fun getMusicRecommendations(vararg tracks: String): CompletableFuture<String> {
         val fut = CompletableFuture<String>()
 
-        val obj = JSONObject()
-            .put("provider", "youtube_titles")
-            .put("tracks", tracks)
-            .put("type", "youtube_id")
-            .put("limit", 1)
+        val obj = JsonWriter.string()
+            .`object`()
+            .value("provider", "youtube_titles")
+            .value("type", "youtube_id")
+            .value("limit", 1)
+            .value("tracks", tracks)
 
         if (JukeBot.config.hasKey("youtube")) {
-            obj.put("youtube_token", JukeBot.config.getString("youtube"))
+            obj.value("youtube_token", JukeBot.config.getString("youtube"))
         }
 
-        makeRequest("/music/recommendations") {
-            post(RequestBody.create(applicationJson, obj.toString()))
-        }.thenAccept {
-            val results = it.getJSONArray("tracks")
+        val jsonString = obj.end().done()
 
-            if (results.length() == 0) {
+        makeRequest("/music/recommendations") {
+            post(RequestBody.create(applicationJson, jsonString))
+        }.thenAccept {
+            val results = it.getArray("tracks")
+
+            if (results.size == 0) {
                 fut.completeExceptionally(IllegalStateException("No recommendations were returned by KSoft API"))
                 return@thenAccept
             }
 
-            val first = results.getJSONObject(0)
-            val youtube = first.get("youtube")
+            val first = results.getObject(0)
+            val youtube = first["youtube"]
 
-            if (youtube is JSONObject) {
+            if (youtube is JsonObject) {
                 fut.complete(youtube.getString("id"))
             } else {
                 fut.complete(youtube as String)
@@ -68,7 +72,7 @@ class KSoftAPI(private val key: String) {
         return fut
     }
 
-    fun makeRequest(endpoint: String, requestOptions: (Request.Builder.() -> Unit)? = null): CompletableFuture<JSONObject> {
+    fun makeRequest(endpoint: String, requestOptions: (Request.Builder.() -> Unit)? = null): CompletableFuture<JsonObject> {
         return JukeBot.httpClient
             .request {
                 url(BASE_URL + endpoint)

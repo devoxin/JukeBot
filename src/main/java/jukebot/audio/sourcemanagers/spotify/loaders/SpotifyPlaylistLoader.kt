@@ -1,14 +1,14 @@
 package jukebot.audio.sourcemanagers.spotify.loaders
 
+import com.grack.nanojson.JsonObject
+import com.grack.nanojson.JsonParser
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
-import jukebot.JukeBot
 import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager
 import org.apache.http.HttpStatus
 import org.apache.http.util.EntityUtils
-import org.json.JSONObject
 import java.util.concurrent.CompletableFuture
 import java.util.regex.Matcher
 
@@ -20,12 +20,12 @@ class SpotifyPlaylistLoader : Loader {
         val playlistId = matcher.group(1)
         val playlistInfo = fetchPlaylistInfo(sourceManager, playlistId)
         val playlistTracks = fetchPlaylistTracks(sourceManager, playlistId)
-        val playlistName = playlistInfo.optString("name")
+        val playlistName = playlistInfo.getString("name")
 
         return BasicAudioPlaylist(playlistName, playlistTracks, null, false)
     }
 
-    private fun fetchPlaylistInfo(sourceManager: SpotifyAudioSourceManager, playlistId: String): JSONObject {
+    private fun fetchPlaylistInfo(sourceManager: SpotifyAudioSourceManager, playlistId: String): JsonObject {
         return sourceManager.request("https://api.spotify.com/v1/playlists/$playlistId") {
             addHeader("Authorization", "Bearer ${sourceManager.accessToken}")
         }.use {
@@ -33,8 +33,7 @@ class SpotifyPlaylistLoader : Loader {
                 "Received code ${it.statusLine.statusCode} from Spotify while fetching playlist information"
             }
 
-            val content = EntityUtils.toString(it.entity)
-            JSONObject(content)
+            JsonParser.`object`().from(it.entity.content)
         }
     }
 
@@ -47,19 +46,19 @@ class SpotifyPlaylistLoader : Loader {
             }
 
             val content = EntityUtils.toString(it.entity)
-            val json = JSONObject(content)
+            val json = JsonParser.`object`().from(content)
 
             if (!json.has("items")) {
                 return emptyList()
             }
 
-            val jsonTracks = json.getJSONArray("items")
+            val jsonTracks = json.getArray("items")
             val tasks = mutableListOf<CompletableFuture<AudioTrack>>()
 
             for (jTrack in jsonTracks) {
-                val track = (jTrack as JSONObject).getJSONObject("track")
+                val track = (jTrack as JsonObject).getObject("track")
                 val title = track.getString("name")
-                val artist = track.getJSONArray("artists").getJSONObject(0).getString("name")
+                val artist = track.getArray("artists").getObject(0).getString("name")
                 val task = sourceManager.queueYoutubeSearch("ytsearch:$title $artist")
                     .thenApply { ai -> if (ai is AudioPlaylist) ai.tracks.first() else ai as AudioTrack }
                 tasks.add(task)
@@ -70,8 +69,7 @@ class SpotifyPlaylistLoader : Loader {
             } catch (ignored: Exception) {
             }
 
-            tasks.filterNot { t -> t.isCompletedExceptionally }
-                .map { t -> t.get() }
+            tasks.filterNot { t -> t.isCompletedExceptionally }.map { t -> t.get() }
         }
     }
 

@@ -1,15 +1,16 @@
 package jukebot.utils
 
+import com.grack.nanojson.JsonObject
+import com.grack.nanojson.JsonParser
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import okhttp3.Response
-import org.json.JSONObject
 import java.awt.Color
 
-fun Response.json(): JSONObject? {
+fun Response.json(): JsonObject? {
     body().use {
-        return if (isSuccessful && it != null) JSONObject(it.string()) else null
+        return if (isSuccessful && it != null) JsonParser.`object`().from(it.string()) else null
     }
 }
 
