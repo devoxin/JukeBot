@@ -121,24 +121,24 @@ class CachingSourceManager : AudioSourceManager/*, CacheProvider*/ {
         private val TRACK_TTL = TimeUnit.HOURS.toMillis(12)
 
         fun cache(identifier: String, item: AudioItem) {
-//            if (jedisPool.isClosed) {
-//                return
-//            }
-//
-//            if (item is AudioTrack) {
-//                jedisPool.resource.use {
-//                    val encoded = JukeBot.playerManager.toBase64String(item)
-//                    val setParams = SetParams.setParams().nx().px(TRACK_TTL)
-//                    it.set(identifier, encoded, setParams)
-//                }
-//            } else if (item is AudioPlaylist) {
-//                jedisPool.resource.use {
-//                    val ttl = if (item.isSearchResult) SEARCH_TTL else PLAYLIST_TTL
-//                    val encoded = JukeBot.playerManager.toJsonString(item)
-//                    val setParams = SetParams.setParams().nx().px(ttl)
-//                    it.set(identifier, encoded, setParams)
-//                }
-//            }
+            if (jedisPool.isClosed) {
+                return
+            }
+
+            if (item is AudioTrack) {
+                jedisPool.resource.use {
+                    val encoded = JukeBot.playerManager.toBase64String(item)
+                    val setParams = SetParams.setParams().nx().px(TRACK_TTL)
+                    it.set(identifier, encoded, setParams)
+                }
+            } else if (item is AudioPlaylist) {
+                jedisPool.resource.use {
+                    val ttl = if (item.isSearchResult) SEARCH_TTL else PLAYLIST_TTL
+                    val encoded = JukeBot.playerManager.toJsonString(item)
+                    val setParams = SetParams.setParams().nx().px(ttl)
+                    it.set(identifier, encoded, setParams)
+                }
+            }
         }
     }
 

@@ -20,7 +20,7 @@ class Move : Command(ExecutionType.STANDARD) {
 
         val target = args[0].toIntOrNull()?.takeIf { it > 0 && it <= player.queue.size }
             ?: return context.embed("Move Tracks", "Invalid target track. Example: `move 3 1`")
-        val dest = args[0].toIntOrNull()?.takeIf { it > 0 && it <= player.queue.size && it != target }
+        val dest = args[1].toIntOrNull()?.takeIf { it > 0 && it <= player.queue.size && it != target }
             ?: return context.embed("Move Tracks", "Invalid destination position. Example: `move 3 1`")
 
         val selectedTrack = player.queue[target - 1]

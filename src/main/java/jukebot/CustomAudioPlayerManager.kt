@@ -12,7 +12,6 @@ import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
 import jukebot.audio.AudioHandler
 import jukebot.audio.SongResultHandler
 import jukebot.framework.Context
-import org.json.JSONObject
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.*

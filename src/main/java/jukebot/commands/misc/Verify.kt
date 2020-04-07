@@ -170,11 +170,4 @@ class Verify : Command(ExecutionType.STANDARD) {
         ctx.embed("Perks | Server Management", "Server unregistered successfully.")
     }
 
-    /**
-     * TODO LIST:
-     *  - Automatic removal of servers if user deletes/lowers pledge
-     *  - Integrate with existing systems
-     *  - Release Patreon tier
-     */
-
 }
