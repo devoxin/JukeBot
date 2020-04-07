@@ -67,7 +67,7 @@ import java.util.concurrent.TimeUnit;
 public class JukeBot {
 
     /* Bot-Related*/
-    public static final String VERSION = "6.5.8";
+    public static final String VERSION = "6.6.0";
 
     public static final long startTime = System.currentTimeMillis();
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
