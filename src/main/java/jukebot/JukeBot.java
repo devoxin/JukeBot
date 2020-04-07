@@ -170,13 +170,10 @@ public class JukeBot {
             RotatingNanoIpRoutePlanner planner = new RotatingNanoIpRoutePlanner(blocks);
             new YoutubeIpRotatorSetup(planner).forSource(sourceManager).setup();
         }
-
-        //CachingSourceManager cachingSourceManager = playerManager.source(CachingSourceManager.class);
-        ///sourceManager.setCacheProvider(cachingSourceManager);
     }
 
     private static void registerSourceManagers() {
-        //playerManager.registerSourceManager(new CachingSourceManager());
+        playerManager.registerSourceManager(new CachingSourceManager());
         playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
         if (config.getNsfwEnabled()) {

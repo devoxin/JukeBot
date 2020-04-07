@@ -1,6 +1,5 @@
 package jukebot.audio.sourcemanagers.caching
 
-//import com.sedmelluq.discord.lavaplayer.source.youtube.CacheProvider
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.track.*
@@ -13,7 +12,7 @@ import java.io.DataInput
 import java.io.DataOutput
 import java.util.concurrent.TimeUnit
 
-class CachingSourceManager : AudioSourceManager/*, CacheProvider*/ {
+class CachingSourceManager : AudioSourceManager {
 
     init {
         try {
@@ -40,68 +39,27 @@ class CachingSourceManager : AudioSourceManager/*, CacheProvider*/ {
     override fun isTrackEncodable(track: AudioTrack) = false
 
     override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
-        return null
-//        if (jedisPool.isClosed) {
-//            return null
-//        }
-//
-//        totalHits++
-//
-//        if (reference.identifier.startsWith("s!")) {
-//            if (reference.identifier.split("!")[2].toInt() < 2) {
-//                return null
-//            }
-//        }
-//
-//        val identifier = if (reference.identifier.startsWith("s!")) {
-//            reference.identifier.split("!")[1]
-//        } else {
-//            reference.identifier
-//        }
-//
-//        jedisPool.resource.use {
-//            val encoded = it.get(identifier)
-//                ?: return null
-//
-//            successfulHits++
-//
-//            if (encoded.startsWith('{')) {
-//                return JukeBot.playerManager.toPlaylist(encoded)
-//            }
-//
-//            return JukeBot.playerManager.toAudioTrack(encoded)
-//        }
-    }
+        if (jedisPool.isClosed) {
+            return null
+        }
 
-//    override fun cacheVideoFormat(identifier: String, format: YoutubeAudioTrack.FormatWithUrl, ttl: Long) {
-//    }
-//
-//    override fun removeVideoFormat(identifier: String) {
-//    }
-//
-//    override fun getVideoFormat(identifier: String): YoutubeAudioTrack.FormatWithUrl? {
-//        return null
-//    }
-//
-//    override fun cacheUnavailableVideo(identifier: String, unavailableReason: String) {
-//        if (jedisPool.isClosed) {
-//            return
-//        }
-//
-//        jedisPool.resource.use {
-//            it.set(identifier, unavailableReason)
-//        }
-//    }
-//
-//    override fun checkUnavailable(identifier: String): String? {
-//        if (jedisPool.isClosed) {
-//            return null
-//        }
-//
-//        return jedisPool.resource.use {
-//            it.get(identifier)
-//        }
-//    }
+        totalHits++
+
+        val identifier = reference.identifier
+
+        jedisPool.resource.use {
+            val encoded = it.get(identifier)
+                ?: return null
+
+            successfulHits++
+
+            if (encoded.startsWith('{')) {
+                return JukeBot.playerManager.toPlaylist(encoded)
+            }
+
+            return JukeBot.playerManager.toAudioTrack(encoded)
+        }
+    }
 
     override fun shutdown() {
         jedisPool.close()

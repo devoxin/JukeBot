@@ -43,6 +43,7 @@ class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlaye
             .value("search", playlist.isSearchResult)
             .value("selected", selectedIndex)
             .array("tracks", playlist.tracks.map(::toBase64String))
+            .end()
             .done()
     }
 
