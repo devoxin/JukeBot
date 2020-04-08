@@ -87,7 +87,10 @@ class Playlists : Command(ExecutionType.STANDARD) {
                 val imported = it.tracks.take(CustomPlaylist.TRACK_LIMIT)
                 ctx.embed("Import Playlist", "Importing **${imported.size}** tracks from **${it.name}**...")
 
-                val playlist = Database.createPlaylist(ctx.author.idLong, title)
+                Database.createPlaylist(ctx.author.idLong, title)
+                val playlist = Database.getPlaylist(ctx.author.idLong, title)
+                    ?: return@Consumer ctx.embed("Import Playlist", "An unknown error occurred while creating the playlist.")
+
                 playlist.tracks.addAll(imported)
                 playlist.save()
 
