@@ -1,6 +1,8 @@
 package jukebot.commands.misc
 
+import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler
 import jukebot.Database
+import jukebot.JukeBot
 import jukebot.entities.CustomPlaylist
 import jukebot.framework.Command
 import jukebot.framework.CommandProperties
@@ -12,6 +14,7 @@ import jukebot.utils.separate
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
+import java.util.function.Consumer
 import kotlin.math.ceil
 
 @CommandProperties(description = "Manage personal playlists stored within the bot.", aliases = ["pl", "playlist"])
@@ -44,21 +47,9 @@ class Playlists : Command(ExecutionType.STANDARD) {
     @SubCommand(trigger = "create", description = "Create a new custom playlist.")
     fun createPlaylist(ctx: Context, args: List<String>) {
         val allPlaylists = Database.getPlaylists(ctx.author.idLong)
-        val donorTier = ctx.donorTier
 
-        when {
-            donorTier < 1 && allPlaylists.size >= 5 -> {
-                ctx.embed(
-                    "Custom Playlists",
-                    "You've reached the maximum amount of custom playlists!\n" +
-                        "[Consider becoming a Patron](https://patreon.com/Devoxin) to get more!"
-                )
-                return
-            }
-            allPlaylists.size >= 50 && donorTier < 2 || allPlaylists.size >= 100 -> {
-                ctx.embed("Custom Playlists", "You've reached the maximum amount of playlists!")
-                return
-            }
+        if (!checkPlaylistCount(ctx, allPlaylists.size)) {
+            return
         }
 
         if (args.isEmpty()) {
@@ -70,19 +61,43 @@ class Playlists : Command(ExecutionType.STANDARD) {
                 createPlaylistWithTitle(ctx, title)
             }
         } else {
-            createPlaylistWithTitle(ctx, args.first())
+            createPlaylistWithTitle(ctx, args[0])
         }
     }
 
-    private fun createPlaylistWithTitle(ctx: Context, title: String) {
-        if (title.length > 32) {
-            return ctx.embed("Custom Playlists", "The playlist name cannot be longer than 32 characters!")
+    @SubCommand(trigger = "import", description = "Import a playlist from YouTube/SoundCloud/etc.")
+    fun importPlaylist(ctx: Context, args: List<String>) {
+        val allPlaylists = Database.getPlaylists(ctx.author.idLong)
+
+        if (!checkPlaylistCount(ctx, allPlaylists.size)) {
+            return
         }
 
-        Database.createPlaylist(ctx.author.idLong, title)
+        if (args.size < 2) {
+            return ctx.embed("Custom Playlists", "You need to specify a URL, and title.\n" +
+                "The URL should point to the playlist you want to imported.\n" +
+                "Title can be anything, however it must be no more than one word.\n" +
+                "`${ctx.prefix}playlists import <url> <title>`")
+        }
 
-        ctx.embed("Custom Playlists", ":fire: Any time you hear a song you like, you can add it to your new playlist " +
-            "by running `${ctx.prefix}save $title`")
+        val title = args[1]
+        val handler = FunctionalResultHandler(
+            Consumer { ctx.embed("Import Playlist", "You need to provide a playlist URL.\nYou provided a track URL.") },
+            Consumer {
+                val imported = it.tracks.take(CustomPlaylist.TRACK_LIMIT)
+                ctx.embed("Import Playlist", "Importing **${imported.size}** tracks from **${it.name}**...")
+
+                val playlist = Database.createPlaylist(ctx.author.idLong, title)
+                playlist.tracks.addAll(imported)
+                playlist.save()
+
+                ctx.embed("Import Playliss", "Playlist imported as **$title** successfully.")
+            },
+            Runnable { ctx.embed("Import Playlist", "No results found!") },
+            Consumer { ctx.embed("Import Playlist", "An error occurred while loading the URL.") }
+        )
+
+        JukeBot.playerManager.loadItem(args[0], handler)
     }
 
     @SubCommand(trigger = "view", description = "Lists the tracks in a playlist.")
@@ -108,11 +123,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "manage", description = "Make modifications to a playlist.")
     fun manage(ctx: Context, args: List<String>) {
-        val playlistName = args.joinToString(" ")
-
-        if (playlistName.isEmpty()) {
-            return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to load.")
-        }
+        val playlistName = args.joinToString(" ").takeIf { it.isNotEmpty() }
+            ?: return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to load.")
 
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
             ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
@@ -144,9 +156,9 @@ class Playlists : Command(ExecutionType.STANDARD) {
                     manageMenu(ctx, dialog, playlist, page)
                 }
                 "remove" -> {
-                    val index = args.firstOrNull()?.toIntOrNull() ?: 0
+                    val index = args.firstOrNull()?.toIntOrNull()?.takeIf { it in 1..playlist.tracks.size }
 
-                    if (index < 1 || index > playlist.tracks.size) {
+                    if (index == null) {
                         ctx.embed("Managing Playlist - ${playlist.title}", "Index needs be higher than 0, and equal to or less than ${playlist.tracks.size}.")
                         return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
@@ -155,10 +167,10 @@ class Playlists : Command(ExecutionType.STANDARD) {
                     dialog.editMessage(buildEmbed(ctx, playlist, page)).queue { manageMenu(ctx, it, playlist, page) }
                 }
                 "page" -> {
-                    val index = args.firstOrNull()?.toIntOrNull() ?: 0
                     val maxPages = ceil(playlist.tracks.size.toDouble() / 10).toInt()
+                    val index = args.firstOrNull()?.toIntOrNull()?.takeIf { it in 1..maxPages }
 
-                    if (index < 1 || index > maxPages) {
+                    if (index == null) {
                         ctx.embed("Managing Playlist - ${playlist.title}", "Page needs be higher than 0, and equal to or less than $maxPages.")
                         return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
@@ -171,10 +183,10 @@ class Playlists : Command(ExecutionType.STANDARD) {
                         return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
-                    val i1 = args[0].toIntOrNull() ?: 0
-                    val i2 = args[1].toIntOrNull() ?: 0
+                    val i1 = args[0].toIntOrNull()?.takeIf { it in 1..playlist.tracks.size }
+                    val i2 = args[1].toIntOrNull()?.takeIf { it in 1..playlist.tracks.size && it != i1 }
 
-                    if (i1 < 1 || i2 < 1 || i1 == i2 || i1 > playlist.tracks.size || i2 > playlist.tracks.size) {
+                    if (i1 == null || i2 == null) {
                         ctx.embed("Managing Playlist - ${playlist.title}", "You need to specify a valid target track, and a valid target position.")
                         return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
@@ -195,11 +207,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "delete", description = "Deletes a custom playlist.")
     fun delete(ctx: Context, args: List<String>) {
-        val playlistName = args.joinToString(" ")
-
-        if (playlistName.isEmpty()) {
-            return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to delete.")
-        }
+        val playlistName = args.joinToString(" ").takeIf { it.isNotEmpty() }
+            ?: return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to delete.")
 
         Database.getPlaylist(ctx.author.idLong, playlistName)
             ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
@@ -210,11 +219,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "load", description = "Loads a playlist into the queue.")
     fun load(ctx: Context, args: List<String>) {
-        val playlistName = args.joinToString(" ")
-
-        if (playlistName.isEmpty()) {
-            return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to load.")
-        }
+        val playlistName = args.joinToString(" ").takeIf { it.isNotEmpty() }
+            ?: return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to load.")
 
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
             ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
@@ -236,6 +242,17 @@ class Playlists : Command(ExecutionType.STANDARD) {
         ctx.embed("Custom Playlists", "Loaded `${playlist.tracks.size}` tracks from playlist `${playlist.title}`")
     }
 
+    private fun createPlaylistWithTitle(ctx: Context, title: String) {
+        if (title.length > 32) {
+            return ctx.embed("Custom Playlists", "The playlist name cannot be longer than 32 characters!")
+        }
+
+        Database.createPlaylist(ctx.author.idLong, title)
+
+        ctx.embed("Custom Playlists", ":fire: Any time you hear a song you like, you can add it to your new playlist " +
+            "by running `${ctx.prefix}save $title`")
+    }
+
     private fun buildEmbed(ctx: Context, playlist: CustomPlaylist, selectedPage: Int = 1): MessageEmbed {
         val page = Page.paginate(playlist.tracks, selectedPage)
 
@@ -247,6 +264,32 @@ class Playlists : Command(ExecutionType.STANDARD) {
             .build()
     }
 
-    // proper loading system
+    private fun checkPlaylistCount(ctx: Context, count: Int): Boolean {
+        if (JukeBot.isSelfHosted || ctx.author.idLong == JukeBot.botOwnerId) {
+            return true
+        }
+
+        val donorTier = Database.getTier(ctx.author.idLong)
+        val cap = when {
+            donorTier < 1 -> 5
+            donorTier < 2 -> 50
+            else -> 100
+        }
+
+        if (count < cap) {
+            return true
+        }
+
+        val response = buildString {
+            appendln("You've reached the maximum amount of custom playlists.")
+
+            if (count < 100) { // Hit 5/50 cap
+                append("[Upgrade your tier](https://patreon.com/devoxin) to get more slots!")
+            }
+        }
+
+        ctx.embed("Custom Playlists", response)
+        return false
+    }
 
 }

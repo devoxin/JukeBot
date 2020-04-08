@@ -84,16 +84,20 @@ public class Database {
         }
     }
 
-    public static boolean createPlaylist(final long creator, final String title) {
+    public static CustomPlaylist createPlaylist(final long creator, final String title) {
         try (Connection connection = getConnection()) {
             PreparedStatement update = connection.prepareStatement("INSERT INTO customplaylists VALUES (?, ?, ?)");
             update.setString(1, title);
             update.setLong(2, creator);
             update.setString(3, "");
 
-            return update.executeUpdate() == 1;
+            if (update.executeUpdate() == 1) {
+                return new CustomPlaylist(title, creator, "");
+            } else {
+                throw new IllegalStateException("Failed to create custom playlist!");
+            }
         } catch (SQLException e) {
-            return false;
+            throw new IllegalStateException("An error occurred while creating the custom playlist!", e);
         }
     }
 
