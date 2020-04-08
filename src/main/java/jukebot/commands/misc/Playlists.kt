@@ -80,6 +80,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
                 "`${ctx.prefix}playlists import <url> <title>`")
         }
 
+        val url = args[0].removePrefix("<").removeSuffix(">")
         val title = args[1]
         val handler = FunctionalResultHandler(
             Consumer { ctx.embed("Import Playlist", "You need to provide a playlist URL.\nYou provided a track URL.") },
@@ -94,13 +95,13 @@ class Playlists : Command(ExecutionType.STANDARD) {
                 playlist.tracks.addAll(imported)
                 playlist.save()
 
-                ctx.embed("Import Playliss", "Playlist imported as **$title** successfully.")
+                ctx.embed("Import Playlist", "Playlist imported as **$title** successfully.")
             },
             Runnable { ctx.embed("Import Playlist", "No results found!") },
             Consumer { ctx.embed("Import Playlist", "An error occurred while loading the URL.") }
         )
 
-        JukeBot.playerManager.loadItem(args[0], handler)
+        JukeBot.playerManager.loadItem(url, handler)
     }
 
     @SubCommand(trigger = "view", description = "Lists the tracks in a playlist.")
