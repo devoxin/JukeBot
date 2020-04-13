@@ -45,15 +45,18 @@ import jukebot.listeners.CommandHandler;
 import jukebot.listeners.EventHandler;
 import jukebot.utils.Config;
 import jukebot.utils.Helpers;
+import jukebot.utils.IntentHelper;
 import jukebot.utils.RequestUtil;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,17 +97,15 @@ public class JukeBot {
         RestAction.setDefaultFailure((e) -> {
         });
 
-        DefaultShardManagerBuilder shardManagerBuilder = new DefaultShardManagerBuilder()
-                .setToken(config.getToken())
+        String token = config.getToken();
+        EnumSet<GatewayIntent> enabledIntents = IntentHelper.INSTANCE.getEnabledIntents();
+
+        DefaultShardManagerBuilder shardManagerBuilder = DefaultShardManagerBuilder.create(token, enabledIntents)
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), new EventHandler(), waiter)
-                .setDisabledCacheFlags(EnumSet.of(
-                        CacheFlag.EMOTE,
-                        CacheFlag.ACTIVITY,
-                        CacheFlag.CLIENT_STATUS
-                ))
-                .setGuildSubscriptionsEnabled(false)
-                .setActivity(Activity.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"));
+                .setMemberCachePolicy(MemberCachePolicy.VOICE)
+                .disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
+                .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"));
 
         final String os = System.getProperty("os.name").toLowerCase();
         final String arch = System.getProperty("os.arch");
@@ -157,7 +158,6 @@ public class JukeBot {
     /**
      * Audio System
      */
-
     private static void setupAudioSystem() {
         playerManager.getConfiguration().setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
         playerManager.setPlayerCleanupThreshold(30000);
