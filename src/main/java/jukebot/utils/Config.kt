@@ -18,7 +18,7 @@ class Config(filePath: String) {
     val defaultPrefix = get("prefix", "$")
     val embedColour = opt("color")?.toColorOrNull() ?: Color.decode("#1E90FF")
     val nsfwEnabled = opt("nsfw")?.toBoolean() ?: false
-    val ipv6block = opt("ipv6")
+    val ipv6Block = opt("ipv6")
 
 
     companion object {
