@@ -65,13 +65,14 @@ import org.sqlite.SQLiteJDBCLoader;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.nio.file.*; 
 
 public class JukeBot {
 
     /* Bot-Related*/
     public static final long startTime = System.currentTimeMillis();
     public static Logger LOG = LoggerFactory.getLogger("JukeBot");
-    public static Config config = new Config("config.properties");
+    public static Config config;
 
     public static long selfId = 0L;
     public static long botOwnerId = 0L;
@@ -88,6 +89,14 @@ public class JukeBot {
     public static ShardManager shardManager;
 
     public static void main(final String[] args) throws Exception {
+        String configPath = args[0];
+        if(configPath != ""){
+            String absouleConfigPath = FileSystems.getDefault().getPath(configPath).normalize().toAbsolutePath().toString();
+            config = new Config(args[0]);
+        }else{
+            config = new Config("config.properties");
+        }
+       
         Thread.currentThread().setName("JukeBot-Main");
         printBanner();
 
