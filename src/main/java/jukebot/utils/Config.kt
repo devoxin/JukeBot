@@ -28,7 +28,7 @@ class Config(filePath: String) {
          *        The complete path to the file, including filename.
          */
         fun load(): Config {
-            val configPath = System.getProperty("jukebot.config")
+            val configPath = System.getenv("jukebot.config")
                 ?: "config.properties"
 
             return Config(configPath)
