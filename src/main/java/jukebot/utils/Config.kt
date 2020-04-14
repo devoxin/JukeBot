@@ -4,26 +4,36 @@ import java.awt.Color
 import java.io.FileReader
 import java.util.*
 
-class Config(file: String) {
-    private val _conf = Properties()
+class Config(filePath: String) {
+    private val conf = FileReader(filePath).use { fr -> Properties().apply { load(fr) } }
 
-    init {
-        FileReader(file).use {
-            _conf.load(it)
+    operator fun contains(key: String) = conf.containsKey(key) && conf.getProperty(key).isNotEmpty()
+    operator fun get(key: String, default: String? = null): String = conf.getProperty(key)
+        ?: default
+        ?: throw IllegalArgumentException("$key is not present in config!")
+
+    fun opt(key: String, default: String? = null): String? = conf.getProperty(key, default)
+
+    val token = get("token")
+    val defaultPrefix = get("prefix", "$")
+    val embedColour = opt("color")?.toColorOrNull() ?: Color.decode("#1E90FF")
+    val nsfwEnabled = opt("nsfw")?.toBoolean() ?: false
+    val ipv6block = opt("ipv6")
+
+
+    companion object {
+        /**
+         * Loads a .properties file using the given path.
+         * @param filePath
+         *        The complete path to the file, including filename.
+         */
+        fun load(): Config {
+            val configPath = System.getProperty("jukebot.config")
+                ?: "config.properties"
+
+            return Config(configPath)
+            // TODO: Perhaps allow loading config from an env, and additionally, a program flag (--config).
+            // Also consider switching to a more flexible config like hocon.
         }
     }
-
-    val token = getString("token", "")
-    val defaultPrefix = getString("prefix", "$")
-    val embedColour: Color = decodeColor(getString("color", "")) ?: Color.decode("#1E90FF")
-    val nsfwEnabled = getBoolean("nsfw")
-    val ipv6block = getString("ipv6", "")
-
-    fun hasKey(key: String) = getString(key)?.isNotEmpty() ?: false
-
-    fun getString(key: String): String? = _conf.getProperty(key, null)
-
-    fun getString(key: String, default: String): String = _conf.getProperty(key, default)
-
-    fun getBoolean(key: String): Boolean = getString(key)?.toBoolean() ?: false
 }

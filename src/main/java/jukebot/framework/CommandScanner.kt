@@ -7,7 +7,7 @@ class CommandScanner(private val pkg: String) {
 
     fun scan(): Map<String, Command> {
         val classes = ClassPath.from(this::class.java.classLoader).getTopLevelClassesRecursive(pkg)
-        JukeBot.LOG.debug("Discovered ${classes.size} commands")
+        JukeBot.log.debug("Discovered ${classes.size} commands")
 
         return classes
             .asSequence()
@@ -20,7 +20,7 @@ class CommandScanner(private val pkg: String) {
 
     private fun loadSubCommands(cmd: Command): Command {
         val methods = cmd::class.java.methods.filter { it.isAnnotationPresent(SubCommand::class.java) }
-        JukeBot.LOG.debug("Discovered ${methods.size} subcommands for command ${cmd.name}")
+        JukeBot.log.debug("Discovered ${methods.size} subcommands for command ${cmd.name}")
 
         for (meth in methods) {
             val annotation = meth.getAnnotation(SubCommand::class.java)

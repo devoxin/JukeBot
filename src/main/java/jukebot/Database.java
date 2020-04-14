@@ -3,6 +3,8 @@ package jukebot;
 import com.zaxxer.hikari.HikariDataSource;
 import jukebot.entities.CustomPlaylist;
 import jukebot.entities.PremiumGuild;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.sql.*;
@@ -11,9 +13,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Database {
+    private static Logger log = LoggerFactory.getLogger(Database.class);
 
-    public static int calls = 0;
     private final static HikariDataSource pool = new HikariDataSource();
+    public static int calls = 0;
 
     private static Connection getConnection() throws SQLException {
         if (!pool.isRunning()) {
@@ -43,7 +46,7 @@ public class Database {
             statement.addBatch("CREATE TABLE IF NOT EXISTS customplaylists (title TEXT NOT NULL, creator INTEGER, tracks TEXT)");
             statement.executeBatch();
         } catch (SQLException e) {
-            JukeBot.LOG.error("There was an error setting up the SQL database!", e);
+            log.error("There was an error setting up the SQL database!", e);
         }
     }
 
@@ -61,7 +64,7 @@ public class Database {
 
             return playlists;
         } catch (SQLException e) {
-            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            log.error("An error occurred while trying to retrieve from the database", e);
             return null;
         }
     }
@@ -79,7 +82,7 @@ public class Database {
                     ? new CustomPlaylist(results.getString("title"), creator, results.getString("tracks"))
                     : null;
         } catch (SQLException e) {
-            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            log.error("An error occurred while trying to retrieve from the database", e);
             return null;
         }
     }
@@ -232,7 +235,7 @@ public class Database {
 
             return statement.executeUpdate() == 1;
         } catch (SQLException unused) {
-            JukeBot.LOG.error("Error updating skip thres", unused);
+            log.error("Error updating skip threshold", unused);
             return false;
         }
     }
@@ -307,7 +310,7 @@ public class Database {
 
             return statement.executeUpdate() == 1;
         } catch (SQLException unused) {
-            JukeBot.LOG.error("Error updating colour", unused);
+            log.error("Error updating colour", unused);
             return false;
         }
     }
@@ -319,7 +322,7 @@ public class Database {
             ResultSet results = statement.executeQuery();
             return results.next() ? results.getInt("rgb") : JukeBot.config.getEmbedColour().getRGB();
         } catch (SQLException e) {
-            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            log.error("An error occurred while trying to retrieve from the database", e);
             return JukeBot.config.getEmbedColour().getRGB();
         }
     }
@@ -335,7 +338,7 @@ public class Database {
             ResultSet results = statement.executeQuery();
             return results.next();
         } catch (SQLException e) {
-            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            log.error("An error occurred while trying to retrieve from the database", e);
             return false;
         }
     }
@@ -427,7 +430,7 @@ public class Database {
             ResultSet results = statement.executeQuery();
             return results.next() ? results.getString(columnId) : null;
         } catch (SQLException e) {
-            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            log.error("An error occurred while trying to retrieve from the database", e);
             return null;
         }
     }
@@ -441,7 +444,7 @@ public class Database {
             ResultSet results = statement.executeQuery();
             return results.next();
         } catch (SQLException e) {
-            JukeBot.LOG.error("An error occurred while trying to retrieve from the database", e);
+            log.error("An error occurred while trying to retrieve from the database", e);
             return false;
         }
     }

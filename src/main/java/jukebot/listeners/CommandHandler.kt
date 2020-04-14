@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 class CommandHandler : ListenerAdapter() {
 
     init {
-        JukeBot.LOG.info("${commands.size} commands in registry")
+        JukeBot.log.info("${commands.size} commands in registry")
     }
 
     override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {

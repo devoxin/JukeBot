@@ -70,8 +70,8 @@ public class JukeBot {
 
     /* Bot-Related*/
     public static final long startTime = System.currentTimeMillis();
-    public static Logger LOG = LoggerFactory.getLogger("JukeBot");
-    public static Config config = new Config("config.properties");
+    public static Logger log = LoggerFactory.getLogger("JukeBot");
+    public static Config config = Config.Companion.load();
 
     public static long selfId = 0L;
     public static long botOwnerId = 0L;
@@ -111,7 +111,7 @@ public class JukeBot {
         final String arch = System.getProperty("os.arch");
 
         if ((os.contains("windows") || os.contains("linux")) && !arch.equalsIgnoreCase("arm") && !arch.equalsIgnoreCase("arm-linux")) {
-            LOG.info("System supports NAS, enabling...");
+            log.info("System supports NAS, enabling...");
             shardManagerBuilder.setAudioSendFactory(new NativeAudioSendFactory());
         }
 
@@ -128,7 +128,7 @@ public class JukeBot {
         String version = Helpers.INSTANCE.getVersion();
         String commitUrl = "https://github.com/devoxin/JukeBot/commit/" + version;
 
-        LOG.info(
+        log.info(
                 "\n{}\nJukeBot (Revision {}) | JDA {} | Lavaplayer {} | SQLite {} | {}-bit JVM | {} {} \n{}\n",
                 banner,
                 version,
@@ -143,14 +143,15 @@ public class JukeBot {
     }
 
     private static void loadApis() {
-        if (config.hasKey("patreon")) {
-            LOG.debug("Config has patreon key, loading patreon API...");
-            patreonApi = new PatreonAPI(Objects.requireNonNull(config.getString("patreon")));
+        if (config.contains("patreon")) {
+            log.debug("Config has patreon key, loading patreon API...");
+            patreonApi = new PatreonAPI(config.get("patreon", null));
+            // Default should never be used here, but Java insists on the 2nd parameter.
         }
 
-        if (config.hasKey("ksoft")) {
-            LOG.debug("Config has ksoft key, loading ksoft API...");
-            String key = Objects.requireNonNull(config.getString("ksoft"));
+        if (config.contains("ksoft")) {
+            log.debug("Config has ksoft key, loading ksoft API...");
+            String key = config.get("ksoft", null);
             kSoftAPI = new KSoftAPI(key);
         }
     }
@@ -168,8 +169,8 @@ public class JukeBot {
         YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
         sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
 
-        if (!config.getIpv6block().isEmpty()) {
-            LOG.info("Using IPv6 block with RotatingNanoIpRoutePlanner!");
+        if (config.getIpv6block() != null && !config.getIpv6block().isEmpty()) {
+            log.info("Using IPv6 block with RotatingNanoIpRoutePlanner!");
             List<IpBlock> blocks = Collections.singletonList(new Ipv6Block(config.getIpv6block()));
             RotatingNanoIpRoutePlanner planner = new RotatingNanoIpRoutePlanner(blocks);
             new YoutubeIpRotatorSetup(planner).forSource(sourceManager).setup();
@@ -186,9 +187,9 @@ public class JukeBot {
 
         YoutubeAudioSourceManager ytasm = new YoutubeAudioSourceManager();
 
-        if (config.hasKey("spotify_client") && config.hasKey("spotify_secret")) {
-            String client = Objects.requireNonNull(config.getString("spotify_client"));
-            String secret = Objects.requireNonNull(config.getString("spotify_secret"));
+        if (config.contains("spotify_client") && config.contains("spotify_secret")) {
+            String client = config.get("spotify_client", null);
+            String secret = config.get("spotify_secret", null);
             playerManager.registerSourceManager(new SpotifyAudioSourceManager(client, secret, ytasm));
         }
 

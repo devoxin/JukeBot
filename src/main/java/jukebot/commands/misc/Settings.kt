@@ -4,7 +4,7 @@ import jukebot.Database
 import jukebot.framework.*
 import jukebot.utils.Helpers
 import jukebot.utils.addFields
-import jukebot.utils.decodeColor
+import jukebot.utils.toColorOrNull
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.text.DecimalFormat
 import java.util.regex.Pattern
@@ -89,7 +89,7 @@ class Settings : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "embedcolor", description = "Sets the colour used for embeds")
     fun embedcolor(ctx: Context, args: List<String>) {
-        val color = decodeColor(args.firstOrNull() ?: "")
+        val color = args.firstOrNull()?.toColorOrNull()
             ?: return ctx.embed("Invalid Colour", "You need to specify a valid hex. Example: `#1E90FF`")
 
         Database.setColour(ctx.guild.idLong, color.rgb)

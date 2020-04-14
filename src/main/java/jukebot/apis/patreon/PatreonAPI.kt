@@ -5,6 +5,7 @@ import jukebot.JukeBot
 import jukebot.utils.RequestUtil
 import jukebot.utils.json
 import okhttp3.HttpUrl
+import org.slf4j.LoggerFactory
 import java.net.URI
 import java.net.URLDecoder
 import java.util.concurrent.CompletableFuture
@@ -24,7 +25,7 @@ class PatreonAPI(var accessToken: String) {
             offset?.let { setQueryParameter("page[cursor]", it) }
         }.queue({
             if (!it.isSuccessful) {
-                JukeBot.LOG.error("Unable to get list of pledges ({}): {}", it.code(), it.body()?.string())
+                log.error("Unable to get list of pledges ({}): {}", it.code(), it.body()?.string())
                 it.close()
 
                 return@queue cb(users.toList())
@@ -45,7 +46,7 @@ class PatreonAPI(var accessToken: String) {
             val nextPage = getNextPage(json) ?: return@queue cb(users.toList())
             getPageOfPledge(campaignId, nextPage, users, cb)
         }, {
-            JukeBot.LOG.error("Unable to get list of pledges", it)
+            log.error("Unable to get list of pledges", it)
             return@queue cb(users.toList())
         })
     }
@@ -80,6 +81,7 @@ class PatreonAPI(var accessToken: String) {
     }
 
     companion object {
+        private val log = LoggerFactory.getLogger(PatreonAPI::class.java)
         private val baseUrl = HttpUrl.get("https://www.patreon.com/api/oauth2/api")
     }
 }

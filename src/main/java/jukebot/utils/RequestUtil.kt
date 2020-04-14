@@ -21,7 +21,7 @@ class RequestUtil {
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    JukeBot.LOG.debug("Response: code=${response.code()} message=${response.message()}")
+                    JukeBot.log.debug("Response: code=${response.code()} message=${response.message()}")
                     fut.complete(response)
                 }
             })

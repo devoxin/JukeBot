@@ -70,11 +70,11 @@ object Helpers {
     }
 
     fun monitorPledges() {
-        JukeBot.LOG.info("Checking pledges...")
+        JukeBot.log.info("Checking pledges...")
 
         JukeBot.patreonApi.fetchPledgesOfCampaign("750822").thenAccept { users ->
             if (users.isEmpty()) {
-                return@thenAccept JukeBot.LOG.warn("Scheduled pledge clean failed: No users to check")
+                return@thenAccept JukeBot.log.warn("Scheduled pledge clean failed: No users to check")
             }
 
             for (id in Database.getDonorIds()) {
@@ -83,7 +83,7 @@ object Helpers {
                 if (pledge == null || pledge.isDeclined) {
                     Database.setTier(id, 0)
                     Database.removePremiumServersOf(id)
-                    JukeBot.LOG.info("Removed $id from donors")
+                    JukeBot.log.info("Removed $id from donors")
                     continue
                 }
 
@@ -98,7 +98,7 @@ object Helpers {
                         val allServers = Database.getPremiumServersOf(id)
 
                         if (allServers.size > calculatedServerQuota) {
-                            JukeBot.LOG.info("Removing some of $id's premium servers to meet quota (quota: $calculatedServerQuota, servers: ${allServers.size}")
+                            JukeBot.log.info("Removing some of $id's premium servers to meet quota (quota: $calculatedServerQuota, servers: ${allServers.size}")
                             val exceededQuotaBy = allServers.size - calculatedServerQuota
 
                             for (i in 0..exceededQuotaBy) {
@@ -106,7 +106,7 @@ object Helpers {
                             }
                         }
                     }
-                    JukeBot.LOG.info("Adjusting $id's tier (saved: $tier, calculated: $calculatedTier, pledge: $$friendly)")
+                    JukeBot.log.info("Adjusting $id's tier (saved: $tier, calculated: $calculatedTier, pledge: $$friendly)")
                     Database.setTier(id, calculatedTier)
                 }
             }

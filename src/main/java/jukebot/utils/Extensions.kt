@@ -41,12 +41,10 @@ fun Long.toTimeString(): String {
     }
 }
 
-fun decodeColor(nm: String): Color? {
-    return try {
-        Color.decode(nm)
-    } catch (e: NumberFormatException) {
-        null
-    }
+fun String.toColorOrNull() = try {
+    Color.decode(this)
+} catch (e: NumberFormatException) {
+    null
 }
 
 fun <T> List<T>.separate(): Pair<T, List<T>> = Pair(first(), drop(1))

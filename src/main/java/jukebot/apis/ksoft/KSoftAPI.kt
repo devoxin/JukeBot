@@ -20,8 +20,8 @@ class KSoftAPI(private val key: String) {
             .value("limit", 1)
             .value("tracks", tracks)
 
-        if (JukeBot.config.hasKey("youtube")) {
-            obj.value("youtube_token", JukeBot.config.getString("youtube"))
+        if ("youtube" in JukeBot.config) {
+            obj.value("youtube_token", JukeBot.config["youtube"])
         }
 
         val jsonString = obj.end().done()

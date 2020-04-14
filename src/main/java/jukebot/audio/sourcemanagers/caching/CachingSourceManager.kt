@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.track.*
 import jukebot.JukeBot
+import org.slf4j.LoggerFactory
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import redis.clients.jedis.exceptions.JedisConnectionException
@@ -17,10 +18,10 @@ class CachingSourceManager : AudioSourceManager {
     init {
         try {
             jedisPool.resource.use {
-                JukeBot.LOG.info("Connected to Redis; caching available.")
+                log.info("Connected to Redis; caching available.")
             }
         } catch (e: JedisConnectionException) {
-            JukeBot.LOG.warn("Unable to connect to Redis; caching unavailable!")
+            log.warn("Unable to connect to Redis; caching unavailable!")
             jedisPool.close()
             enabled = false
         }
@@ -70,6 +71,7 @@ class CachingSourceManager : AudioSourceManager {
         var totalHits = 0
         var successfulHits = 0
 
+        private val log = LoggerFactory.getLogger(CachingSourceManager::class.java)
         private val jedisPool = JedisPool(JedisPoolConfig(), "localhost")
 
         private val PLAYLIST_TTL = TimeUnit.HOURS.toMillis(2)
