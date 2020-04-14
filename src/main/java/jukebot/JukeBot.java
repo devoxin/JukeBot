@@ -92,7 +92,7 @@ public class JukeBot {
         String configPath = args[0];
         if(configPath != ""){
             String absouleConfigPath = FileSystems.getDefault().getPath(configPath).normalize().toAbsolutePath().toString();
-            config = new Config(args[0]);
+            config = new Config(absouleConfigPath);
         }else{
             config = new Config("config.properties");
         }
