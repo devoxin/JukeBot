@@ -23,7 +23,7 @@ class Config(filePath: String) {
 
     companion object {
         fun load(): Config {
-            val configPath = System.getenv("jukebot.config")
+            val configPath = System.getenv("jukebot_config")
                 ?: "config.properties"
 
             return Config(configPath)
