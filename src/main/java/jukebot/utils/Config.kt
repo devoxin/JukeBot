@@ -22,11 +22,6 @@ class Config(filePath: String) {
 
 
     companion object {
-        /**
-         * Loads a .properties file using the given path.
-         * @param filePath
-         *        The complete path to the file, including filename.
-         */
         fun load(): Config {
             val configPath = System.getenv("jukebot.config")
                 ?: "config.properties"
