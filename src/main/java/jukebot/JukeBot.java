@@ -126,10 +126,9 @@ public class JukeBot {
         String arch = System.getProperty("os.arch");
         String banner = Helpers.INSTANCE.readFile("banner.txt", "");
         String version = Helpers.INSTANCE.getVersion();
-        String commitUrl = "https://github.com/devoxin/JukeBot/commit/" + version;
 
-        log.info(
-                "\n{}\nJukeBot (Revision {}) | JDA {} | Lavaplayer {} | SQLite {} | {}-bit JVM | {} {} \n{}\n",
+        System.out.printf(
+                "%s\nRevision %s | JDA %s | Lavaplayer %s | SQLite %s | %s-bit JVM | %s %s\n\n",
                 banner,
                 version,
                 JDAInfo.VERSION,
@@ -137,8 +136,7 @@ public class JukeBot {
                 SQLiteJDBCLoader.getVersion(),
                 System.getProperty("sun.arch.data.model"),
                 os,
-                arch,
-                commitUrl
+                arch
         );
     }
 
