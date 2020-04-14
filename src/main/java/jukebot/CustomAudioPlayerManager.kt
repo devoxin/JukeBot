@@ -21,21 +21,21 @@ class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlaye
     constructor() : this(DefaultAudioPlayerManager())
 
     fun toBase64String(track: AudioTrack): String {
-        val baos = ByteArrayOutputStream()
-        encodeTrack(MessageOutput(baos), track)
-        return Base64.getEncoder().encodeToString(baos.toByteArray())
+        return ByteArrayOutputStream().use {
+            encodeTrack(MessageOutput(it), track)
+            Base64.getEncoder().encodeToString(it.toByteArray())
+        }
     }
 
     fun toAudioTrack(encoded: String): AudioTrack {
         val b64 = Base64.getDecoder().decode(encoded)
-        val bais = ByteArrayInputStream(b64)
-        return decodeTrack(MessageInput(bais)).decodedTrack
+        return ByteArrayInputStream(b64).use {
+            decodeTrack(MessageInput(it)).decodedTrack
+        }
     }
 
     fun toJsonString(playlist: AudioPlaylist): String {
-        val selectedIndex = playlist.selectedTrack?.let {
-            playlist.tracks.indexOf(playlist.selectedTrack)
-        } ?: -1
+        val selectedIndex = playlist.selectedTrack?.let(playlist.tracks::indexOf) ?: -1
 
         return JsonWriter.string()
             .`object`()
@@ -51,13 +51,9 @@ class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlaye
         val obj = JsonParser.`object`().from(encoded)
 
         val name = obj.getString("name")
-        val tracks = mutableListOf<AudioTrack>()
-
-        for (track in obj.getArray("tracks")) {
-            tracks.add(toAudioTrack(track as String))
-        }
-
+        val tracks = obj.getArray("tracks").map { toAudioTrack(it as String) }
         val index = obj.getInt("selected")
+
         val selectedTrack = if (index > -1) tracks[index] else null
         val search = obj.getBoolean("search")
 
