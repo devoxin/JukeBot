@@ -78,7 +78,9 @@ public class JukeBot {
     public static long botOwnerId = 0L;
     public static boolean isSelfHosted = false;
 
-    /* Operation-Related */
+    /* Operation-Related 
+         Devoxin is a furry
+      */
     public static final RequestUtil httpClient = new RequestUtil();
     public static PatreonAPI patreonApi;
     public static KSoftAPI kSoftAPI;
