@@ -4,6 +4,7 @@ import com.grack.nanojson.JsonParser
 import com.grack.nanojson.JsonWriter
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
+import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
@@ -15,6 +16,8 @@ import jukebot.framework.Context
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.*
+import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlayerManager by dapm {
 
@@ -63,6 +66,25 @@ class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlaye
     fun loadIdentifier(identifier: String, ctx: Context,
                        handler: AudioHandler, useSelection: Boolean, playNext: Boolean = false) {
         loadItem(identifier, SongResultHandler(ctx, identifier, handler, useSelection, playNext))
+    }
+
+    fun searchYoutube(query: String): CompletableFuture<AudioTrack> {
+        val future = CompletableFuture<AudioTrack>()
+
+        val resultHandler = FunctionalResultHandler(
+            Consumer { future.complete(it) },
+            Consumer { future.complete(it.tracks.first()) },
+            Runnable {
+                val ex = IllegalStateException("No results found")
+                future.completeExceptionally(ex)
+            },
+            Consumer {
+                future.completeExceptionally(it)
+            }
+        )
+
+        loadItem(query, resultHandler)
+        return future
     }
 
 }

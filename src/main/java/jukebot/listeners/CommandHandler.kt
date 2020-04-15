@@ -1,5 +1,6 @@
 package jukebot.listeners
 
+import io.sentry.Sentry
 import jukebot.Database
 import jukebot.JukeBot
 import jukebot.framework.CommandScanner
@@ -45,7 +46,11 @@ class CommandHandler : ListenerAdapter() {
             return
         }
 
-        foundCommand.runChecks(Context(e, args, originalArgs, guildPrefix))
+        try {
+            foundCommand.runChecks(Context(e, args, originalArgs, guildPrefix))
+        } catch (e: Exception) {
+            Sentry.capture(e)
+        }
     }
 
     companion object {

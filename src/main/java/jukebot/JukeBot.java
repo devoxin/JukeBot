@@ -32,6 +32,7 @@ import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
 import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRoutePlanner;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
+import io.sentry.Sentry;
 import jukebot.apis.ksoft.KSoftAPI;
 import jukebot.apis.patreon.PatreonAPI;
 import jukebot.audio.AudioHandler;
@@ -149,6 +150,10 @@ public class JukeBot {
             log.debug("Config has ksoft key, loading ksoft API...");
             String key = config.get("ksoft", null);
             kSoftAPI = new KSoftAPI(key);
+        }
+
+        if (config.getSentryDsn() != null && !config.getSentryDsn().isEmpty()) {
+            Sentry.init(config.getSentryDsn());
         }
     }
 

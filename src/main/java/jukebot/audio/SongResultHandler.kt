@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import io.sentry.Sentry
 import jukebot.JukeBot
 import jukebot.audio.sourcemanagers.caching.CachingSourceManager
 import jukebot.framework.Context
@@ -144,6 +145,7 @@ class SongResultHandler(
     }
 
     override fun loadFailed(ex: FriendlyException) {
+        Sentry.capture(ex)
         ctx.embed("Track Unavailable", Helpers.rootCauseOf(ex).localizedMessage)
 
         if (!musicManager.isPlaying) {

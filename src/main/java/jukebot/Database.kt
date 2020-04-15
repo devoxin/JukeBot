@@ -1,12 +1,14 @@
 package jukebot
 
 import com.zaxxer.hikari.HikariDataSource
+import io.sentry.Sentry
 import jukebot.entities.CustomPlaylist
 import jukebot.entities.PremiumGuild
 import jukebot.utils.get
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.PreparedStatement
+import java.sql.SQLException
 import java.time.Instant
 
 object Database {
@@ -277,13 +279,14 @@ object Database {
         try {
             block()
         } catch (e: Exception) {
-
+            Sentry.capture(e)
         }
     }
 
     fun <T> runSuppressed(default: T?, block: () -> T) = try {
         block()
-    } catch (e: Exception) {
+    } catch (e: SQLException) {
+        Sentry.capture(e)
         default
     }
 

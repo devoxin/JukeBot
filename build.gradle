@@ -57,6 +57,7 @@ dependencies {
     /* Logging */
     implementation "org.apache.logging.log4j:log4j-core:$logger_version"
     implementation "org.apache.logging.log4j:log4j-slf4j-impl:$logger_version"
+    implementation 'io.sentry:sentry:1.7.30'
 
     /* Kotlin stdlib */
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"

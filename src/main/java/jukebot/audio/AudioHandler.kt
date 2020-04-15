@@ -1,12 +1,12 @@
 package jukebot.audio
 
-import com.fasterxml.jackson.core.JsonParseException
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
+import io.sentry.Sentry
 import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Helpers
@@ -59,7 +59,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             if (playNext) {
                 queue.add(0, track)
             } else {
-                queue.offer(track)
+                queue.add(track)
             }
             return true
         }
@@ -77,7 +77,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
         current?.let {
             if (it.sourceManager.sourceName == "youtube") {
-                //autoPlay.store(it.info.title)
+                autoPlay.store(it.info.title)
             }
         }
 
@@ -104,40 +104,34 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             return player.playTrack(nextTrack)
         }
 
-//        if (shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
-//            autoPlay.getRelatedTrack()
-//                .thenAccept(player::playTrack)
-//                .exceptionally {
-//                    playNext(false)
-//                    announce("AutoPlay", "AutoPlay encountered an error.\nWe're sorry for any inconvenience caused!")
-//                    JukeBot.LOG.error("AutoPlay Error", it)
-//                    return@exceptionally null
-//                }
-//            return
-//        }
+        if (shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
+            autoPlay.getRelatedTrack()
+                .thenAccept(player::playTrack)
+                .exceptionally {
+                    playNext(false)
+                    announce("AutoPlay", "AutoPlay encountered an error.\nWe're sorry for any inconvenience caused!")
+                    Sentry.capture(it)
+                    return@exceptionally null
+                }
+            return
+        }
 
         current = null
         player.stopTrack()
         bassBooster.boost(0.0f)
 
-        val guild = JukeBot.shardManager.getGuildById(guildId)
-
-        if (guild == null) { // Bot was kicked or something
-            JukeBot.removePlayer(guildId)
-            return
-        }
-
-        val audioManager = guild.audioManager
+        val audioManager = JukeBot.shardManager.getGuildById(guildId)?.audioManager
+            ?: return JukeBot.removePlayer(guildId)
 
         if (audioManager.isConnected || audioManager.isAttemptingToConnect) {
             Helpers.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS)
 
-            //if (Database.isPremiumServer(guildId)) {
-            //    announce("Queue Concluded", "Enable AutoPlay to keep the party going!")
-            //} else {
+            if (Database.getIsPremiumServer(guildId)) {
+                announce("Queue Concluded", "Enable AutoPlay to keep the party going!")
+            } else {
                 announce("Queue Concluded!",
                     "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
-            //}
+            }
 
             setNick(null)
         }
@@ -149,10 +143,8 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         }
 
         val channel = JukeBot.shardManager.getTextChannelById(channelId!!)
-
-        if (channel == null || !Helpers.canSendTo(channel)) {
-            return
-        }
+            ?.takeIf { Helpers.canSendTo(it) }
+            ?: return
 
         channel.sendMessage(EmbedBuilder()
             .setColor(Database.getColour(channel.guild.idLong))
@@ -210,20 +202,19 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     override fun onTrackException(player: AudioPlayer, track: AudioTrack, exception: FriendlyException) {
+        Sentry.capture(exception)
+
         if (repeat != RepeatMode.NONE)
             repeat = RepeatMode.NONE
 
         val problem = Helpers.rootCauseOf(exception)
-        val banned = problem is JsonParseException
 
-        if (banned && Database.getIsAutoPlayEnabled(guildId)) {
-            Database.setAutoPlayEnabled(guildId, false)
-        }
-
-        val append = if (banned) "\n\n**YouTube banned the bot's IP. This problem should be resolved soon.**" else ""
+//        if (banned && Database.getIsAutoPlayEnabled(guildId)) {
+//            Database.setAutoPlayEnabled(guildId, false)
+//        }
 
         announce("Playback Error", "Playback of **${track.info.title}** encountered an error!\n" +
-            problem.localizedMessage + append)
+            problem.localizedMessage)
     }
 
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long) {
