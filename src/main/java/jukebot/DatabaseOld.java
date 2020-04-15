@@ -12,8 +12,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class Database {
-    private static Logger log = LoggerFactory.getLogger(Database.class);
+public class DatabaseOld {
+    private static Logger log = LoggerFactory.getLogger(DatabaseOld.class);
 
     private final static HikariDataSource pool = new HikariDataSource();
     public static int calls = 0;

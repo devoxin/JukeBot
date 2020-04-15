@@ -100,7 +100,7 @@ class Verify : Command(ExecutionType.STANDARD) {
             )
         }
 
-        if (Database.isPremiumServer(ctx.guild.idLong)) {
+        if (Database.getIsPremiumServer(ctx.guild.idLong)) {
             return ctx.embed(
                 "Perks | Server Management",
                 "This server is already registered as a premium server."

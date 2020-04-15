@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import okhttp3.Response
 import java.awt.Color
+import java.sql.ResultSet
 
 fun Response.json(): JsonObject? {
     body().use {
@@ -54,3 +55,5 @@ fun <T> Iterable<T>.iterate(range: IntRange) = sequence {
         yield(Pair(i, this@iterate.elementAt(i)))
     }
 }
+
+operator fun ResultSet.get(key: String): String = this.getString(key)

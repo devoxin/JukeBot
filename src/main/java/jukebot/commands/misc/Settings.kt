@@ -116,7 +116,7 @@ class Settings : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "autoplay", description = "Sets whether to autoplay once the queue is empty.")
     fun autoplay(ctx: Context, args: List<String>) {
-        if (!Database.isPremiumServer(ctx.guild.idLong)) {
+        if (!Database.getIsPremiumServer(ctx.guild.idLong)) {
             return ctx.embed("Server Settings", "This setting is only available for premium servers. Check `${ctx.prefix}patreon` for more info.")
         }
 
@@ -134,7 +134,7 @@ class Settings : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "autodc", description = "Toggle whether the bot disconnects upon empty VC")
     fun autodc(ctx: Context, args: List<String>) {
-        if (!Database.isPremiumServer(ctx.guild.idLong)) {
+        if (!Database.getIsPremiumServer(ctx.guild.idLong)) {
             return ctx.embed("Server Settings", "This setting is only available for premium servers. Check `${ctx.prefix}patreon` for more info.")
         }
 
@@ -157,9 +157,9 @@ class Settings : Command(ExecutionType.STANDARD) {
         val skipThreshold = dpFormatter.format(Database.getSkipThreshold(ctx.guild.idLong) * 100)
         val hex = Integer.toHexString(ctx.embedColor and 0xffffff)
         val musicNick = if (Database.getIsMusicNickEnabled(ctx.guild.idLong)) "Enabled" else "Disabled"
-        val autoPlay = if (Database.isPremiumServer(ctx.guild.idLong) &&
+        val autoPlay = if (Database.getIsPremiumServer(ctx.guild.idLong) &&
             Database.getIsAutoPlayEnabled(ctx.guild.idLong)) "Enabled" else "Disabled"
-        val autoDc = if (!Database.isPremiumServer(ctx.guild.idLong) ||
+        val autoDc = if (!Database.getIsPremiumServer(ctx.guild.idLong) ||
             !Database.getIsAutoDcDisabled(ctx.guild.idLong)) "Enabled" else "Disabled"
 
         val fields = arrayOf(

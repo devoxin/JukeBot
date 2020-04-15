@@ -35,7 +35,7 @@ class EventHandler : ListenerAdapter() {
         val listeners = connectedChannel.members.filter { !it.user.isBot }.size
 
         if (listeners == 0) {
-            if (!Database.isPremiumServer(channel.guild.idLong) || !Database.getIsAutoDcDisabled(channel.guild.idLong)) {
+            if (!Database.getIsPremiumServer(channel.guild.idLong) || !Database.getIsAutoDcDisabled(channel.guild.idLong)) {
                 JukeBot.removePlayer(channel.guild.idLong)
                 audioManager.closeAudioConnection()
             }

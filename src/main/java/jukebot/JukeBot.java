@@ -91,8 +91,6 @@ public class JukeBot {
         Thread.currentThread().setName("JukeBot-Main");
         printBanner();
 
-        Database.setupDatabase();
-
         RestAction.setPassContext(false);
         RestAction.setDefaultFailure((e) -> {
         });

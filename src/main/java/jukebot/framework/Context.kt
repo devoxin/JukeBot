@@ -26,7 +26,7 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
                 return Integer.MAX_VALUE
             }
 
-            if (Database.isPremiumServer(guild.idLong)) {
+            if (Database.getIsPremiumServer(guild.idLong)) {
                 return 2
             }
 

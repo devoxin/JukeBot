@@ -3,6 +3,7 @@ package jukebot.commands.misc
 import com.sun.management.OperatingSystemMXBean
 import jukebot.Database
 import jukebot.JukeBot
+import jukebot.audio.sourcemanagers.caching.CachingSourceManager
 import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
@@ -10,6 +11,7 @@ import jukebot.utils.toTimeString
 import net.dv8tion.jda.api.JDA
 import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
+import kotlin.math.max
 
 @CommandProperties(description = "Displays JukeBot statistics")
 class Stats : Command(ExecutionType.STANDARD) {
@@ -41,10 +43,10 @@ class Stats : Command(ExecutionType.STANDARD) {
         val callsPerSecond = Database.calls / secondsSinceBoot
         val formattedCPS = dpFormatter.format(callsPerSecond)
 
-        //val totalHits = CachingSourceManager.totalHits
-        //val successfulHits = CachingSourceManager.successfulHits
-        //val pcCached = successfulHits.toDouble() / max(1, totalHits).toDouble()
-        //val pcCachedFormatted = dpFormatter.format(pcCached * 100)
+        val totalHits = CachingSourceManager.totalHits
+        val successfulHits = CachingSourceManager.successfulHits
+        val pcCached = successfulHits.toDouble() / max(1, totalHits).toDouble()
+        val pcCachedFormatted = dpFormatter.format(pcCached * 100)
 
         toSend.append("```asciidoc\n")
             .append("= JVM =\n")
@@ -59,8 +61,8 @@ class Stats : Command(ExecutionType.STANDARD) {
             .append("Total Players   :: ").append(players).append("\n")
             .append("  Playing        : ").append(playingPlayers).append("\n")
             .append("  Encoding       : ").append(encodingPlayers).append("\n")
-            //.append("Queries         :: ").append(totalHits).append("\n")
-            //.append("  Cache Hits     : ").append(successfulHits).append(" ($pcCachedFormatted%)").append("\n")
+            .append("Queries         :: ").append(totalHits).append("\n")
+            .append("  Cache Hits     : ").append(successfulHits).append(" ($pcCachedFormatted%)").append("\n")
             .append("Database Calls  :: ").append(Database.calls).append(" (").append(formattedCPS).append("/sec)").append("\n")
             .append("Shards Online   :: ").append(shardsOnline).append("/").append(shards).append("\n")
             .append("Average Latency :: ").append(averageShardLatency).append("ms\n")
