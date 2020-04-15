@@ -2,7 +2,6 @@ package jukebot.commands.playback
 
 import jukebot.JukeBot
 import jukebot.audio.AudioHandler
-import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager
 import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties

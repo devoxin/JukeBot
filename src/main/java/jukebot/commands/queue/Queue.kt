@@ -8,7 +8,6 @@ import jukebot.utils.iterate
 import jukebot.utils.toTimeString
 import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import kotlin.math.ceil
-import kotlin.math.max
 import kotlin.math.min
 
 @CommandProperties(description = "Displays the current queue", aliases = ["q", "list", "songs"], category = CommandCategory.QUEUE)

@@ -45,7 +45,7 @@ class CachingSourceManager : AudioSourceManager {
         }
 
         totalHits++
-        
+
         jedisPool.resource.use {
             val encoded = it.get(reference.identifier)
                 ?: return null

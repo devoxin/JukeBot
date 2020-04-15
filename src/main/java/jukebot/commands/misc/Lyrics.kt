@@ -2,7 +2,6 @@ package jukebot.commands.misc
 
 import jukebot.JukeBot
 import jukebot.framework.Command
-import jukebot.framework.CommandChecks
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.utils.TextSplitter

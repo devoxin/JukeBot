@@ -1,7 +1,6 @@
 package jukebot.commands.misc
 
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary
-import jukebot.JukeBot
 import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context

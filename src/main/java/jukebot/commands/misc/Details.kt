@@ -1,7 +1,6 @@
 package jukebot.commands.misc
 
 import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.JukeBot
 import jukebot.framework.Command
