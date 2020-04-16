@@ -254,7 +254,7 @@ object Database {
             val stmt = if (!enable) {
                 buildStatement(it, "DELETE FROM $table WHERE id = ?", id)
             } else {
-                buildStatement(it, "INSERT OR IGNORE INTO $table VALUES (?)", id)
+                buildStatement(it, "INSERT OR IGNORE INTO $table (id) VALUES (?)", id)
             }
 
             stmt.execute()
