@@ -18,10 +18,6 @@ class KSoftAPI(private val key: String) {
             .value("limit", 1)
             .value("tracks", tracks)
 
-        //if ("youtube" in JukeBot.config) {
-            //obj.value("youtube_token", JukeBot.config["youtube"])
-        //}
-
         val jsonString = obj.end().done()
 
         return makeRequest("/music/recommendations") { post(RequestBody.create(applicationJson, jsonString)) }

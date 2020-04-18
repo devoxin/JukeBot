@@ -10,6 +10,7 @@ import jukebot.JukeBot
 import jukebot.audio.sourcemanagers.caching.CachingSourceManager
 import jukebot.framework.Context
 import jukebot.utils.Helpers
+import jukebot.utils.Limits
 import jukebot.utils.editEmbed
 import jukebot.utils.toTimeString
 import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
@@ -62,9 +63,9 @@ class SongResultHandler(
                 }
 
                 ctx.prompt("Select Song", menu.toString()) { m, it ->
-                    val n = it?.toIntOrNull()
+                    val n = it?.toIntOrNull()?.takeIf { it > 0 && it <= tracks.size }
 
-                    if (n == null || n <= 0 || n > tracks.size) {
+                    if (n == null) {
                         m.delete().queue()
 
                         val manager = ctx.guild.audioManager
@@ -113,7 +114,7 @@ class SongResultHandler(
         } else {
             val tracks = playlist.tracks
                 .filter(::canQueueTrack)
-                .take(playlistLimit(ctx.donorTier))
+                .take(Limits.playlist(ctx.donorTier))
 
             var estPlay = musicManager.queue.sumByLong { it.duration }
 
@@ -156,23 +157,12 @@ class SongResultHandler(
     private fun calculateEstimatedPlayTime(): Long {
         val current = musicManager.current
         val remaining = current?.duration?.minus(current.position) ?: 0L
-
-        return if (playNext) {
-            remaining
-        } else {
-            musicManager.queue.sumByLong { it.duration } + remaining
-        }
+        return if (playNext) remaining else musicManager.queue.sumByLong { it.duration } + remaining
     }
 
     private fun canQueueTrack(track: AudioTrack): Boolean {
-        val trackDuration = track.duration
-        val maxTrackDuration = when {
-            ctx.donorTier >= 2 -> Long.MAX_VALUE
-            ctx.donorTier == 1 -> TimeUnit.HOURS.toMillis(5)
-            else -> TimeUnit.HOURS.toMillis(2)
-        }
-
-        return JukeBot.isSelfHosted || track.info.isStream && ctx.donorTier > 0 || maxTrackDuration >= trackDuration
+        val maxTrackDuration = Limits.duration(ctx.donorTier)
+        return JukeBot.isSelfHosted || track.info.isStream && ctx.donorTier > 0 || maxTrackDuration >= track.duration
     }
 
     private fun isCommand(s: String): Boolean {
@@ -197,15 +187,6 @@ class SongResultHandler(
             "porn",
             "spotify"
         )
-
-        fun playlistLimit(tier: Int): Int {
-            return when {
-                JukeBot.isSelfHosted -> Integer.MAX_VALUE
-                tier >= 2 -> Integer.MAX_VALUE
-                tier == 1 -> 1000
-                else -> 100
-            }
-        }
     }
 
 }

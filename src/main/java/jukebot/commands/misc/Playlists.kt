@@ -9,6 +9,7 @@ import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.framework.SubCommand
 import jukebot.utils.Helpers
+import jukebot.utils.Limits
 import jukebot.utils.Page
 import jukebot.utils.separate
 import net.dv8tion.jda.api.EmbedBuilder
@@ -274,11 +275,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         }
 
         val donorTier = Database.getTier(ctx.author.idLong)
-        val cap = when {
-            donorTier < 1 -> 5
-            donorTier < 2 -> 50
-            else -> 100
-        }
+        val cap = Limits.customPlaylists(donorTier)
 
         if (count < cap) {
             return true
