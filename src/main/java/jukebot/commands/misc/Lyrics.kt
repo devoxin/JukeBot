@@ -24,6 +24,7 @@ class Lyrics : Command(ExecutionType.STANDARD) {
 
         JukeBot.httpClient.get(lyricsUrl + encoded).queue({
             if (it.code() == 404) {
+                it.close()
                 return@queue context.embed("Lyrics", "The API returned no lyrics for **$query**")
             }
 
