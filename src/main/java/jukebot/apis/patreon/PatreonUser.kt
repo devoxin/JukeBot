@@ -17,7 +17,7 @@ class PatreonUser(
 
             val connections = userAttr.getObject("social_connections")
             val discordId = connections.getObject("discord")
-                ?.getLong("user_id")
+                ?.getString("user_id")?.toLong()
 
             return PatreonUser(
                 userAttr.getString("first_name"),

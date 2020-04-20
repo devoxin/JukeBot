@@ -5,6 +5,7 @@ import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
+import java.util.concurrent.CompletableFuture
 
 @CommandProperties(description = "Evaluate arbitrary code.", developerOnly = true)
 class Eval : Command(ExecutionType.STANDARD) {
@@ -24,8 +25,19 @@ class Eval : Command(ExecutionType.STANDARD) {
 
         try {
             val result = engine.eval("$bindString\n${context.originalArgs}", bind)
-            context.channel.sendMessage("```\n$result```").queue(null) {
-                context.embed("Response Error", it.toString())
+                ?: return context.message.addReaction("👌").queue()
+
+            if (result is CompletableFuture<*>) {
+                context.channel.sendMessage("```\nCompletableFuture<Pending>```").queue { m ->
+                    result.whenComplete { r, ex ->
+                        val post = ex ?: r
+                        m.editMessage("```\n$post```").queue()
+                    }
+                }
+            } else {
+                context.channel.sendMessage("```\n$result```").queue(null) {
+                    context.embed("Response Error", it.toString())
+                }
             }
         } catch (e: Exception) {
             context.channel.sendMessage("Engine Error\n```\n$e```").queue(null) {
