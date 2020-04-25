@@ -73,7 +73,7 @@ object Database {
             val results = buildStatement(it, "SELECT * FROM customplaylists WHERE creator = ? AND title = ?", creator, title)
                 .executeQuery()
 
-            if (results.next()) CustomPlaylist(results["title"], creator, results["string"]) else null
+            if (results.next()) CustomPlaylist(results["title"], creator, results["tracks"]) else null
         }
     }
 
