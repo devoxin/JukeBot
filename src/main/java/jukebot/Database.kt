@@ -270,13 +270,6 @@ object Database {
         }
     }
 
-//    fun <T> runSuppressed(default: T?, block: () -> T) = try {
-//        block()
-//    } catch (e: SQLException) {
-//        Sentry.capture(e)
-//        default
-//    }
-
     fun <T> executeSuppressed(block: Connection.() -> T) = try {
         connection.use {
             block(it)
