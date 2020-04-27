@@ -83,6 +83,11 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
         val url = args[0].removePrefix("<").removeSuffix(">")
         val title = args[1]
+
+        if (Database.getPlaylist(ctx.author.idLong, title) != null) {
+            return ctx.embed("Import Playlist", "A playlist with that name already exists!")
+        }
+
         val handler = FunctionalResultHandler(
             Consumer { ctx.embed("Import Playlist", "You need to provide a playlist URL.\nYou provided a track URL.") },
             Consumer {

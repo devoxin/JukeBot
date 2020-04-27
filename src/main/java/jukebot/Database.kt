@@ -53,28 +53,24 @@ object Database {
         }
     }
 
-    fun getPlaylists(creator: Long): List<String> = runSuppressed(emptyList()) {
-        connection.use {
-            val results = buildStatement(it, "SELECT title FROM customplaylists WHERE creator = ?", creator)
-                .executeQuery()
+    fun getPlaylists(creator: Long): List<String> = executeSuppressed {
+        val results = buildStatement(this, "SELECT title FROM customplaylists WHERE creator = ?", creator)
+            .executeQuery()
 
-            val playlists = mutableListOf<String>()
+        val playlists = mutableListOf<String>()
 
-            while (results.next()) {
-                playlists.add(results.getString("title"))
-            }
-
-            playlists.toList()
+        while (results.next()) {
+            playlists.add(results.getString("title"))
         }
-    }!!
 
-    fun getPlaylist(creator: Long, title: String): CustomPlaylist? = runSuppressed<CustomPlaylist?>(null) {
-        connection.use {
-            val results = buildStatement(it, "SELECT * FROM customplaylists WHERE creator = ? AND title = ?", creator, title)
-                .executeQuery()
+        playlists.toList()
+    } ?: emptyList()
 
-            if (results.next()) CustomPlaylist(results["title"], creator, results["tracks"]) else null
-        }
+    fun getPlaylist(creator: Long, title: String): CustomPlaylist? = executeSuppressed {
+        val results = buildStatement(this, "SELECT * FROM customplaylists WHERE creator = ? AND title = ?", creator, title)
+            .executeQuery()
+
+        if (results.next()) CustomPlaylist(results["title"], creator, results["tracks"]) else null
     }
 
     fun createPlaylist(creator: Long, title: String) = runSuppressed {
@@ -146,27 +142,23 @@ object Database {
         }
     }
 
-    fun getDonorIds(): List<Long> = runSuppressed(emptyList()) {
-        connection.use {
-            val results = buildStatement(it, "SELECT * FROM donators").executeQuery()
-            val list = mutableListOf<Long>()
+    fun getDonorIds(): List<Long> = executeSuppressed {
+        val results = buildStatement(this, "SELECT * FROM donators").executeQuery()
+        val list = mutableListOf<Long>()
 
-            while (results.next()) {
-                list.add(results.getLong(1))
-            }
-
-            list
+        while (results.next()) {
+            list.add(results.getLong(1))
         }
-    }!!
 
-    fun getColour(guildId: Long) = runSuppressed(JukeBot.config.embedColour.rgb) {
-        connection.use {
-            val results = buildStatement(it, "SELECT * FROM colours WHERE id = ?", guildId)
-                .executeQuery()
+        list
+    } ?: emptyList()
 
-            if (results.next()) results.getInt("rgb") else JukeBot.config.embedColour.rgb
-        }
-    }!!
+    fun getColour(guildId: Long) = executeSuppressed {
+        val results = buildStatement(this, "SELECT * FROM colours WHERE id = ?", guildId)
+            .executeQuery()
+
+        if (results.next()) results.getInt("rgb") else JukeBot.config.embedColour.rgb
+    } ?: JukeBot.config.embedColour.rgb
 
     fun setColour(guildId: Long, rgb: Int) = runSuppressed {
         connection.use {
@@ -175,16 +167,14 @@ object Database {
         }
     }
 
-    fun getIsPremiumServer(guildId: Long) = runSuppressed(false) {
+    fun getIsPremiumServer(guildId: Long) = executeSuppressed {
         if (JukeBot.isSelfHosted) {
-            return@runSuppressed true
+            return@executeSuppressed true
         }
 
-        connection.use {
-            buildStatement(it, "SELECT * FROM premiumservers WHERE guildid = ?", guildId)
-                .executeQuery().next()
-        }
-    }!!
+        buildStatement(this, "SELECT * FROM premiumservers WHERE guildid = ?", guildId)
+            .executeQuery().next()
+    } ?: false
 
     fun setPremiumServer(guildId: Long, userId: Long) = runSuppressed {
         connection.use {
@@ -207,20 +197,18 @@ object Database {
         }
     }
 
-    fun getPremiumServersOf(userId: Long): List<PremiumGuild> = runSuppressed(emptyList()) {
-        connection.use {
-            val results = buildStatement(it, "SELECT * FROM premiumservers WHERE userid = ?", userId)
-                .executeQuery()
+    fun getPremiumServersOf(userId: Long): List<PremiumGuild> = executeSuppressed {
+        val results = buildStatement(this, "SELECT * FROM premiumservers WHERE userid = ?", userId)
+            .executeQuery()
 
-            val list = mutableListOf<PremiumGuild>()
+        val list = mutableListOf<PremiumGuild>()
 
-            while (results.next()) {
-                list.add(PremiumGuild(results.getLong("guildid"), results.getLong("added")))
-            }
-
-            list
+        while (results.next()) {
+            list.add(PremiumGuild(results.getLong("guildid"), results.getLong("added")))
         }
-    }!!
+
+        list
+    } ?: emptyList()
 
     fun getIsBlocked(userId: Long) = getFromDatabase("blocked", userId, "id") != null
     fun setIsBlocked(userId: Long, block: Boolean) = setEnabled("blocked", userId, block)
@@ -239,14 +227,13 @@ object Database {
      * |                IGNORE BELOW THIS                |
      * +=================================================+
      */
-    private fun getFromDatabase(table: String, id: Long, columnId: String): String? = runSuppressed<String?>(null) {
+    private fun getFromDatabase(table: String, id: Long, columnId: String): String? = executeSuppressed {
         val idColumn = if (table == "djroles") "guildid" else "id" // I'm an actual idiot I stg
-        return@runSuppressed connection.use {
-            val results = buildStatement(it, "SELECT * FROM $table WHERE $idColumn = ?", id)
-                .executeQuery()
 
-            if (results.next()) results[columnId] else null
-        }
+        val results = buildStatement(this, "SELECT * FROM $table WHERE $idColumn = ?", id)
+            .executeQuery()
+
+        if (results.next()) results[columnId] else null
     }
 
     private fun setEnabled(table: String, id: Long, enable: Boolean) = runSuppressed {
@@ -283,11 +270,20 @@ object Database {
         }
     }
 
-    fun <T> runSuppressed(default: T?, block: () -> T) = try {
-        block()
+//    fun <T> runSuppressed(default: T?, block: () -> T) = try {
+//        block()
+//    } catch (e: SQLException) {
+//        Sentry.capture(e)
+//        default
+//    }
+
+    fun <T> executeSuppressed(block: Connection.() -> T) = try {
+        connection.use {
+            block(it)
+        }
     } catch (e: SQLException) {
         Sentry.capture(e)
-        default
+        null
     }
 
 }
