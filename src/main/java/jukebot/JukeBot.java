@@ -33,6 +33,8 @@ import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRouteP
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
 import io.sentry.Sentry;
+import io.sentry.SentryClientFactory;
+import io.sentry.SentryOptions;
 import jukebot.apis.ksoft.KSoftAPI;
 import jukebot.apis.patreon.PatreonAPI;
 import jukebot.audio.AudioHandler;
@@ -154,6 +156,7 @@ public class JukeBot {
 
         if (config.getSentryDsn() != null && !config.getSentryDsn().isEmpty()) {
             Sentry.init(config.getSentryDsn());
+            Sentry.getStoredClient().setRelease(Helpers.INSTANCE.getVersion());
         }
     }
 
