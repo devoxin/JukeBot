@@ -7,6 +7,10 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
 import io.sentry.Sentry
+import io.sentry.event.BreadcrumbBuilder
+import io.sentry.event.Event
+import io.sentry.event.EventBuilder
+import io.sentry.event.interfaces.ExceptionInterface
 import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Helpers
@@ -202,6 +206,17 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     override fun onTrackException(player: AudioPlayer, track: AudioTrack, exception: FriendlyException) {
+        val breadCrumb = BreadcrumbBuilder()
+            .setCategory("AudioHandler")
+            .setMessage("Track ID: ${track.identifier}")
+            .build()
+
+        val eventBuilder = EventBuilder().withMessage(exception.message)
+            .withLevel(Event.Level.ERROR)
+            .withSentryInterface(ExceptionInterface(exception))
+            .withBreadcrumbs(listOf(breadCrumb))
+
+        Sentry.capture(eventBuilder)
         Sentry.capture(exception)
 
         if (repeat != RepeatMode.NONE)

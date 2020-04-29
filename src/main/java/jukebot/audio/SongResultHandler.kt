@@ -6,6 +6,10 @@ import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import io.sentry.Sentry
+import io.sentry.event.BreadcrumbBuilder
+import io.sentry.event.Event
+import io.sentry.event.EventBuilder
+import io.sentry.event.interfaces.ExceptionInterface
 import jukebot.JukeBot
 import jukebot.audio.sourcemanagers.caching.CachingSourceManager
 import jukebot.framework.Context
@@ -14,7 +18,6 @@ import jukebot.utils.Limits
 import jukebot.utils.editEmbed
 import jukebot.utils.toTimeString
 import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
-import java.util.concurrent.TimeUnit
 
 class SongResultHandler(
     private val ctx: Context,
@@ -146,7 +149,17 @@ class SongResultHandler(
     }
 
     override fun loadFailed(ex: FriendlyException) {
-        Sentry.capture(ex)
+        val breadCrumb = BreadcrumbBuilder()
+            .setCategory("LoadHandler")
+            .setMessage("Track ID: $identifier")
+            .build()
+
+        val eventBuilder = EventBuilder().withMessage(ex.message)
+            .withLevel(Event.Level.ERROR)
+            .withSentryInterface(ExceptionInterface(ex))
+            .withBreadcrumbs(listOf(breadCrumb))
+
+        Sentry.capture(eventBuilder)
         ctx.embed("Track Unavailable", Helpers.rootCauseOf(ex).localizedMessage)
 
         if (!musicManager.isPlaying) {
