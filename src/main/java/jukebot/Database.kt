@@ -176,7 +176,7 @@ object Database {
             .executeQuery().next()
     } ?: false
 
-    fun setPremiumServer(guildId: Long, userId: Long) = runSuppressed {
+    fun setPremiumServer(userId: Long, guildId: Long) = runSuppressed {
         connection.use {
             buildStatement(it, "INSERT INTO premiumservers VALUES (?, ?, ?)", guildId, userId, Instant.now().toEpochMilli())
                 .execute()
