@@ -54,7 +54,8 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                 return
             }
 
-            JukeBot.playerManager.loadIdentifier(userQuery, ctx, player, false)
+            val url = userQuery.split(' ')
+            JukeBot.playerManager.loadIdentifier(url[0], ctx, player, false)
         } else {
             JukeBot.playerManager.loadIdentifier("ytsearch:$userQuery", ctx, player, false)
         }
