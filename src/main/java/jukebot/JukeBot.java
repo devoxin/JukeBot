@@ -242,8 +242,9 @@ public class JukeBot {
 
         AudioManager audioManager = g.getAudioManager();
 
-        if (audioManager.getSendingHandler() == null)
+        if (audioManager.getSendingHandler() == null) {
             audioManager.setSendingHandler(handler);
+        }
 
         return handler;
     }

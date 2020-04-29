@@ -5,6 +5,7 @@ import jukebot.JukeBot
 import jukebot.audio.AudioHandler
 import jukebot.utils.Helpers
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import java.util.concurrent.TimeUnit
@@ -39,14 +40,6 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
         return JukeBot.getPlayer(guild.idLong)
     }
 
-    fun ensureMutualVoiceChannel(): Boolean {
-        val manager = member.guild.audioManager
-
-        return (member.voiceState!!.channel != null
-            && manager.connectedChannel != null
-            && manager.connectedChannel!!.idLong == member.voiceState!!.channel!!.idLong)
-    }
-
     fun isDJ(allowLoneVC: Boolean): Boolean {
         val customDjRole: Long? = Database.getDjRole(guild.idLong)
         val roleMatch = if (customDjRole != null) {
@@ -65,7 +58,9 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
     }
 
     fun react(emoji: String) {
-        message.addReaction(emoji).queue()
+        if (message.guild.selfMember.hasPermission(message.textChannel, Permission.MESSAGE_HISTORY)) {
+            message.addReaction(emoji).queue()
+        }
     }
 
     fun embed(title: String, description: String) {
