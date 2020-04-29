@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
 import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager
 import org.apache.http.HttpStatus
 import org.apache.http.util.EntityUtils
+import org.jetbrains.kotlin.utils.addToStdlib.cast
 import java.util.concurrent.CompletableFuture
 import java.util.regex.Matcher
 
@@ -55,8 +56,14 @@ class SpotifyPlaylistLoader : Loader {
             val jsonTracks = json.getArray("items")
             val tasks = mutableListOf<CompletableFuture<AudioTrack>>()
 
-            for (jTrack in jsonTracks) {
-                val track = (jTrack as JsonObject).getObject("track")
+            for (trackObj in jsonTracks) {
+                val trackJ = trackObj as JsonObject
+
+                if (trackJ.isNull("track")) {
+                    continue
+                }
+
+                val track = trackJ.getObject("track")
                 val title = track.getString("name")
                 val artist = track.getArray("artists").getObject(0).getString("name")
                 val task = sourceManager.queueYoutubeSearch("ytsearch:$title $artist")
