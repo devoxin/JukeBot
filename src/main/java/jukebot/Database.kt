@@ -256,6 +256,7 @@ object Database {
                 is String -> statement.setString(i + 1, o)
                 is Int -> statement.setInt(i + 1, o)
                 is Long -> statement.setLong(i + 1, o)
+                is Double -> statement.setDouble(i + 1, o)
             }
         }
 
