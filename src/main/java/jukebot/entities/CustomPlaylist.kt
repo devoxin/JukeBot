@@ -17,28 +17,29 @@ class CustomPlaylist(val title: String, val creator: Long, tracks: String) {
             .asSequence()
             .filter { it.isNotEmpty() }
             .map { decoder.decode(it) }
-            .map { ByteArrayInputStream(it) }
-            .map { MessageInput(it) }
-            .map { JukeBot.playerManager.decodeTrack(it) }
-            .map { it.decodedTrack }
+            .map { d ->
+                ByteArrayInputStream(d).use {
+                    JukeBot.playerManager.decodeTrack(MessageInput(it)).decodedTrack
+                }
+            }
             .toMutableList()
     }
 
     private fun toMessage(audioTrack: AudioTrack): String {
-        val baos = ByteArrayOutputStream()
-        JukeBot.playerManager.encodeTrack(MessageOutput(baos), audioTrack)
-        return encoder.encodeToString(baos.toByteArray())
+        return ByteArrayOutputStream().use {
+            val encoded = JukeBot.playerManager.encodeTrack(MessageOutput(it), audioTrack)
+            encoder.encodeToString(it.toByteArray())
+        }
     }
 
     fun save() {
-        val trackList = this.tracks.joinToString("\n") { toMessage(it) }
+        val trackList = this.tracks.joinToString("\n", transform = ::toMessage)
         Database.updatePlaylist(creator, title, trackList)
     }
 
     companion object {
         private val decoder = Base64.getDecoder()
         private val encoder = Base64.getEncoder()
-
         const val TRACK_LIMIT = 100
     }
 }
