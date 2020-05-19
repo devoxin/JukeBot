@@ -4,11 +4,7 @@ import jukebot.Database
 import java.time.Duration
 import java.time.Instant
 
-class PremiumGuild(
-    val guildId: Long,
-    val added: Long
-) {
-
+class PremiumGuild(val guildId: Long, val added: Long) {
     fun daysSinceAdded(): Long {
         val current = Instant.now()
         val then = Instant.ofEpochMilli(added)
@@ -20,5 +16,4 @@ class PremiumGuild(
     fun remove() {
         Database.removePremiumServer(guildId)
     }
-
 }
