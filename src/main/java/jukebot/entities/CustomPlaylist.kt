@@ -10,24 +10,20 @@ import java.io.ByteArrayOutputStream
 import java.util.*
 
 class CustomPlaylist(val title: String, val creator: Long, tracks: String) {
-    val tracks: MutableList<AudioTrack>
-
-    init {
-        this.tracks = tracks.split("\n")
-            .asSequence()
-            .filter { it.isNotEmpty() }
-            .map { decoder.decode(it) }
-            .map { d ->
-                ByteArrayInputStream(d).use {
-                    JukeBot.playerManager.decodeTrack(MessageInput(it)).decodedTrack
-                }
+    val tracks = tracks.split("\n")
+        .asSequence()
+        .filter(String::isNotEmpty)
+        .map(decoder::decode)
+        .map { d ->
+            ByteArrayInputStream(d).use {
+                JukeBot.playerManager.decodeTrack(MessageInput(it)).decodedTrack
             }
-            .toMutableList()
-    }
+        }
+        .toMutableList()
 
     private fun toMessage(audioTrack: AudioTrack): String {
         return ByteArrayOutputStream().use {
-            val encoded = JukeBot.playerManager.encodeTrack(MessageOutput(it), audioTrack)
+            JukeBot.playerManager.encodeTrack(MessageOutput(it), audioTrack)
             encoder.encodeToString(it.toByteArray())
         }
     }
