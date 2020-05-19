@@ -10,6 +10,10 @@ import jukebot.framework.Context
 class PlayNext : Command(ExecutionType.REQUIRE_MUTUAL) {
 
     override fun execute(context: Context) {
+        if (context.args.isEmpty()) {
+            return context.embed(name, "You need to specify an identifier to lookup.")
+        }
+
         val player = context.getAudioPlayer()
 
         if (!player.isPlaying) {
