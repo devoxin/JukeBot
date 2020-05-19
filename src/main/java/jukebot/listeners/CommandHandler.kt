@@ -7,16 +7,23 @@ import jukebot.framework.CommandScanner
 import jukebot.framework.Context
 import jukebot.utils.Helpers
 import jukebot.utils.separate
+import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
+import net.dv8tion.jda.api.hooks.EventListener
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
-class CommandHandler : ListenerAdapter() {
-
+class CommandHandler : EventListener {
     init {
         JukeBot.log.info("${commands.size} commands in registry")
     }
 
-    override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
+    override fun onEvent(event: GenericEvent) {
+        if (event is GuildMessageReceivedEvent) {
+            onGuildMessageReceived(event)
+        }
+    }
+
+    private fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
         if (e.author.isBot || e.isWebhookMessage || !Helpers.canSendTo(e.channel)
             || Database.getIsBlocked(e.author.idLong)) {
             return
@@ -56,5 +63,4 @@ class CommandHandler : ListenerAdapter() {
     companion object {
         val commands = CommandScanner("jukebot.commands").scan().toMutableMap()
     }
-
 }

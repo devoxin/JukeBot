@@ -1,13 +1,13 @@
 package jukebot.listeners
 
 import jukebot.utils.Helpers
+import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.hooks.EventListener
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class ActionWaiter : ListenerAdapter() {
-
+class ActionWaiter : EventListener {
     private val selectionMenus = HashMap<Long, (String?) -> Unit>()
 
     fun waitForSelection(userID: Long, selection: (String?) -> Unit, delay: Int = 10, unit: TimeUnit = TimeUnit.SECONDS) {
@@ -19,8 +19,13 @@ class ActionWaiter : ListenerAdapter() {
         }, delay, unit)
     }
 
-    override fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
-        selectionMenus.remove(e.author.idLong)?.invoke(e.message.contentRaw)
+    override fun onEvent(event: GenericEvent) {
+        if (event is GuildMessageReceivedEvent) {
+            onGuildMessageReceived(event)
+        }
     }
 
+    private fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
+        selectionMenus.remove(e.author.idLong)?.invoke(e.message.contentRaw)
+    }
 }

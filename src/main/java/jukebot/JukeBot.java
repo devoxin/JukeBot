@@ -33,8 +33,6 @@ import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRouteP
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
 import io.sentry.Sentry;
-import io.sentry.SentryClientFactory;
-import io.sentry.SentryOptions;
 import jukebot.apis.ksoft.KSoftAPI;
 import jukebot.apis.patreon.PatreonAPI;
 import jukebot.audio.AudioHandler;
@@ -106,7 +104,8 @@ public class JukeBot {
                 .addEventListeners(new CommandHandler(), new EventHandler(), waiter)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
                 .disableCache(CacheFlag.EMOTE, CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
-                .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"));
+                .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"))
+                .setBulkDeleteSplittingEnabled(false);
 
         final String os = System.getProperty("os.name").toLowerCase();
         final String arch = System.getProperty("os.arch");
