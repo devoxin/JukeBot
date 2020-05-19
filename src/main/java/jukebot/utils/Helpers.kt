@@ -101,11 +101,7 @@ object Helpers {
                         if (allServers.size > calculatedServerQuota) {
                             JukeBot.log.info("Removing some of $id's premium servers to meet quota (quota: $calculatedServerQuota, servers: ${allServers.size}")
                             val exceededQuotaBy = allServers.size - calculatedServerQuota
-                            val forRemoval = allServers.subList(0, exceededQuotaBy)
-
-                            for (server in forRemoval) {
-                                server.remove()
-                            }
+                            (0..exceededQuotaBy).onEach { allServers[it].remove() }
                         }
                     }
                     JukeBot.log.info("Adjusting $id's tier (saved: $tier, calculated: $calculatedTier, pledge: $$friendly)")
@@ -128,13 +124,7 @@ object Helpers {
     }
 
     fun rootCauseOf(ex: Throwable): Throwable {
-        val cause = ex.cause
-
-        if (cause != null) {
-            return rootCauseOf(cause)
-        }
-
-        return ex
+        return ex.cause?.let(::rootCauseOf) ?: ex
     }
 
 }
