@@ -1,6 +1,7 @@
 package jukebot.utils
 
 
+import io.sentry.Sentry
 import jukebot.Database
 import jukebot.JukeBot
 import net.dv8tion.jda.api.Permission
@@ -100,9 +101,10 @@ object Helpers {
                         if (allServers.size > calculatedServerQuota) {
                             JukeBot.log.info("Removing some of $id's premium servers to meet quota (quota: $calculatedServerQuota, servers: ${allServers.size}")
                             val exceededQuotaBy = allServers.size - calculatedServerQuota
+                            val forRemoval = allServers.subList(0, exceededQuotaBy)
 
-                            for (i in 0..exceededQuotaBy) {
-                                allServers[i].remove()
+                            for (server in forRemoval) {
+                                server.remove()
                             }
                         }
                     }
@@ -110,6 +112,9 @@ object Helpers {
                     Database.setTier(id, calculatedTier)
                 }
             }
+        }.exceptionally {
+            Sentry.capture(it)
+            return@exceptionally null
         }
     }
 
