@@ -1,6 +1,5 @@
 package jukebot.utils
 
-
 import io.sentry.Sentry
 import jukebot.Database
 import jukebot.JukeBot
@@ -17,7 +16,7 @@ import kotlin.math.floor
 import kotlin.math.round
 
 object Helpers {
-    val version by lazy {
+    val version: String by lazy {
         val stream = Helpers::class.java.classLoader.getResourceAsStream("version.txt")
         IOUtils.toString(stream, Charsets.UTF_8)
     }
@@ -44,13 +43,9 @@ object Helpers {
         }
     }
 
-    fun pad(s: String): String {
-        return String.format("%-12s", s).replace(" ", " \u200B")
-    }
+    fun pad(s: String) = String.format("%-12s", s).replace(" ", " \u200B")
 
-    fun canSendTo(channel: TextChannel): Boolean {
-        return channel.canTalk() && channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)
-    }
+    fun canSendTo(channel: TextChannel) = channel.canTalk() && channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)
 
     fun schedule(task: () -> Unit, delay: Int, unit: TimeUnit) {
         timer.schedule(task, delay.toLong(), unit)
@@ -126,5 +121,4 @@ object Helpers {
     fun rootCauseOf(ex: Throwable): Throwable {
         return ex.cause?.let(::rootCauseOf) ?: ex
     }
-
 }

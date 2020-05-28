@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.regex.Matcher
 
 class SpotifyPlaylistLoader : Loader {
-
     override fun pattern() = PLAYLIST_PATTERN
 
     override fun load(sourceManager: SpotifyAudioSourceManager, matcher: Matcher): AudioItem? {
@@ -46,8 +45,7 @@ class SpotifyPlaylistLoader : Loader {
                 "Received code ${it.statusLine.statusCode} from Spotify while fetching playlist tracks"
             }
 
-            val content = EntityUtils.toString(it.entity)
-            val json = JsonParser.`object`().from(content)
+            val json = JsonParser.`object`().from(it.entity.content)
 
             if (!json.has("items")) {
                 return emptyList()
@@ -81,7 +79,8 @@ class SpotifyPlaylistLoader : Loader {
     }
 
     companion object {
-        private val PLAYLIST_PATTERN = "^https?://(?:open\\.)?spotify\\.com/(?:user/[a-zA-Z0-9_]+/)?playlist/([a-zA-Z0-9]+).*".toPattern()
+        //private val PLAYLIST_PATTERN = "^https?://(?:open\\.)?spotify\\.com/(?:user/[a-zA-Z0-9_]+/)?playlist/([a-zA-Z0-9]+).*".toPattern()
+        private const val URL_PATTERN = "https?://(?:open\\.)?spotify\\.com(?:/user/[a-zA-Z0-9_]+)?"
+        private val PLAYLIST_PATTERN = "^(?:$URL_PATTERN|spotify)([/:])playlist\\1([a-zA-Z0-9]+)".toPattern()
     }
-
 }

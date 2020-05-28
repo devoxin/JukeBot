@@ -85,23 +85,18 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             }
         }
 
-        if (current != null) {
+        if (current != null && repeat != RepeatMode.NONE) {
+            val cloned = current!!.makeClone().also { c -> c.userData = current!!.userData }
+
             if (repeat == RepeatMode.ALL) {
-                val r = current!!.makeClone()
-                r.userData = current!!.userData
-                queue.offer(r)
+                queue.offer(cloned)
             } else if (repeat == RepeatMode.SINGLE) {
-                nextTrack = current!!.makeClone()
-                nextTrack.userData = current!!.userData
+                nextTrack = cloned
             }
         }
 
         if (nextTrack == null && !queue.isEmpty()) {
-            nextTrack = if (shuffle) {
-                queue.removeAt(selector.nextInt(queue.size))
-            } else {
-                queue.poll()
-            }
+            nextTrack = if (shuffle) queue.removeAt(selector.nextInt(queue.size)) else queue.poll()
         }
 
         if (nextTrack != null) {
