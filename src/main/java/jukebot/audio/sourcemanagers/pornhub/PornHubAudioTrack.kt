@@ -15,16 +15,12 @@ import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 
 class PornHubAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: PornHubAudioSourceManager) : DelegatedAudioTrack(trackInfo) {
-
     override fun makeClone() = PornHubAudioTrack(trackInfo, sourceManager)
-
     override fun getSourceManager() = sourceManager
 
     @Throws(Exception::class)
     override fun process(localExecutor: LocalAudioTrackExecutor) {
-        sourceManager.httpInterfaceManager.`interface`.use {
-            processStatic(localExecutor, it)
-        }
+        sourceManager.httpInterfaceManager.`interface`.use { processStatic(localExecutor, it) }
     }
 
     @Throws(Exception::class)
@@ -47,9 +43,4 @@ class PornHubAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: Po
             return Utils.extractMediaString(IOUtils.toString(response.entity.content, StandardCharsets.UTF_8))
         }
     }
-
-    companion object {
-        private val VIDEO_INFO_REGEX = Pattern.compile("var flashvars_\\d{7,9} = (\\{.+})")
-    }
-
 }
