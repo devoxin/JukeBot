@@ -4,6 +4,7 @@ import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonParser
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager
+import org.apache.commons.io.IOUtils
 import org.apache.http.HttpStatus
 import java.util.regex.Matcher
 
@@ -11,7 +12,7 @@ class SpotifyTrackLoader : Loader {
     override fun pattern() = TRACK_PATTERN
 
     override fun load(sourceManager: SpotifyAudioSourceManager, matcher: Matcher): AudioItem? {
-        val trackId = matcher.group(1)
+        val trackId = matcher.group(2)
         val spotifyTrack = fetchTrackInfo(sourceManager, trackId)
         val trackArtists = spotifyTrack.getArray("artists")
         val trackArtist = if (trackArtists.isEmpty()) "" else trackArtists.getObject(0).getString("name")

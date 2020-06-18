@@ -33,7 +33,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
         val manager = ctx.guild.audioManager
         val userQuery = ctx.argString.removePrefix("<").removeSuffix(">")
 
-        if (userQuery.startsWith("http")) {
+        if (userQuery.startsWith("http") || userQuery.startsWith("spotify:")) {
             if (userQuery.toLowerCase().contains("soundcloud.com/you/")) {
                 ctx.embed("SoundCloud Liked Tracks", "Loading SoundCloud tracks requires username.")
 
