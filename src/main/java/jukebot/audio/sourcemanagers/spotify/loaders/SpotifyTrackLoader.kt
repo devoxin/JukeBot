@@ -4,7 +4,6 @@ import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonParser
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager
-import org.apache.commons.io.IOUtils
 import org.apache.http.HttpStatus
 import java.util.regex.Matcher
 
