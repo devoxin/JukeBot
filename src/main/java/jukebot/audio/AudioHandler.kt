@@ -212,7 +212,6 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             .withBreadcrumbs(listOf(breadCrumb))
 
         Sentry.capture(eventBuilder)
-        Sentry.capture(exception)
 
         if (repeat != RepeatMode.NONE)
             repeat = RepeatMode.NONE
