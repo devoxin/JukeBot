@@ -45,7 +45,6 @@ class SpotifyAudioSourceManager(
         }
     }
 
-
     /**
      * Source manager shizzle
      */
@@ -116,7 +115,6 @@ class SpotifyAudioSourceManager(
         return future
     }
 
-
     /**
      * Spotify shizzle
      */
@@ -151,7 +149,6 @@ class SpotifyAudioSourceManager(
         }
     }
 
-
     /**
      * Utils boiiii
      */
@@ -173,5 +170,4 @@ class SpotifyAudioSourceManager(
             SpotifyPlaylistLoader()
         )
     }
-
 }

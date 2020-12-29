@@ -32,7 +32,6 @@ import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor
 import java.net.URI
 
 class MixcloudAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: MixcloudAudioSourceManager) : DelegatedAudioTrack(trackInfo) {
-
     override fun makeClone(): AudioTrack {
         return MixcloudAudioTrack(trackInfo, sourceManager)
     }
@@ -67,6 +66,4 @@ class MixcloudAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: M
 
         return sourceManager.decodeUrl(streamKey, mp4Url)
     }
-
-
 }

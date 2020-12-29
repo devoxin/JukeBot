@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import java.util.concurrent.TimeUnit
 
 class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val originalArgs: String, val prefix: String) {
-
     val argString: String
         get() = args.joinToString(" ")
 
@@ -106,5 +105,4 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
             cb(it)
         }, delay, TimeUnit.SECONDS)
     }
-
 }

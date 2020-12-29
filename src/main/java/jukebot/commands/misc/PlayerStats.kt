@@ -11,7 +11,6 @@ import kotlin.math.abs
 @CommandProperties(description = "Displays player statistics", aliases = ["pm"], developerOnly = true)
 @CommandChecks.Playing
 class PlayerStats : Command(ExecutionType.REQUIRE_MUTUAL) {
-
     private val dpFormatter = DecimalFormat("0.00")
 
     override fun execute(context: Context) {
@@ -31,5 +30,4 @@ class PlayerStats : Command(ExecutionType.REQUIRE_MUTUAL) {
                 "Sent packets: ${player.trackPacketsSent}"
         ).queue()
     }
-
 }

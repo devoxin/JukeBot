@@ -9,7 +9,6 @@ class TrackRecommendation(
     val thumbnail: String,
     val description: String
 ) {
-
     companion object {
         fun fromJsonObject(jsonObject: JsonObject): TrackRecommendation {
             val id = jsonObject.getString("id")
@@ -21,5 +20,4 @@ class TrackRecommendation(
             return TrackRecommendation(id, link, title, thumbnail, description)
         }
     }
-
 }

@@ -8,7 +8,6 @@ import jukebot.framework.Context
 
 @CommandProperties(description = "Finds a track and queues it to be played next", aliases = ["pn"], category = CommandCategory.PLAYBACK)
 class PlayNext : Command(ExecutionType.REQUIRE_MUTUAL) {
-
     override fun execute(context: Context) {
         if (context.args.isEmpty()) {
             return context.embed(name, "You need to specify an identifier to lookup.")
@@ -22,5 +21,4 @@ class PlayNext : Command(ExecutionType.REQUIRE_MUTUAL) {
 
         JukeBot.playerManager.loadIdentifier("ytsearch:${context.argString}", context, player, useSelection = false, playNext = true)
     }
-
 }

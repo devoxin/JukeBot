@@ -7,7 +7,6 @@ import jukebot.framework.Context
 
 @CommandProperties(description = "Remove a track from the queue", aliases = ["uq", "remove", "r", "rm"], category = CommandCategory.QUEUE)
 class Unqueue : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 

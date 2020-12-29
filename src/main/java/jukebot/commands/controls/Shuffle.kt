@@ -6,11 +6,9 @@ import jukebot.framework.*
 @CommandChecks.Dj(alone = true)
 @CommandChecks.Playing
 class Shuffle : Command(ExecutionType.REQUIRE_MUTUAL) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
         player.shuffle = !player.shuffle
         context.embed("Player Shuffle", "Shuffle is now **${if (player.shuffle) "enabled" else "disabled"}**")
     }
-
 }

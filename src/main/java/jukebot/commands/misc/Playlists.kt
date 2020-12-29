@@ -20,7 +20,6 @@ import kotlin.math.ceil
 
 @CommandProperties(description = "Manage personal playlists stored within the bot.", aliases = ["pl", "playlist"])
 class Playlists : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val sc = context.args.firstOrNull() ?: ""
 
@@ -34,6 +33,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         this.subcommands[sc]!!.invoke(context, withArgs = true)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     @SubCommand(trigger = "list", description = "View your custom playlists.")
     fun listPlaylists(ctx: Context, args: List<String>) {
         val userPlaylists = Database.getPlaylists(ctx.author.idLong)
@@ -89,22 +89,22 @@ class Playlists : Command(ExecutionType.STANDARD) {
         }
 
         val handler = FunctionalResultHandler(
-            Consumer { ctx.embed("Import Playlist", "You need to provide a playlist URL.\nYou provided a track URL.") },
-            Consumer {
+            { ctx.embed("Import Playlist", "You need to provide a playlist URL.\nYou provided a track URL.") },
+            {
                 val imported = it.tracks.take(CustomPlaylist.TRACK_LIMIT)
                 ctx.embed("Import Playlist", "Importing **${imported.size}** tracks from **${it.name}**...")
 
                 Database.createPlaylist(ctx.author.idLong, title)
                 val playlist = Database.getPlaylist(ctx.author.idLong, title)
-                    ?: return@Consumer ctx.embed("Import Playlist", "An unknown error occurred while creating the playlist.")
+                    ?: return@FunctionalResultHandler ctx.embed("Import Playlist", "An unknown error occurred while creating the playlist.")
 
                 playlist.tracks.addAll(imported)
                 playlist.save()
 
                 ctx.embed("Import Playlist", "Playlist imported as **$title** successfully.")
             },
-            Runnable { ctx.embed("Import Playlist", "No results found!") },
-            Consumer { ctx.embed("Import Playlist", "An error occurred while loading the URL.") }
+            { ctx.embed("Import Playlist", "No results found!") },
+            { ctx.embed("Import Playlist", "An error occurred while loading the URL.") }
         )
 
         JukeBot.playerManager.loadItem(url, handler)
@@ -287,7 +287,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         }
 
         val response = buildString {
-            appendln("You've reached the maximum amount of custom playlists.")
+            appendLine("You've reached the maximum amount of custom playlists.")
 
             if (count < 100) { // Hit 5/50 cap
                 append("[Upgrade your tier](https://patreon.com/devoxin) to get more slots!")
@@ -297,5 +297,4 @@ class Playlists : Command(ExecutionType.STANDARD) {
         ctx.embed("Custom Playlists", response)
         return false
     }
-
 }

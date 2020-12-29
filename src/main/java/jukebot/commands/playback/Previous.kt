@@ -6,7 +6,6 @@ import jukebot.framework.*
 @CommandChecks.Dj(alone = true)
 @CommandChecks.Playing
 class Previous : Command(ExecutionType.REQUIRE_MUTUAL) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 
@@ -17,5 +16,4 @@ class Previous : Command(ExecutionType.REQUIRE_MUTUAL) {
 
         player.player.playTrack(player.previous!!.makeClone())
     }
-
 }

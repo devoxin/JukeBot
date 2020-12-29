@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 
 @CommandProperties(aliases = ["donate"], description = "Provides a link to JukeBot's Patreon")
 class Patreon : Command(ExecutionType.STANDARD) {
-
     private val BASE_URL = "https://www.patreon.com/join/devoxin/checkout?rid="
     private val TIER_1 = "2127364"
     private val TIER_2 = "1594794"
@@ -46,5 +45,4 @@ class Patreon : Command(ExecutionType.STANDARD) {
             addFields(fields)
         }
     }
-
 }

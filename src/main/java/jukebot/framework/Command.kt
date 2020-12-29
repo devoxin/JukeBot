@@ -4,7 +4,6 @@ import jukebot.JukeBot
 import net.dv8tion.jda.api.Permission
 
 abstract class Command(private val executionType: ExecutionType) {
-
     val subcommands = hashMapOf<String, MethodWrapper>()
 
     /**
@@ -148,5 +147,4 @@ abstract class Command(private val executionType: ExecutionType) {
         REQUIRE_MUTUAL,
         STANDARD
     }
-
 }

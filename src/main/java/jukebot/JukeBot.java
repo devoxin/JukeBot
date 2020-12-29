@@ -68,7 +68,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class JukeBot {
-
     /* Bot-Related*/
     public static final long startTime = System.currentTimeMillis();
     public static Logger log = LoggerFactory.getLogger("JukeBot");
@@ -89,7 +88,7 @@ public class JukeBot {
     public static ShardManager shardManager;
 
     public static void main(final String[] args) throws Exception {
-        Thread.currentThread().setName("JukeBot-Main");
+        Thread.currentThread().setName("JukeBot");
         printBanner();
 
         RestAction.setPassContext(false);
@@ -256,5 +255,4 @@ public class JukeBot {
             players.remove(guildId).cleanup();
         }
     }
-
 }

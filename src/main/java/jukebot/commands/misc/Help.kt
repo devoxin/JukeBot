@@ -9,7 +9,6 @@ import jukebot.utils.Helpers
 
 @CommandProperties(description = "Displays all commands", aliases = ["commands", "cmds", "?"])
 class Help : Command(ExecutionType.STANDARD) {
-
     private val categories = CommandCategory.values()
         .mapIndexed { i, e -> "`${i + 1}.` **`${Helpers.pad(e.toTitleCase())}:`** ${e.description}" }
         .joinToString("\n")
@@ -73,5 +72,4 @@ class Help : Command(ExecutionType.STANDARD) {
             .values
             .filter { it.properties.category == category }
             .sortedBy { it.name }
-
 }

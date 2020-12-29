@@ -9,7 +9,6 @@ import jukebot.utils.toTimeString
 @CommandChecks.Dj(alone = true)
 @CommandChecks.Playing
 class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
         val currentTrack = player.player.playingTrack

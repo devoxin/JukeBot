@@ -6,7 +6,6 @@ import jukebot.JukeBot
 import java.util.concurrent.CompletableFuture
 
 class AutoPlay(private val guildId: Long) {
-
     private val trackTitles = mutableSetOf<String>()
 
     val enabled: Boolean
@@ -30,5 +29,4 @@ class AutoPlay(private val guildId: Long) {
     companion object {
         private const val MAX_SET_SIZE = 5
     }
-
 }

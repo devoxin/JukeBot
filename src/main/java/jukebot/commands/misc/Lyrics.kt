@@ -11,7 +11,6 @@ import java.net.URLEncoder
 
 @CommandProperties(description = "Searches for lyrics.")
 class Lyrics : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val player = JukeBot.getPlayer(context.guild.idLong)
 
@@ -62,5 +61,4 @@ class Lyrics : Command(ExecutionType.STANDARD) {
     companion object {
         private const val lyricsUrl = "https://lyrics.tsu.sh/v1/?q="
     }
-
 }

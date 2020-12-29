@@ -12,17 +12,16 @@ import java.util.function.Consumer
 
 @CommandProperties(aliases = ["d", "id"], description = "Show information about a song.")
 class Details : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         if (context.args.isEmpty()) {
             return context.embed("Track Information", "You need to specify a search query.")
         }
 
         val loadHandler = FunctionalResultHandler(
-            Consumer { sendTrackInfo(context, it) },
-            Consumer { sendTrackInfo(context, it.selectedTrack ?: it.tracks.first()) },
-            Runnable { context.embed("No Results", "Couldn't find any tracks related to the query.") },
-            Consumer { context.embed("Load Failed", "An error occurred while trying to load track information.") }
+            { sendTrackInfo(context, it) },
+            { sendTrackInfo(context, it.selectedTrack ?: it.tracks.first()) },
+            { context.embed("No Results", "Couldn't find any tracks related to the query.") },
+            { context.embed("Load Failed", "An error occurred while trying to load track information.") }
         )
 
         JukeBot.playerManager.loadItem("ytsearch:${context.argString}", loadHandler)
@@ -38,5 +37,4 @@ class Details : Command(ExecutionType.STANDARD) {
             setThumbnail("https://img.youtube.com/vi/${track.info.identifier}/0.jpg")
         }
     }
-
 }

@@ -7,7 +7,6 @@ import jukebot.utils.Helpers
 @CommandChecks.Dj(alone = true)
 @CommandChecks.Playing
 class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
-
     override fun execute(context: Context) {
         val handler = context.getAudioPlayer()
 
@@ -23,5 +22,4 @@ class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
     }
 
     private fun createBar(v: Float) = Helpers.createBar(v.toInt(), 200, 10)
-
 }

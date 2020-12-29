@@ -8,7 +8,6 @@ import kotlin.math.min
 @CommandChecks.Dj(alone = false)
 @CommandChecks.Playing
 class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 
@@ -22,5 +21,4 @@ class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {
         val vol = player.player.volume
         context.embed("Player Volume", "${Helpers.createBar(vol, 250, 10)} `$vol`")
     }
-
 }

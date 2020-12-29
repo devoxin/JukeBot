@@ -5,7 +5,6 @@ import jukebot.framework.*
 @CommandProperties(description = "Removes all of the tracks from the queue", aliases = ["cq", "c", "clear", "empty"], category = CommandCategory.QUEUE)
 @CommandChecks.Dj(alone = true)
 class ClearQueue : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 
@@ -16,5 +15,4 @@ class ClearQueue : Command(ExecutionType.STANDARD) {
         player.queue.clear()
         context.embed("Queue Cleared", "The queue is now empty.")
     }
-
 }

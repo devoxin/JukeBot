@@ -14,7 +14,6 @@ import java.io.DataOutput
 import java.util.concurrent.TimeUnit
 
 class CachingSourceManager : AudioSourceManager {
-
     init {
         try {
             jedisPool.resource.use {
@@ -99,5 +98,4 @@ class CachingSourceManager : AudioSourceManager {
             }
         }
     }
-
 }

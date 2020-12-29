@@ -9,7 +9,6 @@ import jukebot.framework.*
 )
 @CommandChecks.Dj(alone = false)
 class RemoveAbsent : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val handler = context.getAudioPlayer()
 
@@ -23,5 +22,4 @@ class RemoveAbsent : Command(ExecutionType.STANDARD) {
         handler.queue.removeAll(tracksToRemove)
         context.embed("Queue Cleaned", "Removed **${tracksToRemove.size}** tracks queued by absent members.")
     }
-
 }

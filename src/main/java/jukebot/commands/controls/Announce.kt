@@ -5,7 +5,6 @@ import jukebot.framework.*
 @CommandProperties(description = "Configure track announcements", category = CommandCategory.CONTROLS)
 @CommandChecks.Dj(alone = false)
 class Announce : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 

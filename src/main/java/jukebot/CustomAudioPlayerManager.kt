@@ -20,7 +20,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlayerManager by dapm {
-
     constructor() : this(DefaultAudioPlayerManager())
 
     fun toBase64String(track: AudioTrack): String {
@@ -72,19 +71,16 @@ class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlaye
         val future = CompletableFuture<AudioTrack>()
 
         val resultHandler = FunctionalResultHandler(
-            Consumer { future.complete(it) },
-            Consumer { future.complete(it.tracks.first()) },
-            Runnable {
+            future::complete,
+            { future.complete(it.tracks.first()) },
+            {
                 val ex = IllegalStateException("No results found")
                 future.completeExceptionally(ex)
             },
-            Consumer {
-                future.completeExceptionally(it)
-            }
+            future::completeExceptionally
         )
 
         loadItem(query, resultHandler)
         return future
     }
-
 }

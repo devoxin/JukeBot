@@ -25,7 +25,6 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import java.text.DecimalFormat
 
 class BassBooster(private val player: AudioPlayer) : EqualizerFactory() {
-
     var percentage: Float = 0.0f
         private set
 
@@ -73,5 +72,4 @@ class BassBooster(private val player: AudioPlayer) : EqualizerFactory() {
 //        INSANE(0.4F, 0.26F, 0.18F),
 //        WTF(1F, 0.8F, 0.6F);
     }
-
 }

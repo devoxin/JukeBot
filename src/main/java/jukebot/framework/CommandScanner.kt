@@ -4,7 +4,6 @@ import com.google.common.reflect.ClassPath
 import jukebot.JukeBot
 
 class CommandScanner(private val pkg: String) {
-
     fun scan(): Map<String, Command> {
         val classes = ClassPath.from(this::class.java.classLoader).getTopLevelClassesRecursive(pkg)
         JukeBot.log.debug("Discovered ${classes.size} commands")
@@ -33,5 +32,4 @@ class CommandScanner(private val pkg: String) {
 
         return cmd
     }
-
 }

@@ -7,7 +7,6 @@ import kotlin.math.ceil
 @CommandProperties(aliases = ["next"], description = "Vote to skip the track", category = CommandCategory.CONTROLS)
 @CommandChecks.Playing
 class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 

@@ -9,7 +9,6 @@ import jukebot.framework.*
 )
 @CommandChecks.Dj(alone = true)
 class DeDuplicate : Command(ExecutionType.REQUIRE_MUTUAL) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 
@@ -24,5 +23,4 @@ class DeDuplicate : Command(ExecutionType.REQUIRE_MUTUAL) {
         val removed = originalSize - player.queue.size
         context.embed("Queue De-duplicated", "Removed $removed duplicate tracks.")
     }
-
 }

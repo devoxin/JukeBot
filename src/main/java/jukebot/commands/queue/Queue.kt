@@ -12,7 +12,6 @@ import kotlin.math.min
 
 @CommandProperties(description = "Displays the current queue", aliases = ["q", "list", "songs"], category = CommandCategory.QUEUE)
 class Queue : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
         val queue = player.queue
@@ -33,13 +32,13 @@ class Queue : Command(ExecutionType.STANDARD) {
             for ((i, track) in queue.iterate(begin..end)) {
                 append("`${i + 1}.` ")
                 append("**[${track.info.title}](${track.info.uri})** ")
-                appendln("<@${track.userData}>")
+                appendLine("<@${track.userData}>")
             }
         }
 
         context.embed {
             setTitle("Queue (${queue.size} songs, $queueDuration)")
-            setDescription(fQueue.toString().trim())
+            setDescription(fQueue.trim())
             setFooter("Page $page/$maxPages", null)
         }
     }

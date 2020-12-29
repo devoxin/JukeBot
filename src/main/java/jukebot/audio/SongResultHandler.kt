@@ -26,7 +26,6 @@ class SongResultHandler(
     private val useSelection: Boolean,
     private val playNext: Boolean = false
 ) : AudioLoadResultHandler {
-
     override fun trackLoaded(track: AudioTrack) {
         cache(track)
 
@@ -201,5 +200,4 @@ class SongResultHandler(
             "spotify"
         )
     }
-
 }

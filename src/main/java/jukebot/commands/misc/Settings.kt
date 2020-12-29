@@ -150,6 +150,7 @@ class Settings : Command(ExecutionType.STANDARD) {
         ctx.embed("Auto-DC Updated", "Auto-DC is now `$human`")
     }
 
+    @Suppress("UNUSED_PARAMETER")
     @SubCommand(trigger = "view", description = "Displays all settings and their values.")
     fun view(ctx: Context, args: List<String>) {
         val customDjRole: Long? = Database.getDjRole(ctx.guild.idLong)

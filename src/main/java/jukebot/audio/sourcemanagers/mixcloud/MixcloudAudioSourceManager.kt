@@ -188,5 +188,4 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
         private val JS_REGEX = Pattern.compile("<script[^>]+src=\"(https://(?:www\\.)?mixcloud\\.com/media/(?:js2/www_js_4|js/www)\\.[^>]+\\.js)")
         private val KEY_REGEX = Pattern.compile("\\{return *?[\"']([^\"']+)[\"']\\.concat\\([\"']([^\"']+)[\"']\\)}")
     }
-
 }

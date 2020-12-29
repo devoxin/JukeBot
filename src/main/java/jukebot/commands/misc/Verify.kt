@@ -10,7 +10,6 @@ import jukebot.utils.Helpers
 
 @CommandProperties(description = "Receive your donor rewards if you're a patron", aliases = ["perks", "rewards"])
 class Verify : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val sc = context.args.firstOrNull() ?: ""
 
@@ -60,23 +59,6 @@ class Verify : Command(ExecutionType.STANDARD) {
 
             Database.setTier(ctx.author.idLong, calculatedTier)
         }
-    }
-
-    /**
-     * @return The amount of servers the user may register.
-     */
-    fun calculateServerQuota(userId: Long): Int {
-        val pledge = if (userId == JukeBot.botOwnerId) {
-            Integer.MAX_VALUE
-        } else {
-            Database.getTier(userId)
-        }
-
-        if (pledge < 3) {
-            return 0
-        }
-
-        return ((pledge - 3) / 1) + 1
     }
 
     @SubCommand(trigger = "addserver", description = "Registers the current server to receive perks")
@@ -170,4 +152,13 @@ class Verify : Command(ExecutionType.STANDARD) {
         ctx.embed("Perks | Server Management", "Server unregistered successfully.")
     }
 
+    fun calculateServerQuota(userId: Long): Int {
+        val pledge = if (userId == JukeBot.botOwnerId) Integer.MAX_VALUE else Database.getTier(userId)
+
+        if (pledge < 3) {
+            return 0
+        }
+
+        return ((pledge - 3) / 1) + 1
+    }
 }

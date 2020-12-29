@@ -1,7 +1,6 @@
 package jukebot.audio.sourcemanagers.pornhub
 
 object Utils {
-
     //private val assignmentPattern = "(var.+?media_0[^<]+)".toPattern()
     //private val assignmentPattern = "(var.+?media_0.+)".toPattern()
 
@@ -62,5 +61,4 @@ object Utils {
         return v[cleaned]
             ?: cleaned.replace("'", "").replace("\"", "")
     }
-
 }

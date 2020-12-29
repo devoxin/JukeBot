@@ -6,7 +6,6 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 interface Loader {
-
     /**
      * Returns the pattern used to match URLs for this loader.
      */
@@ -16,5 +15,4 @@ interface Loader {
      * Loads an AudioItem from the given regex match.
      */
     fun load(sourceManager: SpotifyAudioSourceManager, matcher: Matcher): AudioItem?
-
 }

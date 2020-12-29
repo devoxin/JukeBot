@@ -122,7 +122,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         val audioManager = JukeBot.shardManager.getGuildById(guildId)?.audioManager
             ?: return JukeBot.removePlayer(guildId)
 
-        if (audioManager.isConnected || audioManager.isAttemptingToConnect) {
+        if (audioManager.isConnected) {
             Helpers.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS)
 
             if (Database.getIsPremiumServer(guildId)) {
@@ -274,5 +274,4 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     companion object {
         const val EXPECTED_PACKET_COUNT_PER_MIN = ((60 * 1000) / 20).toDouble()
     }
-
 }

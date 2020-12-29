@@ -54,9 +54,4 @@ class KSoftAPI(private val key: String) {
         private const val BASE_URL = "https://api.ksoft.si"
         private val applicationJson = MediaType.parse("application/json")
     }
-
 }
-
-
-
-

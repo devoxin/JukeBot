@@ -8,7 +8,6 @@ import jukebot.framework.Context
 
 @CommandProperties(description = "Developer menu", developerOnly = true)
 class Dev : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         when (context.args.firstOrNull()) {
             "preload" -> {
@@ -44,5 +43,4 @@ class Dev : Command(ExecutionType.STANDARD) {
             }
         }
     }
-
 }

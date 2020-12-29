@@ -9,7 +9,6 @@ import java.util.concurrent.CompletableFuture
 
 @CommandProperties(description = "Evaluate arbitrary code.", developerOnly = true)
 class Eval : Command(ExecutionType.STANDARD) {
-
     private val engine = KotlinJsr223JvmLocalScriptEngineFactory().scriptEngine
 
     override fun execute(context: Context) {
@@ -45,5 +44,4 @@ class Eval : Command(ExecutionType.STANDARD) {
             }
         }
     }
-
 }

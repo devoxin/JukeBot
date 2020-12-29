@@ -1,7 +1,6 @@
 package jukebot.audio.sourcemanagers.mixcloud
 
 object Utils {
-
     fun cycle(i: String): Sequence<Char> = sequence {
         var index = -1
         while (true) {
@@ -18,5 +17,4 @@ object Utils {
             }
             .joinToString("")
     }
-
 }

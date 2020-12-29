@@ -279,5 +279,4 @@ object Database {
         Sentry.capture(e)
         null
     }
-
 }

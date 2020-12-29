@@ -8,7 +8,6 @@ import jukebot.utils.toTimeString
 @CommandProperties(description = "Displays the currently playing track", aliases = ["n", "np"], category = CommandCategory.QUEUE)
 @CommandChecks.Playing
 class Now : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val player = JukeBot.getPlayer(context.guild.idLong)
 

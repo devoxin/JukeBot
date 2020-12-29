@@ -11,7 +11,6 @@ import java.time.OffsetDateTime
 
 @CommandProperties(aliases = ["suggest"], description = "Send feedback to the developer")
 class Feedback : Command(ExecutionType.STANDARD) {
-
     private val webhookClient: WebhookClient? = if ("feedback_webhook" in JukeBot.config) {
         WebhookClientBuilder(JukeBot.config["feedback_webhook"]).build()
     } else {
@@ -55,5 +54,4 @@ class Feedback : Command(ExecutionType.STANDARD) {
     override fun destroy() {
         webhookClient?.close()
     }
-
 }

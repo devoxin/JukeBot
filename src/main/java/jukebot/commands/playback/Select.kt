@@ -12,7 +12,6 @@ import jukebot.framework.Context
     category = CommandCategory.PLAYBACK
 )
 class Select : Command(ExecutionType.TRIGGER_CONNECT) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 

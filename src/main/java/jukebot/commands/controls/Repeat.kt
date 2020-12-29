@@ -7,7 +7,6 @@ import jukebot.framework.*
 @CommandChecks.Dj(alone = true)
 @CommandChecks.Playing
 class Repeat : Command(ExecutionType.REQUIRE_MUTUAL) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 

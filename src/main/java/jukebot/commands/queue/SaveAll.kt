@@ -7,7 +7,6 @@ import jukebot.framework.*
 @CommandProperties(description = "Adds all tracks in the queue to a custom playlist", category = CommandCategory.QUEUE)
 @CommandChecks.Playing
 class SaveAll : Command(ExecutionType.STANDARD) {
-
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 

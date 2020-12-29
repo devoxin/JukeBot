@@ -179,5 +179,4 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
         private val VIDEO_INFO_REGEX = Pattern.compile("var flashvars_\\d{7,9} = (\\{.+})")
         private const val VIDEO_SEARCH_PREFIX = "phsearch:"
     }
-
 }
