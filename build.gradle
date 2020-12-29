@@ -20,9 +20,10 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'application'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = 'jukebot.JukeBot'
+
+apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
     mavenCentral()
@@ -81,7 +82,7 @@ shadowJar {
 }
 
 wrapper {
-    gradleVersion = '4.10.2'
+    gradleVersion = '6.2.2'
 }
 
 def getBuildVersion() {
