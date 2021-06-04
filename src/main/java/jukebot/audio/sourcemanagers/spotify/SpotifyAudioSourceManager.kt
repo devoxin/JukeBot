@@ -1,7 +1,7 @@
 package jukebot.audio.sourcemanagers.spotify
 
 import com.grack.nanojson.JsonParser
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
@@ -64,7 +64,7 @@ class SpotifyAudioSourceManager(
         httpInterfaceManager.close()
     }
 
-    override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
+    override fun loadItem(manager: AudioPlayerManager, reference: AudioReference): AudioItem? {
         if (accessToken.isEmpty()) {
             return null
         }
