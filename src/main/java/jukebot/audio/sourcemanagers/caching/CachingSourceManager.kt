@@ -1,6 +1,6 @@
 package jukebot.audio.sourcemanagers.caching
 
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.track.*
 import jukebot.JukeBot
@@ -38,7 +38,7 @@ class CachingSourceManager : AudioSourceManager {
 
     override fun isTrackEncodable(track: AudioTrack) = false
 
-    override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
+    override fun loadItem(manager: AudioPlayerManager, reference: AudioReference): AudioItem? {
         if (jedisPool.isClosed) {
             return null
         }
