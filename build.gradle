@@ -26,14 +26,14 @@ mainClassName = 'jukebot.JukeBot'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
+    maven {
+        url 'https://m2.dv8tion.net/releases'
+        name 'm2-dv8tion'
+    }
+    maven { url 'https://dl.bintray.com/natanbc/maven' }
     mavenCentral()
     jcenter()
-    maven {
-        url 'https://jitpack.io'
-    }
-    maven {
-        url 'https://dl.bintray.com/sedmelluq/com.sedmelluq'
-    }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
