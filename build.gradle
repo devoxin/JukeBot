@@ -73,6 +73,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-scripting-jsr223:$kotlin_version"
 
     implementation 'com.grack:nanojson:1.4'
+    implementation 'org.jsoup:jsoup:1.13.1'
 }
 
 shadowJar {
