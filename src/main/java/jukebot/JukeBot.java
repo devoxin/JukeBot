@@ -63,6 +63,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -228,6 +230,10 @@ public class JukeBot {
         } else {
             Helpers.INSTANCE.getMonitor().scheduleAtFixedRate(Helpers.INSTANCE::monitorPledges, 0, 1, TimeUnit.DAYS);
         }
+
+        String jarLocation = JukeBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String decodedLocation = URLDecoder.decode(jarLocation, Charset.defaultCharset());
+        System.setProperty("kotlin.script.classpath", decodedLocation);
     }
 
     public static boolean hasPlayer(final long guildId) {
