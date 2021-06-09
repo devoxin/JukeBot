@@ -3,6 +3,7 @@ package jukebot.listeners
 import io.sentry.Sentry
 import jukebot.Database
 import jukebot.JukeBot
+import jukebot.framework.Command
 import jukebot.framework.CommandScanner
 import jukebot.framework.Context
 import jukebot.utils.Helpers
@@ -61,6 +62,10 @@ class CommandHandler : EventListener {
     }
 
     companion object {
-        val commands = CommandScanner("jukebot.commands").scan().toMutableMap()
+        val commands = mutableMapOf<String, Command>()
+
+        fun scan() {
+            commands.putAll(CommandScanner("jukebot.commands").scan().toMutableMap())
+        }
     }
 }

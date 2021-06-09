@@ -235,6 +235,8 @@ public class JukeBot {
         String decodedLocation = URLDecoder.decode(jarLocation, Charset.defaultCharset());
         System.out.println(decodedLocation);
         System.setProperty("kotlin.script.classpath", decodedLocation);
+
+        CommandHandler.Companion.scan();
     }
 
     public static boolean hasPlayer(final long guildId) {
