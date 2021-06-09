@@ -93,6 +93,11 @@ public class JukeBot {
         Thread.currentThread().setName("JukeBot");
         printBanner();
 
+        String jarLocation = JukeBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        //String decodedLocation = URLDecoder.decode(jarLocation, Charset.defaultCharset());
+        System.out.println(jarLocation);
+        System.setProperty("kotlin.script.classpath", jarLocation);
+
         RestAction.setPassContext(false);
         RestAction.setDefaultFailure((e) -> {
         });
@@ -230,13 +235,6 @@ public class JukeBot {
         } else {
             Helpers.INSTANCE.getMonitor().scheduleAtFixedRate(Helpers.INSTANCE::monitorPledges, 0, 1, TimeUnit.DAYS);
         }
-
-        String jarLocation = JukeBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        String decodedLocation = URLDecoder.decode(jarLocation, Charset.defaultCharset());
-        System.out.println(decodedLocation);
-        System.setProperty("kotlin.script.classpath", decodedLocation);
-
-        CommandHandler.Companion.scan();
     }
 
     public static boolean hasPlayer(final long guildId) {

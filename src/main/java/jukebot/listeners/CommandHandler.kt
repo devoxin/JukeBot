@@ -62,10 +62,6 @@ class CommandHandler : EventListener {
     }
 
     companion object {
-        val commands = mutableMapOf<String, Command>()
-
-        fun scan() {
-            commands.putAll(CommandScanner("jukebot.commands").scan().toMutableMap())
-        }
+        val commands = CommandScanner("jukebot.commands").scan().toMutableMap()
     }
 }
