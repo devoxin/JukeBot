@@ -233,6 +233,7 @@ public class JukeBot {
 
         String jarLocation = JukeBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         String decodedLocation = URLDecoder.decode(jarLocation, Charset.defaultCharset());
+        System.out.println(decodedLocation);
         System.setProperty("kotlin.script.classpath", decodedLocation);
     }
 
