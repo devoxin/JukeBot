@@ -109,7 +109,7 @@ public class JukeBot {
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), new EventHandler(), waiter)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
-                .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOTE, CacheFlag.ONLINE_STATUS, CacheFlag.ROLE_TAGS)
+                .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOTE, CacheFlag.ROLE_TAGS, CacheFlag.ONLINE_STATUS)
                 .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"))
                 .setBulkDeleteSplittingEnabled(false);
 
