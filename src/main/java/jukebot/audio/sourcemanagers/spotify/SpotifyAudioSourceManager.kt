@@ -11,6 +11,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioReference
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
 import jukebot.JukeBot
+import jukebot.audio.sourcemanagers.spotify.loaders.SpotifyAlbumLoader
 import jukebot.audio.sourcemanagers.spotify.loaders.SpotifyPlaylistLoader
 import jukebot.audio.sourcemanagers.spotify.loaders.SpotifyTrackLoader
 import jukebot.utils.Helpers
@@ -167,6 +168,7 @@ class SpotifyAudioSourceManager(
 
         private val loaders = listOf(
             SpotifyTrackLoader(),
+            SpotifyAlbumLoader(),
             SpotifyPlaylistLoader()
         )
     }
