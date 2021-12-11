@@ -86,7 +86,7 @@ class SpotifyAudioSourceManager(
         for (loader in loaders) {
             val matcher = loader.pattern().matcher(identifier)
 
-            if (matcher.matches()) {
+            if (matcher.find()) {
                 return loader.load(this, matcher)
             }
         }
