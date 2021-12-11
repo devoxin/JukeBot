@@ -89,14 +89,29 @@ class Settings : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "embedcolor", description = "Sets the colour used for embeds")
     fun embedcolor(ctx: Context, args: List<String>) {
-        val color = args.firstOrNull()?.toColorOrNull()
-            ?: return ctx.embed("Invalid Colour", "You need to specify a valid hex. Example: `#1E90FF`")
+        val hex = when (args.size) {
+            1 -> args.first()
+            3 -> {
+                val (r, g, b) = args.map { it.toIntOrNull() }.map { it?.coerceIn(0, 255) }
+
+                if (r == null || g == null || b == null) {
+                    return ctx.embed("Invalid Colour", "RGB must be 3 different numbers between 0-255")
+                }
+
+                String.format("#%02x%02x%02x", r, g, b)
+            }
+            else -> return ctx.embed("Invalid Colour", "You must specify either a [hex code or RGB](https://www.w3schools.com/colors/colors_picker.asp)")
+        }
+
+        val color = hex.toColorOrNull()
+            ?: return ctx.embed("Invalid Colour", "The provided argument could not be resolved into a colour.\n" +
+                "Specify a hex or RGB. Example: `#1E90FF` or `30 144 255`")
 
         Database.setColour(ctx.guild.idLong, color.rgb)
         ctx.embed {
             setColor(color.rgb)
             setTitle("Colour Updated")
-            setDescription("Set new colour to `${args.first()}`")
+            setDescription("Set new colour to `${String.format("#%02x%02x%02x", color.red, color.green, color.blue)}`")
         }
     }
 
@@ -156,7 +171,7 @@ class Settings : Command(ExecutionType.STANDARD) {
         val customDjRole: Long? = Database.getDjRole(ctx.guild.idLong)
         val djRoleFormatted = if (customDjRole != null) "<@&$customDjRole>" else "Default (DJ)"
         val skipThreshold = dpFormatter.format(Database.getSkipThreshold(ctx.guild.idLong) * 100)
-        val hex = Integer.toHexString(ctx.embedColor and 0xffffff)
+        val hex = '#' + Integer.toHexString(ctx.embedColor and 0xffffff)
         val musicNick = if (Database.getIsMusicNickEnabled(ctx.guild.idLong)) "Enabled" else "Disabled"
         val autoPlay = if (Database.getIsPremiumServer(ctx.guild.idLong) &&
             Database.getIsAutoPlayEnabled(ctx.guild.idLong)) "Enabled" else "Disabled"
