@@ -92,7 +92,7 @@ class Settings : Command(ExecutionType.STANDARD) {
         val hex = when (args.size) {
             1 -> args.first()
             3 -> {
-                val (r, g, b) = args.map { it.toIntOrNull() }.map { it?.coerceIn(0, 255) }
+                val (r, g, b) = args.map { it.toIntOrNull()?.coerceIn(0, 255) }
 
                 if (r == null || g == null || b == null) {
                     return ctx.embed("Invalid Colour", "RGB must be 3 different numbers between 0-255")
