@@ -14,9 +14,11 @@ import io.sentry.event.interfaces.ExceptionInterface
 import jukebot.Database
 import jukebot.JukeBot
 import jukebot.utils.Helpers
+import jukebot.utils.toMessage
 import jukebot.utils.toTimeString
 import jukebot.utils.toTitleCase
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.audio.AudioSendHandler
 import java.nio.ByteBuffer
@@ -145,11 +147,13 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             ?.takeIf { Helpers.canSendTo(it) }
             ?: return
 
-        channel.sendMessage(EmbedBuilder()
-            .setColor(Database.getColour(channel.guild.idLong))
-            .setTitle(title)
-            .setDescription(Helpers.truncate(description, 1000))
-            .build()
+        channel.sendMessage(
+            EmbedBuilder().apply {
+                setColor(Database.getColour(channel.guild.idLong))
+                setTitle(title)
+                setDescription(Helpers.truncate(description, 1000))
+                build()
+            }.build().toMessage()
         ).queue()
     }
 

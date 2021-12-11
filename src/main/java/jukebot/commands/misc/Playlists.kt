@@ -8,10 +8,7 @@ import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.framework.SubCommand
-import jukebot.utils.Helpers
-import jukebot.utils.Limits
-import jukebot.utils.Page
-import jukebot.utils.separate
+import jukebot.utils.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -143,7 +140,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
             return ctx.embed("Custom Playlists", "No tracks to manage.")
         }
 
-        val em = buildEmbed(ctx, playlist)
+        val em = buildEmbed(ctx, playlist).toMessage()
         ctx.channel.sendMessage(em).queue {
             manageMenu(ctx, it, playlist, 1)
         }
@@ -174,7 +171,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
                     }
 
                     playlist.tracks.removeAt(index - 1)
-                    dialog.editMessage(buildEmbed(ctx, playlist, page)).queue { manageMenu(ctx, it, playlist, page) }
+                    dialog.editMessage(buildEmbed(ctx, playlist, page).toMessage()).queue { manageMenu(ctx, it, playlist, page) }
                 }
                 "page" -> {
                     val maxPages = ceil(playlist.tracks.size.toDouble() / 10).toInt()
@@ -185,7 +182,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
                         return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
-                    dialog.editMessage(buildEmbed(ctx, playlist, index)).queue { manageMenu(ctx, it, playlist, index) }
+                    dialog.editMessage(buildEmbed(ctx, playlist, index).toMessage()).queue { manageMenu(ctx, it, playlist, index) }
                 }
                 "move" -> {
                     if (args.size < 2) {
@@ -205,7 +202,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
                     playlist.tracks.removeAt(i1 - 1)
                     playlist.tracks.add(i2 - 1, selectedTrack)
 
-                    dialog.editMessage(buildEmbed(ctx, playlist, page)).queue { manageMenu(ctx, it, playlist, page) }
+                    dialog.editMessage(buildEmbed(ctx, playlist, page).toMessage()).queue { manageMenu(ctx, it, playlist, page) }
                 }
                 "save" -> {
                     playlist.save()

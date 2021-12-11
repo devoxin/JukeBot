@@ -6,7 +6,9 @@ import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.utils.TextSplitter
 import jukebot.utils.json
+import jukebot.utils.toMessage
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
 import java.net.URLEncoder
 
 @CommandProperties(description = "Searches for lyrics.")
@@ -46,11 +48,13 @@ class Lyrics : Command(ExecutionType.STANDARD) {
     }
 
     private fun sendChunks(context: Context, title: String, chunks: Array<String>, index: Int = 0) {
-        context.channel.sendMessage(EmbedBuilder()
-            .setColor(context.embedColor)
-            .setTitle(title)
-            .setDescription(chunks[index])
-            .build()
+        context.channel.sendMessage(
+            EmbedBuilder().apply {
+                setColor(context.embedColor)
+                setTitle(title)
+                setDescription(chunks[index])
+                build()
+            }.build().toMessage()
         ).queue {
             if (chunks.size > index + 1) {
                 sendChunks(context, title, chunks, index + 1)

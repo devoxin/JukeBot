@@ -3,6 +3,7 @@ package jukebot.utils
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonParser
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import okhttp3.Response
@@ -19,14 +20,16 @@ fun String.toTitleCase(): String {
     return this[0].toUpperCase() + this.substring(1)
 }
 
-fun Message.editEmbed(block: EmbedBuilder.() -> Unit) {
-    this.editMessage(EmbedBuilder().apply(block).build()).queue()
-}
+fun MessageEmbed.toMessage(): Message = MessageBuilder().setEmbeds(this).build()
 
 fun EmbedBuilder.addFields(fields: Array<MessageEmbed.Field>) {
     for (field in fields) {
         this.addField(field)
     }
+}
+
+fun Message.editEmbed(block: EmbedBuilder.() -> Unit) {
+    this.editMessage(EmbedBuilder().apply(block).build().toMessage()).queue()
 }
 
 fun Long.toTimeString(): String {

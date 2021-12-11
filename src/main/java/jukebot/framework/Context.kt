@@ -4,6 +4,7 @@ import jukebot.Database
 import jukebot.JukeBot
 import jukebot.audio.AudioHandler
 import jukebot.utils.Helpers
+import jukebot.utils.toMessage
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -78,6 +79,7 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
             .setColor(embedColor)
             .apply(block)
             .build()
+            .toMessage()
 
         event.channel.sendMessage(embed).queue()
     }
@@ -92,6 +94,7 @@ class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val 
             .setTitle(title)
             .setDescription(description)
             .build()
+            .toMessage()
 
         event.channel.sendMessage(embed).queue { m ->
             JukeBot.waiter.waitForSelection(author.idLong, {
