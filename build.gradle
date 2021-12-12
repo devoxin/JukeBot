@@ -4,7 +4,7 @@ version '6'
 buildscript {
     ext.kotlin_version = '1.4.21'
     ext.kotlin_coroutines = '1.3.5'
-    ext.logger_version = '2.13.1'
+    ext.logger_version = '2.15.0'
 
     repositories {
         jcenter()
