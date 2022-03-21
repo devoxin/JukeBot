@@ -1,5 +1,9 @@
 package jukebot.audio.sourcemanagers.pornhub
 
+import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser
+import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface
+import org.apache.http.client.methods.HttpGet
+
 object Utils {
     private val formatPattern = "(var\\s+(?:media|quality)_.+)".toPattern()
     private val mediaStringPattern = "(var.+?mediastring[^<]+)".toPattern()
@@ -8,7 +12,7 @@ object Utils {
     private val links = "https.+?(?=,upgrade)".toRegex()
 
 
-    fun extractMediaString(page: String): String {
+    fun extractMediaString(page: String, http: HttpInterface): String {
         val vars = hashMapOf<String, String>()
         val assignments = extractAssignments(page)
 
@@ -25,19 +29,25 @@ object Utils {
             vars[name] = parseSegment(value, vars)
         }
 
-        val formats = vars.filter { it.key.startsWith("media") || it.key.startsWith("qualityItems_") }
+        val formats = mutableMapOf<String, String>()
 
-        val validFormats = formats.filter { it.key.startsWith("qualityItems")}
-        if(validFormats.isEmpty()) {
-            throw IllegalStateException("Failed to parse valid formats.")
-        } else if (validFormats.size > 1) {
-            throw IllegalStateException("Contains too many entries from parse.")
+        for ((formatKey, url) in vars) {
+            when {
+                formatKey.startsWith("quality_") ||
+                    formatKey.startsWith("media") -> formats[formatKey] = url
+
+                formatKey.startsWith("flashvars") &&
+                    "/video/get_media" in url -> formats.putAll(loadMp4Formats(url, http))
+
+                else -> continue
+            }
         }
 
-        val newLink = validFormats.iterator().next().value.replace("\\", "", ignoreCase = true)
-
-        val values = links.findAll(newLink)
-        return values.iterator().next().value
+        return formats["quality_720p"]
+            ?: formats["quality_480p"]
+            ?: formats["quality_240p"]
+            ?: formats["quality_1080p"] // This is last because it's a relatively new option, and might not always be available for free.
+            ?: throw IllegalStateException("No formats detected")
     }
 
     fun extractAssignments(script: String): List<String> {
@@ -54,6 +64,28 @@ object Utils {
         }
 
         return assignments.group(1).split(';')
+    }
+
+    private fun loadMp4Formats(getMediaUrl: String, http: HttpInterface): Map<String, String> {
+        val formats = mutableMapOf<String, String>()
+
+        http.use {
+            it.execute(HttpGet(getMediaUrl)).use { res ->
+                val json = JsonBrowser.parse(res.entity.content)
+
+                for (format in json.values()) {
+                    if (format.get("format").safeText() != "mp4") {
+                        continue
+                    }
+
+                    val quality = format.get("quality").text() + 'p' // 240, 480, 720, 1080
+                    val videoUrl = format.get("videoUrl").text()
+                    formats["quality_$quality"] = videoUrl
+                }
+            }
+        }
+
+        return formats
     }
 
     fun parseSegment(segment: String, v: HashMap<String, String>): String {

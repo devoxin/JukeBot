@@ -31,6 +31,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioReference
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
+import jukebot.audio.sourcemanagers.mixcloud.Utils.urlDecoded
+import jukebot.audio.sourcemanagers.mixcloud.Utils.urlEncoded
 import org.apache.commons.io.IOUtils
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.CloseableHttpResponse
@@ -44,6 +46,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
+import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
@@ -59,11 +62,11 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
         }
 
         return try {
-            loadItemOnce(reference)
+            loadItemOnce(reference, matcher)
         } catch (exception: FriendlyException) {
             // In case of a connection reset exception, try once more.
             if (HttpClientTools.isRetriableNetworkException(exception.cause)) {
-                loadItemOnce(reference)
+                loadItemOnce(reference, matcher)
             } else {
                 throw exception
             }
@@ -90,25 +93,67 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
         httpInterfaceManager.configureBuilder(configurator)
     }
 
-    private fun loadItemOnce(reference: AudioReference): AudioItem {
+    private fun loadItemOnce(reference: AudioReference, matcher: Matcher): AudioItem? {
         try {
-            val trackInfo = getTrackInfo(reference.identifier) ?: return AudioReference.NO_TRACK
+            val username = matcher.group(1).urlDecoded()
+            val slug = matcher.group(2).urlDecoded()
+            val trackInfo = extractTrackInfoGraphQl(username, slug) ?: return null
+            //val trackInfo = getTrackInfo(reference.identifier) ?: return AudioReference.NO_TRACK
 
-            if ("false".equals(trackInfo.get("isPlayable").text(), true)) {
-                throw FriendlyException(trackInfo.get("restrictedReason").text(), FriendlyException.Severity.COMMON, null)
-            }
+//            if ("false".equals(trackInfo.get("isPlayable").text(), true)) {
+//                throw FriendlyException(trackInfo.get("restrictedReason").text(), FriendlyException.Severity.COMMON, null)
+//            }
 
             val url = reference.identifier
-            val id = trackInfo.get("slug").text()
+            //val id = trackInfo.get("slug").text()
+            val id = matcher.group(2)
             val title = trackInfo.get("name").text()
             val duration = trackInfo.get("audioLength").`as`(Long::class.java) * 1000
-            val uploader = trackInfo.get("owner").get("displayName").text()
+            val uploader = trackInfo.get("owner").get("username").text() // displayName
 
             return buildTrackObject(url, id, title, uploader, false, duration)
         } catch (e: Exception) {
             throw ExceptionTools.wrapUnfriendlyExceptions("Loading information for a MixCloud track failed.", FriendlyException.Severity.FAULT, e)
         }
     }
+
+    internal fun extractTrackInfoGraphQl(username: String, slug: String? = null): JsonBrowser? {
+        val slugFormatted = if (slug != null) String.format(", slug: \"%s\"", slug) else ""
+        val query = String.format("{\n  cloudcastLookup(lookup: {username: \"%s\"%s}) {\n    %s\n  }\n}", username, slugFormatted, requestStructure)
+        val encodedQuery = query.urlEncoded()
+
+        makeHttpRequest(HttpGet("https://www.mixcloud.com/graphql?query=$encodedQuery")).use {
+            val statusCode = it.statusLine.statusCode
+
+            if (statusCode != 200) {
+                if (statusCode == 404) {
+                    return null
+                }
+                throw IOException("Invalid status code for Mixcloud track page response: $statusCode")
+            }
+
+            val content = IOUtils.toString(it.entity.content, StandardCharsets.UTF_8)
+            val json = JsonBrowser.parse(content).get("data").get("cloudcastLookup")
+
+            if (!json.get("streamInfo").isNull) {
+                return json
+            }
+
+            return null
+        }
+    }
+
+    private val requestStructure = """audioLength
+    name
+    owner {
+      username
+    }
+    streamInfo {
+      dashUrl
+      hlsUrl
+      url
+    }
+    """.trim()
 
     fun getTrackInfo(uri: String): JsonBrowser? {
         makeHttpRequest(HttpGet(uri)).use {
@@ -122,10 +167,6 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
             }
 
             val content = IOUtils.toString(it.entity.content, StandardCharsets.UTF_8)
-
-//            if (content.contains("m-play-info")) { // legacy
-//                // TODO
-//            }
 
             val matcher = JSON_REGEX.matcher(content)
             check(matcher.find()) { "Missing MixCloud track JSON" }
@@ -167,11 +208,6 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
         }
     }
 
-    fun decodeUrl(key: String, url: String): String {
-        val xorUrl = String(Base64.getDecoder().decode(url))
-        return Utils.decryptXor(key, xorUrl)
-    }
-
     private fun buildTrackObject(uri: String, identifier: String, title: String, uploader: String, isStream: Boolean, duration: Long): MixcloudAudioTrack {
         return MixcloudAudioTrack(AudioTrackInfo(title, uploader, duration, identifier, isStream, uri), this)
     }
@@ -187,5 +223,7 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
         private val JSON_REGEX = Pattern.compile("<script id=\"relay-data\" type=\"text/x-mixcloud\">([^<]+)</script>")
         private val JS_REGEX = Pattern.compile("<script[^>]+src=\"(https://(?:www\\.)?mixcloud\\.com/media/(?:js2/www_js_4|js/www)\\.[^>]+\\.js)")
         private val KEY_REGEX = Pattern.compile("\\{return *?[\"']([^\"']+)[\"']\\.concat\\([\"']([^\"']+)[\"']\\)}")
+
+        internal const val DECRYPTION_KEY = "IFYOUWANTTHEARTISTSTOGETPAIDDONOTDOWNLOADFROMMIXCLOUD"
     }
 }

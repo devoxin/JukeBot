@@ -127,7 +127,11 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 val title = anchor.text()
                 val identifier = anchor.parents().select("li.videoBox").first()!!.attr("_vkey")
                 val url = anchor.absUrl("href")
-                val durationStr = anchor.parents().select("div.videoPreviewBg .marker-overlays var").firstOrNull()?.text()
+                val durationStr = anchor.parents()
+                    .select("div.videoPreviewBg .marker-overlays var")
+                    .firstOrNull()
+                    ?.text()
+                // TODO: Fix duration
                 val duration = if (durationStr != null) parseDuration(durationStr) else 0L
 
                 tracks.add(buildTrackObject(url, identifier, title, "Unknown Uploader", false, duration))
@@ -156,7 +160,14 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
         }
     }
 
-    private fun buildTrackObject(uri: String, identifier: String, title: String, uploader: String, isStream: Boolean, duration: Long): PornHubAudioTrack {
+    private fun buildTrackObject(
+        uri: String,
+        identifier: String,
+        title: String,
+        uploader: String,
+        isStream: Boolean,
+        duration: Long
+    ): PornHubAudioTrack {
         return PornHubAudioTrack(
             AudioTrackInfo(title, uploader, duration, identifier, isStream, uri),
             this
