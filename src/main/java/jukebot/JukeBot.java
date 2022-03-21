@@ -95,7 +95,6 @@ public class JukeBot {
 
         String jarLocation = JukeBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         //String decodedLocation = URLDecoder.decode(jarLocation, Charset.defaultCharset());
-        System.out.println(jarLocation);
         System.setProperty("kotlin.script.classpath", jarLocation);
 
         RestAction.setPassContext(false);
@@ -109,7 +108,13 @@ public class JukeBot {
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), new EventHandler(), waiter)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
-                .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOTE, CacheFlag.ROLE_TAGS, CacheFlag.ONLINE_STATUS)
+                .disableCache(
+                        CacheFlag.ACTIVITY,
+                        CacheFlag.CLIENT_STATUS,
+                        CacheFlag.EMOTE,
+                        CacheFlag.ROLE_TAGS,
+                        CacheFlag.ONLINE_STATUS
+                )
                 .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"))
                 .setBulkDeleteSplittingEnabled(false);
 

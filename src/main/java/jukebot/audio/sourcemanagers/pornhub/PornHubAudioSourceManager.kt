@@ -109,10 +109,10 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
             val document = Jsoup.parse(it.entity.content, StandardCharsets.UTF_8.name(), "https://pornhub.com")
             val videos = document.getElementsByClass("wrap")
                 .filter { elem ->
-                    !elem.select("div.thumbnail-info-wrapper span.title a")
+                    elem.select("div.thumbnail-info-wrapper span.title a")
                         .first()
-                        .attr("href")
-                        .contains("playlist")
+                        ?.attr("href")
+                        ?.contains("playlist") != true
                 }
 
             if (videos.isEmpty()) {
@@ -123,8 +123,9 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
             for (e in videos) {
                 val anchor = e.select("div.thumbnail-info-wrapper span.title a").first()
+                    ?: continue
                 val title = anchor.text()
-                val identifier = anchor.parents().select("li.videoBox").first().attr("_vkey")
+                val identifier = anchor.parents().select("li.videoBox").first()!!.attr("_vkey")
                 val url = anchor.absUrl("href")
                 val durationStr = anchor.parents().select("div.videoPreviewBg .marker-overlays var").firstOrNull()?.text()
                 val duration = if (durationStr != null) parseDuration(durationStr) else 0L

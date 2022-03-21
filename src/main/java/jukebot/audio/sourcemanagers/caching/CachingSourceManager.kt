@@ -71,7 +71,7 @@ class CachingSourceManager : AudioSourceManager {
         var successfulHits = 0
 
         private val log = LoggerFactory.getLogger(CachingSourceManager::class.java)
-        private val jedisPool = JedisPool(JedisPoolConfig(), "localhost")
+        private val jedisPool = JedisPool(JedisPoolConfig(), "redis://localhost:6379/")
 
         private val PLAYLIST_TTL = TimeUnit.HOURS.toMillis(2)
         private val SEARCH_TTL = TimeUnit.HOURS.toMillis(12)

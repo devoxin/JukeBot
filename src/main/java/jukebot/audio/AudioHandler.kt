@@ -271,7 +271,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         NONE;
 
         fun humanized(): String {
-            return this.toString().toLowerCase().toTitleCase()
+            return this.toString().lowercase().toTitleCase()
         }
     }
 
