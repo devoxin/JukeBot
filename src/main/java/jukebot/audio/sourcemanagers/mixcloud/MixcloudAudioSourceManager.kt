@@ -59,6 +59,7 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
         if (!matcher.matches()) {
             return null
+            // Null when URL not recognised, AudioReference.NO_TRACK if URL recognised but no track.
         }
 
         return try {
@@ -76,7 +77,6 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
     override fun isTrackEncodable(track: AudioTrack) = true
 
     override fun encodeTrack(track: AudioTrack, output: DataOutput) {
-
     }
 
     override fun decodeTrack(trackInfo: AudioTrackInfo, input: DataInput) = MixcloudAudioTrack(trackInfo, this)
@@ -97,7 +97,8 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
         try {
             val username = matcher.group(1).urlDecoded()
             val slug = matcher.group(2).urlDecoded()
-            val trackInfo = extractTrackInfoGraphQl(username, slug) ?: return null
+            val trackInfo = extractTrackInfoGraphQl(username, slug)
+                ?: return AudioReference.NO_TRACK
             //val trackInfo = getTrackInfo(reference.identifier) ?: return AudioReference.NO_TRACK
 
 //            if ("false".equals(trackInfo.get("isPlayable").text(), true)) {

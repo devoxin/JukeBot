@@ -55,7 +55,6 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
     override fun isTrackEncodable(track: AudioTrack) = true
 
     override fun encodeTrack(track: AudioTrack, output: DataOutput) {
-
     }
 
     override fun decodeTrack(trackInfo: AudioTrackInfo, input: DataInput) = PornHubAudioTrack(trackInfo, this)
@@ -124,17 +123,18 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
             for (e in videos) {
                 val anchor = e.select("div.thumbnail-info-wrapper span.title a").first()
                     ?: continue
-                val title = anchor.text()
-                val identifier = anchor.parents().select("li.videoBox").first()!!.attr("_vkey")
-                val url = anchor.absUrl("href")
-                val durationStr = anchor.parents()
-                    .select("div.videoPreviewBg .marker-overlays var")
-                    .firstOrNull()
-                    ?.text()
-                // TODO: Fix duration
-                val duration = if (durationStr != null) parseDuration(durationStr) else 0L
+                val anchorParents = anchor.parents()
 
-                tracks.add(buildTrackObject(url, identifier, title, "Unknown Uploader", false, duration))
+                val url = anchor.absUrl("href")
+                val identifier = anchorParents.select("li.videoBox").first()?.attr("_vkey")
+                    ?: throw IllegalStateException("Missing identifier for video, page layout changed?")
+                val title = anchor.text()
+                val uploader = anchorParents.select(".usernameWrap a").first()?.text()
+                    ?: "Unknown Uploader"
+                val durationStr = anchorParents.select(".duration").first()?.text()
+                val duration = durationStr?.let(::parseDuration) ?: 0L
+
+                tracks.add(buildTrackObject(url, identifier, title, uploader, false, duration))
             }
 
             return BasicAudioPlaylist("Search results for: $query", tracks, null, true)
