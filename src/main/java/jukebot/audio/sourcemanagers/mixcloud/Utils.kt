@@ -9,8 +9,7 @@ object Utils {
     fun cycle(i: String): Sequence<Char> = sequence {
         var index = -1
         while (true) {
-            ++index
-            yield(i[index % i.length])
+            yield(i[++index % i.length])
         }
     }
 
