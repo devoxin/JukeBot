@@ -10,8 +10,7 @@ class Previous : Command(ExecutionType.REQUIRE_MUTUAL) {
         val player = context.getAudioPlayer()
 
         if (player.previous == null) {
-            context.embed("Previous", "There is no previous track stored.")
-            return
+            return context.embed("Previous", "There is no previous track stored.")
         }
 
         player.player.playTrack(player.previous!!.makeClone())

@@ -23,14 +23,14 @@ class Stats : Command(ExecutionType.STANDARD) {
         val usedMB = dpFormatter.format(rUsedRaw.toDouble() / 1048576)
 
         val players = JukeBot.players.size
-        val playingPlayers = JukeBot.players.values.filter { it.isPlaying }.size
-        val encodingPlayers = JukeBot.players.values.filter { it.isPlaying && (it.bassBooster.isEnabled || it.player.volume != 100) }.size
+        val playingPlayers = JukeBot.players.values.count { it.isPlaying }
+        val encodingPlayers = JukeBot.players.values.count { it.isPlaying && (it.bassBooster.isEnabled || it.player.volume != 100) }
 
         val servers = JukeBot.shardManager.guildCache.size()
-        val users = JukeBot.shardManager.guilds.sumBy { it.memberCount }
+        val users = JukeBot.shardManager.guilds.sumOf { it.memberCount }
 
         val shards = JukeBot.shardManager.shardsTotal
-        val shardsOnline = JukeBot.shardManager.shards.filter { s -> s.status == JDA.Status.CONNECTED }.size
+        val shardsOnline = JukeBot.shardManager.shards.count { s -> s.status == JDA.Status.CONNECTED }
         val averageShardLatency = JukeBot.shardManager.averageGatewayPing.toInt()
 
         val osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean::class.java)

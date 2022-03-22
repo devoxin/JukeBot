@@ -33,7 +33,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
         val userQuery = ctx.argString.removePrefix("<").removeSuffix(">")
 
         if (userQuery.startsWith("http") || userQuery.startsWith("spotify:")) {
-            if (userQuery.toLowerCase().contains("soundcloud.com/you/")) {
+            if ("soundcloud.com/you/" in userQuery.lowercase()) {
                 ctx.embed("SoundCloud Liked Tracks", "Loading SoundCloud tracks requires username.")
 
                 if (!player.isPlaying) {
@@ -43,7 +43,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                 return
             }
 
-            if (userQuery.toLowerCase().contains("pornhub") && !ctx.channel.isNSFW) {
+            if ("pornhub" in userQuery.lowercase() && !ctx.channel.isNSFW) {
                 ctx.embed("PornHub Tracks", "PornHub tracks can only be loaded from NSFW channels!")
 
                 if (!player.isPlaying) {

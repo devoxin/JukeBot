@@ -9,7 +9,6 @@ import jukebot.framework.Context
 import jukebot.utils.toTimeString
 import java.util.function.Consumer
 
-
 @CommandProperties(aliases = ["d", "id"], description = "Show information about a song.")
 class Details : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {

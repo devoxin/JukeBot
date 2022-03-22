@@ -9,7 +9,7 @@ enum class CommandCategory(val description: String) {
     MISC("Commands that don't fit in the other categories.");
 
     fun toTitleCase(): String {
-        return this.toString().toLowerCase().toTitleCase()
+        return this.toString().lowercase().toTitleCase()
         // Imagine calling .toTitleCase() but it doesn't lowercase
         // the rest of the fucking word???????????????????????????
     }

@@ -14,7 +14,7 @@ class CommandScanner(private val pkg: String) {
             .map { it.getDeclaredConstructor().newInstance() as Command }
             .filter { it.properties.enabled && (JukeBot.config.nsfwEnabled || !it.properties.nsfw) }
             .map(::loadSubCommands)
-            .associateBy { it.name.toLowerCase() }
+            .associateBy { it.name.lowercase() }
     }
 
     private fun loadSubCommands(cmd: Command): Command {
@@ -23,7 +23,7 @@ class CommandScanner(private val pkg: String) {
 
         for (meth in methods) {
             val annotation = meth.getAnnotation(SubCommand::class.java)
-            val trigger = annotation.trigger.toLowerCase()
+            val trigger = annotation.trigger.lowercase()
             val description = annotation.description
 
             val wrapper = MethodWrapper(description, meth, cmd)

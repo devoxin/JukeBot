@@ -27,7 +27,7 @@ class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
         }
     }
 
-    fun parseSeconds(ctx: Context, player: AudioHandler, track: AudioTrack, seconds: String) {
+    private fun parseSeconds(ctx: Context, player: AudioHandler, track: AudioTrack, seconds: String) {
         val jumpTime = seconds.toIntOrNull()
             ?: return ctx.embed("Track Seeking", "You need to specify a valid amount of seconds to jump.")
 
@@ -41,7 +41,7 @@ class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
         ctx.embed("Track Seeking", "Seeked to **${track.position.toTimeString()}**/${track.info.length.toTimeString()}")
     }
 
-    fun parseTime(ctx: Context, player: AudioHandler, track: AudioTrack, time: String) {
+    private fun parseTime(ctx: Context, player: AudioHandler, track: AudioTrack, time: String) {
         val parts = time.split(":").map { it.toIntOrNull() }
 
         if (parts.any { it == null }) {

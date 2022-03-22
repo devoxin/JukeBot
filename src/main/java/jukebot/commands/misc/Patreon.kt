@@ -9,11 +9,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 
 @CommandProperties(aliases = ["donate"], description = "Provides a link to JukeBot's Patreon")
 class Patreon : Command(ExecutionType.STANDARD) {
-    private val BASE_URL = "https://www.patreon.com/join/devoxin/checkout?rid="
-    private val TIER_1 = "2127364"
-    private val TIER_2 = "1594794"
-    private val TIER_3 = "4008303"
-
     override fun execute(context: Context) {
         val fields = arrayOf(
             MessageEmbed.Field("Tier 0 (Free)",
@@ -45,5 +40,12 @@ class Patreon : Command(ExecutionType.STANDARD) {
             setTitle("Become a Patron!", "https://patreon.com/Devoxin")
             addFields(fields)
         }
+    }
+
+    companion object {
+        private const val BASE_URL = "https://www.patreon.com/join/devoxin/checkout?rid="
+        private const val TIER_1 = "2127364"
+        private const val TIER_2 = "1594794"
+        private const val TIER_3 = "4008303"
     }
 }

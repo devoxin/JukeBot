@@ -49,7 +49,7 @@ class Help : Command(ExecutionType.STANDARD) {
         }
     }
 
-    fun sendDefaultHelp(ctx: Context) {
+    private fun sendDefaultHelp(ctx: Context) {
         ctx.embed {
             setColor(ctx.embedColor)
             setTitle("JukeBot Help Menu")
@@ -60,7 +60,7 @@ class Help : Command(ExecutionType.STANDARD) {
         }
     }
 
-    fun sendCommandHelp(context: Context, cmd: Command) {
+    private fun sendCommandHelp(context: Context, cmd: Command) {
         val aliases = cmd.properties.aliases
         val aliasString = if (aliases.isEmpty()) "None" else aliases.joinToString(", ")
 

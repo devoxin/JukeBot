@@ -80,7 +80,6 @@ class SongResultHandler(
                     }
 
                     val estPlay = calculateEstimatedPlayTime()
-
                     val track = tracks[n - 1]
 
                     m.editEmbed {

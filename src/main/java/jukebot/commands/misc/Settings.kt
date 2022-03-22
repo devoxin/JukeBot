@@ -12,12 +12,11 @@ import java.util.regex.Pattern
 @CommandProperties(description = "Manage server-specific settings such as prefix etc", aliases = ["set", "config", "configure"])
 @CommandChecks.Dj(alone = false)
 class Settings : Command(ExecutionType.STANDARD) {
-
     private val mentionRegex = Pattern.compile("<@!?\\d{17,20}>")
     private val dpFormatter = DecimalFormat("0.00")
 
     override fun execute(context: Context) {
-        val sc = context.args.firstOrNull()?.toLowerCase() ?: ""
+        val sc = context.args.firstOrNull()?.lowercase() ?: ""
 
         if (!this.subcommands.containsKey(sc)) {
             return context.embed(

@@ -17,7 +17,7 @@ fun Response.json(): JsonObject? {
 }
 
 fun String.toTitleCase(): String {
-    return this[0].toUpperCase() + this.substring(1)
+    return this[0].uppercase() + this.substring(1)
 }
 
 fun MessageEmbed.toMessage(): Message = MessageBuilder().setEmbeds(this).build()

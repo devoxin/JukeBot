@@ -1,6 +1,5 @@
 package jukebot.utils
 
-
 object TextSplitter {
     fun split(content: String, limit: Int = 2000): Array<String> {
         val pages = ArrayList<String>()
