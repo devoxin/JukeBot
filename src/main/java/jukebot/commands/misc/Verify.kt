@@ -160,6 +160,8 @@ class Verify : Command(ExecutionType.STANDARD) {
         }
 
         return ((pledge - 3) / 1) + 1
+        // Going back through this code, I'm really wondering why I divided by 1,
+        // but I dare not change it because knowing my luck something would break
     }
 
     companion object {
