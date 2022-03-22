@@ -1,5 +1,6 @@
 package jukebot.commands.misc
 
+import jukebot.JukeBot
 import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
@@ -42,7 +43,7 @@ class Help : Command(ExecutionType.STANDARD) {
 
             context.embed {
                 setTitle("Help for **$category**")
-                setDescription("[View more information here](https://jukebot.serux.pro/docs)\n$builder")
+                setDescription("[View more information here](${JukeBot.WEBSITE}/docs)\n$builder")
                 setFooter("You can use ${context.prefix}help <command> to view additional command information", null)
             }
         }
@@ -54,7 +55,7 @@ class Help : Command(ExecutionType.STANDARD) {
             setTitle("JukeBot Help Menu")
             setDescription("Get started by joining a voicechannel and sending `${ctx.prefix}play <query>`!")
             addField("Categories", categories, true)
-            addField("Links", "[Discord](https://discord.gg/xvtH2Yn) | [Website](https://jukebot.serux.pro)", false)
+            addField("Links", "[Discord](${JukeBot.HOME_SERVER}) | [Website](${JukeBot.WEBSITE})", false)
             setFooter("Select a category with ${ctx.prefix}help <number>", null)
         }
     }

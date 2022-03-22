@@ -70,6 +70,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class JukeBot {
+    public static final String HOME_SERVER = "https://discord.gg/xvtH2Yn";
+    public static final String WEBSITE = "https://jukebot.serux.pro";
     /* Bot-Related*/
     public static final long startTime = System.currentTimeMillis();
     public static Logger log = LoggerFactory.getLogger("JukeBot");
@@ -115,7 +117,7 @@ public class JukeBot {
                         CacheFlag.ROLE_TAGS,
                         CacheFlag.ONLINE_STATUS
                 )
-                .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | https://jukebot.serux.pro"))
+                .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | " + WEBSITE))
                 .setBulkDeleteSplittingEnabled(false);
 
         final String os = System.getProperty("os.name").toLowerCase();

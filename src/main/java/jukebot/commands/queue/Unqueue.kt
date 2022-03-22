@@ -1,5 +1,6 @@
 package jukebot.commands.queue
 
+import jukebot.JukeBot
 import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
@@ -25,7 +26,7 @@ class Unqueue : Command(ExecutionType.STANDARD) {
         val selectedTrack = player.queue[selected - 1]
 
         if (selectedTrack.userData as Long != context.author.idLong && !context.isDJ(false)) {
-            return context.embed("Not a DJ", "You need the DJ role to unqueue others' tracks. [See here on how to become a DJ](https://jukebot.serux.pro/faq)")
+            return context.embed("Not a DJ", "You need the DJ role to unqueue others' tracks. [See here on how to become a DJ](${JukeBot.WEBSITE}/faq)")
         }
 
         player.queue.removeAt(selected - 1)

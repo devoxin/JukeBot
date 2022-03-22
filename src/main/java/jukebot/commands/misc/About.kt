@@ -1,6 +1,7 @@
 package jukebot.commands.misc
 
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary
+import jukebot.JukeBot
 import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
@@ -20,7 +21,7 @@ class About : Command(ExecutionType.STANDARD) {
 
     private val links = mapOf(
         "GitHub" to "https://github.com/Devoxin/JukeBot",
-        "Website" to "https://jukebot.serux.pro"
+        "Website" to JukeBot.WEBSITE
     )
 
     override fun execute(context: Context) {
@@ -34,7 +35,7 @@ class About : Command(ExecutionType.STANDARD) {
 
         context.embed {
             setTitle("JukeBot (Revision $commitHash)", commitUrl)
-            setDescription("Developed by **devoxin#0101**")
+            setDescription("Developed by **devoxin#0001**")
             addFields(fields)
         }
     }

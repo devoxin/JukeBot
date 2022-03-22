@@ -1,5 +1,6 @@
 package jukebot.commands.misc
 
+import jukebot.JukeBot
 import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
@@ -20,7 +21,7 @@ class Patreon : Command(ExecutionType.STANDARD) {
                     "• Playlist import limit of 100\n" +
                     "• Up to 5 custom playlists", false),
             MessageEmbed.Field("Tier 1 ($1)",
-                "• Donor Role in [JukeBot's Server](https://discord.gg/xvtH2Yn)\n" +
+                "• Donor Role in [JukeBot's Server](${JukeBot.HOME_SERVER})\n" +
                     "• Ability to queue songs up to 5 hours long\n" +
                     "• Ability to queue up to 1000 songs from a playlist\n" +
                     "• Ability to queue livestreams\n" +

@@ -28,7 +28,7 @@ class Now : Command(ExecutionType.STANDARD) {
         val timeLink = if (isYouTubeTrack) {
             "${current.info.uri}&t=${current.position / 1000}s"
         } else {
-            "https://jukebot.serux.pro"
+            JukeBot.WEBSITE
         }
 
         context.embed {

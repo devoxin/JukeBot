@@ -36,11 +36,11 @@ class Verify : Command(ExecutionType.STANDARD) {
                 ?: return@thenAccept ctx.embed("Donor Verification",
                     "No Discord account [linked to your Patreon account]($DISCORD_LINK_ARTICLE). " +
                         "Link your discord and try again.\nIf you continue to receive this error, please " +
-                        "[join here](https://discord.gg/xvtH2Yn)")
+                        "[join here](${JukeBot.HOME_SERVER})")
 
             if (pledge.isDeclined) {
                 return@thenAccept ctx.embed("Donor Verification", "It appears your payment has been declined. Please resolve this issue and then try again.\n" +
-                    "If you believe this to be in error, please [join here](https://discord.gg/xvtH2Yn)")
+                    "If you believe this to be in error, please [join here](${JukeBot.HOME_SERVER})")
             }
 
             val pledgeAmount = pledge.pledgeCents.toDouble() / 100
@@ -55,7 +55,7 @@ class Verify : Command(ExecutionType.STANDARD) {
 
             ctx.embed("Donor Perks", "Thanks for donating! **Your pledge: $${String.format("%1$,.2f", pledgeAmount)}** " +
                 "(Tier $calculatedTier)\n\n" +
-                "$note\nIf for some reason you encounter issues, please join https://discord.gg/xvtH2Yn")
+                "$note\nIf for some reason you encounter issues, please join ${JukeBot.HOME_SERVER}")
 
             Database.setTier(ctx.author.idLong, calculatedTier)
         }
@@ -144,7 +144,7 @@ class Verify : Command(ExecutionType.STANDARD) {
                 "Perks | Server Management",
                 "This server was registered less than 28 days ago. It cannot be unregistered " +
                     "until at least 28 days have elapsed since registration to prevent abuse.\n\n" +
-                    "If you have a valid reason for early de-registration, contact `devoxin#0001`."
+                    "If you have a valid reason for early de-registration, join ${JukeBot.HOME_SERVER}"
             )
         }
 

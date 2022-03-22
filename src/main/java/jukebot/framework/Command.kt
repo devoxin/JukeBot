@@ -78,7 +78,7 @@ abstract class Command(private val executionType: ExecutionType) {
     open fun runCommandPreChecks(context: Context): Boolean {
         check(CommandChecks.Dj::class.java)?.let {
             if (!context.isDJ(it.alone)) {
-                context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](https://jukebot.serux.pro/faq)")
+                context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](${JukeBot.WEBSITE}/faq)")
                 return false
             }
         }

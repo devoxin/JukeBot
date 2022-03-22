@@ -23,7 +23,7 @@ object Helpers {
     private val timer: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
     val monitor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }
 
-    fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC', link: String = "https://jukebot.serux.pro"): String {
+    fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC', link: String = JukeBot.WEBSITE): String {
         val percent = v.toFloat() / max
         val blocks = floor((barLength * percent).toDouble()).toInt()
         val barChar = bar.toString()
