@@ -6,14 +6,14 @@ import java.nio.charset.Charset
 import java.util.*
 
 object Utils {
-    fun cycle(i: String): Sequence<Char> = sequence {
+    private fun cycle(i: String): Sequence<Char> = sequence {
         var index = -1
         while (true) {
             yield(i[++index % i.length])
         }
     }
 
-    fun decryptXor(key: String, cipher: String): String {
+    private fun decryptXor(key: String, cipher: String): String {
         return cipher.asIterable()
             .zip(cycle(key).asIterable())
             .map { (ch, k) ->

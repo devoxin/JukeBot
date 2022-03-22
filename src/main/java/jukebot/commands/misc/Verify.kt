@@ -33,10 +33,10 @@ class Verify : Command(ExecutionType.STANDARD) {
             }
 
             val pledge = users.firstOrNull { it.discordId != null && it.discordId == ctx.author.idLong }
-            // TODO: Link to add account.
                 ?: return@thenAccept ctx.embed("Donor Verification",
-                    "No Discord account linked to your Patreon account. Link your discord and try again.\n" +
-                        "If you continue to receive this error, please [join here](https://discord.gg/xvtH2Yn)")
+                    "No Discord account [linked to your Patreon account]($DISCORD_LINK_ARTICLE). " +
+                        "Link your discord and try again.\nIf you continue to receive this error, please " +
+                        "[join here](https://discord.gg/xvtH2Yn)")
 
             if (pledge.isDeclined) {
                 return@thenAccept ctx.embed("Donor Verification", "It appears your payment has been declined. Please resolve this issue and then try again.\n" +
@@ -144,7 +144,7 @@ class Verify : Command(ExecutionType.STANDARD) {
                 "Perks | Server Management",
                 "This server was registered less than 28 days ago. It cannot be unregistered " +
                     "until at least 28 days have elapsed since registration to prevent abuse.\n\n" +
-                    "If you have a valid reason for early de-registration, contact `devoxin#0101`."
+                    "If you have a valid reason for early de-registration, contact `devoxin#0001`."
             )
         }
 
@@ -160,5 +160,9 @@ class Verify : Command(ExecutionType.STANDARD) {
         }
 
         return ((pledge - 3) / 1) + 1
+    }
+
+    companion object {
+        private const val DISCORD_LINK_ARTICLE = "https://support.patreon.com/hc/en-gb/articles/212052266-How-do-I-connect-Discord-to-Patreon-Patron-"
     }
 }
