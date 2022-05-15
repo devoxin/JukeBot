@@ -105,7 +105,7 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 throw IOException("Invalid status code for search response: $statusCode")
             }
 
-            val document = Jsoup.parse(it.entity.content, StandardCharsets.UTF_8.name(), "https://pornhub.com")
+            val document = Jsoup.parse(it.entity.content, Charsets.UTF_8.name(), "https://pornhub.com")
             val videos = document.getElementsByClass("wrap")
                 .filter { elem ->
                     elem.select("div.thumbnail-info-wrapper span.title a")

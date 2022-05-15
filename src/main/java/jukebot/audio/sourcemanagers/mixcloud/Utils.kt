@@ -26,6 +26,6 @@ object Utils {
         return decryptXor(key, xorUrl)
     }
 
-    internal fun String.urlEncoded() = URLEncoder.encode(this, Charsets.UTF_8.name())
-    internal fun String.urlDecoded() = URLDecoder.decode(this, Charsets.UTF_8.name())
+    internal fun String.urlEncoded() = URLEncoder.encode(this, Charsets.UTF_8)
+    internal fun String.urlDecoded() = URLDecoder.decode(this, Charsets.UTF_8)
 }
