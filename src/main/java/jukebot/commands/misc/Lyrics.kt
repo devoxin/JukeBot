@@ -21,7 +21,7 @@ class Lyrics : Command(ExecutionType.STANDARD) {
         }
 
         val query = if (context.args.isNotEmpty()) context.argString else player.player.playingTrack.info.title
-        val encoded = URLEncoder.encode(query, Charsets.UTF_8)
+        val encoded = URLEncoder.encode(query, Charsets.UTF_8.name())
 
         JukeBot.httpClient.get(lyricsUrl + encoded).queue({
             if (it.code() == 404) {

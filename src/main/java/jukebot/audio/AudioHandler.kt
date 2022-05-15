@@ -255,7 +255,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         return frameProvided
     }
 
-    override fun provide20MsAudio(): ByteBuffer = buffer.flip()
+    override fun provide20MsAudio(): ByteBuffer = buffer.flip() as ByteBuffer
     override fun isOpus() = true
 
     enum class RepeatMode {

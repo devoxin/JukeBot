@@ -2,7 +2,6 @@ package jukebot.audio.sourcemanagers.mixcloud
 
 import java.net.URLDecoder
 import java.net.URLEncoder
-import java.nio.charset.Charset
 import java.util.*
 
 object Utils {
@@ -27,6 +26,6 @@ object Utils {
         return decryptXor(key, xorUrl)
     }
 
-    internal fun String.urlEncoded() = URLEncoder.encode(this, Charset.defaultCharset())
-    internal fun String.urlDecoded() = URLDecoder.decode(this, Charset.defaultCharset())
+    internal fun String.urlEncoded() = URLEncoder.encode(this, Charsets.UTF_8.name())
+    internal fun String.urlDecoded() = URLDecoder.decode(this, Charsets.UTF_8.name())
 }

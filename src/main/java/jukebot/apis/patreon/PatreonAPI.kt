@@ -69,7 +69,7 @@ class PatreonAPI(var accessToken: String) {
             .associate { Pair(decode(it[0]), decode(it[1])) }
     }
 
-    private fun decode(s: String) = URLDecoder.decode(s, Charsets.UTF_8)
+    private fun decode(s: String) = URLDecoder.decode(s, Charsets.UTF_8.name())
 
     private fun request(urlOpts: HttpUrl.Builder.() -> Unit): RequestUtil.PendingRequest {
         val url = baseUrl.newBuilder().apply(urlOpts).build()
