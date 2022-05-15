@@ -8,7 +8,7 @@ class Announce : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
 
-        when (context.args.firstOrNull()?.toLowerCase()) {
+        when (context.args.firstOrNull()?.lowercase()) {
             "here" -> {
                 player.channelId = context.channel.idLong
                 player.shouldAnnounce = true

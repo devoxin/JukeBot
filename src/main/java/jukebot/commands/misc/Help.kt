@@ -35,7 +35,7 @@ class Help : Command(ExecutionType.STANDARD) {
 
             for (cmd in commandsByCategory(category)) {
                 builder.append("**`")
-                    .append(Helpers.pad(cmd.name.toLowerCase()))
+                    .append(Helpers.pad(cmd.name.lowercase()))
                     .append(":`** ")
                     .append(cmd.properties.description)
                     .append("\n")

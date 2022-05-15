@@ -43,7 +43,7 @@ class CommandHandler : EventListener {
 
         val content = e.message.contentRaw.substring(triggerLength).trim()
         val (cmdStr, args) = content.split("\\s+".toRegex()).separate()
-        val command = cmdStr.toLowerCase()
+        val command = cmdStr.lowercase()
         val originalArgs = if (content.length >= command.length) content.substring(command.length).trim() else ""
 
         val foundCommand = commands[command]
