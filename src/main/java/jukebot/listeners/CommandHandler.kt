@@ -31,15 +31,12 @@ class CommandHandler : EventListener {
         }
 
         val guildPrefix = Database.getPrefix(e.guild.idLong)
-        val wasMentioned = e.message.contentRaw.startsWith("<@${e.guild.selfMember.id}>")
-            || e.message.contentRaw.startsWith("<@!${e.guild.selfMember.id}>")
-        val triggerLength = if (wasMentioned) e.guild.selfMember.asMention.length + 1 else guildPrefix.length
+        val mentionTrigger = MENTION_FORMATS.firstOrNull(e.message.contentRaw::startsWith)
+        val triggerLength = mentionTrigger?.let { it.length + 1 } ?: guildPrefix.length
 
-        if (!e.message.contentRaw.startsWith(guildPrefix) && !wasMentioned)
+        if (!e.message.contentRaw.startsWith(guildPrefix) && (mentionTrigger == null || !e.message.contentRaw.contains(' '))) {
             return
-
-        if (wasMentioned && !e.message.contentRaw.contains(" "))
-            return
+        }
 
         val content = e.message.contentRaw.substring(triggerLength).trim()
         val (cmdStr, args) = content.split("\\s+".toRegex()).separate()
@@ -54,14 +51,13 @@ class CommandHandler : EventListener {
             return
         }
 
-        try {
+        runCatching {
             foundCommand.runChecks(Context(e, args, originalArgs, guildPrefix))
-        } catch (e: Exception) {
-            Sentry.capture(e)
-        }
+        }.onFailure(Sentry::capture)
     }
 
     companion object {
+        private val MENTION_FORMATS = listOf("<@${JukeBot.selfId}>", "<@!${JukeBot.selfId}>")
         val commands = CommandScanner("jukebot.commands").scan().toMutableMap()
     }
 }
