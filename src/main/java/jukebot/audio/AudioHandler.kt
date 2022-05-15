@@ -133,9 +133,9 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
                 announce("Queue Concluded!",
                     "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
             }
-
-            setNick(null)
         }
+
+        cleanup()
     }
 
     private fun announce(title: String, description: String) {
@@ -171,6 +171,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         player.destroy()
 
         JukeBot.shardManager.getGuildById(guildId)?.audioManager?.sendingHandler = null
+        setNick(null)
     }
 
     /*
@@ -216,9 +217,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             .withBreadcrumbs(listOf(breadCrumb))
 
         Sentry.capture(eventBuilder)
-
-        if (repeat != RepeatMode.NONE)
-            repeat = RepeatMode.NONE
+        repeat = RepeatMode.NONE
 
         val problem = Helpers.rootCauseOf(exception)
 
@@ -231,8 +230,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long) {
-        if (repeat != RepeatMode.NONE)
-            repeat = RepeatMode.NONE
+        repeat = RepeatMode.NONE
 
         announce("Track Stuck", "Playback of **${track.info.title}** has frozen and is unable to resume!")
         playNext()
@@ -257,13 +255,8 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         return frameProvided
     }
 
-    override fun provide20MsAudio(): ByteBuffer {
-        return buffer.flip()
-    }
-
-    override fun isOpus(): Boolean {
-        return true
-    }
+    override fun provide20MsAudio(): ByteBuffer = buffer.flip()
+    override fun isOpus() = true
 
     enum class RepeatMode {
         ALL,

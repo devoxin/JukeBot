@@ -23,8 +23,9 @@ class EventHandler : EventListener {
     }
 
     private fun onGuildVoiceLeave(e: GuildVoiceLeaveEvent) {
-        if (!e.member.user.isBot) {
-            handleLeave(e.channelLeft)
+        when {
+            !e.member.user.isBot -> return handleLeave(e.channelLeft)
+            e.member == e.guild.selfMember -> return JukeBot.removePlayer(e.guild.idLong)
         }
     }
 
