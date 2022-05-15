@@ -57,7 +57,7 @@ class CommandHandler : EventListener {
     }
 
     companion object {
-        private val MENTION_FORMATS = listOf("<@${JukeBot.selfId}>", "<@!${JukeBot.selfId}>")
+        private val MENTION_FORMATS by lazy { listOf("<@${JukeBot.selfId}>", "<@!${JukeBot.selfId}>") }
         val commands = CommandScanner("jukebot.commands").scan().toMutableMap()
     }
 }
