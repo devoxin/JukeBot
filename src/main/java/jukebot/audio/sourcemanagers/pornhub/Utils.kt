@@ -5,12 +5,14 @@ import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface
 import org.apache.http.client.methods.HttpGet
 
 object Utils {
-    private val formatPattern = "(var\\s+(?:media|quality)_.+)".toPattern()
-    private val mediaStringPattern = "(var.+?mediastring[^<]+)".toPattern()
+    //private val assignmentPattern = "(var.+?media_0[^<]+)".toPattern()
+    //private val assignmentPattern = "(var.+?media_0.+)".toPattern()
+
+    private val jsVarPattern = "(var\\s+(?:media|quality|qualityItems)_.+)".toPattern()
+    private val tvMediaStringPattern = "(var.+?mediastring[^<]+)".toPattern()
+    private val flashVarRegex = "var flashvars_\\d+ = (\\{.+})".toPattern()
     private val cleanRegex = "/\\*(?:(?!\\*/).)*?\\*/".toRegex()
     private val cleanVarRegex = "var\\s+".toRegex()
-    private val links = "https.+?(?=,upgrade)".toRegex()
-
 
     fun extractMediaString(page: String, http: HttpInterface): String {
         val vars = hashMapOf<String, String>()
@@ -50,14 +52,14 @@ object Utils {
             ?: throw IllegalStateException("No formats detected")
     }
 
-    fun extractAssignments(script: String): List<String> {
-        val formats = formatPattern.matcher(script)
+    private fun extractAssignments(script: String): List<String> {
+        val formats = jsVarPattern.matcher(script)
 
         if (formats.find()) {
             return formats.group(1).split(';')
         }
 
-        val assignments = mediaStringPattern.matcher(script)
+        val assignments = tvMediaStringPattern.matcher(script)
 
         if (!assignments.find()) {
             throw IllegalStateException("No assignments or formats found within the script!")
@@ -88,7 +90,7 @@ object Utils {
         return formats
     }
 
-    fun parseSegment(segment: String, v: HashMap<String, String>): String {
+    private fun parseSegment(segment: String, v: HashMap<String, String>): String {
         val cleaned = segment.replace(cleanRegex, "").trim()
 
         if (cleaned.contains('+')) {
