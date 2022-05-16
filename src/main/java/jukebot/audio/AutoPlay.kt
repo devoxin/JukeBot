@@ -2,7 +2,6 @@ package jukebot.audio
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.Database
-import jukebot.JukeBot
 import java.util.concurrent.CompletableFuture
 
 class AutoPlay(private val guildId: Long) {
@@ -21,9 +20,7 @@ class AutoPlay(private val guildId: Long) {
     }
 
     fun getRelatedTrack(): CompletableFuture<AudioTrack> {
-        return JukeBot.kSoftAPI.getMusicRecommendations(*trackTitles.toTypedArray())
-            .thenCompose(JukeBot.playerManager::searchYoutube)
-            .thenApply { it.apply { userData = JukeBot.selfId } }
+        return CompletableFuture.failedFuture(UnsupportedOperationException("Autoplay provider is unavailable"))
     }
 
     companion object {

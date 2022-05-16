@@ -72,10 +72,7 @@ class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlaye
         val resultHandler = FunctionalResultHandler(
             future::complete,
             { future.complete(it.tracks.first()) },
-            {
-                val ex = IllegalStateException("No results found")
-                future.completeExceptionally(ex)
-            },
+            { future.completeExceptionally(IllegalStateException("No results found")) },
             future::completeExceptionally
         )
 

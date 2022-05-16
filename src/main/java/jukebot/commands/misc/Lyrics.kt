@@ -9,7 +9,10 @@ import jukebot.utils.json
 import jukebot.utils.toMessage
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
+import org.apache.commons.io.IOUtils
+import org.jetbrains.kotlin.utils.sure
 import java.net.URLEncoder
+import java.util.concurrent.CompletableFuture
 
 @CommandProperties(description = "Searches for lyrics.")
 class Lyrics : Command(ExecutionType.STANDARD) {
@@ -20,31 +23,48 @@ class Lyrics : Command(ExecutionType.STANDARD) {
             return context.embed("Lyrics", "Play something, or specify the title of a song.")
         }
 
-        val query = if (context.args.isNotEmpty()) context.argString else player.player.playingTrack.info.title
+        val query = context.argString.ifEmpty { player.player.playingTrack.info.title }
         val encoded = URLEncoder.encode(query, Charsets.UTF_8)
 
-        JukeBot.httpClient.get(lyricsUrl + encoded).queue({
+        getLyrics(encoded).thenAccept {
+            when {
+                !it.exists -> return@thenAccept context.embed("No Lyrics Found", "The API returned no lyrics for **$query**")
+                it.lyrics == null -> return@thenAccept context.embed("Lyrics", "The API did not provide a valid response.")
+                else -> {
+                    val pages = TextSplitter.split(it.lyrics)
+
+                    if (pages.isEmpty() || pages.size > 5) {
+                        return@thenAccept context.embed("No Lyrics Found", "The API returned no lyrics for **$query**")
+                    }
+
+                    sendChunks(context, it.title!!, pages)
+                }
+            }
+        }.exceptionally {
+            context.embed("Lyrics", "An unknown error occurred while fetching lyrics.")
+            return@exceptionally null
+        }
+    }
+
+    private fun getLyrics(query: String): CompletableFuture<LyricsResult> {
+        val future = CompletableFuture<LyricsResult>()
+
+        JukeBot.httpClient.get(LYRICS_BASE_URL + query).queue({
             if (it.code() == 404) {
                 it.close()
-                return@queue context.embed("Lyrics", "The API returned no lyrics for **$query**")
+                return@queue future.complete(LyricsResult(false, null, null)).let {}
             }
 
             val response = it.json()
-                ?: return@queue context.embed("Lyrics", "The API did not provide a valid response.")
+                ?: return@queue future.complete(LyricsResult(true, null, null)).let {}
 
-            val content = response.getString("content")
-            val title = response.getObject("song").getString("full_title")
+            val content = response.getString("lyrics")
+            val title = response.getString("name")
 
-            val pages = TextSplitter.split(content)
+            future.complete(LyricsResult(true, title, content))
+        }, future::completeExceptionally)
 
-            if (pages.isEmpty() || pages.size > 5) {
-                return@queue context.embed("No Lyrics Found", "The API returned no lyrics for **$query**")
-            }
-
-            sendChunks(context, title, pages)
-        }, {
-            context.embed("Lyrics", "An unknown error occurred while fetching lyrics.")
-        })
+        return future
     }
 
     private fun sendChunks(context: Context, title: String, chunks: Array<String>, index: Int = 0) {
@@ -62,7 +82,9 @@ class Lyrics : Command(ExecutionType.STANDARD) {
         }
     }
 
+    inner class LyricsResult(val exists: Boolean, val title: String?, val lyrics: String?)
+
     companion object {
-        private const val lyricsUrl = "https://lyrics.tsu.sh/v1/?q="
+        private const val LYRICS_BASE_URL = "https://evan.lol/lyrics/search/top?q="
     }
 }

@@ -4,4 +4,3 @@ color=0x1E90FF
 spotify_client=not required
 spotify_secret=not required
 nsfw=true
-ksoft=for autoplay

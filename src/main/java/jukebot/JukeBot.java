@@ -32,7 +32,6 @@ import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRouteP
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
 import io.sentry.Sentry;
-import jukebot.apis.ksoft.KSoftAPI;
 import jukebot.apis.patreon.PatreonAPI;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.caching.CachingSourceManager;
@@ -81,7 +80,6 @@ public class JukeBot {
     /* Operation-Related */
     public static final RequestUtil httpClient = new RequestUtil();
     public static PatreonAPI patreonApi;
-    public static KSoftAPI kSoftAPI;
 
     public static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
@@ -155,12 +153,6 @@ public class JukeBot {
             log.debug("Config has patreon key, loading patreon API...");
             patreonApi = new PatreonAPI(config.get("patreon", null));
             // Default should never be used here, but Java insists on the 2nd parameter.
-        }
-
-        if (config.contains("ksoft")) {
-            log.debug("Config has ksoft key, loading ksoft API...");
-            String key = config.get("ksoft", null);
-            kSoftAPI = new KSoftAPI(key);
         }
 
         if (config.getSentryDsn() != null && !config.getSentryDsn().isEmpty()) {
