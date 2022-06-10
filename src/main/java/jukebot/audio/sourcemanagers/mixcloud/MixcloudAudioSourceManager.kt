@@ -235,12 +235,10 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
     }
 
     companion object {
-        private val URL_REGEX =
-            Pattern.compile("https?://(?:(?:www|beta|m)\\.)?mixcloud\\.com/([^/]+)/(?!stream|uploads|favorites|listens|playlists)([^/]+)/?")
-        private val JSON_REGEX = Pattern.compile("<script id=\"relay-data\" type=\"text/x-mixcloud\">([^<]+)</script>")
-        private val JS_REGEX =
-            Pattern.compile("<script[^>]+src=\"(https://(?:www\\.)?mixcloud\\.com/media/(?:js2/www_js_4|js/www)\\.[^>]+\\.js)")
-        private val KEY_REGEX = Pattern.compile("\\{return *?[\"']([^\"']+)[\"']\\.concat\\([\"']([^\"']+)[\"']\\)}")
+        private val URL_REGEX = "https?://(?:(?:www|beta|m)\\.)?mixcloud\\.com/([^/]+)/(?!stream|uploads|favorites|listens|playlists)([^/]+)/?".toPattern()
+        private val JSON_REGEX = "<script id=\"relay-data\" type=\"text/x-mixcloud\">([^<]+)</script>".toPattern()
+        private val JS_REGEX = "<script[^>]+src=\"(https://(?:www\\.)?mixcloud\\.com/media/(?:js2/www_js_4|js/www)\\.[^>]+\\.js)".toPattern()
+        private val KEY_REGEX = "\\{return *?[\"']([^\"']+)[\"']\\.concat\\([\"']([^\"']+)[\"']\\)}".toPattern()
 
         internal const val DECRYPTION_KEY = "IFYOUWANTTHEARTISTSTOGETPAIDDONOTDOWNLOADFROMMIXCLOUD"
     }

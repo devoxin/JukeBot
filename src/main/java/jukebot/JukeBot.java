@@ -59,7 +59,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class JukeBot {
-    public static Logger log = LoggerFactory.getLogger("JukeBot");
+    public static final Logger log = LoggerFactory.getLogger("JukeBot");
 
     /* Bot-Related*/
     public static final long startTime = System.currentTimeMillis();
@@ -82,17 +82,17 @@ public class JukeBot {
         Thread.currentThread().setName("JukeBot");
         printBanner();
 
-        String jarLocation = JukeBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        final String jarLocation = JukeBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         System.setProperty("kotlin.script.classpath", jarLocation);
 
         RestAction.setPassContext(false);
         RestAction.setDefaultFailure((e) -> {
         });
 
-        String token = config.getToken();
-        EnumSet<GatewayIntent> enabledIntents = IntentHelper.INSTANCE.getEnabledIntents();
+        final String token = config.getToken();
+        final EnumSet<GatewayIntent> enabledIntents = IntentHelper.INSTANCE.getEnabledIntents();
 
-        DefaultShardManagerBuilder shardManagerBuilder = DefaultShardManagerBuilder.create(token, enabledIntents)
+        final DefaultShardManagerBuilder shardManagerBuilder = DefaultShardManagerBuilder.create(token, enabledIntents)
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), new EventHandler(), waiter)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
@@ -121,10 +121,10 @@ public class JukeBot {
     }
 
     private static void printBanner() {
-        String os = System.getProperty("os.name");
-        String arch = System.getProperty("os.arch");
-        String banner = Helpers.INSTANCE.readFile("banner.txt", "");
-        String version = Helpers.INSTANCE.getVersion();
+        final String os = System.getProperty("os.name");
+        final String arch = System.getProperty("os.arch");
+        final String banner = Helpers.INSTANCE.readFile("banner.txt", "");
+        final String version = Helpers.INSTANCE.getVersion();
 
         System.out.printf(
                 "%s\nRevision %s | JDA %s | Lavaplayer %s | SQLite %s | %s-bit JVM | %s %s\n\n",
@@ -140,7 +140,7 @@ public class JukeBot {
     }
 
     private static void loadApis() {
-        if (config.contains("patreon")) {
+        if (config.contains("patreon") && !isSelfHosted) {
             log.debug("Config has patreon key, loading patreon API...");
             patreonApi = new PatreonAPI(config.get("patreon", null));
             // Default should never be used here, but Java insists on the 2nd parameter.
@@ -187,27 +187,25 @@ public class JukeBot {
     }
 
     private static void setupSelf() {
-        ApplicationInfo appInfo = shardManager.retrieveApplicationInfo().complete();
+        final ApplicationInfo appInfo = shardManager.retrieveApplicationInfo().complete();
         selfId = appInfo.getIdLong();
         botOwnerId = appInfo.getOwner().getIdLong();
-        isSelfHosted = appInfo.getIdLong() != 249303797371895820L
-                && appInfo.getIdLong() != 314145804807962634L;
+        isSelfHosted = selfId != 249303797371895820L
+                && selfId != 314145804807962634L;
 
         if (isSelfHosted || selfId == 314145804807962634L) {
             playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
         }
 
         if (isSelfHosted) {
-            Map<String, Command> commandRegistry = CommandHandler.Companion.getCommands();
+            final Map<String, Command> commandRegistry = CommandHandler.Companion.getCommands();
             commandRegistry.remove("patreon");
             commandRegistry.remove("verify");
-            Command feedback = commandRegistry.remove("feedback");
+            final Command feedback = commandRegistry.remove("feedback");
 
             if (feedback != null) {
                 feedback.destroy();
             }
-        } else {
-            Helpers.INSTANCE.getMonitor().scheduleAtFixedRate(Helpers.INSTANCE::monitorPledges, 0, 1, TimeUnit.DAYS);
         }
     }
 
@@ -216,13 +214,13 @@ public class JukeBot {
     }
 
     public static AudioHandler getPlayer(final long guildId) {
-        Guild g = shardManager.getGuildById(guildId);
-        Objects.requireNonNull(g, "getPlayer was given an invalid guildId!");
+        final Guild g = shardManager.getGuildById(guildId);
+        Objects.requireNonNull(g, "Guild does not exist for the provided guildId!");
 
-        AudioHandler handler = players.computeIfAbsent(guildId,
+        final AudioHandler handler = players.computeIfAbsent(guildId,
                 v -> new AudioHandler(guildId, playerManager.createPlayer()));
 
-        AudioManager audioManager = g.getAudioManager();
+        final AudioManager audioManager = g.getAudioManager();
 
         if (audioManager.getSendingHandler() == null) {
             audioManager.setSendingHandler(handler);

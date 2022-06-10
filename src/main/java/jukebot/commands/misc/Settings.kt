@@ -15,7 +15,7 @@ import java.util.regex.Pattern
 )
 @CommandChecks.Dj(alone = false)
 class Settings : Command(ExecutionType.STANDARD) {
-    private val mentionRegex = Pattern.compile("<@!?\\d{17,20}>")
+    private val mentionRegex = "<@!?\\d{17,20}>".toPattern()
     private val dpFormatter = DecimalFormat("0.00")
 
     override fun execute(context: Context) {

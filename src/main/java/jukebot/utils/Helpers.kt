@@ -1,8 +1,5 @@
 package jukebot.utils
 
-import io.sentry.Sentry
-import jukebot.Database
-import jukebot.JukeBot
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
 import org.apache.commons.io.IOUtils
@@ -22,8 +19,6 @@ object Helpers {
     }
     private val timer: ScheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
-    val monitor: ScheduledExecutorService =
-        Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }
 
     fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC', link: String = Constants.WEBSITE): String {
         val percent = v.toFloat() / max
@@ -65,50 +60,6 @@ object Helpers {
             Files.lines(Paths.get(path)).collect(Collectors.joining("\n"))
         } catch (e: Exception) {
             def
-        }
-    }
-
-    fun monitorPledges() {
-        JukeBot.log.info("Checking pledges...")
-
-        JukeBot.patreonApi.fetchPledgesOfCampaign("750822").thenAccept { users ->
-            if (users.isEmpty()) {
-                return@thenAccept JukeBot.log.warn("Scheduled pledge clean failed: No users to check")
-            }
-
-            for (id in Database.getDonorIds()) {
-                val pledge = users.firstOrNull { it.discordId != null && it.discordId == id }
-
-                if (pledge == null || pledge.isDeclined) {
-                    Database.setTier(id, 0)
-                    Database.removePremiumServersOf(id)
-                    JukeBot.log.info("Removed $id from donors")
-                    continue
-                }
-
-                val amount = pledge.pledgeCents.toDouble() / 100
-                val friendly = String.format("%1$,.2f", amount)
-                val tier = Database.getTier(id)
-                val calculatedTier = calculateTier(amount)
-
-                if (tier != calculatedTier) {
-                    if (calculatedTier < tier) {
-                        val calculatedServerQuota = if (calculatedTier < 3) 0 else ((calculatedTier - 3) / 1) + 1
-                        val allServers = Database.getPremiumServersOf(id)
-
-                        if (allServers.size > calculatedServerQuota) {
-                            JukeBot.log.info("Removing some of $id's premium servers to meet quota (quota: $calculatedServerQuota, servers: ${allServers.size}")
-                            val exceededQuotaBy = allServers.size - calculatedServerQuota
-                            (0..exceededQuotaBy).onEach { allServers[it].remove() }
-                        }
-                    }
-                    JukeBot.log.info("Adjusting $id's tier (saved: $tier, calculated: $calculatedTier, pledge: $$friendly)")
-                    Database.setTier(id, calculatedTier)
-                }
-            }
-        }.exceptionally {
-            Sentry.capture(it)
-            return@exceptionally null
         }
     }
 
