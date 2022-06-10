@@ -14,10 +14,11 @@ class SpotifyTrackLoader : Loader {
         val trackId = matcher.group(2)
         val spotifyTrack = fetchTrackInfo(sourceManager, trackId)
         val trackArtists = spotifyTrack.getArray("artists")
-        val trackArtist = if (trackArtists.isEmpty()) "" else trackArtists.getObject(0).getString("name")
-        val trackTitle = spotifyTrack.getString("name")
+        //val trackArtist = if (trackArtists.isEmpty()) "" else trackArtists.getObject(0).getString("name")
+        //val trackTitle = spotifyTrack.getString("name")
+        val isrcId = spotifyTrack.getObject("external_ids").getString("isrc")
 
-        return sourceManager.doYoutubeSearch("ytsearch:$trackArtist $trackTitle")
+        return sourceManager.doYoutubeSearch("ytsearch:\"$isrcId\"")
     }
 
     private fun fetchTrackInfo(sourceManager: SpotifyAudioSourceManager, trackId: String): JsonObject {

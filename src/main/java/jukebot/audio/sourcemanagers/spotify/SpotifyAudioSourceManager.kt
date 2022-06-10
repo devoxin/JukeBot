@@ -95,19 +95,16 @@ class SpotifyAudioSourceManager(
     }
 
     internal fun doYoutubeSearch(identifier: String): AudioItem? {
-        val reference = AudioReference(identifier, null)
-        return youtubeAudioSourceManager.loadItem(JukeBot.playerManager.dapm, reference)
+        val ytasm = JukeBot.playerManager.dapm.source(YoutubeAudioSourceManager::class.java)
+        return ytasm.loadItem(JukeBot.playerManager.dapm, AudioReference(identifier, null))
     }
 
     internal fun queueYoutubeSearch(identifier: String): CompletableFuture<AudioItem?> {
         val future = CompletableFuture<AudioItem?>()
 
         trackLoaderPool.submit {
-            val reference = AudioReference(identifier, null)
-
             try {
-                val result = youtubeAudioSourceManager.loadItem(JukeBot.playerManager.dapm, reference)
-                future.complete(result)
+                future.complete(doYoutubeSearch(identifier))
             } catch (e: Exception) {
                 future.completeExceptionally(e)
             }
@@ -157,7 +154,7 @@ class SpotifyAudioSourceManager(
         return request(HttpGet.METHOD_NAME, url, requestBuilder)
     }
 
-    internal fun request(method: String, url: String, requestBuilder: RequestBuilder.() -> Unit): CloseableHttpResponse {
+    private fun request(method: String, url: String, requestBuilder: RequestBuilder.() -> Unit): CloseableHttpResponse {
         return httpInterfaceManager.`interface`.use {
             it.execute(RequestBuilder.create(method).setUri(url).apply(requestBuilder).build())
         }

@@ -53,6 +53,8 @@ class SpotifyAlbumLoader : Loader {
             val task = sourceManager.queueYoutubeSearch("ytsearch:$title $artist")
                 .thenApply { ai -> if (ai is AudioPlaylist) ai.tracks.first() else ai as AudioTrack }
             tasks.add(task)
+
+            // Consider refactoring this to load at play-time due to the fact album tracks do not contain ISRC.
         }
 
         try {
