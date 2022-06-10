@@ -8,9 +8,6 @@ import jukebot.utils.TextSplitter
 import jukebot.utils.json
 import jukebot.utils.toMessage
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
-import org.apache.commons.io.IOUtils
-import org.jetbrains.kotlin.utils.sure
 import java.net.URLEncoder
 import java.util.concurrent.CompletableFuture
 
@@ -28,8 +25,14 @@ class Lyrics : Command(ExecutionType.STANDARD) {
 
         getLyrics(encoded).thenAccept {
             when {
-                !it.exists -> return@thenAccept context.embed("No Lyrics Found", "The API returned no lyrics for **$query**")
-                it.lyrics == null -> return@thenAccept context.embed("Lyrics", "The API did not provide a valid response.")
+                !it.exists -> return@thenAccept context.embed(
+                    "No Lyrics Found",
+                    "The API returned no lyrics for **$query**"
+                )
+                it.lyrics == null -> return@thenAccept context.embed(
+                    "Lyrics",
+                    "The API did not provide a valid response."
+                )
                 else -> {
                     val pages = TextSplitter.split(it.lyrics)
 

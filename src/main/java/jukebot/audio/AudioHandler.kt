@@ -18,7 +18,6 @@ import jukebot.utils.toMessage
 import jukebot.utils.toTimeString
 import jukebot.utils.toTitleCase
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.audio.AudioSendHandler
 import java.nio.ByteBuffer
@@ -130,8 +129,10 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             if (Database.getIsPremiumServer(guildId)) {
                 announce("Queue Concluded", "Enable AutoPlay to keep the party going!")
             } else {
-                announce("Queue Concluded!",
-                    "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
+                announce(
+                    "Queue Concluded!",
+                    "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)"
+                )
             }
         }
 
@@ -225,8 +226,10 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 //            Database.setAutoPlayEnabled(guildId, false)
 //        }
 
-        announce("Playback Error", "Playback of **${track.info.title}** encountered an error!\n" +
-            problem.localizedMessage)
+        announce(
+            "Playback Error", "Playback of **${track.info.title}** encountered an error!\n" +
+                problem.localizedMessage
+        )
     }
 
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long) {

@@ -12,7 +12,6 @@ import jukebot.utils.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
-import java.util.function.Consumer
 import kotlin.math.ceil
 
 @CommandProperties(description = "Manage personal playlists stored within the bot.", aliases = ["pl", "playlist"])
@@ -72,10 +71,12 @@ class Playlists : Command(ExecutionType.STANDARD) {
         }
 
         if (args.size < 2) {
-            return ctx.embed("Custom Playlists", "You need to specify a URL, and title.\n" +
-                "The URL should point to the playlist you want to imported.\n" +
-                "Title can be anything, however it must be no more than one word.\n" +
-                "`${ctx.prefix}playlists import <url> <title>`")
+            return ctx.embed(
+                "Custom Playlists", "You need to specify a URL, and title.\n" +
+                    "The URL should point to the playlist you want to imported.\n" +
+                    "Title can be anything, however it must be no more than one word.\n" +
+                    "`${ctx.prefix}playlists import <url> <title>`"
+            )
         }
 
         val url = args[0].removePrefix("<").removeSuffix(">")
@@ -93,7 +94,10 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
                 Database.createPlaylist(ctx.author.idLong, title)
                 val playlist = Database.getPlaylist(ctx.author.idLong, title)
-                    ?: return@FunctionalResultHandler ctx.embed("Import Playlist", "An unknown error occurred while creating the playlist.")
+                    ?: return@FunctionalResultHandler ctx.embed(
+                        "Import Playlist",
+                        "An unknown error occurred while creating the playlist."
+                    )
 
                 playlist.tracks.addAll(imported)
                 playlist.save()
@@ -157,7 +161,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
                         "**`remove:`** Removes the track at the given index.\n" +
                             "**`move \u200B \u200B:`** Moves a track to the specified index.\n" +
                             "**`page \u200B \u200B:`** Displays a different page.\n" +
-                            "**`save \u200B \u200B:`** Saves any changes you've made to the database.")
+                            "**`save \u200B \u200B:`** Saves any changes you've made to the database."
+                    )
                     // u200B is a magical hack that allows our embeds to keep their formatting
                     // Don't tell Discord, though :>
                     manageMenu(ctx, dialog, playlist, page)
@@ -166,27 +171,38 @@ class Playlists : Command(ExecutionType.STANDARD) {
                     val index = args.firstOrNull()?.toIntOrNull()?.takeIf { it in 1..playlist.tracks.size }
 
                     if (index == null) {
-                        ctx.embed("Managing Playlist - ${playlist.title}", "Index needs be higher than 0, and equal to or less than ${playlist.tracks.size}.")
+                        ctx.embed(
+                            "Managing Playlist - ${playlist.title}",
+                            "Index needs be higher than 0, and equal to or less than ${playlist.tracks.size}."
+                        )
                         return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
                     playlist.tracks.removeAt(index - 1)
-                    dialog.editMessage(buildEmbed(ctx, playlist, page).toMessage()).queue { manageMenu(ctx, it, playlist, page) }
+                    dialog.editMessage(buildEmbed(ctx, playlist, page).toMessage())
+                        .queue { manageMenu(ctx, it, playlist, page) }
                 }
                 "page" -> {
                     val maxPages = ceil(playlist.tracks.size.toDouble() / 10).toInt()
                     val index = args.firstOrNull()?.toIntOrNull()?.takeIf { it in 1..maxPages }
 
                     if (index == null) {
-                        ctx.embed("Managing Playlist - ${playlist.title}", "Page needs be higher than 0, and equal to or less than $maxPages.")
+                        ctx.embed(
+                            "Managing Playlist - ${playlist.title}",
+                            "Page needs be higher than 0, and equal to or less than $maxPages."
+                        )
                         return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
-                    dialog.editMessage(buildEmbed(ctx, playlist, index).toMessage()).queue { manageMenu(ctx, it, playlist, index) }
+                    dialog.editMessage(buildEmbed(ctx, playlist, index).toMessage())
+                        .queue { manageMenu(ctx, it, playlist, index) }
                 }
                 "move" -> {
                     if (args.size < 2) {
-                        ctx.embed("Managing Playlist - ${playlist.title}", "You need to specify two numbers, higher than 0 and equal to or less than ${playlist.tracks.size}")
+                        ctx.embed(
+                            "Managing Playlist - ${playlist.title}",
+                            "You need to specify two numbers, higher than 0 and equal to or less than ${playlist.tracks.size}"
+                        )
                         return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
@@ -194,7 +210,10 @@ class Playlists : Command(ExecutionType.STANDARD) {
                     val i2 = args[1].toIntOrNull()?.takeIf { it in 1..playlist.tracks.size && it != i1 }
 
                     if (i1 == null || i2 == null) {
-                        ctx.embed("Managing Playlist - ${playlist.title}", "You need to specify a valid target track, and a valid target position.")
+                        ctx.embed(
+                            "Managing Playlist - ${playlist.title}",
+                            "You need to specify a valid target track, and a valid target position."
+                        )
                         return@prompt manageMenu(ctx, dialog, playlist, page)
                     }
 
@@ -202,7 +221,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
                     playlist.tracks.removeAt(i1 - 1)
                     playlist.tracks.add(i2 - 1, selectedTrack)
 
-                    dialog.editMessage(buildEmbed(ctx, playlist, page).toMessage()).queue { manageMenu(ctx, it, playlist, page) }
+                    dialog.editMessage(buildEmbed(ctx, playlist, page).toMessage())
+                        .queue { manageMenu(ctx, it, playlist, page) }
                 }
                 "save" -> {
                     playlist.save()
@@ -256,8 +276,10 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
         Database.createPlaylist(ctx.author.idLong, title)
 
-        ctx.embed("Custom Playlists", ":fire: Any time you hear a song you like, you can add it to your new playlist " +
-            "by running `${ctx.prefix}save $title`")
+        ctx.embed(
+            "Custom Playlists", ":fire: Any time you hear a song you like, you can add it to your new playlist " +
+                "by running `${ctx.prefix}save $title`"
+        )
     }
 
     private fun buildEmbed(ctx: Context, playlist: CustomPlaylist, selectedPage: Int = 1): MessageEmbed {

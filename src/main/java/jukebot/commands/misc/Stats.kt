@@ -13,7 +13,7 @@ import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
 import kotlin.math.max
 
-@CommandProperties(description = "Displays JukeBot statistics")
+@CommandProperties(description = "Displays statistics about the bot")
 class Stats : Command(ExecutionType.STANDARD) {
     private val dpFormatter = DecimalFormat("0.00")
 
@@ -24,7 +24,8 @@ class Stats : Command(ExecutionType.STANDARD) {
 
         val players = JukeBot.players.size
         val playingPlayers = JukeBot.players.values.count { it.isPlaying }
-        val encodingPlayers = JukeBot.players.values.count { it.isPlaying && (it.bassBooster.isEnabled || it.player.volume != 100) }
+        val encodingPlayers =
+            JukeBot.players.values.count { it.isPlaying && (it.bassBooster.isEnabled || it.player.volume != 100) }
 
         val servers = JukeBot.shardManager.guildCache.size()
         val users = JukeBot.shardManager.guilds.sumOf { it.memberCount }
@@ -49,7 +50,8 @@ class Stats : Command(ExecutionType.STANDARD) {
         context.channel.sendMessage(buildString {
             append("```asciidoc\n")
             append("= JVM =\n")
-            append("Uptime          :: ").append((System.currentTimeMillis() - JukeBot.startTime).toTimeString()).append("\n")
+            append("Uptime          :: ").append((System.currentTimeMillis() - JukeBot.startTime).toTimeString())
+                .append("\n")
             append("JVM CPU Usage   :: ").append(procCpuUsage).append("%\n")
             append("System CPU Usage:: ").append(sysCpuUsage).append("%\n")
             append("RAM Usage       :: ").append(usedMB).append("MB (").append(rPercent).append("%)\n")
@@ -62,7 +64,8 @@ class Stats : Command(ExecutionType.STANDARD) {
             append("  Encoding       : ").append(encodingPlayers).append("\n")
             append("Queries         :: ").append(totalHits).append("\n")
             append("  Cache Hits     : ").append(successfulHits).append(" ($pcCachedFormatted%)").append("\n")
-            append("Database Calls  :: ").append(Database.calls).append(" (").append(formattedCPS).append("/sec)").append("\n")
+            append("Database Calls  :: ").append(Database.calls).append(" (").append(formattedCPS).append("/sec)")
+                .append("\n")
             append("Shards Online   :: ").append(shardsOnline).append("/").append(shards).append("\n")
             append("Average Latency :: ").append(averageShardLatency).append("ms\n")
             append("```")

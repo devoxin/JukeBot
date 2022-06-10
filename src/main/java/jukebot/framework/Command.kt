@@ -1,6 +1,7 @@
 package jukebot.framework
 
 import jukebot.JukeBot
+import jukebot.utils.Constants
 import net.dv8tion.jda.api.Permission
 
 abstract class Command(private val executionType: ExecutionType) {
@@ -50,7 +51,12 @@ abstract class Command(private val executionType: ExecutionType) {
         if (!isConnected) {
             val voiceChannel = memberVoice.channel!!
 
-            if (!voiceChannel.guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK)) {
+            if (!voiceChannel.guild.selfMember.hasPermission(
+                    voiceChannel,
+                    Permission.VOICE_CONNECT,
+                    Permission.VOICE_SPEAK
+                )
+            ) {
                 context.embed(
                     "Unable to Connect",
                     "The VoiceChannel permissions prevent me from connecting.\n" +
@@ -60,7 +66,8 @@ abstract class Command(private val executionType: ExecutionType) {
             }
 
             if (voiceChannel.userLimit > 0 && voiceChannel.members.size >= voiceChannel.userLimit &&
-                !voiceChannel.guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_MOVE_OTHERS)) {
+                !voiceChannel.guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_MOVE_OTHERS)
+            ) {
                 context.embed(
                     "Unable to Connect",
                     "Your VoiceChannel is currently full.\n" +
@@ -78,7 +85,10 @@ abstract class Command(private val executionType: ExecutionType) {
     open fun runCommandPreChecks(context: Context): Boolean {
         check(CommandChecks.Dj::class.java)?.let {
             if (!context.isDJ(it.alone)) {
-                context.embed("Not a DJ", "You need to be a DJ to use this command.\n[See here on how to become a DJ](${JukeBot.WEBSITE}/faq)")
+                context.embed(
+                    "Not a DJ",
+                    "You need to be a DJ to use this command.\n[See here on how to become a DJ](${Constants.WEBSITE}/faq)"
+                )
                 return false
             }
         }
@@ -94,7 +104,10 @@ abstract class Command(private val executionType: ExecutionType) {
             check(CommandChecks.Donor::class.java)?.let {
                 val requiredTier = this.javaClass.getAnnotation(CommandChecks.Donor::class.java).tier
                 if (requiredTier > context.donorTier) {
-                    context.embed("Command Unavailable", "You must be a [donor in Tier $requiredTier or higher](https://patreon.com/devoxin)")
+                    context.embed(
+                        "Command Unavailable",
+                        "You must be a [donor in Tier $requiredTier or higher](https://patreon.com/devoxin)"
+                    )
                     return false
                 }
             }
@@ -109,7 +122,8 @@ abstract class Command(private val executionType: ExecutionType) {
         }
 
         if (executionType == ExecutionType.REQUIRE_MUTUAL &&
-            !checkVoiceState(context, true)) {
+            !checkVoiceState(context, true)
+        ) {
             return
         } else if (executionType == ExecutionType.TRIGGER_CONNECT) {
             if (context.args.isEmpty() && context.message.attachments.size == 0) {

@@ -1,12 +1,16 @@
 package jukebot.commands.queue
 
-import jukebot.JukeBot
 import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
+import jukebot.utils.Constants
 
-@CommandProperties(description = "Remove a track from the queue", aliases = ["uq", "remove", "r", "rm"], category = CommandCategory.QUEUE)
+@CommandProperties(
+    description = "Remove a track from the queue",
+    aliases = ["uq", "remove", "r", "rm"],
+    category = CommandCategory.QUEUE
+)
 class Unqueue : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
@@ -26,7 +30,10 @@ class Unqueue : Command(ExecutionType.STANDARD) {
         val selectedTrack = player.queue[selected - 1]
 
         if (selectedTrack.userData as Long != context.author.idLong && !context.isDJ(false)) {
-            return context.embed("Not a DJ", "You need the DJ role to unqueue others' tracks. [See here on how to become a DJ](${JukeBot.WEBSITE}/faq)")
+            return context.embed(
+                "Not a DJ",
+                "You need the DJ role to unqueue others' tracks. [See here on how to become a DJ](${Constants.WEBSITE}/faq)"
+            )
         }
 
         player.queue.removeAt(selected - 1)

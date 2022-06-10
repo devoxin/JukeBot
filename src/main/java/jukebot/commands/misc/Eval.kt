@@ -18,7 +18,9 @@ class Eval : Command(ExecutionType.STANDARD) {
             "sm" to JukeBot.shardManager
         )
 
-        val bindString = bindings.map { "val ${it.key} = bindings[\"${it.key}\"] as ${it.value.javaClass.kotlin.qualifiedName}" }.joinToString("\n")
+        val bindString =
+            bindings.map { "val ${it.key} = bindings[\"${it.key}\"] as ${it.value.javaClass.kotlin.qualifiedName}" }
+                .joinToString("\n")
         val bind = engine.createBindings()
         bind.putAll(bindings)
 

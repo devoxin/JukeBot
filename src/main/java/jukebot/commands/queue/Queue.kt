@@ -10,14 +10,21 @@ import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import kotlin.math.ceil
 import kotlin.math.min
 
-@CommandProperties(description = "Displays the current queue", aliases = ["q", "list", "songs"], category = CommandCategory.QUEUE)
+@CommandProperties(
+    description = "Displays the current queue",
+    aliases = ["q", "list", "songs"],
+    category = CommandCategory.QUEUE
+)
 class Queue : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()
         val queue = player.queue
 
         if (queue.isEmpty()) {
-            return context.embed("Queue is empty", "There are no tracks to display.\nUse `${context.prefix}now` to view current track.")
+            return context.embed(
+                "Queue is empty",
+                "There are no tracks to display.\nUse `${context.prefix}now` to view current track."
+            )
         }
 
         val selectedPage = context.args.firstOrNull()?.toIntOrNull() ?: 1

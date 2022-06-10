@@ -11,7 +11,10 @@ class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
         val handler = context.getAudioPlayer()
 
         val boost = context.args.firstOrNull()?.toFloatOrNull()
-            ?: return context.embed("Bass Boost", "${createBar(handler.bassBooster.percentage)} `${handler.bassBooster.percentage.toInt()}`")
+            ?: return context.embed(
+                "Bass Boost",
+                "${createBar(handler.bassBooster.percentage)} `${handler.bassBooster.percentage.toInt()}`"
+            )
 
         if (boost < 0 || boost > 200) {
             return context.embed("Bass Boost", "You need to specify a valid number from 0-200.")

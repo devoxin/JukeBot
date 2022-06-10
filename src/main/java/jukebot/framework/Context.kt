@@ -11,7 +11,12 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import java.util.concurrent.TimeUnit
 
-class Context(val event: GuildMessageReceivedEvent, val args: List<String>, val originalArgs: String, val prefix: String) {
+class Context(
+    val event: GuildMessageReceivedEvent,
+    val args: List<String>,
+    val originalArgs: String,
+    val prefix: String
+) {
     val argString: String
         get() = args.joinToString(" ")
 

@@ -67,6 +67,7 @@ class SpotifyAlbumLoader : Loader {
     }
 
     companion object {
-        private val ALBUM_PATTERN = "^(?:https?://(?:open\\.)?spotify\\.com|spotify)([/:])album\\1([a-zA-Z0-9]+)".toPattern()
+        private val ALBUM_PATTERN =
+            "^(?:https?://(?:open\\.)?spotify\\.com|spotify)([/:])album\\1([a-zA-Z0-9]+)".toPattern()
     }
 }

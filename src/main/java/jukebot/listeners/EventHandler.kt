@@ -4,11 +4,9 @@ import jukebot.Database
 import jukebot.JukeBot
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.events.GenericEvent
-import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.hooks.EventListener
-import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class EventHandler : EventListener {
     override fun onEvent(event: GenericEvent) {

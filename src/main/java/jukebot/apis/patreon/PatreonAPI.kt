@@ -17,8 +17,10 @@ class PatreonAPI(var accessToken: String) {
         return future
     }
 
-    private fun getPageOfPledge(campaignId: String, offset: String? = null,
-                                users: MutableSet<PatreonUser> = mutableSetOf(), cb: (List<PatreonUser>) -> Unit) {
+    private fun getPageOfPledge(
+        campaignId: String, offset: String? = null,
+        users: MutableSet<PatreonUser> = mutableSetOf(), cb: (List<PatreonUser>) -> Unit
+    ) {
         request {
             addPathSegments("campaigns/$campaignId/pledges")
             setQueryParameter("include", "pledge,patron")

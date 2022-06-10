@@ -18,7 +18,10 @@ class SaveAll : Command(ExecutionType.STANDARD) {
             ?: return context.embed("Save", "That playlist doesn't exist.")
 
         if (playlist.tracks.size >= CustomPlaylist.TRACK_LIMIT) {
-            return context.embed("Save", "You've hit the maximum amount of tracks for this playlist! (${CustomPlaylist.TRACK_LIMIT})")
+            return context.embed(
+                "Save",
+                "You've hit the maximum amount of tracks for this playlist! (${CustomPlaylist.TRACK_LIMIT})"
+            )
         }
 
         val tracksToAdd = player.queue

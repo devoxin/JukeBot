@@ -43,7 +43,6 @@ import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.regex.Matcher
@@ -114,13 +113,22 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
 
             return buildTrackObject(url, id, title, uploader, false, duration)
         } catch (e: Exception) {
-            throw ExceptionTools.wrapUnfriendlyExceptions("Loading information for a MixCloud track failed.", FriendlyException.Severity.FAULT, e)
+            throw ExceptionTools.wrapUnfriendlyExceptions(
+                "Loading information for a MixCloud track failed.",
+                FriendlyException.Severity.FAULT,
+                e
+            )
         }
     }
 
     internal fun extractTrackInfoGraphQl(username: String, slug: String? = null): JsonBrowser? {
         val slugFormatted = if (slug != null) String.format(", slug: \"%s\"", slug) else ""
-        val query = String.format("{\n  cloudcastLookup(lookup: {username: \"%s\"%s}) {\n    %s\n  }\n}", username, slugFormatted, requestStructure)
+        val query = String.format(
+            "{\n  cloudcastLookup(lookup: {username: \"%s\"%s}) {\n    %s\n  }\n}",
+            username,
+            slugFormatted,
+            requestStructure
+        )
         val encodedQuery = query.urlEncoded()
 
         makeHttpRequest(HttpGet("https://www.mixcloud.com/graphql?query=$encodedQuery")).use {
@@ -209,7 +217,14 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
         }
     }
 
-    private fun buildTrackObject(uri: String, identifier: String, title: String, uploader: String, isStream: Boolean, duration: Long): MixcloudAudioTrack {
+    private fun buildTrackObject(
+        uri: String,
+        identifier: String,
+        title: String,
+        uploader: String,
+        isStream: Boolean,
+        duration: Long
+    ): MixcloudAudioTrack {
         return MixcloudAudioTrack(AudioTrackInfo(title, uploader, duration, identifier, isStream, uri), this)
     }
 
@@ -220,9 +235,11 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
     }
 
     companion object {
-        private val URL_REGEX = Pattern.compile("https?://(?:(?:www|beta|m)\\.)?mixcloud\\.com/([^/]+)/(?!stream|uploads|favorites|listens|playlists)([^/]+)/?")
+        private val URL_REGEX =
+            Pattern.compile("https?://(?:(?:www|beta|m)\\.)?mixcloud\\.com/([^/]+)/(?!stream|uploads|favorites|listens|playlists)([^/]+)/?")
         private val JSON_REGEX = Pattern.compile("<script id=\"relay-data\" type=\"text/x-mixcloud\">([^<]+)</script>")
-        private val JS_REGEX = Pattern.compile("<script[^>]+src=\"(https://(?:www\\.)?mixcloud\\.com/media/(?:js2/www_js_4|js/www)\\.[^>]+\\.js)")
+        private val JS_REGEX =
+            Pattern.compile("<script[^>]+src=\"(https://(?:www\\.)?mixcloud\\.com/media/(?:js2/www_js_4|js/www)\\.[^>]+\\.js)")
         private val KEY_REGEX = Pattern.compile("\\{return *?[\"']([^\"']+)[\"']\\.concat\\([\"']([^\"']+)[\"']\\)}")
 
         internal const val DECRYPTION_KEY = "IFYOUWANTTHEARTISTSTOGETPAIDDONOTDOWNLOADFROMMIXCLOUD"

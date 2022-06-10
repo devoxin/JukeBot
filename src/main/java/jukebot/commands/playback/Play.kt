@@ -7,7 +7,11 @@ import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Finds and plays the provided song query/URL", aliases = ["p"], category = CommandCategory.PLAYBACK)
+@CommandProperties(
+    description = "Finds and plays the provided song query/URL",
+    aliases = ["p"],
+    category = CommandCategory.PLAYBACK
+)
 class Play : Command(ExecutionType.TRIGGER_CONNECT) {
     override fun execute(context: Context) {
         val player = context.getAudioPlayer()

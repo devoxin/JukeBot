@@ -30,7 +30,10 @@ class SongResultHandler(
         cache(track)
 
         if (!canQueueTrack(track)) {
-            ctx.embed("Track Unavailable", "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
+            ctx.embed(
+                "Track Unavailable",
+                "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)"
+            )
             return
         }
 
@@ -98,7 +101,10 @@ class SongResultHandler(
                 val track = playlist.tracks.firstOrNull() ?: return noMatches()
 
                 if (!canQueueTrack(track)) {
-                    ctx.embed("Track Unavailable", "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)")
+                    ctx.embed(
+                        "Track Unavailable",
+                        "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)"
+                    )
                     return
                 }
 

@@ -34,6 +34,7 @@ class SpotifyTrackLoader : Loader {
     }
 
     companion object {
-        private val TRACK_PATTERN = "^(?:https?://(?:open\\.)?spotify\\.com|spotify)([/:])track\\1([a-zA-Z0-9]+)".toPattern()
+        private val TRACK_PATTERN =
+            "^(?:https?://(?:open\\.)?spotify\\.com|spotify)([/:])track\\1([a-zA-Z0-9]+)".toPattern()
     }
 }

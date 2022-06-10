@@ -6,6 +6,7 @@ import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 import jukebot.framework.SubCommand
+import jukebot.utils.Constants
 import jukebot.utils.Helpers
 
 @CommandProperties(description = "Receive your donor rewards if you're a patron", aliases = ["perks", "rewards"])
@@ -29,18 +30,26 @@ class Verify : Command(ExecutionType.STANDARD) {
 
         JukeBot.patreonApi.fetchPledgesOfCampaign("750822").thenAccept { users ->
             if (users.isEmpty()) {
-                return@thenAccept ctx.embed("Donor Verification", "Unable to retrieve a list of donors!\nWe're sorry for the inconvenience.")
+                return@thenAccept ctx.embed(
+                    "Donor Verification",
+                    "Unable to retrieve a list of donors!\nWe're sorry for the inconvenience."
+                )
             }
 
             val pledge = users.firstOrNull { it.discordId != null && it.discordId == ctx.author.idLong }
-                ?: return@thenAccept ctx.embed("Donor Verification",
+                ?: return@thenAccept ctx.embed(
+                    "Donor Verification",
                     "No Discord account [linked to your Patreon account]($DISCORD_LINK_ARTICLE). " +
                         "Link your discord and try again.\nIf you continue to receive this error, please " +
-                        "[join here](${JukeBot.HOME_SERVER})")
+                        "[join here](${Constants.HOME_SERVER})"
+                )
 
             if (pledge.isDeclined) {
-                return@thenAccept ctx.embed("Donor Verification", "It appears your payment has been declined. Please resolve this issue and then try again.\n" +
-                    "If you believe this to be in error, please [join here](${JukeBot.HOME_SERVER})")
+                return@thenAccept ctx.embed(
+                    "Donor Verification",
+                    "It appears your payment has been declined. Please resolve this issue and then try again.\n" +
+                        "If you believe this to be in error, please [join here](${Constants.HOME_SERVER})"
+                )
             }
 
             val pledgeAmount = pledge.pledgeCents.toDouble() / 100
@@ -53,9 +62,11 @@ class Verify : Command(ExecutionType.STANDARD) {
                 "Your perks have been automatically applied."
             }
 
-            ctx.embed("Donor Perks", "Thanks for donating! **Your pledge: $${String.format("%1$,.2f", pledgeAmount)}** " +
-                "(Tier $calculatedTier)\n\n" +
-                "$note\nIf for some reason you encounter issues, please join ${JukeBot.HOME_SERVER}")
+            ctx.embed(
+                "Donor Perks", "Thanks for donating! **Your pledge: $${String.format("%1$,.2f", pledgeAmount)}** " +
+                    "(Tier $calculatedTier)\n\n" +
+                    "$note\nIf for some reason you encounter issues, please join ${Constants.HOME_SERVER}"
+            )
 
             Database.setTier(ctx.author.idLong, calculatedTier)
         }
@@ -144,7 +155,7 @@ class Verify : Command(ExecutionType.STANDARD) {
                 "Perks | Server Management",
                 "This server was registered less than 28 days ago. It cannot be unregistered " +
                     "until at least 28 days have elapsed since registration to prevent abuse.\n\n" +
-                    "If you have a valid reason for early de-registration, join ${JukeBot.HOME_SERVER}"
+                    "If you have a valid reason for early de-registration, join ${Constants.HOME_SERVER}"
             )
         }
 
@@ -165,6 +176,7 @@ class Verify : Command(ExecutionType.STANDARD) {
     }
 
     companion object {
-        private const val DISCORD_LINK_ARTICLE = "https://support.patreon.com/hc/en-gb/articles/212052266-How-do-I-connect-Discord-to-Patreon-Patron-"
+        private const val DISCORD_LINK_ARTICLE =
+            "https://support.patreon.com/hc/en-gb/articles/212052266-How-do-I-connect-Discord-to-Patreon-Patron-"
     }
 }

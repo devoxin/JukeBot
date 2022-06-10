@@ -32,7 +32,8 @@ import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor
 import jukebot.audio.sourcemanagers.mixcloud.Utils.urlDecoded
 import java.net.URI
 
-class MixcloudAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: MixcloudAudioSourceManager) : DelegatedAudioTrack(trackInfo) {
+class MixcloudAudioTrack(trackInfo: AudioTrackInfo, private val sourceManager: MixcloudAudioSourceManager) :
+    DelegatedAudioTrack(trackInfo) {
     override fun makeClone(): AudioTrack {
         return MixcloudAudioTrack(trackInfo, sourceManager)
     }

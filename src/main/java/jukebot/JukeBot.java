@@ -18,12 +18,7 @@ package jukebot;
 
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
-import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
@@ -32,6 +27,7 @@ import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRouteP
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
 import io.sentry.Sentry;
+import io.sentry.SentryClient;
 import jukebot.apis.patreon.PatreonAPI;
 import jukebot.audio.AudioHandler;
 import jukebot.audio.sourcemanagers.caching.CachingSourceManager;
@@ -42,10 +38,7 @@ import jukebot.framework.Command;
 import jukebot.listeners.ActionWaiter;
 import jukebot.listeners.CommandHandler;
 import jukebot.listeners.EventHandler;
-import jukebot.utils.Config;
-import jukebot.utils.Helpers;
-import jukebot.utils.IntentHelper;
-import jukebot.utils.RequestUtil;
+import jukebot.utils.*;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
@@ -66,12 +59,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class JukeBot {
-    public static final String HOME_SERVER = "https://discord.gg/xvtH2Yn";
-    public static final String WEBSITE = "https://jukebot.serux.pro";
+    public static Logger log = LoggerFactory.getLogger("JukeBot");
+
     /* Bot-Related*/
     public static final long startTime = System.currentTimeMillis();
-    public static Logger log = LoggerFactory.getLogger("JukeBot");
-    public static Config config = Config.Companion.load();
+    public static final Config config = Config.Companion.load();
 
     public static long selfId = 0L;
     public static long botOwnerId = 0L;
@@ -83,7 +75,7 @@ public class JukeBot {
 
     public static final ConcurrentHashMap<Long, AudioHandler> players = new ConcurrentHashMap<>();
     public static final ActionWaiter waiter = new ActionWaiter();
-    public static CustomAudioPlayerManager playerManager = new CustomAudioPlayerManager();
+    public static final CustomAudioPlayerManager playerManager = new CustomAudioPlayerManager();
     public static ShardManager shardManager;
 
     public static void main(final String[] args) throws Exception {
@@ -91,7 +83,6 @@ public class JukeBot {
         printBanner();
 
         String jarLocation = JukeBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        //String decodedLocation = URLDecoder.decode(jarLocation, Charset.defaultCharset());
         System.setProperty("kotlin.script.classpath", jarLocation);
 
         RestAction.setPassContext(false);
@@ -112,7 +103,7 @@ public class JukeBot {
                         CacheFlag.ROLE_TAGS,
                         CacheFlag.ONLINE_STATUS
                 )
-                .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | " + WEBSITE))
+                .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | " + Constants.WEBSITE))
                 .setBulkDeleteSplittingEnabled(false);
 
         final String os = System.getProperty("os.name").toLowerCase();
@@ -156,8 +147,8 @@ public class JukeBot {
         }
 
         if (config.getSentryDsn() != null && !config.getSentryDsn().isEmpty()) {
-            Sentry.init(config.getSentryDsn());
-            Sentry.getStoredClient().setRelease(Helpers.INSTANCE.getVersion());
+            final SentryClient sentry = Sentry.init(config.getSentryDsn());
+            sentry.setRelease(Helpers.INSTANCE.getVersion());
         }
     }
 
@@ -169,20 +160,6 @@ public class JukeBot {
         playerManager.setPlayerCleanupThreshold(30000);
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
 
-        registerSourceManagers();
-
-        YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
-        sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
-
-        if (config.getIpv6Block() != null && !config.getIpv6Block().isEmpty()) {
-            log.info("Using IPv6 block with RotatingNanoIpRoutePlanner!");
-            List<IpBlock> blocks = Collections.singletonList(new Ipv6Block(config.getIpv6Block()));
-            RotatingNanoIpRoutePlanner planner = new RotatingNanoIpRoutePlanner(blocks);
-            new YoutubeIpRotatorSetup(planner).forSource(sourceManager).setup();
-        }
-    }
-
-    private static void registerSourceManagers() {
         playerManager.registerSourceManager(new CachingSourceManager());
         playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
@@ -190,21 +167,23 @@ public class JukeBot {
             playerManager.registerSourceManager(new PornHubAudioSourceManager());
         }
 
-        YoutubeAudioSourceManager ytasm = new YoutubeAudioSourceManager();
-
         if (config.contains("spotify_client") && config.contains("spotify_secret")) {
-            String client = config.get("spotify_client", null);
-            String secret = config.get("spotify_secret", null);
-            playerManager.registerSourceManager(new SpotifyAudioSourceManager(client, secret, ytasm));
+            final String client = config.get("spotify_client", null);
+            final String secret = config.get("spotify_secret", null);
+            playerManager.registerSourceManager(new SpotifyAudioSourceManager(client, secret));
         }
 
-        playerManager.registerSourceManager(ytasm);
-        playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
-        playerManager.registerSourceManager(new BandcampAudioSourceManager());
-        playerManager.registerSourceManager(new VimeoAudioSourceManager());
-        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
-        playerManager.registerSourceManager(new GetyarnAudioSourceManager());
-        playerManager.registerSourceManager(new HttpAudioSourceManager());
+        AudioSourceManagers.registerRemoteSources(playerManager);
+
+        final YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
+        sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
+
+        if (config.getIpv6Block() != null && !config.getIpv6Block().isEmpty()) {
+            log.info("Using IPv6 block with RotatingNanoIpRoutePlanner!");
+            final List<IpBlock> blocks = Collections.singletonList(new Ipv6Block(config.getIpv6Block()));
+            final RotatingNanoIpRoutePlanner planner = new RotatingNanoIpRoutePlanner(blocks);
+            new YoutubeIpRotatorSetup(planner).forSource(sourceManager).setup();
+        }
     }
 
     private static void setupSelf() {

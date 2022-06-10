@@ -31,8 +31,7 @@ import java.util.concurrent.TimeUnit
 
 class SpotifyAudioSourceManager(
     private val clientId: String,
-    private val clientSecret: String,
-    private val youtubeAudioSourceManager: YoutubeAudioSourceManager
+    private val clientSecret: String
 ) : AudioSourceManager {
     private val trackLoaderPool = Executors.newFixedThreadPool(10)
 
@@ -142,7 +141,8 @@ class SpotifyAudioSourceManager(
             accessToken = json.getString("access_token")
             Helpers.schedule(::refreshAccessToken, (refreshIn * 1000) - 10000, TimeUnit.MILLISECONDS)
 
-            val snippet = accessToken.substring(0..4).padEnd(accessToken.length - 5, '*') // lol imagine printing the entire token
+            val snippet =
+                accessToken.substring(0..4).padEnd(accessToken.length - 5, '*') // lol imagine printing the entire token
             log.info("Updated access token to $snippet")
         }
     }

@@ -20,7 +20,6 @@ import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.regex.Pattern
@@ -32,7 +31,9 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
     override fun getSourceName() = "pornhub"
 
     override fun loadItem(manager: AudioPlayerManager, reference: AudioReference): AudioItem? {
-        if (!VIDEO_REGEX.matcher(reference.identifier).matches() && !reference.identifier.startsWith(VIDEO_SEARCH_PREFIX))
+        if (!VIDEO_REGEX.matcher(reference.identifier)
+                .matches() && !reference.identifier.startsWith(VIDEO_SEARCH_PREFIX)
+        )
             return null
 
         if (reference.identifier.startsWith(VIDEO_SEARCH_PREFIX)) {
@@ -187,7 +188,8 @@ class PornHubAudioSourceManager : AudioSourceManager, HttpConfigurable {
     }
 
     companion object {
-        private val VIDEO_REGEX = Pattern.compile("^https?://www\\.pornhub\\.com/view_video\\.php\\?viewkey=([a-zA-Z0-9]{9,15})\$")
+        private val VIDEO_REGEX =
+            Pattern.compile("^https?://www\\.pornhub\\.com/view_video\\.php\\?viewkey=([a-zA-Z0-9]{9,15})\$")
         private val VIDEO_INFO_REGEX = Pattern.compile("var flashvars_\\d{7,9} = (\\{.+})")
         private const val VIDEO_SEARCH_PREFIX = "phsearch:"
     }

@@ -1,10 +1,10 @@
 package jukebot.commands.misc
 
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary
-import jukebot.JukeBot
 import jukebot.framework.Command
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
+import jukebot.utils.Constants
 import jukebot.utils.Helpers
 import jukebot.utils.addFields
 import net.dv8tion.jda.api.JDAInfo
@@ -21,7 +21,7 @@ class About : Command(ExecutionType.STANDARD) {
 
     private val links = mapOf(
         "GitHub" to "https://github.com/Devoxin/JukeBot",
-        "Website" to JukeBot.WEBSITE
+        "Website" to Constants.WEBSITE
     )
 
     override fun execute(context: Context) {

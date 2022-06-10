@@ -18,7 +18,10 @@ class Announce : Command(ExecutionType.STANDARD) {
                 player.shouldAnnounce = false
                 context.embed("Track Announcements", "Track announcements are now disabled for this server")
             }
-            else -> context.embed("Track Announcements", "`here` - Uses the current channel for track announcements\n`off` - Disables track announcements")
+            else -> context.embed(
+                "Track Announcements",
+                "`here` - Uses the current channel for track announcements\n`off` - Disables track announcements"
+            )
         }
     }
 }

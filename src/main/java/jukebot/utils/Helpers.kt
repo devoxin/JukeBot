@@ -20,10 +20,12 @@ object Helpers {
         val stream = Helpers::class.java.classLoader.getResourceAsStream("version.txt")
         IOUtils.toString(stream, Charsets.UTF_8)
     }
-    private val timer: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
-    val monitor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }
+    private val timer: ScheduledExecutorService =
+        Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
+    val monitor: ScheduledExecutorService =
+        Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Pledge-Monitor") }
 
-    fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC', link: String = JukeBot.WEBSITE): String {
+    fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC', link: String = Constants.WEBSITE): String {
         val percent = v.toFloat() / max
         val blocks = floor((barLength * percent).toDouble()).toInt()
         val barChar = bar.toString()
@@ -45,7 +47,8 @@ object Helpers {
 
     fun pad(s: String) = String.format("%-12s", s).replace(" ", " \u200B")
 
-    fun canSendTo(channel: TextChannel) = channel.canTalk() && channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)
+    fun canSendTo(channel: TextChannel) =
+        channel.canTalk() && channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)
 
     fun schedule(task: () -> Unit, delay: Int, unit: TimeUnit) {
         timer.schedule(task, delay.toLong(), unit)

@@ -6,7 +6,11 @@ import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(description = "Searches for a track on PornHub and queues it", nsfw = true, category = CommandCategory.PLAYBACK)
+@CommandProperties(
+    description = "Searches for a track on PornHub and queues it",
+    nsfw = true,
+    category = CommandCategory.PLAYBACK
+)
 class Porn : Command(ExecutionType.TRIGGER_CONNECT) {
     override fun execute(context: Context) {
         if (!context.channel.isNSFW) {

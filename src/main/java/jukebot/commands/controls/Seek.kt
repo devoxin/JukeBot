@@ -5,7 +5,11 @@ import jukebot.audio.AudioHandler
 import jukebot.framework.*
 import jukebot.utils.toTimeString
 
-@CommandProperties(description = "Jump to a certain time, or by a specific amount of seconds", category = CommandCategory.CONTROLS, aliases = ["jump"])
+@CommandProperties(
+    description = "Jump to a certain time, or by a specific amount of seconds",
+    category = CommandCategory.CONTROLS,
+    aliases = ["jump"]
+)
 @CommandChecks.Dj(alone = true)
 @CommandChecks.Playing
 class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
@@ -63,7 +67,10 @@ class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
                 val (minutes, seconds) = partsInt
                 (minutes * 60) + seconds
             }
-            else -> return ctx.embed("Track Seeking", "Invalid time.\nAcceptable formats: `mm:ss`, `hh:mm:ss`, `dd:hh:mm:ss`")
+            else -> return ctx.embed(
+                "Track Seeking",
+                "Invalid time.\nAcceptable formats: `mm:ss`, `hh:mm:ss`, `dd:hh:mm:ss`"
+            )
         }
 
         if (track.position + jumpTimeMs >= track.duration) {

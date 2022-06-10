@@ -2,10 +2,15 @@ package jukebot.commands.queue
 
 import jukebot.JukeBot
 import jukebot.framework.*
+import jukebot.utils.Constants
 import jukebot.utils.Helpers
 import jukebot.utils.toTimeString
 
-@CommandProperties(description = "Displays the currently playing track", aliases = ["n", "np"], category = CommandCategory.QUEUE)
+@CommandProperties(
+    description = "Displays the currently playing track",
+    aliases = ["n", "np"],
+    category = CommandCategory.QUEUE
+)
 @CommandChecks.Playing
 class Now : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
@@ -28,7 +33,7 @@ class Now : Command(ExecutionType.STANDARD) {
         val timeLink = if (isYouTubeTrack) {
             "${current.info.uri}&t=${current.position / 1000}s"
         } else {
-            JukeBot.WEBSITE
+            Constants.WEBSITE
         }
 
         context.embed {

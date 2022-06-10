@@ -8,8 +8,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
 import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager
 import org.apache.http.HttpStatus
-import org.apache.http.util.EntityUtils
-import org.jetbrains.kotlin.utils.addToStdlib.cast
 import java.util.concurrent.CompletableFuture
 import java.util.regex.Matcher
 
