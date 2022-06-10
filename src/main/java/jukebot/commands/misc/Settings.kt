@@ -7,7 +7,6 @@ import jukebot.utils.addFields
 import jukebot.utils.toColorOrNull
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.text.DecimalFormat
-import java.util.regex.Pattern
 
 @CommandProperties(
     description = "Manage server-specific settings such as prefix etc",

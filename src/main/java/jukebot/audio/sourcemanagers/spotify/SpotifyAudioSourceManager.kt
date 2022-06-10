@@ -141,9 +141,7 @@ class SpotifyAudioSourceManager(
             accessToken = json.getString("access_token")
             Helpers.schedule(::refreshAccessToken, (refreshIn * 1000) - 10000, TimeUnit.MILLISECONDS)
 
-            val snippet =
-                accessToken.substring(0..4).padEnd(accessToken.length - 5, '*') // lol imagine printing the entire token
-            log.info("Updated access token to $snippet")
+            log.info("Access token successfully refreshed")
         }
     }
 

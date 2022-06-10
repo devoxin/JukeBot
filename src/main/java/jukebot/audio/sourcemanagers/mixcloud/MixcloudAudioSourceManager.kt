@@ -46,7 +46,6 @@ import java.nio.charset.StandardCharsets
 import java.util.function.Consumer
 import java.util.function.Function
 import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
     val httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager()!!
@@ -163,59 +162,6 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
       url
     }
     """.trim()
-
-    fun getTrackInfo(uri: String): JsonBrowser? {
-        makeHttpRequest(HttpGet(uri)).use {
-            val statusCode = it.statusLine.statusCode
-
-            if (statusCode != 200) {
-                if (statusCode == 404) {
-                    return null
-                }
-                throw IOException("Invalid status code for Mixcloud track page response: $statusCode")
-            }
-
-            val content = IOUtils.toString(it.entity.content, StandardCharsets.UTF_8)
-
-            val matcher = JSON_REGEX.matcher(content)
-            check(matcher.find()) { "Missing MixCloud track JSON" }
-
-            val json = JsonBrowser.parse(matcher.group(1).replace("&quot;", "\""))
-
-            for (node in json.values()) {
-                val info = node.get("cloudcastLookup").get("data").get("cloudcastLookup")
-
-                if (!info.isNull && !info.get("streamInfo").isNull) {
-                    val jsMatcher = JS_REGEX.matcher(content)
-
-                    if (jsMatcher.find()) {
-                        info.put("jsUrl", jsMatcher.group(1))
-                    }
-
-                    return info
-                }
-            }
-
-            throw IllegalStateException("No nodes found matching path cloudcastLookup.data.cloudcastLookup")
-        }
-    }
-
-    fun getStreamKey(json: JsonBrowser): String {
-        check(!json.get("jsUrl").isNull) { "jsUrl is missing from json" }
-
-        makeHttpRequest(HttpGet(json.get("jsUrl").text())).use {
-            check(it.statusLine.statusCode == 200) { "Invalid status code while fetching JS" }
-
-            val content = IOUtils.toString(it.entity.content, StandardCharsets.UTF_8)
-            val keyMatcher = KEY_REGEX.matcher(content)
-
-            if (keyMatcher.find()) {
-                return keyMatcher.group(1) + keyMatcher.group(2)
-            }
-
-            throw IllegalStateException("Missing key in JS")
-        }
-    }
 
     private fun buildTrackObject(
         uri: String,
