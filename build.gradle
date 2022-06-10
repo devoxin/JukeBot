@@ -1,5 +1,5 @@
 group 'jukebot'
-version '6'
+version getBuildVersion()
 
 buildscript {
     ext.kotlin_version = '1.6.21'
