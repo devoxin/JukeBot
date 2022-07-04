@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.regex.Matcher
 
 class SpotifyAlbumLoader : Loader {
-    override fun pattern() = ALBUM_PATTERN
+    override val pattern = "^(?:https?://(?:open\\.)?spotify\\.com|spotify)([/:])album\\1([a-zA-Z\\d]+)".toPattern()
 
     override fun load(sourceManager: SpotifyAudioSourceManager, matcher: Matcher): AudioItem {
         val albumId = matcher.group(2)
@@ -64,10 +64,5 @@ class SpotifyAlbumLoader : Loader {
 
         return tasks.filterNot { t -> t.isCompletedExceptionally }
             .mapNotNull { t -> t.get() }
-    }
-
-    companion object {
-        private val ALBUM_PATTERN =
-            "^(?:https?://(?:open\\.)?spotify\\.com|spotify)([/:])album\\1([a-zA-Z0-9]+)".toPattern()
     }
 }

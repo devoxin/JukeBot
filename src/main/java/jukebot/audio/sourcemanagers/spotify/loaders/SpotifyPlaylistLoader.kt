@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.regex.Matcher
 
 class SpotifyPlaylistLoader : Loader {
-    override fun pattern() = PLAYLIST_PATTERN
+    override val pattern = "^(?:$URL_PATTERN|spotify)([/:])playlist\\1([a-zA-Z\\d]+)".toPattern()
 
     override fun load(sourceManager: SpotifyAudioSourceManager, matcher: Matcher): AudioItem? {
         val playlistId = matcher.group(2)
@@ -80,6 +80,5 @@ class SpotifyPlaylistLoader : Loader {
     companion object {
         //private val URL_PATTERN = "^https?://(?:open\\.)?spotify\\.com/(?:user/[a-zA-Z0-9_]+/)?playlist/([a-zA-Z0-9]+).*".toPattern()
         private const val URL_PATTERN = "https?://(?:open\\.)?spotify\\.com(?:/user/[a-zA-Z0-9_]+)?"
-        private val PLAYLIST_PATTERN = "^(?:$URL_PATTERN|spotify)([/:])playlist\\1([a-zA-Z0-9]+)".toPattern()
     }
 }

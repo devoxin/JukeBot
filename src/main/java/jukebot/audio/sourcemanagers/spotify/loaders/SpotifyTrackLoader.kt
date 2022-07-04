@@ -8,7 +8,7 @@ import org.apache.http.HttpStatus
 import java.util.regex.Matcher
 
 class SpotifyTrackLoader : Loader {
-    override fun pattern() = TRACK_PATTERN
+    override val pattern = "^(?:https?://(?:open\\.)?spotify\\.com|spotify)([/:])track\\1([a-zA-Z\\d]+)".toPattern()
 
     override fun load(sourceManager: SpotifyAudioSourceManager, matcher: Matcher): AudioItem? {
         val trackId = matcher.group(2)
@@ -31,10 +31,5 @@ class SpotifyTrackLoader : Loader {
 
             JsonParser.`object`().from(it.entity.content)
         }
-    }
-
-    companion object {
-        private val TRACK_PATTERN =
-            "^(?:https?://(?:open\\.)?spotify\\.com|spotify)([/:])track\\1([a-zA-Z0-9]+)".toPattern()
     }
 }

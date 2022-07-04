@@ -9,7 +9,7 @@ interface Loader {
     /**
      * Returns the pattern used to match URLs for this loader.
      */
-    fun pattern(): Pattern
+    val pattern: Pattern
 
     /**
      * Loads an AudioItem from the given regex match.
