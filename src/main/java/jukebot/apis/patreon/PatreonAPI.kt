@@ -23,11 +23,11 @@ class PatreonAPI(var accessToken: String) {
     }
 
     private fun checkPledges() {
-        JukeBot.log.info("Checking pledges...")
+        logger.info("Checking pledges...")
 
         JukeBot.patreonApi.fetchPledgesOfCampaign("750822").thenAccept { users ->
             if (users.isEmpty()) {
-                return@thenAccept JukeBot.log.warn("Scheduled pledge clean failed: No users to check")
+                return@thenAccept logger.warn("Scheduled pledge clean failed: No users to check")
             }
 
             for (id in Database.getDonorIds()) {
@@ -36,7 +36,7 @@ class PatreonAPI(var accessToken: String) {
                 if (pledge == null || pledge.isDeclined) {
                     Database.setTier(id, 0)
                     Database.removePremiumServersOf(id)
-                    JukeBot.log.info("Removed $id from donors")
+                    logger.info("Removed $id from donors")
                     continue
                 }
 
@@ -51,12 +51,12 @@ class PatreonAPI(var accessToken: String) {
                         val allServers = Database.getPremiumServersOf(id)
 
                         if (allServers.size > calculatedServerQuota) {
-                            JukeBot.log.info("Removing some of $id's premium servers to meet quota (quota: $calculatedServerQuota, servers: ${allServers.size}")
+                            logger.info("Removing some of $id's premium servers to meet quota (quota: $calculatedServerQuota, servers: ${allServers.size}")
                             val exceededQuotaBy = allServers.size - calculatedServerQuota
                             (0..exceededQuotaBy).onEach { allServers[it].remove() }
                         }
                     }
-                    JukeBot.log.info("Adjusting $id's tier (saved: $tier, calculated: $calculatedTier, pledge: $$friendly)")
+                    logger.info("Adjusting $id's tier (saved: $tier, calculated: $calculatedTier, pledge: $$friendly)")
                     Database.setTier(id, calculatedTier)
                 }
             }
@@ -82,7 +82,7 @@ class PatreonAPI(var accessToken: String) {
             offset?.let { setQueryParameter("page[cursor]", it) }
         }.queue({
             if (!it.isSuccessful) {
-                log.error("Unable to get list of pledges ({}): {}", it.code(), it.body()?.string())
+                logger.error("Unable to get list of pledges ({}): {}", it.code(), it.body()?.string())
                 it.close()
 
                 return@queue cb(users.toList())
@@ -103,7 +103,7 @@ class PatreonAPI(var accessToken: String) {
             val nextPage = getNextPage(json) ?: return@queue cb(users.toList())
             getPageOfPledge(campaignId, nextPage, users, cb)
         }, {
-            log.error("Unable to get list of pledges", it)
+            logger.error("Unable to get list of pledges", it)
             return@queue cb(users.toList())
         })
     }
@@ -137,7 +137,7 @@ class PatreonAPI(var accessToken: String) {
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(PatreonAPI::class.java)
+        private val logger = LoggerFactory.getLogger(PatreonAPI::class.java)
         private val baseUrl = HttpUrl.get("https://www.patreon.com/api/oauth2/api")
     }
 }

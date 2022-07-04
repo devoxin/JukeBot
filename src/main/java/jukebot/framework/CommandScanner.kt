@@ -2,11 +2,12 @@ package jukebot.framework
 
 import com.google.common.reflect.ClassPath
 import jukebot.JukeBot
+import org.slf4j.LoggerFactory
 
 class CommandScanner(private val pkg: String) {
     fun scan(): Map<String, Command> {
         val classes = ClassPath.from(this::class.java.classLoader).getTopLevelClassesRecursive(pkg)
-        JukeBot.log.debug("Discovered ${classes.size} commands")
+        logger.debug("Discovered ${classes.size} commands")
 
         return classes
             .asSequence()
@@ -19,7 +20,7 @@ class CommandScanner(private val pkg: String) {
 
     private fun loadSubCommands(cmd: Command): Command {
         val methods = cmd::class.java.methods.filter { it.isAnnotationPresent(SubCommand::class.java) }
-        JukeBot.log.debug("Discovered ${methods.size} subcommands for command ${cmd.name}")
+        logger.debug("Discovered ${methods.size} subcommands for command ${cmd.name}")
 
         for (meth in methods) {
             val annotation = meth.getAnnotation(SubCommand::class.java)
@@ -31,5 +32,9 @@ class CommandScanner(private val pkg: String) {
         }
 
         return cmd
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(CommandScanner::class.java)
     }
 }

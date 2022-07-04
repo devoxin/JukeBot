@@ -10,10 +10,11 @@ import jukebot.utils.separate
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.EventListener
+import org.slf4j.LoggerFactory
 
 class CommandHandler : EventListener {
     init {
-        JukeBot.log.info("${commands.size} commands in registry")
+        logger.info("${commands.size} commands in registry")
     }
 
     override fun onEvent(event: GenericEvent) {
@@ -23,9 +24,7 @@ class CommandHandler : EventListener {
     }
 
     private fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
-        if (e.author.isBot || e.isWebhookMessage || !e.channel.canSendEmbed()
-            || Database.getIsBlocked(e.author.idLong)
-        ) {
+        if (e.author.isBot || e.isWebhookMessage || !e.channel.canSendEmbed() || Database.getIsBlocked(e.author.idLong)) {
             return
         }
 
@@ -56,7 +55,9 @@ class CommandHandler : EventListener {
     }
 
     companion object {
+        private val logger = LoggerFactory.getLogger(CommandHandler::class.java)
         private val MENTION_FORMATS by lazy { listOf("<@${JukeBot.selfId}>", "<@!${JukeBot.selfId}>") }
+
         val commands = CommandScanner("jukebot.commands").scan().toMutableMap()
     }
 }

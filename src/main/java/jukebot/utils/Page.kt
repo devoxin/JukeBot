@@ -8,7 +8,7 @@ import kotlin.math.min
 class Page(val content: String, val duration: String, val page: Int, val maxPages: Int) {
     companion object {
         fun paginate(tracks: List<AudioTrack>, selectedPage: Int = 1): Page {
-            val queueDuration = tracks.map { it.duration }.sum().toTimeString()
+            val queueDuration = tracks.sumOf { it.duration }.toTimeString()
             val content = StringBuilder()
 
             val maxPages = ceil(tracks.size.toDouble() / 10).toInt()

@@ -58,7 +58,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JukeBot {
-    public static final Logger log = LoggerFactory.getLogger("JukeBot");
+    private static final Logger logger = LoggerFactory.getLogger("JukeBot");
 
     /* Bot-Related*/
     public static final long startTime = System.currentTimeMillis();
@@ -109,7 +109,7 @@ public class JukeBot {
         final String arch = System.getProperty("os.arch");
 
         if ((os.contains("windows") || os.contains("linux")) && !arch.equalsIgnoreCase("arm") && !arch.equalsIgnoreCase("arm-linux")) {
-            log.info("System supports NAS, enabling...");
+            logger.info("System supports NAS, enabling...");
             shardManagerBuilder.setAudioSendFactory(new NativeAudioSendFactory());
         }
 
@@ -140,7 +140,7 @@ public class JukeBot {
 
     private static void loadApis() {
         if (config.contains("patreon") && !isSelfHosted) {
-            log.debug("Config has patreon key, loading patreon API...");
+            logger.debug("Config has patreon key, loading patreon API...");
             patreonApi = new PatreonAPI(config.get("patreon", null));
             // Default should never be used here, but Java insists on the 2nd parameter.
         }
@@ -178,7 +178,7 @@ public class JukeBot {
         sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
 
         if (config.getIpv6Block() != null && !config.getIpv6Block().isEmpty()) {
-            log.info("Using IPv6 block with RotatingNanoIpRoutePlanner!");
+            logger.info("Using IPv6 block with RotatingNanoIpRoutePlanner!");
             final List<IpBlock> blocks = Collections.singletonList(new Ipv6Block(config.getIpv6Block()));
             final RotatingNanoIpRoutePlanner planner = new RotatingNanoIpRoutePlanner(blocks);
             new YoutubeIpRotatorSetup(planner).forSource(sourceManager).setup();

@@ -17,10 +17,10 @@ class CachingSourceManager : AudioSourceManager {
     init {
         try {
             jedisPool.resource.use {
-                log.info("Connected to Redis; caching available.")
+                logger.info("Connected to Redis; caching available.")
             }
         } catch (e: JedisConnectionException) {
-            log.warn("Unable to connect to Redis; caching unavailable!")
+            logger.warn("Unable to connect to Redis; caching unavailable!")
             jedisPool.close()
             enabled = false
         }
@@ -64,18 +64,18 @@ class CachingSourceManager : AudioSourceManager {
     }
 
     companion object {
-        var enabled = true
-            private set
-
-        var totalHits = 0
-        var successfulHits = 0
-
-        private val log = LoggerFactory.getLogger(CachingSourceManager::class.java)
+        private val logger = LoggerFactory.getLogger(CachingSourceManager::class.java)
         private val jedisPool = JedisPool(JedisPoolConfig(), "redis://localhost:6379/")
 
         private val PLAYLIST_TTL = TimeUnit.HOURS.toMillis(2)
         private val SEARCH_TTL = TimeUnit.HOURS.toMillis(12)
         private val TRACK_TTL = TimeUnit.HOURS.toMillis(12)
+
+        var enabled = true
+            private set
+
+        var totalHits = 0
+        var successfulHits = 0
 
         fun cache(identifier: String, item: AudioItem) {
             if (jedisPool.isClosed) {

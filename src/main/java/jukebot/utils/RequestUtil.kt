@@ -8,7 +8,6 @@ import java.util.concurrent.CompletableFuture
 
 class RequestUtil {
     private val httpClient = OkHttpClient()
-    private val logger = LoggerFactory.getLogger(this.javaClass)
 
     inner class PendingRequest(private val request: Request) {
         fun submit(): CompletableFuture<Response> {
@@ -21,7 +20,7 @@ class RequestUtil {
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    JukeBot.log.debug("Response: code=${response.code()} message=${response.message()}")
+                    logger.debug("Response: code=${response.code()} message=${response.message()}")
                     fut.complete(response)
                 }
             })
@@ -57,4 +56,8 @@ class RequestUtil {
     }
 
     fun request(request: Request) = PendingRequest(request)
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(RequestUtil::class.java)
+    }
 }

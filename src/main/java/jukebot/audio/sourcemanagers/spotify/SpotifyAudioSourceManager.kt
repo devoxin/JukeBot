@@ -124,7 +124,7 @@ class SpotifyAudioSourceManager(
             entity = StringEntity("grant_type=client_credentials")
         }.use {
             if (it.statusLine.statusCode != HttpStatus.SC_OK) {
-                log.warn("Received code ${it.statusLine.statusCode} from Spotify while trying to update access token!")
+                logger.warn("Received code ${it.statusLine.statusCode} from Spotify while trying to update access token!")
                 Helpers.schedule(::refreshAccessToken, 1, TimeUnit.MINUTES)
                 return
             }
@@ -132,7 +132,7 @@ class SpotifyAudioSourceManager(
             val json = JsonParser.`object`().from(it.entity.content)
 
             if (json.has("error") && json.getString("error").startsWith("invalid_")) {
-                log.error("Spotify API access disabled (${json.getString("error")})")
+                logger.error("Spotify API access disabled (${json.getString("error")})")
                 accessToken = ""
                 return
             }
@@ -141,7 +141,7 @@ class SpotifyAudioSourceManager(
             accessToken = json.getString("access_token")
             Helpers.schedule(::refreshAccessToken, (refreshIn * 1000) - 10000, TimeUnit.MILLISECONDS)
 
-            log.info("Access token successfully refreshed")
+            logger.info("Access token successfully refreshed")
         }
     }
 
@@ -159,7 +159,7 @@ class SpotifyAudioSourceManager(
     }
 
     companion object {
-        private val log = LoggerFactory.getLogger(SpotifyAudioSourceManager::class.java)
+        private val logger = LoggerFactory.getLogger(SpotifyAudioSourceManager::class.java)
 
         private val loaders = listOf(
             SpotifyTrackLoader(),
