@@ -2,15 +2,19 @@ package jukebot.utils
 
 object TextSplitter {
     fun split(content: String, limit: Int = 2000): Array<String> {
+        if (content.length < limit) {
+            return arrayOf(content)
+        }
+
         val pages = ArrayList<String>()
 
         val lines = content.trim().split("\n").dropLastWhile { it.isEmpty() }.toTypedArray()
-        var chunk = StringBuilder()
+        val chunk = StringBuilder(limit)
 
         for (line in lines) {
             if (chunk.isNotEmpty() && chunk.length + line.length > limit) {
                 pages.add(chunk.toString())
-                chunk = StringBuilder()
+                chunk.setLength(0)
             }
 
             if (line.length > limit) {
