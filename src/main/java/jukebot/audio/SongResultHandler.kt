@@ -125,7 +125,7 @@ class SongResultHandler(
 
             val estPlay = musicManager.queue
                 .sumByLong { it.duration }
-                .let { duration -> musicManager.current?.let { duration + (it.duration - it.position) } ?: duration }
+                .plus(musicManager.current?.let { it.duration - it.position } ?: 0)
 
             for (track in tracks) {
                 musicManager.enqueue(track, ctx.author.idLong, false)
