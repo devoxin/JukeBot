@@ -19,8 +19,7 @@ object IntentHelper {
 
     // Basically everything except GUILD_MESSAGES + GUILD_VOICE_STATES
 
-    val allIntents = GatewayIntent.ALL_INTENTS
-    val disabledIntentsInt = GatewayIntent.getRaw(disabledIntents)
-    val enabledIntentsInt = allIntents and disabledIntentsInt.inv()
+    private val disabledIntentsInt = GatewayIntent.getRaw(disabledIntents)
+    private val enabledIntentsInt = GatewayIntent.ALL_INTENTS and disabledIntentsInt.inv()
     val enabledIntents = GatewayIntent.getIntents(enabledIntentsInt)
 }

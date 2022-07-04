@@ -123,11 +123,9 @@ class SongResultHandler(
                 .filter(::canQueueTrack)
                 .take(Limits.playlist(ctx.donorTier))
 
-            var estPlay = musicManager.queue.sumByLong { it.duration }
-
-            if (musicManager.current != null) {
-                estPlay += musicManager.current!!.duration - musicManager.current!!.position
-            }
+            val estPlay = musicManager.queue
+                .sumByLong { it.duration }
+                .let { duration -> musicManager.current?.let { duration + (it.duration - it.position) } ?: duration }
 
             for (track in tracks) {
                 musicManager.enqueue(track, ctx.author.idLong, false)

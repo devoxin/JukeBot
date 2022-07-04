@@ -13,10 +13,7 @@ import io.sentry.event.EventBuilder
 import io.sentry.event.interfaces.ExceptionInterface
 import jukebot.Database
 import jukebot.JukeBot
-import jukebot.utils.Helpers
-import jukebot.utils.canSendEmbed
-import jukebot.utils.toMessage
-import jukebot.utils.toTimeString
+import jukebot.utils.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.audio.AudioSendHandler
@@ -267,7 +264,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         NONE;
 
         fun humanized(): String {
-            return this.toString().lowercase().capitalize()
+            return this.toString().lowercase().capitalise()
         }
     }
 
