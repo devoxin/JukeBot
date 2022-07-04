@@ -43,7 +43,8 @@ dependencies {
     implementation 'club.minnced:discord-webhooks:0.8.0'
 
     /* Audio */
-    implementation 'com.github.devoxin:walkyst-lavaplayer:f4ec4f3'
+    //implementation 'com.github.devoxin:walkyst-lavaplayer:f4ec4f3'
+    implementation 'com.github.walkyst:lavaplayer-fork:1.3.98.1'
     implementation 'com.sedmelluq:lavaplayer-ext-youtube-rotator:0.2.3'
     implementation 'com.sedmelluq:jda-nas:1.1.0'
 
@@ -104,6 +105,4 @@ task writeVersion() {
     file("$resourcePath/version.txt").text = getBuildVersion()
 }
 
-build {
-    dependsOn writeVersion
-}
+build.dependsOn(writeVersion)
