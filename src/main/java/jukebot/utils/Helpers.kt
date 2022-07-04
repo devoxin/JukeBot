@@ -1,7 +1,5 @@
 package jukebot.utils
 
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.TextChannel
 import org.apache.commons.io.IOUtils
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -41,9 +39,6 @@ object Helpers {
     }
 
     fun pad(s: String) = String.format("%-12s", s).replace(" ", " \u200B")
-
-    fun canSendTo(channel: TextChannel) =
-        channel.canTalk() && channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)
 
     fun schedule(task: () -> Unit, delay: Int, unit: TimeUnit) {
         timer.schedule(task, delay.toLong(), unit)

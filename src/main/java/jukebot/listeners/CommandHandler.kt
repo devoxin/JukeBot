@@ -5,7 +5,7 @@ import jukebot.Database
 import jukebot.JukeBot
 import jukebot.framework.CommandScanner
 import jukebot.framework.Context
-import jukebot.utils.Helpers
+import jukebot.utils.canSendEmbed
 import jukebot.utils.separate
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
@@ -23,7 +23,7 @@ class CommandHandler : EventListener {
     }
 
     private fun onGuildMessageReceived(e: GuildMessageReceivedEvent) {
-        if (e.author.isBot || e.isWebhookMessage || !Helpers.canSendTo(e.channel)
+        if (e.author.isBot || e.isWebhookMessage || !e.channel.canSendEmbed()
             || Database.getIsBlocked(e.author.idLong)
         ) {
             return
@@ -33,10 +33,7 @@ class CommandHandler : EventListener {
         val mentionTrigger = MENTION_FORMATS.firstOrNull(e.message.contentRaw::startsWith)
         val triggerLength = mentionTrigger?.let { it.length + 1 } ?: guildPrefix.length
 
-        if (!e.message.contentRaw.startsWith(guildPrefix) && (mentionTrigger == null || !e.message.contentRaw.contains(
-                ' '
-            ))
-        ) {
+        if (!e.message.contentRaw.startsWith(guildPrefix) && (mentionTrigger == null || !e.message.contentRaw.contains(' '))) {
             return
         }
 

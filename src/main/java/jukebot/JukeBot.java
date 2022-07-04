@@ -217,7 +217,7 @@ public class JukeBot {
         Objects.requireNonNull(g, "Guild does not exist for the provided guildId!");
 
         final AudioHandler handler = players.computeIfAbsent(guildId,
-                v -> new AudioHandler(guildId, playerManager.createPlayer()));
+                __ -> new AudioHandler(guildId, playerManager.createPlayer()));
 
         final AudioManager audioManager = g.getAudioManager();
 

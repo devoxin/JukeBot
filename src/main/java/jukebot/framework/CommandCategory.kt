@@ -1,6 +1,6 @@
 package jukebot.framework
 
-import jukebot.utils.toTitleCase
+import jukebot.utils.capitalise
 
 enum class CommandCategory(val description: String) {
     PLAYBACK("Commands that allow you to find and play songs."),
@@ -9,7 +9,7 @@ enum class CommandCategory(val description: String) {
     MISC("Commands that don't fit in the other categories.");
 
     fun toTitleCase(): String {
-        return this.toString().lowercase().toTitleCase()
+        return this.toString().lowercase().capitalise()
         // Imagine calling .toTitleCase() but it doesn't lowercase
         // the rest of the fucking word???????????????????????????
     }

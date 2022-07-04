@@ -4,8 +4,10 @@ import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonParser
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.TextChannel
 import okhttp3.Response
 import java.awt.Color
 import java.sql.ResultSet
@@ -16,7 +18,7 @@ fun Response.json(): JsonObject? {
     }
 }
 
-fun String.toTitleCase(): String {
+fun String.capitalise(): String {
     return this[0].uppercase() + this.substring(1)
 }
 
@@ -31,6 +33,8 @@ fun EmbedBuilder.addFields(fields: Array<MessageEmbed.Field>) {
 fun Message.editEmbed(block: EmbedBuilder.() -> Unit) {
     this.editMessage(EmbedBuilder().apply(block).build().toMessage()).queue()
 }
+
+fun TextChannel.canSendEmbed() = this.canTalk() && this.guild.selfMember.hasPermission(this, Permission.MESSAGE_EMBED_LINKS)
 
 fun Long.toTimeString(): String {
     val seconds = this / 1000 % 60

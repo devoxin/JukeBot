@@ -16,10 +16,7 @@ object Database {
         private set
 
     val connection: Connection
-        get() {
-            calls++
-            return pool.connection
-        }
+        get() = pool.connection.also { calls++ }
 
     init {
         if (!pool.isRunning) {
@@ -86,8 +83,7 @@ object Database {
                 tracks,
                 creator,
                 title
-            )
-                .executeUpdate()
+            ).executeUpdate()
         }
     }
 
@@ -198,8 +194,7 @@ object Database {
                 guildId,
                 userId,
                 Instant.now().toEpochMilli()
-            )
-                .execute()
+            ).execute()
         }
     }
 

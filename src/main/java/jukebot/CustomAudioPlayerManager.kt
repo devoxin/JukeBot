@@ -16,9 +16,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.*
 
-class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlayerManager by dapm {
-    constructor() : this(DefaultAudioPlayerManager())
-
+class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAudioPlayerManager()) : AudioPlayerManager by dapm {
     fun toBase64String(track: AudioTrack): String {
         return ByteArrayOutputStream().use {
             encodeTrack(MessageOutput(it), track)
@@ -59,10 +57,7 @@ class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager) : AudioPlaye
         return BasicAudioPlaylist(name, tracks, selectedTrack, search)
     }
 
-    fun loadIdentifier(
-        identifier: String, ctx: Context,
-        handler: AudioHandler, useSelection: Boolean, playNext: Boolean = false
-    ) {
+    fun loadIdentifier(identifier: String, ctx: Context, handler: AudioHandler, useSelection: Boolean, playNext: Boolean = false) {
         loadItem(identifier, SongResultHandler(ctx, identifier, handler, useSelection, playNext))
     }
 }
