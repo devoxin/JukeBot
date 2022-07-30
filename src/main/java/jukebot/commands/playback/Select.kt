@@ -6,14 +6,10 @@ import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(
-    description = "Search YouTube and select from up to 5 tracks",
-    aliases = ["search", "sel", "s", "find", "add"],
-    category = CommandCategory.PLAYBACK
-)
+@CommandProperties(description = "Search YouTube and select from up to 5 tracks", aliases = ["search", "sel", "s", "find", "add"], category = CommandCategory.PLAYBACK)
 class Select : Command(ExecutionType.TRIGGER_CONNECT) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
 
         if (!player.isPlaying) {
             player.channelId = context.channel.idLong

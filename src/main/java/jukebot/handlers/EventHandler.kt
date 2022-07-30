@@ -1,4 +1,4 @@
-package jukebot.listeners
+package jukebot.handlers
 
 import jukebot.Database
 import jukebot.JukeBot

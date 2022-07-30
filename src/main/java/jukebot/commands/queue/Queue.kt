@@ -10,14 +10,10 @@ import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import kotlin.math.ceil
 import kotlin.math.min
 
-@CommandProperties(
-    description = "Displays the current queue",
-    aliases = ["q", "list", "songs"],
-    category = CommandCategory.QUEUE
-)
+@CommandProperties(description = "Displays the current queue", aliases = ["q", "list", "songs"], category = CommandCategory.QUEUE)
 class Queue : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
         val queue = player.queue
 
         if (queue.isEmpty()) {

@@ -14,7 +14,7 @@ import jukebot.framework.Context
 )
 class Play : Command(ExecutionType.TRIGGER_CONNECT) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
 
         if (!player.isPlaying) {
             player.channelId = context.channel.idLong

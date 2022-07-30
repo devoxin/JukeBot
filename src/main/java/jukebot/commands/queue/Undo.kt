@@ -5,14 +5,10 @@ import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
 
-@CommandProperties(
-    aliases = ["z"],
-    description = "Removes the last song queued by you",
-    category = CommandCategory.QUEUE
-)
+@CommandProperties(aliases = ["z"], description = "Removes the last song queued by you", category = CommandCategory.QUEUE)
 class Undo : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {
-        val handler = context.getAudioPlayer()
+        val handler = context.audioPlayer
 
         if (handler.queue.isEmpty()) {
             return context.embed("Nothing to Remove", "The queue is empty!")

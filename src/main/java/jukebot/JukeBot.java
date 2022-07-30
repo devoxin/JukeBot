@@ -35,9 +35,9 @@ import jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
 import jukebot.framework.Command;
-import jukebot.listeners.ActionWaiter;
-import jukebot.listeners.CommandHandler;
-import jukebot.listeners.EventHandler;
+import jukebot.handlers.ActionWaiter;
+import jukebot.handlers.CommandHandler;
+import jukebot.handlers.EventHandler;
 import jukebot.utils.*;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.Activity;
@@ -95,13 +95,7 @@ public class JukeBot {
                 .setShardsTotal(-1)
                 .addEventListeners(new CommandHandler(), new EventHandler(), waiter)
                 .setMemberCachePolicy(MemberCachePolicy.VOICE)
-                .disableCache(
-                        CacheFlag.ACTIVITY,
-                        CacheFlag.CLIENT_STATUS,
-                        CacheFlag.EMOTE,
-                        CacheFlag.ROLE_TAGS,
-                        CacheFlag.ONLINE_STATUS
-                )
+                .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.EMOTE, CacheFlag.ROLE_TAGS, CacheFlag.ONLINE_STATUS)
                 .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | " + Constants.WEBSITE))
                 .setBulkDeleteSplittingEnabled(false);
 
@@ -125,17 +119,8 @@ public class JukeBot {
         final String banner = Helpers.INSTANCE.readFile("banner.txt", "");
         final String version = Helpers.INSTANCE.getVersion();
 
-        System.out.printf(
-                "%s\nRevision %s | JDA %s | Lavaplayer %s | SQLite %s | %s-bit JVM | %s %s\n\n",
-                banner,
-                version,
-                JDAInfo.VERSION,
-                PlayerLibrary.VERSION,
-                SQLiteJDBCLoader.getVersion(),
-                System.getProperty("sun.arch.data.model"),
-                os,
-                arch
-        );
+        System.out.printf("%s\nRevision %s | JDA %s | Lavaplayer %s | SQLite %s | %s-bit JVM | %s %s\n\n",
+                banner, version, JDAInfo.VERSION, PlayerLibrary.VERSION, SQLiteJDBCLoader.getVersion(), System.getProperty("sun.arch.data.model"), os, arch);
     }
 
     private static void loadApis() {
@@ -189,8 +174,7 @@ public class JukeBot {
         final ApplicationInfo appInfo = shardManager.retrieveApplicationInfo().complete();
         selfId = appInfo.getIdLong();
         botOwnerId = appInfo.getOwner().getIdLong();
-        isSelfHosted = selfId != 249303797371895820L
-                && selfId != 314145804807962634L;
+        isSelfHosted = selfId != 249303797371895820L && selfId != 314145804807962634L;
 
         if (isSelfHosted || selfId == 314145804807962634L) {
             playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);

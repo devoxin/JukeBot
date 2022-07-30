@@ -1,4 +1,4 @@
-package jukebot.listeners
+package jukebot.handlers
 
 import io.sentry.Sentry
 import jukebot.Database
@@ -13,10 +13,6 @@ import net.dv8tion.jda.api.hooks.EventListener
 import org.slf4j.LoggerFactory
 
 class CommandHandler : EventListener {
-    init {
-        logger.info("${commands.size} commands in registry")
-    }
-
     override fun onEvent(event: GenericEvent) {
         if (event is GuildMessageReceivedEvent) {
             onGuildMessageReceived(event)
@@ -58,6 +54,8 @@ class CommandHandler : EventListener {
         private val logger = LoggerFactory.getLogger(CommandHandler::class.java)
         private val MENTION_FORMATS by lazy { listOf("<@${JukeBot.selfId}>", "<@!${JukeBot.selfId}>") }
 
-        val commands = CommandScanner("jukebot.commands").scan().toMutableMap()
+        val commands = CommandScanner("jukebot.commands").scan().toMutableMap().also {
+            logger.info("${it.size} commands in registry")
+        }
     }
 }

@@ -4,7 +4,7 @@ import jukebot.framework.Command
 import jukebot.framework.CommandCategory
 import jukebot.framework.CommandProperties
 import jukebot.framework.Context
-import jukebot.listeners.CommandHandler
+import jukebot.handlers.CommandHandler
 import jukebot.utils.Constants
 import jukebot.utils.Helpers
 

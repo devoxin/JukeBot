@@ -7,7 +7,7 @@ import jukebot.framework.*
 @CommandChecks.Playing
 class Pause : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
         player.player.isPaused = true
         context.react("⏸")
     }

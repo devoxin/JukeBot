@@ -8,7 +8,7 @@ import jukebot.framework.*
 @CommandChecks.Playing
 class SaveAll : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
 
         if (context.args.isEmpty()) {
             return context.embed("Save", "You need to provide the name of the playlist to add the track to.")

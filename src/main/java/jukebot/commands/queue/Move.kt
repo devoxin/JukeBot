@@ -6,7 +6,7 @@ import jukebot.framework.*
 @CommandChecks.Dj(alone = true)
 class Move : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
 
         if (player.queue.isEmpty()) {
             return context.embed("Queue is empty", "There are no tracks to move.")

@@ -256,7 +256,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
             return
         }
 
-        val player = ctx.getAudioPlayer()
+        val player = ctx.audioPlayer
 
         if (!player.isPlaying) {
             player.channelId = ctx.channel.idLong

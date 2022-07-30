@@ -27,36 +27,26 @@ class Context(
     val guild = event.guild
     val jda = event.jda
     val donorTier: Int
-        get() {
-            if (author.idLong == JukeBot.botOwnerId) {
-                return Integer.MAX_VALUE
-            }
-
-            if (Database.getIsPremiumServer(guild.idLong)) {
-                return 2
-            }
-
-            return Database.getTier(author.idLong)
+        get() = when {
+                author.idLong == JukeBot.botOwnerId -> Integer.MAX_VALUE
+                Database.getIsPremiumServer(guild.idLong) -> 2
+                else -> Database.getTier(author.idLong)
         }
     val embedColor: Int
         get() = Database.getColour(guild.idLong)
 
-    fun getAudioPlayer(): AudioHandler {
-        return JukeBot.getPlayer(guild.idLong)
-    }
+    val audioPlayer: AudioHandler
+        get() = JukeBot.getPlayer(guild.idLong)
 
     fun isDJ(allowLoneVC: Boolean): Boolean {
-        val customDjRole: Long? = Database.getDjRole(guild.idLong)
-        val roleMatch = if (customDjRole != null) {
-            customDjRole == guild.publicRole.idLong || member.roles.any { it.idLong == customDjRole }
-        } else {
-            member.roles.any { it.name.equals("dj", true) }
-        }
+        val customDjRoleId = Database.getDjRole(guild.idLong)
+        val roleMatch = customDjRoleId?.let { id -> id == guild.publicRole.idLong || member.roles.any { it.idLong == id } }
+            ?: member.roles.any { it.name.equals("dj", true) }
 
         val isElevated = member.isOwner || JukeBot.botOwnerId == author.idLong || roleMatch
 
         if (allowLoneVC && !isElevated) {
-            return member.voiceState!!.channel != null && member.voiceState!!.channel!!.members.filter { !it.user.isBot }.size == 1
+            return member.voiceState!!.channel?.members?.count { !it.user.isBot } == 1
         }
 
         return isElevated
@@ -68,11 +58,10 @@ class Context(
         }
     }
 
-    fun embed(title: String, description: String) {
-        embed {
-            setTitle(title)
-            setDescription(description)
-        }
+    fun embed(title: String, description: String) = embed {
+        setColor(embedColor)
+        setTitle(title)
+        setDescription(description)
     }
 
     fun embed(block: EmbedBuilder.() -> Unit) {

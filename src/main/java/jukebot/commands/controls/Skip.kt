@@ -8,15 +8,11 @@ import kotlin.math.ceil
 @CommandChecks.Playing
 class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
 
         val totalVotes = player.voteSkip(context.author.idLong)
         val voteThreshold = Database.getSkipThreshold(context.guild.idLong)
-
-        val neededVotes = ceil(context.guild.audioManager.connectedChannel!!
-            .members
-            .filter { !it.user.isBot }
-            .size * voteThreshold).toInt()
+        val neededVotes = ceil(context.guild.audioManager.connectedChannel!!.members.count { !it.user.isBot } * voteThreshold).toInt()
 
         if (neededVotes - totalVotes <= 0) {
             player.playNext()

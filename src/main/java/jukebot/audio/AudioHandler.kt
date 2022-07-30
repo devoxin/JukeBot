@@ -40,7 +40,9 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
     // Performance Tracking
     var trackPacketLost = 0
+        private set
     var trackPacketsSent = 0
+        private set
 
     // Player Stuff
     val autoPlay = AutoPlay(guildId)
@@ -84,7 +86,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         }
 
         if (current != null && repeat != RepeatMode.NONE) {
-            val cloned = current!!.makeClone().also { c -> c.userData = current!!.userData }
+            val cloned = current!!.makeClone().also { it.userData = current!!.userData }
 
             if (repeat == RepeatMode.ALL) {
                 queue.offer(cloned)
@@ -126,10 +128,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             if (Database.getIsPremiumServer(guildId)) {
                 announce("Queue Concluded", "Enable AutoPlay to keep the party going!")
             } else {
-                announce(
-                    "Queue Concluded!",
-                    "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)"
-                )
+                announce("Queue Concluded!", "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
             }
         }
 
@@ -141,8 +140,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             return
         }
 
-        val channel = JukeBot.shardManager.getTextChannelById(channelId!!)
-            ?.takeIf { it.canSendEmbed() }
+        val channel = JukeBot.shardManager.getTextChannelById(channelId!!)?.takeIf { it.canSendEmbed() }
             ?: return
 
         channel.sendMessage(
@@ -223,10 +221,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 //            Database.setAutoPlayEnabled(guildId, false)
 //        }
 
-        announce(
-            "Playback Error", "Playback of **${track.info.title}** encountered an error!\n" +
-                problem.localizedMessage
-        )
+        announce("Playback Error", "Playback of **${track.info.title}** encountered an error!\n${problem.localizedMessage}")
     }
 
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long) {

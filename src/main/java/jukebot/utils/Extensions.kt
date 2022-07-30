@@ -55,7 +55,7 @@ fun String.toColorOrNull() = try {
     null
 }
 
-fun <T> List<T>.separate(): Pair<T, List<T>> = Pair(first(), drop(1))
+fun <T> List<T>.separate(): Pair<T, List<T>> = first() to drop(1)
 
 fun <T> Iterable<T>.iterate(range: IntRange) = sequence {
     for (i in range.first until range.last) {

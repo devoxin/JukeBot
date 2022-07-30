@@ -13,7 +13,7 @@ import kotlin.math.min
 @CommandChecks.Playing
 class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
 
         if (context.args.isEmpty()) {
             val vol = player.player.volume

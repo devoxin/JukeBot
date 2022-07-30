@@ -26,9 +26,7 @@ class CustomAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAudi
 
     fun toAudioTrack(encoded: String): AudioTrack {
         val b64 = Base64.getDecoder().decode(encoded)
-        return ByteArrayInputStream(b64).use {
-            decodeTrack(MessageInput(it)).decodedTrack
-        }
+        return ByteArrayInputStream(b64).use { decodeTrack(MessageInput(it)).decodedTrack }
     }
 
     fun toJsonString(playlist: AudioPlaylist): String {

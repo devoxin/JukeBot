@@ -6,7 +6,7 @@ import jukebot.framework.*
 @CommandChecks.Dj(alone = false)
 class Announce : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
 
         when (context.args.firstOrNull()?.lowercase()) {
             "here" -> {

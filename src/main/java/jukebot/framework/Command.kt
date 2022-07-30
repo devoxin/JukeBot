@@ -94,7 +94,7 @@ abstract class Command(private val executionType: ExecutionType) {
         }
 
         check(CommandChecks.Playing::class.java)?.let {
-            if (!context.guild.audioManager.isConnected || !context.getAudioPlayer().isPlaying) {
+            if (!context.guild.audioManager.isConnected || !context.audioPlayer.isPlaying) {
                 context.embed("Not Playing", "Nothing is currently playing.")
                 return false
             }
@@ -104,10 +104,7 @@ abstract class Command(private val executionType: ExecutionType) {
             check(CommandChecks.Donor::class.java)?.let {
                 val requiredTier = this.javaClass.getAnnotation(CommandChecks.Donor::class.java).tier
                 if (requiredTier > context.donorTier) {
-                    context.embed(
-                        "Command Unavailable",
-                        "You must be a [donor in Tier $requiredTier or higher](https://patreon.com/devoxin)"
-                    )
+                    context.embed("Command Unavailable", "You must be a [donor in Tier $requiredTier or higher](https://patreon.com/devoxin)")
                     return false
                 }
             }

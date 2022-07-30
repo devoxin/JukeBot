@@ -77,13 +77,8 @@ object Database {
 
     fun updatePlaylist(creator: Long, title: String, tracks: String) = runSuppressed {
         connection.use {
-            buildStatement(
-                it,
-                "UPDATE customplaylists SET tracks = ? WHERE creator = ? AND title = ?",
-                tracks,
-                creator,
-                title
-            ).executeUpdate()
+            buildStatement(it, "UPDATE customplaylists SET tracks = ? WHERE creator = ? AND title = ?", tracks, creator, title)
+                .executeUpdate()
         }
     }
 
@@ -99,10 +94,8 @@ object Database {
 
     fun setPrefix(guildId: Long, newPrefix: String) = runSuppressed {
         connection.use {
-            buildStatement(
-                it, "INSERT INTO prefixes(id, prefix) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET prefix = ?",
-                guildId, newPrefix, newPrefix
-            ).executeUpdate()
+            buildStatement(it, "INSERT INTO prefixes(id, prefix) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET prefix = ?", guildId, newPrefix, newPrefix)
+                .executeUpdate()
         }
     }
 
@@ -115,10 +108,8 @@ object Database {
                 return@runSuppressed
             }
 
-            buildStatement(
-                it, "INSERT INTO donators(id, tier) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET tier = ?",
-                userId, newTier, newTier
-            ).executeUpdate()
+            buildStatement(it, "INSERT INTO donators(id, tier) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET tier = ?", userId, newTier, newTier)
+                .executeUpdate()
         }
     }
 
@@ -131,10 +122,8 @@ object Database {
                 return@runSuppressed
             }
 
-            buildStatement(
-                it, "INSERT INTO djroles(guildid, roleid) VALUES (?, ?) ON CONFLICT(guildid) DO UPDATE SET roleid = ?",
-                guildId, roleId, roleId
-            ).executeUpdate()
+            buildStatement(it, "INSERT INTO djroles(guildid, roleid) VALUES (?, ?) ON CONFLICT(guildid) DO UPDATE SET roleid = ?", guildId, roleId, roleId)
+                .executeUpdate()
         }
     }
 
@@ -143,10 +132,8 @@ object Database {
 
     fun setSkipThreshold(guildId: Long, threshold: Double) = runSuppressed {
         connection.use {
-            buildStatement(
-                it, "INSERT INTO skipthres(id, threshold) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET threshold = ?",
-                guildId, threshold, threshold
-            ).executeUpdate()
+            buildStatement(it, "INSERT INTO skipthres(id, threshold) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET threshold = ?", guildId, threshold, threshold)
+                .executeUpdate()
         }
     }
 
@@ -170,10 +157,8 @@ object Database {
 
     fun setColour(guildId: Long, rgb: Int) = runSuppressed {
         connection.use {
-            buildStatement(
-                it, "INSERT INTO colours(id, rgb) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET rgb = ?",
-                guildId, rgb, rgb
-            ).executeUpdate()
+            buildStatement(it, "INSERT INTO colours(id, rgb) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET rgb = ?", guildId, rgb, rgb)
+                .executeUpdate()
         }
     }
 
@@ -188,13 +173,8 @@ object Database {
 
     fun setPremiumServer(userId: Long, guildId: Long) = runSuppressed {
         connection.use {
-            buildStatement(
-                it,
-                "INSERT INTO premiumservers VALUES (?, ?, ?)",
-                guildId,
-                userId,
-                Instant.now().toEpochMilli()
-            ).execute()
+            buildStatement(it, "INSERT INTO premiumservers VALUES (?, ?, ?)", guildId, userId, Instant.now().toEpochMilli())
+                .execute()
         }
     }
 

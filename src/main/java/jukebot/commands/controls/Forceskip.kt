@@ -7,7 +7,7 @@ import jukebot.utils.Constants
 @CommandChecks.Playing
 class Forceskip : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
 
         if (!context.isDJ(true) && player.player.playingTrack.userData as Long != context.author.idLong) {
             return context.embed(

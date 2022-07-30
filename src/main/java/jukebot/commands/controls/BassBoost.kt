@@ -8,7 +8,7 @@ import jukebot.utils.Helpers
 @CommandChecks.Playing
 class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {
-        val handler = context.getAudioPlayer()
+        val handler = context.audioPlayer
 
         val boost = context.args.firstOrNull()?.toFloatOrNull()
             ?: return context.embed(

@@ -8,7 +8,7 @@ import jukebot.framework.*
 @CommandChecks.Playing
 class Save : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
         val currentTrack = player.player.playingTrack
 
         if (context.args.isEmpty()) {
@@ -19,10 +19,7 @@ class Save : Command(ExecutionType.STANDARD) {
             ?: return context.embed("Save", "That playlist doesn't exist.")
 
         if (playlist.tracks.size >= CustomPlaylist.TRACK_LIMIT) {
-            return context.embed(
-                "Save",
-                "You've hit the maximum amount of tracks for this playlist! (${CustomPlaylist.TRACK_LIMIT})"
-            )
+            return context.embed("Save", "You've hit the maximum amount of tracks for this playlist! (${CustomPlaylist.TRACK_LIMIT})")
         }
 
         playlist.tracks.add(currentTrack.makeClone())

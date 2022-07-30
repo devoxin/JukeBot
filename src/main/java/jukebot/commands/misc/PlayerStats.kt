@@ -14,7 +14,7 @@ class PlayerStats : Command(ExecutionType.REQUIRE_MUTUAL) {
     private val dpFormatter = DecimalFormat("0.00")
 
     override fun execute(context: Context) {
-        val player = context.getAudioPlayer()
+        val player = context.audioPlayer
 
         val packetsLost = player.trackPacketLost.toDouble() / player.trackPacketsSent * 100
         val packetLossPc = dpFormatter.format(packetsLost)

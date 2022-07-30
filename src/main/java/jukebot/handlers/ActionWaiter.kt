@@ -1,4 +1,4 @@
-package jukebot.listeners
+package jukebot.handlers
 
 import jukebot.utils.Helpers
 import net.dv8tion.jda.api.events.GenericEvent
@@ -9,12 +9,7 @@ import java.util.concurrent.TimeUnit
 class ActionWaiter : EventListener {
     private val selectionMenus = HashMap<Long, (String?) -> Unit>()
 
-    fun waitForSelection(
-        userID: Long,
-        selection: (String?) -> Unit,
-        delay: Int = 10,
-        unit: TimeUnit = TimeUnit.SECONDS
-    ) {
+    fun waitForSelection(userID: Long, selection: (String?) -> Unit, delay: Int = 10, unit: TimeUnit = TimeUnit.SECONDS) {
         selectionMenus[userID] = selection
         Helpers.schedule({
             if (selectionMenus.containsValue(selection)) {
