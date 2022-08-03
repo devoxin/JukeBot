@@ -51,10 +51,10 @@ class AutoPlay(private val guildId: Long) {
         val uniqueTracks = mixList.tracks.filter { previousTracks.none { pt -> pt.identifier == it.identifier } }
 
         if (uniqueTracks.isNotEmpty()) {
-            return uniqueTracks.random()
+            return uniqueTracks.random().also { it.userData = JukeBot.selfId }
         }
 
-        return mixList.tracks.takeIf { it.isNotEmpty() }?.random()
+        return mixList.tracks.takeIf { it.isNotEmpty() }?.random()?.also { it.userData = JukeBot.selfId }
     }
 
     companion object {

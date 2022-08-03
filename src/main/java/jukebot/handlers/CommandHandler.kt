@@ -47,7 +47,10 @@ class CommandHandler : EventListener {
 
         runCatching {
             foundCommand.runChecks(Context(e, args, originalArgs, guildPrefix))
-        }.onFailure(Sentry::capture)
+        }.onFailure {
+            logger.error("An error occurred during invocation of command ${foundCommand.name}", it)
+            Sentry.capture(it)
+        }
     }
 
     companion object {
