@@ -63,4 +63,10 @@ fun <T> Iterable<T>.iterate(range: IntRange) = sequence {
     }
 }
 
+fun <T> MutableSet<T>.trimToSize(maxCapacity: Int) {
+    if (this.size > maxCapacity) {
+        this.drop(this.size - maxCapacity)
+    }
+}
+
 operator fun ResultSet.get(key: String): String = this.getString(key)

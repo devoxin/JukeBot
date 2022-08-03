@@ -1,29 +1,63 @@
 package jukebot.audio
 
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
+import com.sedmelluq.discord.lavaplayer.track.AudioReference
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import jukebot.Database
-import java.util.concurrent.CompletableFuture
+import jukebot.JukeBot
+import jukebot.utils.trimToSize
 
 class AutoPlay(private val guildId: Long) {
-    private val trackTitles = mutableSetOf<String>()
+    private val previousTracks = mutableSetOf<AudioTrack>()
 
     val enabled: Boolean
         get() = Database.getIsPremiumServer(guildId) && Database.getIsAutoPlayEnabled(guildId)
 
     val hasSufficientData: Boolean
-        get() = trackTitles.size > 0
+        get() = previousTracks.size > 0
 
-    fun store(identifier: String) {
-        if (trackTitles.add(identifier) && trackTitles.size > MAX_SET_SIZE) {
-            trackTitles.remove(trackTitles.first())
-        }
+    fun store(track: AudioTrack) {
+        previousTracks.add(track)
+        previousTracks.trimToSize(MAX_SET_SIZE)
     }
 
-    fun getRelatedTrack(): CompletableFuture<AudioTrack> {
-        return CompletableFuture.failedFuture(UnsupportedOperationException("Autoplay provider is unavailable"))
+    fun getRelatedTrack(): AudioTrack? {
+        if (!enabled) {
+            return null
+        }
+
+        val ytasm = JukeBot.playerManager.source(YoutubeAudioSourceManager::class.java)
+            ?: return null
+
+        val seedTrack = previousTracks.lastOrNull() ?: return null
+
+        if (seedTrack.sourceManager.sourceName != "youtube") {
+            val reference = AudioReference("ytsearch:${seedTrack.info.title} ${seedTrack.info.author}", null)
+            val equivalentTrack = runCatching { ytasm.loadItem(JukeBot.playerManager, reference) }.getOrNull() as? AudioTrack
+                ?: return null
+
+            return getRandomMixTrack(equivalentTrack.identifier, ytasm)
+        }
+
+        return getRandomMixTrack(seedTrack.identifier, ytasm)
+    }
+
+    private fun getRandomMixTrack(trackId: String, ytasm: YoutubeAudioSourceManager): AudioTrack? {
+        val mixList = runCatching { ytasm.loadItem(JukeBot.playerManager, AudioReference(MIX_URL.format(trackId), null)) }.getOrNull() as? AudioPlaylist
+            ?: return null
+
+        val uniqueTracks = mixList.tracks.filter { previousTracks.none { pt -> pt.identifier == it.identifier } }
+
+        if (uniqueTracks.isNotEmpty()) {
+            return uniqueTracks.random()
+        }
+
+        return mixList.tracks.takeIf { it.isNotEmpty() }?.random()
     }
 
     companion object {
-        private const val MAX_SET_SIZE = 5
+        private const val MAX_SET_SIZE = 10
+        private const val MIX_URL = "https://www.youtube.com/watch?v=%1\$s&list=RD%1\$s"
     }
 }

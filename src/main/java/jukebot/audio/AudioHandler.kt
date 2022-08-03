@@ -79,11 +79,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     fun playNext(shouldAutoPlay: Boolean = true) {
         var nextTrack: AudioTrack? = null
 
-        current?.let {
-            if (it.sourceManager.sourceName == "youtube") {
-                autoPlay.store(it.info.title)
-            }
-        }
+        current?.let(autoPlay::store)
 
         if (current != null && repeat != RepeatMode.NONE) {
             val cloned = current!!.makeClone().also { it.userData = current!!.userData }
@@ -104,15 +100,14 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         }
 
         if (shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
-            autoPlay.getRelatedTrack()
-                .thenAccept(player::playTrack)
-                .exceptionally {
-                    playNext(false)
-                    announce("AutoPlay", "AutoPlay encountered an error.\nWe're sorry for any inconvenience caused!")
-                    Sentry.capture(it)
-                    return@exceptionally null
-                }
-            return
+            val recommendedTrack = autoPlay.getRelatedTrack()
+
+            if (recommendedTrack != null) {
+                return player.playTrack(recommendedTrack)
+            }
+
+            playNext(false)
+            return announce("AutoPlay", "AutoPlay was unable to find a track to play.")
         }
 
         current = null
