@@ -1,5 +1,6 @@
 package jukebot.audio
 
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioReference
@@ -27,24 +28,24 @@ class AutoPlay(private val guildId: Long) {
             return null
         }
 
-        val ytasm = JukeBot.playerManager.source(YoutubeAudioSourceManager::class.java)
+        val provider = JukeBot.playerManager.source(YoutubeAudioSourceManager::class.java)
             ?: return null
 
         val seedTrack = previousTracks.lastOrNull() ?: return null
 
-        if (seedTrack.sourceManager.sourceName != "youtube") {
+        if (seedTrack.sourceManager.sourceName != provider.sourceName) {
             val reference = AudioReference("ytsearch:${seedTrack.info.title} ${seedTrack.info.author}", null)
-            val equivalentTrack = runCatching { ytasm.loadItem(JukeBot.playerManager, reference) }.getOrNull() as? AudioTrack
+            val equivalentTrack = runCatching { provider.loadItem(JukeBot.playerManager, reference) }.getOrNull() as? AudioTrack
                 ?: return null
 
-            return getRandomMixTrack(equivalentTrack.identifier, ytasm)
+            return getRandomMixTrack(equivalentTrack.identifier, provider)
         }
 
-        return getRandomMixTrack(seedTrack.identifier, ytasm)
+        return getRandomMixTrack(seedTrack.identifier, provider)
     }
 
-    private fun getRandomMixTrack(trackId: String, ytasm: YoutubeAudioSourceManager): AudioTrack? {
-        val mixList = runCatching { ytasm.loadItem(JukeBot.playerManager, AudioReference(MIX_URL.format(trackId), null)) }.getOrNull() as? AudioPlaylist
+    private fun getRandomMixTrack(trackId: String, provider: AudioSourceManager): AudioTrack? {
+        val mixList = runCatching { provider.loadItem(JukeBot.playerManager, AudioReference(MIX_URL.format(trackId), null)) }.getOrNull() as? AudioPlaylist
             ?: return null
 
         val uniqueTracks = mixList.tracks.filter { previousTracks.none { pt -> pt.identifier == it.identifier } }
