@@ -8,10 +8,7 @@ import jukebot.utils.toColorOrNull
 import net.dv8tion.jda.api.entities.MessageEmbed
 import java.text.DecimalFormat
 
-@CommandProperties(
-    description = "Manage server-specific settings such as prefix etc",
-    aliases = ["set", "config", "configure"]
-)
+@CommandProperties(description = "Manage server-specific settings such as prefix etc", aliases = ["set", "config", "configure"])
 @CommandChecks.Dj(alone = false)
 class Settings : Command(ExecutionType.STANDARD) {
     private val mentionRegex = "<@!?\\d{17,20}>".toPattern()

@@ -4,11 +4,7 @@ import jukebot.framework.*
 import jukebot.utils.Helpers
 import kotlin.math.min
 
-@CommandProperties(
-    aliases = ["vol", "v"],
-    description = "Adjust the player volume",
-    category = CommandCategory.CONTROLS
-)
+@CommandProperties(aliases = ["vol", "v"], description = "Adjust the player volume", category = CommandCategory.CONTROLS)
 @CommandChecks.Dj(alone = false)
 @CommandChecks.Playing
 class Volume : Command(ExecutionType.REQUIRE_MUTUAL) {

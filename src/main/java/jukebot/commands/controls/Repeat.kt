@@ -3,11 +3,7 @@ package jukebot.commands.controls
 import jukebot.audio.AudioHandler
 import jukebot.framework.*
 
-@CommandProperties(
-    description = "Loop the queue, track or nothing",
-    category = CommandCategory.CONTROLS,
-    aliases = ["loop"]
-)
+@CommandProperties(description = "Loop the queue, track or nothing", category = CommandCategory.CONTROLS, aliases = ["loop"])
 @CommandChecks.Dj(alone = true)
 @CommandChecks.Playing
 class Repeat : Command(ExecutionType.REQUIRE_MUTUAL) {
