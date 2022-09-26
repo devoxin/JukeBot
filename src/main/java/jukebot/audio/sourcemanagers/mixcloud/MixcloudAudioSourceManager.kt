@@ -33,12 +33,12 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
 import jukebot.audio.sourcemanagers.mixcloud.Utils.urlDecoded
 import jukebot.audio.sourcemanagers.mixcloud.Utils.urlEncoded
-import org.apache.commons.io.IOUtils
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.impl.client.HttpClientBuilder
+import org.apache.http.util.EntityUtils
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException
@@ -140,7 +140,7 @@ class MixcloudAudioSourceManager : AudioSourceManager, HttpConfigurable {
                 throw IOException("Invalid status code for Mixcloud track page response: $statusCode")
             }
 
-            val content = IOUtils.toString(it.entity.content, StandardCharsets.UTF_8)
+            val content = EntityUtils.toString(it.entity, StandardCharsets.UTF_8)
             val json = JsonBrowser.parse(content).get("data").get("cloudcastLookup")
 
             if (!json.get("streamInfo").isNull) {

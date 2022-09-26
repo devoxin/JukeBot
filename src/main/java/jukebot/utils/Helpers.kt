@@ -1,6 +1,6 @@
 package jukebot.utils
 
-import org.apache.commons.io.IOUtils
+import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Executors
@@ -12,8 +12,8 @@ import kotlin.math.round
 
 object Helpers {
     val version: String by lazy {
-        val stream = Helpers::class.java.classLoader.getResourceAsStream("version.txt")
-        IOUtils.toString(stream, Charsets.UTF_8)
+        val stream = Helpers::class.java.classLoader.getResourceAsStream("version.txt")!!
+        InputStreamReader(stream, Charsets.UTF_8).readText()
     }
     private val timer: ScheduledExecutorService =
         Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
