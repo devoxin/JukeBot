@@ -44,9 +44,9 @@ class Playlists : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "create", description = "Create a new custom playlist.")
     fun createPlaylist(ctx: Context, args: List<String>) {
-        val allPlaylists = Database.getPlaylists(ctx.author.idLong)
+        val allPlaylists = Database.countPlaylists(ctx.author.idLong)
 
-        if (!checkPlaylistCount(ctx, allPlaylists.size)) {
+        if (!checkPlaylistCount(ctx, allPlaylists)) {
             return
         }
 
@@ -83,7 +83,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         val url = args[0].removePrefix("<").removeSuffix(">")
         val title = args[1]
 
-        if (Database.getPlaylist(ctx.author.idLong, title) != null) {
+        if (allPlaylists.any { it == title }) {
             return ctx.embed("Import Playlist", "A playlist with that name already exists!")
         }
 

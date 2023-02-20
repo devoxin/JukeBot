@@ -83,8 +83,8 @@ class Verify : Command(ExecutionType.STANDARD) {
             )
         }
 
-        val allServers = Database.getPremiumServersOf(ctx.author.idLong)
-        val remainingServers = serverQuota - allServers.size
+        val allServers = Database.countPremiumServersOf(ctx.author.idLong)
+        val remainingServers = serverQuota - allServers
 
         if (remainingServers == 0) {
             return ctx.embed(

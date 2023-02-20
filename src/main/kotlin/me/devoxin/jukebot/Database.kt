@@ -60,9 +60,16 @@ object Database {
         playlists.toList()
     }
 
+    fun countPlaylists(creator: Long): Int = suppressedWithConnection({ 0 }) {
+        val result = buildStatement(it, "SELECT COUNT(title) AS count FROM customplaylists WHERE creator = ?", creator)
+            .executeQuery()
+
+        if (result.next()) result.getInt("count") else 0
+    }
+
     fun getPlaylist(creator: Long, title: String): CustomPlaylist? = suppressedWithConnection({ null }) {
         val results =
-            buildStatement(it, "SELECT * FROM customplaylists WHERE creator = ? AND title = ?", creator, title)
+            buildStatement(it, "SELECT title, creator, tracks FROM customplaylists WHERE creator = ? AND title = ?", creator, title)
                 .executeQuery()
 
         if (results.next()) CustomPlaylist(results["title"], creator, results["tracks"]) else null
@@ -138,7 +145,7 @@ object Database {
     }
 
     fun getDonorIds(): List<Long> = suppressedWithConnection({ emptyList() }) {
-        val results = buildStatement(it, "SELECT * FROM donators").executeQuery()
+        val results = buildStatement(it, "SELECT id, tier FROM donators").executeQuery()
         val list = mutableListOf<Long>()
 
         while (results.next()) {
@@ -149,7 +156,7 @@ object Database {
     }
 
     fun getColour(guildId: Long) = suppressedWithConnection({ JukeBot.config.embedColour.rgb }) {
-        val results = buildStatement(it, "SELECT * FROM colours WHERE id = ?", guildId)
+        val results = buildStatement(it, "SELECT id, rgb FROM colours WHERE id = ?", guildId)
             .executeQuery()
 
         if (results.next()) results.getInt("rgb") else JukeBot.config.embedColour.rgb
@@ -167,7 +174,7 @@ object Database {
             return@suppressedWithConnection true
         }
 
-        buildStatement(it, "SELECT * FROM premiumservers WHERE guildid = ?", guildId)
+        buildStatement(it, "SELECT guildid, userid, added FROM premiumservers WHERE guildid = ?", guildId)
             .executeQuery().next()
     }
 
@@ -193,7 +200,7 @@ object Database {
     }
 
     fun getPremiumServersOf(userId: Long): List<PremiumGuild> = suppressedWithConnection({ emptyList() }) {
-        val results = buildStatement(it, "SELECT * FROM premiumservers WHERE userid = ?", userId)
+        val results = buildStatement(it, "SELECT guildid, userid, added FROM premiumservers WHERE userid = ?", userId)
             .executeQuery()
 
         val list = mutableListOf<PremiumGuild>()
@@ -203,6 +210,13 @@ object Database {
         }
 
         list
+    }
+
+    fun countPremiumServersOf(userId: Long): Int = suppressedWithConnection({ 0 }) {
+        val result = buildStatement(it, "SELECT COUNT(guildid) AS count FROM premiumservers WHERE userid = ?", userId)
+            .executeQuery()
+
+        if (result.next()) result.getInt("count") else 0
     }
 
     fun getIsBlocked(userId: Long) = getFromDatabase("blocked", userId, "id") != null
