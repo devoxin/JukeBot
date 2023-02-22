@@ -44,7 +44,7 @@ dependencies {
 
     /* Audio */
     //implementation 'com.github.devoxin:walkyst-lavaplayer:f4ec4f3'
-    implementation 'com.github.devoxin.lavaplayer:lavaplayer:141bee0'
+    implementation 'com.github.devoxin.lavaplayer:lavaplayer:32f3033'
     implementation 'com.github.walkyst.lavaplayer-fork:lavaplayer-ext-youtube-rotator:1.3.99.2'
     implementation 'com.sedmelluq:jda-nas:1.1.0'
 
