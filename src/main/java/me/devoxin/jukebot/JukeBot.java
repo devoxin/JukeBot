@@ -52,6 +52,7 @@ import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -102,6 +103,7 @@ public class JukeBot {
         final String jarLocation = JukeBot.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         System.setProperty("kotlin.script.classpath", jarLocation);
 
+        Message.suppressContentIntentWarning();
         RestAction.setPassContext(false);
         RestAction.setDefaultFailure((e) -> {
         });
