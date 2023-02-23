@@ -93,17 +93,12 @@ class SpotifyAudioSourceManager(
         return null
     }
 
-    internal fun doYoutubeSearch(identifier: String): AudioItem? {
-        val ytasm = JukeBot.playerManager.dapm.source(YoutubeAudioSourceManager::class.java)
-        return ytasm.loadItem(JukeBot.playerManager.dapm, AudioReference(identifier, null))
-    }
-
-    internal fun queueYoutubeSearch(identifier: String): CompletableFuture<AudioItem?> {
+    internal fun queueAlternateSearch(identifier: String): CompletableFuture<AudioItem?> {
         val future = CompletableFuture<AudioItem?>()
 
         trackLoaderPool.submit {
             try {
-                future.complete(doYoutubeSearch(identifier))
+                future.complete(JukeBot.searchAlternate(identifier))
             } catch (e: Exception) {
                 future.completeExceptionally(e)
             }

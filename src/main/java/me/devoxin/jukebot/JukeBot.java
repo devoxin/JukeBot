@@ -16,11 +16,22 @@
 
 package me.devoxin.jukebot;
 
+import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
+import com.sedmelluq.discord.lavaplayer.track.AudioItem;
+import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
 import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
 import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRoutePlanner;
@@ -30,6 +41,7 @@ import io.sentry.Sentry;
 import io.sentry.SentryClient;
 import me.devoxin.jukebot.audio.AudioHandler;
 import me.devoxin.jukebot.audio.sourcemanagers.caching.CachingSourceManager;
+import me.devoxin.jukebot.audio.sourcemanagers.deezer.DeezerAudioSourceManager;
 import me.devoxin.jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManager;
 import me.devoxin.jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import me.devoxin.jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
@@ -50,12 +62,21 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class JukeBot {
     private static final Logger logger = LoggerFactory.getLogger("JukeBot");
@@ -77,7 +98,7 @@ public class JukeBot {
     public static final CustomAudioPlayerManager playerManager = new CustomAudioPlayerManager();
     public static ShardManager shardManager;
 
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) {
         Thread.currentThread().setName("JukeBot");
         printBanner();
 
@@ -154,6 +175,11 @@ public class JukeBot {
         playerManager.getConfiguration().setFilterHotSwapEnabled(true);
 
         playerManager.registerSourceManager(new CachingSourceManager());
+
+        if (config.contains("deezer_key")) {
+            playerManager.registerSourceManager(new DeezerAudioSourceManager(config.get("deezer_key", null)));
+        }
+
         playerManager.registerSourceManager(new MixcloudAudioSourceManager());
 
         if (config.getNsfwEnabled()) {
@@ -166,17 +192,44 @@ public class JukeBot {
             playerManager.registerSourceManager(new SpotifyAudioSourceManager(client, secret));
         }
 
-        AudioSourceManagers.registerRemoteSources(playerManager);
+        if (config.getYoutubeEnabled()) {
+            final YoutubeAudioSourceManager youtubeAudioSourceManager = new YoutubeAudioSourceManager();
 
-        final YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
-        sourceManager.setPlaylistPageCount(Integer.MAX_VALUE);
+            if (config.getIpv6Block() != null && !config.getIpv6Block().isEmpty()) {
+                logger.info("Using IPv6 block with RotatingNanoIpRoutePlanner!");
+                final List<IpBlock> blocks = Collections.singletonList(new Ipv6Block(config.getIpv6Block()));
+                final RotatingNanoIpRoutePlanner planner = new RotatingNanoIpRoutePlanner(blocks);
+                new YoutubeIpRotatorSetup(planner).forSource(youtubeAudioSourceManager).setup();
+            }
 
-        if (config.getIpv6Block() != null && !config.getIpv6Block().isEmpty()) {
-            logger.info("Using IPv6 block with RotatingNanoIpRoutePlanner!");
-            final List<IpBlock> blocks = Collections.singletonList(new Ipv6Block(config.getIpv6Block()));
-            final RotatingNanoIpRoutePlanner planner = new RotatingNanoIpRoutePlanner(blocks);
-            new YoutubeIpRotatorSetup(planner).forSource(sourceManager).setup();
+            playerManager.registerSourceManager(youtubeAudioSourceManager);
         }
+
+        playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
+        playerManager.registerSourceManager(new BandcampAudioSourceManager());
+        playerManager.registerSourceManager(new VimeoAudioSourceManager());
+        playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+        playerManager.registerSourceManager(new BeamAudioSourceManager());
+        playerManager.registerSourceManager(new GetyarnAudioSourceManager());
+
+        final HttpAudioSourceManager httpAudioSourceManager = new HttpAudioSourceManager();
+        httpAudioSourceManager.configureBuilder(cfg -> {
+            final String proxyHost = config.opt("proxy_host", null);
+            final int proxyPort = config.getInt("proxy_port", 3128);
+            final String proxyAuthUser = config.opt("proxy_user", null);
+            final String proxyAuthPassword = config.get("proxy_password", "");
+
+            if (proxyHost != null && !proxyHost.isEmpty()) {
+                cfg.setProxy(new HttpHost(proxyHost, proxyPort));
+
+                if (proxyAuthUser != null && !proxyAuthUser.isEmpty()) {
+                    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                    credentialsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), new UsernamePasswordCredentials(proxyAuthUser, proxyAuthPassword));
+                    cfg.setDefaultCredentialsProvider(credentialsProvider);
+                }
+            }
+        });
+        playerManager.registerSourceManager(httpAudioSourceManager);
     }
 
     private static void setupSelf() {
@@ -224,6 +277,23 @@ public class JukeBot {
     public static void removePlayer(final long guildId) {
         if (JukeBot.hasPlayer(guildId)) {
             players.remove(guildId).cleanup();
+        }
+    }
+
+    public static String getSearchProvider() {
+        return config.getYoutubeEnabled() ? "ytsearch" : "dzsearch";
+    }
+
+    // TODO: this needs to be moved to player manager perhaps
+    public static AudioItem searchAlternate(final String query) {
+        try {
+            if (config.getYoutubeEnabled()) {
+                return playerManager.source(YoutubeAudioSourceManager.class).loadItem(playerManager, new AudioReference("ytsearch:" + query, null));
+            }
+
+            return playerManager.source(DeezerAudioSourceManager.class).getSearch(query);
+        } catch (final IOException ioe) {
+            return null;
         }
     }
 }

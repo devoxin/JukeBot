@@ -54,8 +54,10 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
                 val nsfwVcCheck = (ctx.member.voiceState?.channel as? VoiceChannel)?.isNSFW == true
 
                 if (!nsfwTcCheck || !nsfwVcCheck) {
-                    if (!nsfwTcCheck) ctx.embed("PornHub Tracks", "PornHub tracks can only be loaded from NSFW channels!")
-                    else if (!nsfwVcCheck) ctx.embed("PornHub Tracks", "PornHub tracks can only be played in NSFW voice channels!")
+                    when {
+                        !nsfwTcCheck -> ctx.embed("PornHub Tracks", "PornHub tracks can only be loaded from NSFW channels!")
+                        !nsfwVcCheck -> ctx.embed("PornHub Tracks", "PornHub tracks can only be played in NSFW voice channels!")
+                    }
                     // double-checking is useless but I cba to figure out a way to make this better lol
 
                     if (!player.isPlaying && player.queue.isEmpty()) {
@@ -69,7 +71,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
             val url = userQuery.split(' ')
             JukeBot.playerManager.loadIdentifier(url[0], ctx, player, false)
         } else {
-            JukeBot.playerManager.loadIdentifier("ytsearch:$userQuery", ctx, player, false)
+            JukeBot.playerManager.loadIdentifier("${JukeBot.getSearchProvider()}:$userQuery", ctx, player, false)
         }
     }
 }

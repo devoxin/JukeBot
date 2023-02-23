@@ -3,6 +3,7 @@ package me.devoxin.jukebot.audio.sourcemanagers.spotify.loaders
 import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonParser
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
+import me.devoxin.jukebot.JukeBot
 import me.devoxin.jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager
 import org.apache.http.HttpStatus
 import java.util.regex.Matcher
@@ -18,7 +19,7 @@ class SpotifyTrackLoader : Loader {
         //val trackTitle = spotifyTrack.getString("name")
         val isrcId = spotifyTrack.getObject("external_ids").getString("isrc")
 
-        return sourceManager.doYoutubeSearch("ytsearch:\"$isrcId\"")
+        return JukeBot.searchAlternate("\"$isrcId\"")
     }
 
     private fun fetchTrackInfo(sourceManager: SpotifyAudioSourceManager, trackId: String): JsonObject {

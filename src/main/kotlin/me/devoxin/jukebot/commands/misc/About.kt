@@ -35,7 +35,7 @@ class About : Command(ExecutionType.STANDARD) {
 
         context.embed {
             setTitle("JukeBot (Revision $commitHash)", commitUrl)
-            setDescription("Developed by **devoxin#0001**")
+            setDescription("Developed by **devoxin#4243**")
             addFields(fields)
         }
     }

@@ -12,12 +12,15 @@ class Config(filePath: String) {
         ?: default
         ?: throw IllegalArgumentException("$key is not present in config!")
 
-    private fun opt(key: String, default: String? = null): String? = conf.getProperty(key, default)
+    fun getInt(key: String, default: Int): Int = conf.getProperty(key, null)?.toIntOrNull() ?: default
+
+    fun opt(key: String, default: String? = null): String? = conf.getProperty(key, default)
 
     val token = get("token")
     val defaultPrefix = get("prefix", "$")
     val embedColour = opt("color")?.toColorOrNull() ?: Color.decode("#1E90FF")!!
     val nsfwEnabled = opt("nsfw")?.toBoolean() ?: false
+    val youtubeEnabled = opt("youtube")?.toBoolean() ?: false
     val ipv6Block = opt("ipv6")
     val sentryDsn = opt("sentry")
 

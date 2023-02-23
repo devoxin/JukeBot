@@ -3,6 +3,7 @@ package me.devoxin.jukebot.commands.misc
 import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import me.devoxin.jukebot.JukeBot
+import me.devoxin.jukebot.audio.sourcemanagers.deezer.DeezerAudioTrack
 import me.devoxin.jukebot.framework.Command
 import me.devoxin.jukebot.framework.CommandProperties
 import me.devoxin.jukebot.framework.Context
@@ -22,7 +23,7 @@ class Details : Command(ExecutionType.STANDARD) {
             { context.embed("Load Failed", "An error occurred while trying to load track information.") }
         )
 
-        JukeBot.playerManager.loadItem("ytsearch:${context.argString}", loadHandler)
+        JukeBot.playerManager.loadItem("${JukeBot.getSearchProvider()}:${context.argString}", loadHandler)
     }
 
     fun sendTrackInfo(ctx: Context, track: AudioTrack) {
@@ -32,7 +33,11 @@ class Details : Command(ExecutionType.STANDARD) {
             addField("Duration", track.info.length.toTimeString(), true)
             addField("Uploader", track.info.author, true)
             addField("Livestream", if (track.info.isStream) "Yes" else "No", true)
-            setThumbnail("https://img.youtube.com/vi/${track.info.identifier}/0.jpg")
+
+            when (track.sourceManager.sourceName) {
+                "youtube" -> setThumbnail("https://img.youtube.com/vi/${track.info.identifier}/0.jpg")
+                "deezer" -> setThumbnail((track as DeezerAudioTrack).artworkURL)
+            }
         }
     }
 }

@@ -34,7 +34,7 @@ class AutoPlay(private val guildId: Long) {
         val seedTrack = previousTracks.lastOrNull() ?: return null
 
         if (seedTrack.sourceManager.sourceName != provider.sourceName) {
-            val reference = AudioReference("ytsearch:${seedTrack.info.title} ${seedTrack.info.author}", null)
+            val reference = AudioReference("${JukeBot.getSearchProvider()}:${seedTrack.info.title} ${seedTrack.info.author}", null)
             val equivalentTrack = runCatching { provider.loadItem(JukeBot.playerManager, reference) }.getOrNull() as? AudioTrack
                 ?: return null
 
