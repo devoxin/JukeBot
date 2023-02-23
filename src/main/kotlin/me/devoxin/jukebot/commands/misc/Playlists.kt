@@ -63,7 +63,7 @@ class Playlists : Command(ExecutionType.STANDARD) {
         }
     }
 
-    @SubCommand(trigger = "import", description = "Import a playlist from YouTube/SoundCloud/etc.")
+    @SubCommand(trigger = "import", description = "Import a playlist from an external service.")
     fun importPlaylist(ctx: Context, args: List<String>) {
         val allPlaylists = Database.getPlaylists(ctx.author.idLong)
 

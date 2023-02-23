@@ -7,7 +7,7 @@ import me.devoxin.jukebot.framework.CommandProperties
 import me.devoxin.jukebot.framework.Context
 
 @CommandProperties(
-    description = "Search YouTube and select from up to 5 tracks",
+    description = "Search and select from up to 5 tracks",
     aliases = ["search", "sel", "s", "find", "add"],
     category = CommandCategory.PLAYBACK
 )
