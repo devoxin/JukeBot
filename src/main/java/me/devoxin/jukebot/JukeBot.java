@@ -114,7 +114,7 @@ public class JukeBot {
         final EnumSet<GatewayIntent> enabledIntents = IntentHelper.INSTANCE.getEnabledIntents();
 
         // TODO: Change this.
-        final String activityStatus = isSelfHosted
+        final String activityStatus = selfId != 249303797371895820L
             ? config.getDefaultPrefix() + "help | " + Constants.WEBSITE
             : "@JukeBot help | " + Constants.WEBSITE;
 
