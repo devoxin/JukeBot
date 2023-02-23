@@ -1,4 +1,4 @@
-group 'jukebot'
+group 'me.devoxin.jukebot'
 version getBuildVersion()
 
 buildscript {
@@ -21,7 +21,7 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'application'
 
-mainClassName = 'jukebot.JukeBot'
+mainClassName = 'me.devoxin.jukebot.JukeBot'
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
