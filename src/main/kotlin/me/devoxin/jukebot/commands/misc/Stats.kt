@@ -24,8 +24,11 @@ class Stats : Command(ExecutionType.STANDARD) {
 
         val players = JukeBot.players.size
         val playingPlayers = JukeBot.players.values.count { it.isPlaying }
-        val encodingPlayers =
-            JukeBot.players.values.count { it.isPlaying && (it.bassBooster.isEnabled || it.player.volume != 100) }
+        val encodingPlayers = JukeBot.players.values.count {
+                it.isPlaying && (it.bassBooster.isEnabled ||
+                    it.player.volume != 100 ||
+                    (it.player.playingTrack?.sourceManager?.sourceName?.let { name -> name !in OPUS_SOURCES) } ?: false)
+        }
 
         val servers = JukeBot.shardManager.guildCache.size()
         val users = JukeBot.shardManager.guilds.sumOf { it.memberCount }
@@ -70,5 +73,9 @@ class Stats : Command(ExecutionType.STANDARD) {
             append("Average Latency :: ").append(averageShardLatency).append("ms\n")
             append("```")
         }).queue()
+    }
+
+    companion object {
+        private val OPUS_SOURCES = setOf("youtube", "soundcloud")
     }
 }
