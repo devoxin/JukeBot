@@ -27,7 +27,7 @@ class Stats : Command(ExecutionType.STANDARD) {
         val encodingPlayers = JukeBot.players.values.count {
                 it.isPlaying && (it.bassBooster.isEnabled ||
                     it.player.volume != 100 ||
-                    (it.player.playingTrack?.sourceManager?.sourceName?.let { name -> name !in OPUS_SOURCES) } ?: false)
+                    (it.player.playingTrack?.sourceManager?.sourceName?.let { name -> name !in OPUS_SOURCES } ?: false))
         }
 
         val servers = JukeBot.shardManager.guildCache.size()
