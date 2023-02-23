@@ -16,11 +16,8 @@
 
 package me.devoxin.jukebot;
 
-import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry;
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
@@ -109,8 +106,18 @@ public class JukeBot {
         RestAction.setDefaultFailure((e) -> {
         });
 
+        final ApplicationInfo appInfo = shardManager.retrieveApplicationInfo().complete();
+        selfId = appInfo.getIdLong();
+        botOwnerId = appInfo.getOwner().getIdLong();
+        isSelfHosted = selfId != 249303797371895820L && selfId != 314145804807962634L;
+
         final String token = config.getToken();
         final EnumSet<GatewayIntent> enabledIntents = IntentHelper.INSTANCE.getEnabledIntents();
+
+        // TODO: Change this.
+        final String activityStatus = isSelfHosted
+            ? config.getDefaultPrefix() + "help | " + Constants.WEBSITE
+            : "@JukeBot help | " + Constants.WEBSITE;
 
         final DefaultShardManagerBuilder shardManagerBuilder = DefaultShardManagerBuilder.create(token, enabledIntents)
                 .setShardsTotal(-1)
@@ -126,7 +133,7 @@ public class JukeBot {
                     CacheFlag.SCHEDULED_EVENTS,
                     CacheFlag.STICKER
                 )
-                .setActivityProvider((i) -> Activity.listening(config.getDefaultPrefix() + "help | " + Constants.WEBSITE))
+                .setActivityProvider((i) -> Activity.listening(activityStatus))
                 .setBulkDeleteSplittingEnabled(false);
 
         final String os = System.getProperty("os.name").toLowerCase();
@@ -233,11 +240,6 @@ public class JukeBot {
     }
 
     private static void setupSelf() {
-        final ApplicationInfo appInfo = shardManager.retrieveApplicationInfo().complete();
-        selfId = appInfo.getIdLong();
-        botOwnerId = appInfo.getOwner().getIdLong();
-        isSelfHosted = selfId != 249303797371895820L && selfId != 314145804807962634L;
-
         if (isSelfHosted || selfId == 314145804807962634L) {
             playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
         }
