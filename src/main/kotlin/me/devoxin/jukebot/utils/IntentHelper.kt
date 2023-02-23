@@ -21,7 +21,7 @@ object IntentHelper {
             GatewayIntent.SCHEDULED_EVENTS
         )
 
-        if (!JukeBot.isSelfHosted) {
+        if (JukeBot.selfId == 249303797371895820L) {
             intents.add(GatewayIntent.MESSAGE_CONTENT)
         }
 
