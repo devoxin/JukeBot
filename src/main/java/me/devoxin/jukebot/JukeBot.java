@@ -106,12 +106,9 @@ public class JukeBot {
         RestAction.setDefaultFailure((e) -> {
         });
 
-        final ApplicationInfo appInfo = shardManager.retrieveApplicationInfo().complete();
-        selfId = appInfo.getIdLong();
-        botOwnerId = appInfo.getOwner().getIdLong();
-        isSelfHosted = selfId != 249303797371895820L && selfId != 314145804807962634L;
-
         final String token = config.getToken();
+        selfId = parseUserIdFromToken(token);
+        isSelfHosted = selfId != 249303797371895820L && selfId != 314145804807962634L;
         final EnumSet<GatewayIntent> enabledIntents = IntentHelper.INSTANCE.getEnabledIntents();
 
         // TODO: Change this.
@@ -240,6 +237,9 @@ public class JukeBot {
     }
 
     private static void setupSelf() {
+        final ApplicationInfo appInfo = shardManager.retrieveApplicationInfo().complete();
+        botOwnerId = appInfo.getOwner().getIdLong();
+
         if (isSelfHosted || selfId == 314145804807962634L) {
             playerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
         }
@@ -254,6 +254,12 @@ public class JukeBot {
                 feedback.destroy();
             }
         }
+    }
+
+    private static long parseUserIdFromToken(final String token) {
+        final byte[] encoded = Base64.getDecoder().decode(token.split(".")[0]);
+        final String idString = new String(encoded);
+        return Long.parseLong(idString);
     }
 
     public static boolean hasPlayer(final long guildId) {
