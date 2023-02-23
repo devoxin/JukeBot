@@ -257,7 +257,7 @@ public class JukeBot {
     }
 
     private static long parseUserIdFromToken(final String token) {
-        final byte[] encoded = Base64.getDecoder().decode(token.split(".")[0]);
+        final byte[] encoded = Base64.getDecoder().decode(token.split("\\.")[0]);
         final String idString = new String(encoded);
         return Long.parseLong(idString);
     }
