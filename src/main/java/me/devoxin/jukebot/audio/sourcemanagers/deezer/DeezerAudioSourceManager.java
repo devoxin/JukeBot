@@ -157,7 +157,6 @@ public class DeezerAudioSourceManager implements AudioSourceManager, HttpConfigu
 
     private AudioItem getTrackSearch(final String query) throws IOException {
         final JsonBrowser json = this.getJson(PUBLIC_API_BASE + "/search/track?q=" + URLEncoder.encode(query, StandardCharsets.UTF_8));
-        System.out.println(PUBLIC_API_BASE + "/search/track?q=" + URLEncoder.encode(query, StandardCharsets.UTF_8));
 
         if (json == null || json.get("data").values().isEmpty()) {
             return AudioReference.NO_TRACK;
