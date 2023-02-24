@@ -11,6 +11,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioReference
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
 import me.devoxin.jukebot.JukeBot
+import me.devoxin.jukebot.audio.sourcemanagers.deezer.DeezerAudioSourceManager
 import me.devoxin.jukebot.audio.sourcemanagers.spotify.loaders.SpotifyAlbumLoader
 import me.devoxin.jukebot.audio.sourcemanagers.spotify.loaders.SpotifyPlaylistLoader
 import me.devoxin.jukebot.audio.sourcemanagers.spotify.loaders.SpotifyTrackLoader
@@ -93,12 +94,17 @@ class SpotifyAudioSourceManager(
         return null
     }
 
-    internal fun queueAlternateSearch(identifier: String): CompletableFuture<AudioItem?> {
+    internal fun queueAlternateSearch(identifier: SearchQuery): CompletableFuture<AudioItem?> {
         val future = CompletableFuture<AudioItem?>()
+        println(identifier.deezer)
+        println(identifier.youtube)
 
         trackLoaderPool.submit {
+            val src = JukeBot.getSearchSource()
+
             try {
-                future.complete(JukeBot.searchAlternate(identifier))
+                val query = if (JukeBot.config.youtubeEnabled) identifier.youtube else identifier.deezer
+                future.complete(src.loadItem(JukeBot.playerManager, AudioReference(query, null)))
             } catch (e: Exception) {
                 future.completeExceptionally(e)
             }
@@ -152,6 +158,8 @@ class SpotifyAudioSourceManager(
             it.execute(RequestBuilder.create(method).setUri(url).apply(requestBuilder).build())
         }
     }
+
+    class SearchQuery(val youtube: String, val deezer: String)
 
     companion object {
         private val logger = LoggerFactory.getLogger(SpotifyAudioSourceManager::class.java)

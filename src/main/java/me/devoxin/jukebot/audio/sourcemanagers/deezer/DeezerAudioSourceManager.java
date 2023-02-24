@@ -34,6 +34,7 @@ public class DeezerAudioSourceManager implements AudioSourceManager, HttpConfigu
 
     public static final Pattern URL_PATTERN = Pattern.compile("(https?://)?(www\\.)?deezer\\.com/(?<countrycode>[a-zA-Z]{2}/)?(?<type>track|album|playlist|artist)/(?<identifier>[0-9]+)");
     public static final String SEARCH_PREFIX = "dzsearch:";
+    public static final String TRACK_SEARCH_PREFIX = "dztrack:";
     public static final String ISRC_PREFIX = "dzisrc:";
     public static final String SHARE_URL = "https://deezer.page.link/";
     public static final String PUBLIC_API_BASE = "https://api.deezer.com/2.0";
@@ -67,6 +68,10 @@ public class DeezerAudioSourceManager implements AudioSourceManager, HttpConfigu
 
             if (reference.identifier.startsWith(ISRC_PREFIX)) {
                 return this.getTrackByISRC(reference.identifier.substring(ISRC_PREFIX.length()));
+            }
+
+            if (reference.identifier.startsWith(TRACK_SEARCH_PREFIX)) {
+                return this.getTrackSearch(reference.identifier.substring(TRACK_SEARCH_PREFIX.length()));
             }
 
             if (reference.identifier.startsWith(SHARE_URL)) {
@@ -148,6 +153,18 @@ public class DeezerAudioSourceManager implements AudioSourceManager, HttpConfigu
         }
 
         return this.parseTrack(json);
+    }
+
+    private AudioItem getTrackSearch(final String query) throws IOException {
+        final JsonBrowser json = this.getJson(PUBLIC_API_BASE + "/search/track?q=" + URLEncoder.encode(query, StandardCharsets.UTF_8));
+        System.out.println(PUBLIC_API_BASE + "/search/track?q=" + URLEncoder.encode(query, StandardCharsets.UTF_8));
+
+        if (json == null || json.get("data").values().isEmpty()) {
+            return AudioReference.NO_TRACK;
+        }
+
+        final List<AudioTrack> tracks = this.parseTracks(json);
+        return new BasicAudioPlaylist("Deezer Search: " + query, tracks, null, true);
     }
 
     public AudioItem getSearch(final String query) throws IOException {

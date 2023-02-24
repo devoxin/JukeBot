@@ -18,6 +18,7 @@ package me.devoxin.jukebot;
 
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
@@ -318,15 +319,11 @@ public class JukeBot {
     }
 
     // TODO: this needs to be moved to player manager perhaps
-    public static AudioItem searchAlternate(final String query) {
-        try {
-            if (config.getYoutubeEnabled()) {
-                return playerManager.source(YoutubeAudioSourceManager.class).loadItem(playerManager, new AudioReference("ytsearch:" + query, null));
-            }
-
-            return playerManager.source(DeezerAudioSourceManager.class).getSearch(query);
-        } catch (final IOException ioe) {
-            return null;
+    public static AudioSourceManager getSearchSource() {
+        if (config.getYoutubeEnabled()) {
+            return playerManager.source(YoutubeAudioSourceManager.class);
         }
+
+        return playerManager.source(DeezerAudioSourceManager.class);
     }
 }
