@@ -96,8 +96,6 @@ class SpotifyAudioSourceManager(
 
     internal fun queueAlternateSearch(identifier: SearchQuery): CompletableFuture<AudioItem?> {
         val future = CompletableFuture<AudioItem?>()
-        println(identifier.deezer)
-        println(identifier.youtube)
 
         trackLoaderPool.submit {
             val src = JukeBot.getSearchSource()
