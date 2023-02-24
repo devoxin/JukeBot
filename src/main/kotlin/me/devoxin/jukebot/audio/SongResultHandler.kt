@@ -44,7 +44,7 @@ class SongResultHandler(
                 setDescription(track.info.title)
                 setFooter("Estimated time until play: ${estPlay.toTimeString()}")
             }
-        } else {
+        } else if (ctx.isSlash) {
             ctx.send(ephemeral = true, { setContent("The requested track should begin playing shortly.") })
         }
     }
@@ -116,7 +116,7 @@ class SongResultHandler(
                         setDescription(track.info.title)
                         setFooter("Estimated time until play: ${estPlay.toTimeString()}")
                     }
-                } else {
+                } else if (ctx.isSlash) {
                     ctx.send(ephemeral = true, { setContent("The requested track should begin playing shortly.") })
                 }
             }
