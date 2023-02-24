@@ -15,6 +15,6 @@ class ScSearch : Command(ExecutionType.TRIGGER_CONNECT) {
             player.channelId = context.channel.idLong
         }
 
-        JukeBot.playerManager.loadIdentifier("scsearch:${context.argString}", context, player, false)
+        JukeBot.playerManager.loadIdentifier("scsearch:${context.args.gatherNext("query")}", context, player, false)
     }
 }

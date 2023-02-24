@@ -4,7 +4,7 @@ import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.framework.*
 import kotlin.math.ceil
 
-@CommandProperties(aliases = ["next"], description = "Vote to skip the track", category = CommandCategory.CONTROLS)
+@CommandProperties(aliases = ["next"], description = "Vote to skip the track", category = CommandCategory.CONTROLS, slashCompatible = true)
 @CommandChecks.Playing
 class Skip : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {

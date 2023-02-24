@@ -2,18 +2,16 @@ package me.devoxin.jukebot.commands.misc
 
 import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.JukeBot
-import me.devoxin.jukebot.framework.Command
-import me.devoxin.jukebot.framework.CommandProperties
-import me.devoxin.jukebot.framework.Context
-import me.devoxin.jukebot.framework.SubCommand
+import me.devoxin.jukebot.framework.*
 import me.devoxin.jukebot.utils.Constants
 import me.devoxin.jukebot.utils.Helpers
 
 @CommandProperties(description = "Receive your donor rewards if you're a patron", aliases = ["perks", "rewards"])
 class Verify : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
-        val sc = context.args.firstOrNull() ?: ""
+        val sc = context.args.next("subcommand", ArgumentResolver.STRING) ?: ""
 
+        // TODO: Subcommands.
         if (!this.subcommands.containsKey(sc)) {
             return context.embed(
                 "Donation Management",
@@ -112,11 +110,10 @@ class Verify : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "removeserver", description = "Unregisters the given server and revokes its perks")
     fun removeServer(ctx: Context) {
-        val scArgs = ctx.args.drop(1)
         val sm = JukeBot.shardManager
         val allServers = Database.getPremiumServersOf(ctx.author.idLong)
 
-        if (scArgs.isEmpty()) {
+        if (!ctx.args.hasNext("serverId")) {
             val sb = StringBuilder()
 
             sb.append("Server ID            | Server Name    | Registered  |\n")
@@ -139,14 +136,12 @@ class Verify : Command(ExecutionType.STANDARD) {
             ).queue()
         }
 
-        val guildId = scArgs[0].toLongOrNull()
-
-        if (guildId == null || !allServers.any { it.guildId == guildId }) {
-            return ctx.embed(
+        val guildId = ctx.args.next("serverId", ArgumentResolver.LONG)
+            ?.takeIf { allServers.any { s -> s.guildId == it } }
+            ?: return ctx.embed(
                 "Perks | Server Management",
                 "Invalid server ID. Run this command without arguments to view a list of registered servers."
             )
-        }
 
         val selectedGuild = allServers.first { it.guildId == guildId }
 
@@ -163,7 +158,7 @@ class Verify : Command(ExecutionType.STANDARD) {
         ctx.embed("Perks | Server Management", "Server unregistered successfully.")
     }
 
-    fun calculateServerQuota(userId: Long): Int {
+    private fun calculateServerQuota(userId: Long): Int {
         val pledge = if (userId == JukeBot.botOwnerId) Integer.MAX_VALUE else Database.getTier(userId)
 
         if (pledge < 3) {

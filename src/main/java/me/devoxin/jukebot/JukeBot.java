@@ -43,6 +43,7 @@ import me.devoxin.jukebot.audio.sourcemanagers.mixcloud.MixcloudAudioSourceManag
 import me.devoxin.jukebot.audio.sourcemanagers.pornhub.PornHubAudioSourceManager;
 import me.devoxin.jukebot.audio.sourcemanagers.spotify.SpotifyAudioSourceManager;
 import me.devoxin.jukebot.framework.Command;
+import me.devoxin.jukebot.framework.Option;
 import me.devoxin.jukebot.handlers.ActionWaiter;
 import me.devoxin.jukebot.handlers.CommandHandler;
 import me.devoxin.jukebot.handlers.EventHandler;
@@ -53,6 +54,9 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -75,6 +79,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class JukeBot {
     private static final Logger logger = LoggerFactory.getLogger("JukeBot");
@@ -147,6 +152,24 @@ public class JukeBot {
         setupSelf();
         setupAudioSystem();
         loadApis();
+
+        final List<CommandData> commands = CommandHandler.Companion.getCommands().values().stream()
+            .filter(cmd -> cmd.getProperties().slashCompatible())
+            .map(cmd -> {
+                final SlashCommandData data = Commands.slash(cmd.getName().toLowerCase(), cmd.getProperties().description());
+
+                for (final Option option : cmd.getOptions()) {
+                    data.addOption(option.type(), option.name(), option.description(), option.required());
+                }
+
+                return data;
+            })
+            .collect(Collectors.toList());
+
+        shardManager.getShardById(0).updateCommands().addCommands(commands).queue(
+            unused -> logger.info("Synced {} commands with Discord.", commands.size()),
+            ex -> logger.error("Failed to sync commands with Discord.", ex)
+        );
     }
 
     private static void printBanner() {

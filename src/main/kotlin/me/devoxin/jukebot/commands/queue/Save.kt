@@ -10,12 +10,10 @@ class Save : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
         val player = context.audioPlayer
         val currentTrack = player.player.playingTrack
+        val playlistName = context.args.gatherNext("playlist_name").takeIf { it.isNotEmpty() }
+            ?: return context.embed("Save", "You need to provide the name of the playlist to add the track to.")
 
-        if (context.args.isEmpty()) {
-            return context.embed("Save", "You need to provide the name of the playlist to add the track to.")
-        }
-
-        val playlist = Database.getPlaylist(context.author.idLong, context.argString)
+        val playlist = Database.getPlaylist(context.author.idLong, playlistName)
             ?: return context.embed("Save", "That playlist doesn't exist.")
 
         if (playlist.tracks.size >= Limits.CUSTOM_PLAYLIST_MAX_TRACKS) {

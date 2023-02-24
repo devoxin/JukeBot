@@ -3,24 +3,27 @@ package me.devoxin.jukebot.handlers
 import io.sentry.Sentry
 import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.JukeBot
+import me.devoxin.jukebot.framework.Arguments
 import me.devoxin.jukebot.framework.CommandScanner
 import me.devoxin.jukebot.framework.Context
 import me.devoxin.jukebot.utils.canSendEmbed
 import me.devoxin.jukebot.utils.separate
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import org.slf4j.LoggerFactory
 
 class CommandHandler : EventListener {
     override fun onEvent(event: GenericEvent) {
-        if (event is MessageReceivedEvent && event.isFromGuild) {
-            onGuildMessageReceived(event)
+        when (event) {
+            is MessageReceivedEvent -> if (event.isFromGuild) onGuildMessageReceived(event)
+            is SlashCommandInteractionEvent -> if (event.isFromGuild) onSlashCommand(event)
         }
     }
 
     private fun onGuildMessageReceived(e: MessageReceivedEvent) {
-        if (e.author.isBot || e.isWebhookMessage || !e.channel.asGuildMessageChannel().canSendEmbed() || Database.getIsBlocked(e.author.idLong)) {
+        if (e.author.isBot || e.isWebhookMessage || !e.guildChannel.canSendEmbed() || Database.getIsBlocked(e.author.idLong)) {
             return
         }
 
@@ -35,7 +38,6 @@ class CommandHandler : EventListener {
         val content = e.message.contentRaw.substring(triggerLength).trim()
         val (cmdStr, args) = content.split("\\s+".toRegex()).separate()
         val command = cmdStr.lowercase()
-        val originalArgs = if (content.length >= command.length) content.substring(command.length).trim() else ""
 
         val foundCommand = commands[command]
             ?: commands.values.firstOrNull { it.properties.aliases.contains(command) }
@@ -45,10 +47,40 @@ class CommandHandler : EventListener {
             return
         }
 
+        val context = Context(
+            Arguments.MessageArguments(e.message, args), guildPrefix,
+            e.jda, e.author, e.member!!, e.guildChannel, e.guild, e.message, null
+        )
+
         runCatching {
-            foundCommand.runChecks(Context(e, args, originalArgs, guildPrefix))
+            foundCommand.runChecks(context)
         }.onFailure {
             logger.error("An error occurred during invocation of command ${foundCommand.name}", it)
+            Sentry.capture(it)
+        }
+    }
+
+    private fun onSlashCommand(e: SlashCommandInteractionEvent) {
+        if (e.user.isBot || !e.guildChannel.canSendEmbed() || Database.getIsBlocked(e.user.idLong)) {
+            return
+        }
+
+        val command = commands[e.name]
+            ?: return e.reply("Command not found.").setEphemeral(true).queue()
+
+        if (command.properties.developerOnly && JukeBot.botOwnerId != e.user.idLong) {
+            return
+        }
+
+        val context = Context(
+            Arguments.SlashArguments(e), "/",
+            e.jda, e.user, e.member!!, e.guildChannel, e.guild!!, null, e
+        )
+
+        runCatching {
+            command.runChecks(context)
+        }.onFailure {
+            logger.error("An error occurred during invocation of command ${command.name}", it)
             Sentry.capture(it)
         }
     }

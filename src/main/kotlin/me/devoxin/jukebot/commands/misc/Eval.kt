@@ -25,7 +25,7 @@ class Eval : Command(ExecutionType.STANDARD) {
         bind.putAll(bindings)
 
         try {
-            val result = engine.eval("$bindString\n${context.originalArgs}", bind)
+            val result = engine.eval("$bindString\n${context.args.gatherNext("code")}", bind)
                 ?: return context.react("👌")
 
             if (result is CompletableFuture<*>) {

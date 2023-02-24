@@ -6,6 +6,17 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 
 abstract class Command(private val executionType: ExecutionType) {
+    val name: String
+        get() = this.javaClass.simpleName
+
+    val properties: CommandProperties
+        get() = this.javaClass.getAnnotation(CommandProperties::class.java)
+
+    val options: Array<Option>
+        get() = this.javaClass.getAnnotation(Options::class.java)?.options
+            ?: this.javaClass.getAnnotation(Option::class.java)?.let { arrayOf(it) }
+            ?: emptyArray()
+
     val subcommands = hashMapOf<String, MethodWrapper>()
 
     /**
@@ -113,12 +124,10 @@ abstract class Command(private val executionType: ExecutionType) {
             return
         }
 
-        if (executionType == ExecutionType.REQUIRE_MUTUAL &&
-            !checkVoiceState(context, true)
-        ) {
+        if (executionType == ExecutionType.REQUIRE_MUTUAL && !checkVoiceState(context, true)) {
             return
         } else if (executionType == ExecutionType.TRIGGER_CONNECT) {
-            if (context.args.isEmpty() && context.message.attachments.size == 0) {
+            if (context.args.gatherNext("query").isEmpty() && context.message?.attachments?.isNotEmpty() != true) {
                 return context.embed(name, "You need to specify an identifier to lookup.")
             }
 
@@ -138,15 +147,9 @@ abstract class Command(private val executionType: ExecutionType) {
         }
     }
 
-    open fun destroy() {}
+    open fun destroy() = Unit
 
     abstract fun execute(context: Context)
-
-    val properties: CommandProperties
-        get() = this.javaClass.getAnnotation(CommandProperties::class.java)
-
-    val name: String
-        get() = this.javaClass.simpleName
 
     enum class ExecutionType {
         TRIGGER_CONNECT,

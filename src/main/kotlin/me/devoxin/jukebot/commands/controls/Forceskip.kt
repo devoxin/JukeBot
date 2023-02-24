@@ -3,7 +3,7 @@ package me.devoxin.jukebot.commands.controls
 import me.devoxin.jukebot.framework.*
 import me.devoxin.jukebot.utils.Constants
 
-@CommandProperties(description = "Skip the track without voting", aliases = ["fs"], category = CommandCategory.CONTROLS)
+@CommandProperties(description = "Skip the track without voting", aliases = ["fs"], category = CommandCategory.CONTROLS, slashCompatible = true)
 @CommandChecks.Playing
 class Forceskip : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {

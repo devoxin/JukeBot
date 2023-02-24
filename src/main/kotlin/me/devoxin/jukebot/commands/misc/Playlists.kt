@@ -4,10 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler
 import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.JukeBot
 import me.devoxin.jukebot.entities.CustomPlaylist
-import me.devoxin.jukebot.framework.Command
-import me.devoxin.jukebot.framework.CommandProperties
-import me.devoxin.jukebot.framework.Context
-import me.devoxin.jukebot.framework.SubCommand
+import me.devoxin.jukebot.framework.*
 import me.devoxin.jukebot.utils.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
@@ -18,8 +15,9 @@ import kotlin.math.ceil
 @CommandProperties(description = "Manage personal playlists stored within the bot.", aliases = ["pl", "playlist"])
 class Playlists : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
-        val sc = context.args.firstOrNull() ?: ""
+        val sc = context.args.next("subcommand", ArgumentResolver.STRING) ?: ""
 
+        // TODO: Subcommands.
         if (!this.subcommands.containsKey(sc)) {
             return context.embed(
                 "Custom Playlists",
@@ -27,12 +25,11 @@ class Playlists : Command(ExecutionType.STANDARD) {
             )
         }
 
-        this.subcommands[sc]!!.invoke(context, withArgs = true)
+        this.subcommands[sc]!!.invoke(context)
     }
 
-    @Suppress("UNUSED_PARAMETER")
     @SubCommand(trigger = "list", description = "View your custom playlists.")
-    fun listPlaylists(ctx: Context, args: List<String>) {
+    fun listPlaylists(ctx: Context) {
         val userPlaylists = Database.getPlaylists(ctx.author.idLong)
 
         if (userPlaylists.isEmpty()) {
@@ -43,14 +40,14 @@ class Playlists : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "create", description = "Create a new custom playlist.")
-    fun createPlaylist(ctx: Context, args: List<String>) {
+    fun createPlaylist(ctx: Context) {
         val allPlaylists = Database.countPlaylists(ctx.author.idLong)
 
         if (!checkPlaylistCount(ctx, allPlaylists)) {
             return
         }
 
-        if (args.isEmpty()) {
+        if (!ctx.args.hasNext("playlist_name")) {
             ctx.prompt("Custom Playlists", "What do you want to name the playlist?\n*Max. 32 characters*") { _, title ->
                 if (title == null) {
                     return@prompt ctx.embed("Custom Playlists", "Playlist creation cancelled.")
@@ -59,19 +56,22 @@ class Playlists : Command(ExecutionType.STANDARD) {
                 createPlaylistWithTitle(ctx, title)
             }
         } else {
-            createPlaylistWithTitle(ctx, args[0])
+            createPlaylistWithTitle(ctx, ctx.args.next("playlist_name", ArgumentResolver.STRING)!!)
         }
     }
 
     @SubCommand(trigger = "import", description = "Import a playlist from an external service.")
-    fun importPlaylist(ctx: Context, args: List<String>) {
+    fun importPlaylist(ctx: Context) {
         val allPlaylists = Database.getPlaylists(ctx.author.idLong)
 
         if (!checkPlaylistCount(ctx, allPlaylists.size)) {
             return
         }
 
-        if (args.size < 2) {
+        val url = ctx.args.next("url", ArgumentResolver.STRING)?.removePrefix("<")?.removeSuffix(">")
+        val title = ctx.args.next("title", ArgumentResolver.STRING)
+
+        if (url == null || title == null) {
             return ctx.embed(
                 "Custom Playlists", "You need to specify a URL, and title.\n" +
                     "The URL should point to the playlist you want to imported.\n" +
@@ -79,9 +79,6 @@ class Playlists : Command(ExecutionType.STANDARD) {
                     "`${ctx.prefix}playlists import <url> <title>`"
             )
         }
-
-        val url = args[0].removePrefix("<").removeSuffix(">")
-        val title = args[1]
 
         if (allPlaylists.any { it == title }) {
             return ctx.embed("Import Playlist", "A playlist with that name already exists!")
@@ -113,12 +110,9 @@ class Playlists : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "view", description = "Lists the tracks in a playlist.")
-    fun viewPlaylist(ctx: Context, args: List<String>) {
-        val playlistName = args.joinToString(" ")
-
-        if (playlistName.isEmpty()) {
-            return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to view.")
-        }
+    fun viewPlaylist(ctx: Context) {
+        val playlistName = ctx.args.next("playlist_name", ArgumentResolver.STRING)
+            ?: return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to view.")
 
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
             ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
@@ -134,8 +128,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "manage", description = "Make modifications to a playlist.")
-    fun manage(ctx: Context, args: List<String>) {
-        val playlistName = args.joinToString(" ").takeIf { it.isNotEmpty() }
+    fun manage(ctx: Context) {
+        val playlistName = ctx.args.gatherNext("playlist_name").takeIf { it.isNotEmpty() }
             ?: return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to load.")
 
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
@@ -234,8 +228,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "delete", description = "Deletes a custom playlist.")
-    fun delete(ctx: Context, args: List<String>) {
-        val playlistName = args.joinToString(" ").takeIf { it.isNotEmpty() }
+    fun delete(ctx: Context) {
+        val playlistName = ctx.args.gatherNext("playlist_name").takeIf { it.isNotEmpty() }
             ?: return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to delete.")
 
         Database.getPlaylist(ctx.author.idLong, playlistName)
@@ -246,8 +240,8 @@ class Playlists : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "load", description = "Loads a playlist into the queue.")
-    fun load(ctx: Context, args: List<String>) {
-        val playlistName = args.joinToString(" ").takeIf { it.isNotEmpty() }
+    fun load(ctx: Context) {
+        val playlistName = ctx.args.gatherNext("playlist_name").takeIf { it.isNotEmpty() }
             ?: return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to load.")
 
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)

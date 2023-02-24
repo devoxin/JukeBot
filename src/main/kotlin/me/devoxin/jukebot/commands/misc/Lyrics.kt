@@ -16,11 +16,11 @@ class Lyrics : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
         val player = JukeBot.getPlayer(context.guild.idLong)
 
-        if (!player.isPlaying && context.args.isEmpty()) {
+        if (!player.isPlaying && context.args.isEmpty) {
             return context.embed("Lyrics", "Play something, or specify the title of a song.")
         }
 
-        val query = context.argString.ifEmpty { player.player.playingTrack.info.title }
+        val query = context.args.gatherNext("query").ifEmpty { player.player.playingTrack.info.title }
         val encoded = URLEncoder.encode(query, Charsets.UTF_8)
 
         getLyrics(encoded).thenAccept {

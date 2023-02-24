@@ -4,12 +4,15 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import me.devoxin.jukebot.audio.AudioHandler
 import me.devoxin.jukebot.framework.*
 import me.devoxin.jukebot.utils.toTimeString
+import net.dv8tion.jda.api.interactions.commands.OptionType
 
 @CommandProperties(
-    description = "Jump to a certain time, or by a specific amount of seconds",
+    description = "Jump to a certain time, or by a specific amount of seconds.",
     category = CommandCategory.CONTROLS,
-    aliases = ["jump"]
+    aliases = ["jump"],
+    slashCompatible = true
 )
+@Option(name = "time", description = "A timestamp, or number of seconds to jump.", type = OptionType.STRING)
 @CommandChecks.Dj(alone = true)
 @CommandChecks.Playing
 class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
@@ -21,7 +24,7 @@ class Seek : Command(ExecutionType.REQUIRE_MUTUAL) {
             return context.embed("Seek Unavailable", "The current track doesn't support seeking.")
         }
 
-        val arg = context.args.firstOrNull()
+        val arg = context.args.next("time", ArgumentResolver.STRING)
             ?: return context.embed("Track Seeking", "You need to specify a time, or amount of seconds to jump by.")
 
         if (arg.contains(":")) {

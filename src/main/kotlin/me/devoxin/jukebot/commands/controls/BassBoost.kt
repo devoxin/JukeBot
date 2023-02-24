@@ -10,7 +10,7 @@ class BassBoost : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {
         val handler = context.audioPlayer
 
-        val boost = context.args.firstOrNull()?.toFloatOrNull()
+        val boost = context.args.next("percent", ArgumentResolver.FLOAT)
             ?: return context.embed(
                 "Bass Boost",
                 "${createBar(handler.bassBooster.percentage)} `${handler.bassBooster.percentage.toInt()}`"

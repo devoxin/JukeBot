@@ -30,11 +30,10 @@ class SongResultHandler(
         cache(track)
 
         if (!canQueueTrack(track)) {
-            ctx.embed(
+            return ctx.embed(
                 "Track Unavailable",
                 "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)"
             )
-            return
         }
 
         val estPlay = calculateEstimatedPlayTime()
@@ -45,6 +44,8 @@ class SongResultHandler(
                 setDescription(track.info.title)
                 setFooter("Estimated time until play: ${estPlay.toTimeString()}")
             }
+        } else {
+            ctx.send(ephemeral = true, { setContent("The requested track should begin playing shortly.") })
         }
     }
 
@@ -101,11 +102,10 @@ class SongResultHandler(
                 val track = playlist.tracks.firstOrNull() ?: return noMatches()
 
                 if (!canQueueTrack(track)) {
-                    ctx.embed(
+                    return ctx.embed(
                         "Track Unavailable",
                         "This track exceeds certain limits. [Remove these limits by donating!](https://patreon.com/Devoxin)"
                     )
-                    return
                 }
 
                 val estPlay = calculateEstimatedPlayTime()
@@ -116,6 +116,8 @@ class SongResultHandler(
                         setDescription(track.info.title)
                         setFooter("Estimated time until play: ${estPlay.toTimeString()}")
                     }
+                } else {
+                    ctx.send(ephemeral = true, { setContent("The requested track should begin playing shortly.") })
                 }
             }
         } else {

@@ -5,7 +5,12 @@ import me.devoxin.jukebot.framework.CommandCategory
 import me.devoxin.jukebot.framework.CommandProperties
 import me.devoxin.jukebot.framework.Context
 
-@CommandProperties(aliases = ["z"], description = "Removes the last song queued by you", category = CommandCategory.QUEUE)
+@CommandProperties(
+    aliases = ["z"],
+    description = "Removes the last song queued by you",
+    category = CommandCategory.QUEUE,
+    slashCompatible = true
+)
 class Undo : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {
         val handler = context.audioPlayer

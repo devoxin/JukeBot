@@ -8,5 +8,6 @@ annotation class CommandProperties(
     val category: CommandCategory = CommandCategory.MISC,
     val developerOnly: Boolean = false,
     val nsfw: Boolean = false,
-    val enabled: Boolean = true
+    val enabled: Boolean = true,
+    val slashCompatible: Boolean = false
 )

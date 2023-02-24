@@ -19,6 +19,6 @@ class Select : Command(ExecutionType.TRIGGER_CONNECT) {
             player.channelId = context.channel.idLong
         }
 
-        JukeBot.playerManager.loadIdentifier("${JukeBot.getSearchProvider()}:${context.argString}", context, player, true)
+        JukeBot.playerManager.loadIdentifier("${JukeBot.getSearchProvider()}:${context.args.gatherNext("query")}", context, player, true)
     }
 }

@@ -2,18 +2,18 @@ package me.devoxin.jukebot.commands.playback
 
 import me.devoxin.jukebot.JukeBot
 import me.devoxin.jukebot.audio.AudioHandler
-import me.devoxin.jukebot.framework.Command
-import me.devoxin.jukebot.framework.CommandCategory
-import me.devoxin.jukebot.framework.CommandProperties
-import me.devoxin.jukebot.framework.Context
+import me.devoxin.jukebot.framework.*
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
+import net.dv8tion.jda.api.interactions.commands.OptionType
 
 @CommandProperties(
-    description = "Finds and plays the provided song query/URL",
+    description = "Finds and plays the provided song query/URL.",
     aliases = ["p"],
-    category = CommandCategory.PLAYBACK
+    category = CommandCategory.PLAYBACK,
+    slashCompatible = true
 )
+@Option(name = "query", description = "The query, or URL to search for.", type = OptionType.STRING)
 class Play : Command(ExecutionType.TRIGGER_CONNECT) {
     override fun execute(context: Context) {
         val player = context.audioPlayer
@@ -22,7 +22,7 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
             player.channelId = context.channel.idLong
         }
 
-        if (context.message.attachments.size > 0) {
+        if (context.message?.attachments?.isNotEmpty() == true) {
             return loadWithAttachment(context, player)
         }
 
@@ -30,13 +30,13 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
     }
 
     private fun loadWithAttachment(ctx: Context, player: AudioHandler) {
-        val identifier = ctx.message.attachments[0].url
+        val identifier = ctx.message!!.attachments[0].url
         JukeBot.playerManager.loadIdentifier(identifier, ctx, player, false)
     }
 
     private fun loadWithArgs(ctx: Context, player: AudioHandler) {
         val manager = ctx.guild.audioManager
-        val userQuery = ctx.argString.removePrefix("<").removeSuffix(">")
+        val userQuery = ctx.args.gatherNext("query").removePrefix("<").removeSuffix(">")
 
         if (userQuery.startsWith("http") || userQuery.startsWith("spotify:")) {
             if ("soundcloud.com/you/" in userQuery.lowercase()) {
@@ -69,9 +69,9 @@ class Play : Command(ExecutionType.TRIGGER_CONNECT) {
             }
 
             val url = userQuery.split(' ')
-            JukeBot.playerManager.loadIdentifier(url[0], ctx, player, false)
+            JukeBot.playerManager.loadIdentifier(url[0], ctx, player, useSelection = false)
         } else {
-            JukeBot.playerManager.loadIdentifier("${JukeBot.getSearchProvider()}:$userQuery", ctx, player, false)
+            JukeBot.playerManager.loadIdentifier("${JukeBot.getSearchProvider()}:$userQuery", ctx, player, useSelection = false)
         }
     }
 }

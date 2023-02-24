@@ -18,13 +18,12 @@ class Feedback : Command(ExecutionType.STANDARD) {
     }
 
     override fun execute(context: Context) {
-        if (context.args.isEmpty()) {
-            return context.embed {
+        val feedback = context.args.gatherNext("feedback").takeIf { it.isNotEmpty() }
+            ?: return context.embed {
                 setTitle("Missing Feedback")
                 setDescription("You need to specify feedback for the developer.")
                 setFooter("Misuse of this command will revoke your access.", null)
             }
-        }
 
         val sender = "${context.author.asTag}\n(${context.author.id})"
         val guild = "${context.guild.name}\n(${context.guild.id})"
@@ -38,7 +37,7 @@ class Feedback : Command(ExecutionType.STANDARD) {
         val whe = WebhookEmbed(
             OffsetDateTime.now(),
             JukeBot.config.embedColour.rgb,
-            context.argString,
+            feedback,
             null,
             null,
             null,

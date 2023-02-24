@@ -2,7 +2,12 @@ package me.devoxin.jukebot.commands.queue
 
 import me.devoxin.jukebot.framework.*
 
-@CommandProperties(aliases = ["dedupe", "dd"], description = "Removes all duplicate tracks from the queue", category = CommandCategory.QUEUE)
+@CommandProperties(
+    aliases = ["dedupe", "dd"],
+    description = "Removes all duplicate tracks from the queue",
+    category = CommandCategory.QUEUE,
+    slashCompatible = true
+)
 @CommandChecks.Dj(alone = true)
 class DeDuplicate : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {

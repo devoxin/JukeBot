@@ -2,6 +2,7 @@ package me.devoxin.jukebot.commands.misc
 
 import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.JukeBot
+import me.devoxin.jukebot.framework.ArgumentResolver
 import me.devoxin.jukebot.framework.Command
 import me.devoxin.jukebot.framework.CommandProperties
 import me.devoxin.jukebot.framework.Context
@@ -9,38 +10,33 @@ import me.devoxin.jukebot.framework.Context
 @CommandProperties(description = "Developer menu", developerOnly = true)
 class Dev : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
-        when (context.args.firstOrNull()) {
+        when (context.args.next("setting", ArgumentResolver.STRING)) {
             "preload" -> {
                 if (JukeBot.isSelfHosted) {
                     return context.embed("Command Unavailable", "This command is unavailable on self-hosted JukeBot.")
                 }
 
-                if (context.args.size < 2) {
-                    return context.embed("Missing Required Arg", "You need to specify `key`")
-                }
+                val patreonKey = context.args.next("key", ArgumentResolver.STRING)
+                    ?: return context.embed("Missing Required Arg", "You need to specify `key`")
 
-                JukeBot.patreonApi.accessToken = context.args[1]
+                JukeBot.patreonApi.accessToken = patreonKey
                 context.react("\uD83D\uDC4C")
             }
             "block" -> {
-                if (context.args.size < 2) {
-                    return context.embed("Missing Required Arg", "You need to specify `userId`")
-                }
+                val userId = context.args.next("userId", ArgumentResolver.LONG)
+                    ?: return context.embed("Missing Required Arg", "You need to specify `userId`")
 
-                Database.setIsBlocked(context.args[1].toLong(), true)
-                context.embed("User Blocked", "${context.args[1]} is now blocked from using JukeBot.")
+                Database.setIsBlocked(userId, true)
+                context.embed("User Blocked", "$userId is now blocked from using JukeBot.")
             }
             "unblock" -> {
-                if (context.args.size < 2) {
-                    return context.embed("Missing Required Arg", "You need to specify `userId`")
-                }
+                val userId = context.args.next("userId", ArgumentResolver.LONG)
+                    ?: return context.embed("Missing Required Arg", "You need to specify `userId`")
 
-                Database.setIsBlocked(context.args[1].toLong(), false)
-                context.embed("User Unblocked", "${context.args[1]} can now use JukeBot.")
+                Database.setIsBlocked(userId, false)
+                context.embed("User Unblocked", "$userId can now use JukeBot.")
             }
-            else -> {
-                context.embed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>")
-            }
+            else -> context.embed("Dev Subcommands", "`->` preload <key>\n`->` block <userId>\n`->` unblock <userId>")
         }
     }
 }

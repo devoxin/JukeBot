@@ -15,8 +15,9 @@ class Settings : Command(ExecutionType.STANDARD) {
     private val dpFormatter = DecimalFormat("0.00")
 
     override fun execute(context: Context) {
-        val sc = context.args.firstOrNull()?.lowercase() ?: ""
+        val sc = context.args.next("subcommand", ArgumentResolver.STRING)?.lowercase() ?: ""
 
+        // TODO: Subcommands.
         if (!this.subcommands.containsKey(sc)) {
             return context.embed(
                 "Server Settings",
@@ -25,16 +26,13 @@ class Settings : Command(ExecutionType.STANDARD) {
             )
         }
 
-        this.subcommands[sc]!!.invoke(context, true)
+        this.subcommands[sc]!!.invoke(context)
     }
 
     @SubCommand(trigger = "prefix", description = "Sets the server prefix")
-    fun prefix(ctx: Context, args: List<String>) {
-        if (args.isEmpty()) {
-            return ctx.embed("Invalid Prefix", "You need to specify a new server prefix.")
-        }
-
-        val newPrefix = args.joinToString(" ")
+    fun prefix(ctx: Context) {
+        val newPrefix = ctx.args.gatherNext("prefix").takeIf { it.isNotEmpty() }
+            ?: return ctx.embed("Invalid Prefix", "You need to specify a new server prefix.")
 
         if (mentionRegex.matcher(newPrefix).matches()) {
             return ctx.embed("Invalid Prefix", "Mentions cannot be used as prefixes.")
@@ -45,12 +43,9 @@ class Settings : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "djrole", description = "Sets the DJ role for the server")
-    fun djrole(ctx: Context, args: List<String>) {
-        if (args.isEmpty()) {
-            return ctx.embed("Invalid Role", "You need to specify the name of the new role (case-sensitive).")
-        }
-
-        val roleName = args.joinToString(" ")
+    fun djrole(ctx: Context) {
+        val roleName = ctx.args.gatherNext("dj_role_name").takeIf { it.isNotEmpty() }
+            ?: return ctx.embed("Invalid Role", "You need to specify the name of the new role (case-sensitive).")
 
         if (roleName == "reset") {
             Database.setDjRole(ctx.guild.idLong, null)
@@ -75,8 +70,8 @@ class Settings : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "votes", description = "Sets the vote-skip percentage threshold")
-    fun votes(ctx: Context, args: List<String>) {
-        val threshold = args.firstOrNull()?.toDouble()
+    fun votes(ctx: Context) {
+        val threshold = ctx.args.next("threshold", ArgumentResolver.DOUBLE)
             ?: return ctx.embed("Invalid Threshold", "You need to specify a number between `0-100`")
 
         if (threshold < 0 || threshold > 100) {
@@ -89,7 +84,9 @@ class Settings : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "embedcolor", description = "Sets the colour used for embeds")
-    fun embedcolor(ctx: Context, args: List<String>) {
+    fun embedcolor(ctx: Context) {
+        val args = ctx.args.gatherNext("colour").split(" ")
+
         val hex = when (args.size) {
             1 -> args.first()
             3 -> {
@@ -122,21 +119,18 @@ class Settings : Command(ExecutionType.STANDARD) {
     }
 
     @SubCommand(trigger = "musicnick", description = "Sets whether the nickname displays the current track")
-    fun musicnick(ctx: Context, args: List<String>) {
-        val opt = when (args.firstOrNull()) {
-            "on" -> true
-            "off" -> false
-            else -> return ctx.embed("Invalid Option", "You need to specify a valid option (`on`/`off`)")
-        }
+    fun musicnick(ctx: Context) {
+        val option = ctx.args.next("setting", ArgumentResolver.BOOLEAN)
+            ?: return ctx.embed("Invalid Option", "You need to specify a valid option (`on`/`off`)")
 
-        Database.setMusicNickEnabled(ctx.guild.idLong, opt)
+        Database.setMusicNickEnabled(ctx.guild.idLong, option)
 
-        val human = if (opt) "enabled" else "disabled"
+        val human = if (option) "enabled" else "disabled"
         ctx.embed("Music Nick Updated", "Nickname changing for playing tracks `$human`")
     }
 
     @SubCommand(trigger = "autoplay", description = "Sets whether to autoplay once the queue is empty.")
-    fun autoplay(ctx: Context, args: List<String>) {
+    fun autoplay(ctx: Context) {
         if (!Database.getIsPremiumServer(ctx.guild.idLong)) {
             return ctx.embed(
                 "Server Settings",
@@ -144,20 +138,17 @@ class Settings : Command(ExecutionType.STANDARD) {
             )
         }
 
-        val opt = when (args.firstOrNull()) {
-            "on" -> true
-            "off" -> false
-            else -> return ctx.embed("Invalid Option", "You need to specify a valid option (`on`/`off`)")
-        }
+        val option = ctx.args.next("setting", ArgumentResolver.BOOLEAN)
+            ?: return ctx.embed("Invalid Option", "You need to specify a valid option (`on`/`off`)")
 
-        Database.setAutoPlayEnabled(ctx.guild.idLong, opt)
+        Database.setAutoPlayEnabled(ctx.guild.idLong, option)
 
-        val human = if (opt) "enabled" else "disabled"
+        val human = if (option) "enabled" else "disabled"
         ctx.embed("AutoPlay Updated", "AutoPlay is now `$human`")
     }
 
     @SubCommand(trigger = "autodc", description = "Toggle whether the bot disconnects upon empty VC")
-    fun autodc(ctx: Context, args: List<String>) {
+    fun autodc(ctx: Context) {
         if (!Database.getIsPremiumServer(ctx.guild.idLong)) {
             return ctx.embed(
                 "Server Settings",
@@ -165,21 +156,17 @@ class Settings : Command(ExecutionType.STANDARD) {
             )
         }
 
-        val opt = when (args.firstOrNull()) {
-            "on" -> false
-            "off" -> true
-            else -> return ctx.embed("Invalid Option", "You need to specify a valid option (`on`/`off`)")
-        }
+        val option = ctx.args.next("setting", ArgumentResolver.BOOLEAN)
+            ?: return ctx.embed("Invalid Option", "You need to specify a valid option (`on`/`off`)")
 
-        Database.setAutoDcDisabled(ctx.guild.idLong, opt)
+        Database.setAutoDcDisabled(ctx.guild.idLong, option)
 
-        val human = if (opt) "disabled" else "enabled"
+        val human = if (option) "disabled" else "enabled"
         ctx.embed("Auto-DC Updated", "Auto-DC is now `$human`")
     }
 
-    @Suppress("UNUSED_PARAMETER")
     @SubCommand(trigger = "view", description = "Displays all settings and their values.")
-    fun view(ctx: Context, args: List<String>) {
+    fun view(ctx: Context) {
         val customDjRole: Long? = Database.getDjRole(ctx.guild.idLong)
         val djRoleFormatted = if (customDjRole != null) "<@&$customDjRole>" else "Default (DJ)"
         val skipThreshold = dpFormatter.format(Database.getSkipThreshold(ctx.guild.idLong) * 100)

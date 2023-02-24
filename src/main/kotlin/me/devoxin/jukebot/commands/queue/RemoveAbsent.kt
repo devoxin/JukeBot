@@ -2,7 +2,12 @@ package me.devoxin.jukebot.commands.queue
 
 import me.devoxin.jukebot.framework.*
 
-@CommandProperties(description = "Removes songs added by members absent from the VoiceChannel", aliases = ["ra"], category = CommandCategory.QUEUE)
+@CommandProperties(
+    description = "Removes songs added by members absent from the VoiceChannel",
+    aliases = ["ra"],
+    category = CommandCategory.QUEUE,
+    slashCompatible = true
+)
 @CommandChecks.Dj(alone = false)
 class RemoveAbsent : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {

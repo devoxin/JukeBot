@@ -2,7 +2,7 @@ package me.devoxin.jukebot.commands.controls
 
 import me.devoxin.jukebot.framework.*
 
-@CommandProperties(description = "Plays the queue in random order", category = CommandCategory.CONTROLS)
+@CommandProperties(description = "Plays the queue in random order", category = CommandCategory.CONTROLS, slashCompatible = true)
 @CommandChecks.Dj(alone = true)
 @CommandChecks.Playing
 class Shuffle : Command(ExecutionType.REQUIRE_MUTUAL) {

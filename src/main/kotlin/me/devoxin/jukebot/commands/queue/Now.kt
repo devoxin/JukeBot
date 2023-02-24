@@ -6,7 +6,12 @@ import me.devoxin.jukebot.utils.Constants
 import me.devoxin.jukebot.utils.Helpers
 import me.devoxin.jukebot.utils.toTimeString
 
-@CommandProperties(description = "Displays the currently playing track", aliases = ["n", "np"], category = CommandCategory.QUEUE)
+@CommandProperties(
+    description = "Displays the currently playing track",
+    aliases = ["n", "np"],
+    category = CommandCategory.QUEUE,
+    slashCompatible = true
+)
 @CommandChecks.Playing
 class Now : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {

@@ -1,9 +1,6 @@
 package me.devoxin.jukebot.commands.misc
 
-import me.devoxin.jukebot.framework.Command
-import me.devoxin.jukebot.framework.CommandCategory
-import me.devoxin.jukebot.framework.CommandProperties
-import me.devoxin.jukebot.framework.Context
+import me.devoxin.jukebot.framework.*
 import me.devoxin.jukebot.handlers.CommandHandler
 import me.devoxin.jukebot.utils.Constants
 import me.devoxin.jukebot.utils.Helpers
@@ -15,22 +12,21 @@ class Help : Command(ExecutionType.STANDARD) {
         .joinToString("\n")
 
     override fun execute(context: Context) {
-        if (context.args.isEmpty()) {
-            return sendDefaultHelp(context)
-        }
+        val menu = context.args.next("specific", ArgumentResolver.STRING)
+            ?: return sendDefaultHelp(context)
 
-        val menu = context.args.first().toIntOrNull() ?: 0
+        val categoryIndex = menu.toIntOrNull() ?: 0
 
-        if (menu <= 0 || menu > CommandCategory.values().size) {
+        if (categoryIndex <= 0 || categoryIndex > CommandCategory.values().size) {
             val cmd = CommandHandler.commands
-                .filter { it.key == context.args[0] || it.value.properties.aliases.contains(context.args[0]) }
+                .filter { it.key == menu || it.value.properties.aliases.contains(menu) }
                 .values
                 .firstOrNull()
                 ?: return sendDefaultHelp(context)
 
             sendCommandHelp(context, cmd)
         } else {
-            val category = CommandCategory.values()[menu - 1]
+            val category = CommandCategory.values()[categoryIndex - 1]
             val builder = StringBuilder()
 
             for (cmd in commandsByCategory(category)) {

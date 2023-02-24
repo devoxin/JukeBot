@@ -1,16 +1,20 @@
 package me.devoxin.jukebot.commands.queue
 
-import me.devoxin.jukebot.framework.Command
-import me.devoxin.jukebot.framework.CommandCategory
-import me.devoxin.jukebot.framework.CommandProperties
-import me.devoxin.jukebot.framework.Context
+import me.devoxin.jukebot.framework.*
 import me.devoxin.jukebot.utils.iterate
 import me.devoxin.jukebot.utils.toTimeString
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import kotlin.math.ceil
 import kotlin.math.min
 
-@CommandProperties(description = "Displays the current queue", aliases = ["q", "list", "songs"], category = CommandCategory.QUEUE)
+@CommandProperties(
+    description = "Displays the current queue.",
+    aliases = ["q", "list", "songs"],
+    category = CommandCategory.QUEUE,
+    slashCompatible = true
+)
+@Option(name = "page", description = "The page to view.", type = OptionType.INTEGER)
 class Queue : Command(ExecutionType.STANDARD) {
     override fun execute(context: Context) {
         val player = context.audioPlayer
@@ -23,7 +27,7 @@ class Queue : Command(ExecutionType.STANDARD) {
             )
         }
 
-        val selectedPage = context.args.firstOrNull()?.toIntOrNull() ?: 1
+        val selectedPage = context.args.next("page", ArgumentResolver.INTEGER) ?: 1
         val maxPages = ceil(queue.size.toDouble() / 10).toInt()
         val page = selectedPage.coerceIn(1, maxPages)
 

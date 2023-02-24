@@ -10,7 +10,8 @@ class Repeat : Command(ExecutionType.REQUIRE_MUTUAL) {
     override fun execute(context: Context) {
         val player = context.audioPlayer
 
-        when (context.args.firstOrNull()?.lowercase()) {
+        // TODO: Subcommands.
+        when (context.args.next("repeat", ArgumentResolver.STRING)?.lowercase()) {
             "a", "all" -> player.repeat = AudioHandler.RepeatMode.ALL
             "s", "single" -> player.repeat = AudioHandler.RepeatMode.SINGLE
             "n", "none" -> player.repeat = AudioHandler.RepeatMode.NONE
