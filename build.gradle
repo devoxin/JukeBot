@@ -37,16 +37,17 @@ repositories {
 }
 
 dependencies {
-    implementation ('net.dv8tion:JDA:5.0.0-beta.4') {
+    implementation ('net.dv8tion:JDA:5.0.0-beta.5') {
         exclude module: 'opus-java'
     }
     implementation 'club.minnced:discord-webhooks:0.8.0'
 
     /* Audio */
     //implementation 'com.github.devoxin:walkyst-lavaplayer:f4ec4f3'
-    implementation 'com.github.devoxin.lavaplayer:lavaplayer:32f3033'
+    implementation 'com.github.devoxin.lavaplayer:lavaplayer:697658b'
     implementation 'com.github.walkyst.lavaplayer-fork:lavaplayer-ext-youtube-rotator:1.3.99.2'
     implementation 'com.sedmelluq:jda-nas:1.1.0'
+    implementation (group: 'com.github.natanbc', name: 'lavadsp', version: '0.7.7')
 
     /* Database */
     implementation 'org.xerial:sqlite-jdbc:3.40.1.0'
