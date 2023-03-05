@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.utils.messages.MessageEditData
 import org.checkerframework.checker.units.qual.m
 import java.util.concurrent.TimeUnit
 
@@ -32,6 +33,7 @@ class Context(
 ) {
     val isSlash = slashEvent != null
 
+    private var deferred = false
     private var replied = false
 
     val donorTier: Int
@@ -58,6 +60,14 @@ class Context(
         }
 
         return isElevated
+    }
+
+    fun think(ephemeral: Boolean = false) {
+        when {
+            deferred -> return
+            slashEvent != null -> slashEvent.deferReply(ephemeral).queue { deferred = true }
+            else -> channel.sendTyping().queue()
+        }
     }
 
     fun react(emoji: String) {
@@ -115,8 +125,9 @@ class Context(
         when {
             slashEvent != null -> {
                 when {
-                    replied -> slashEvent.hook.sendMessage(msg).setEphemeral(ephemeral).queue(cb)
-                    else -> slashEvent.reply(msg).setEphemeral(ephemeral).queue { replied = true }
+                    !deferred && !replied -> slashEvent.reply(msg).setEphemeral(ephemeral).queue { replied = true }
+                    deferred && !replied -> slashEvent.hook.editOriginal(MessageEditData.fromCreateData(msg)).queue { replied = true }
+                    else -> slashEvent.hook.sendMessage(msg).setEphemeral(ephemeral).queue(cb)
                 }
             }
             else -> channel.sendMessage(msg).queue(cb)

@@ -24,10 +24,10 @@ class PlayerStats : Command(ExecutionType.REQUIRE_MUTUAL) {
         val expectedPackets = AudioHandler.EXPECTED_PACKET_COUNT_PER_MIN * trackProgress
         val framesDeficit = abs(expectedPackets - totalPackets).toInt()
 
-        context.channel.sendMessage(
+        context.send(false, {
             "Dropped packets: ${player.trackPacketLost} ($packetLossPc%)\n" +
                 "Deficit packets: $framesDeficit\n" +
                 "Sent packets: ${player.trackPacketsSent}"
-        ).queue()
+        })
     }
 }

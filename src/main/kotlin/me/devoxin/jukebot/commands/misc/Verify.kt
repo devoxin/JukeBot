@@ -24,7 +24,7 @@ class Verify : Command(ExecutionType.STANDARD) {
 
     @SubCommand(trigger = "link", description = "Links your Discord to Patreon for automatic rewards")
     fun link(ctx: Context) {
-        ctx.channel.sendTyping().queue()
+        ctx.think()
 
         JukeBot.patreonApi.fetchPledgesOfCampaign("750822").thenAccept { users ->
             if (users.isEmpty()) {
@@ -129,11 +129,11 @@ class Verify : Command(ExecutionType.STANDARD) {
                 sb.append(days).append(" day").append(plural).append(" ago\n")
             }
 
-            return ctx.channel.sendMessage(
+            return ctx.send(false, {
                 "**Perks | Server Management**\n" +
                     "You need to specify the ID of the server you want to unregister.\n\n" +
                     "```\n$sb```"
-            ).queue()
+            })
         }
 
         val guildId = ctx.args.next("serverId", ArgumentResolver.LONG)
