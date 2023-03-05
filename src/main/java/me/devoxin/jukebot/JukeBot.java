@@ -28,8 +28,6 @@ import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceMan
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary;
-import com.sedmelluq.discord.lavaplayer.track.AudioItem;
-import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
 import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
 import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRoutePlanner;
@@ -74,12 +72,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteJDBCLoader;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class JukeBot {
@@ -125,21 +119,21 @@ public class JukeBot {
             : "@JukeBot help | " + Constants.WEBSITE;
 
         final DefaultShardManagerBuilder shardManagerBuilder = DefaultShardManagerBuilder.create(token, enabledIntents)
-                .setShardsTotal(-1)
-                .addEventListeners(new CommandHandler(), new EventHandler(), waiter)
-                .setMemberCachePolicy(MemberCachePolicy.VOICE)
-                .disableCache(
-                    CacheFlag.ACTIVITY,
-                    CacheFlag.CLIENT_STATUS,
-                    CacheFlag.EMOJI,
-                    CacheFlag.FORUM_TAGS,
-                    CacheFlag.ROLE_TAGS,
-                    CacheFlag.ONLINE_STATUS,
-                    CacheFlag.SCHEDULED_EVENTS,
-                    CacheFlag.STICKER
-                )
-                .setActivityProvider((i) -> Activity.listening(activityStatus))
-                .setBulkDeleteSplittingEnabled(false);
+            .setShardsTotal(-1)
+            .addEventListeners(new CommandHandler(), new EventHandler(), waiter)
+            .setMemberCachePolicy(MemberCachePolicy.VOICE)
+            .disableCache(
+                CacheFlag.ACTIVITY,
+                CacheFlag.CLIENT_STATUS,
+                CacheFlag.EMOJI,
+                CacheFlag.FORUM_TAGS,
+                CacheFlag.ROLE_TAGS,
+                CacheFlag.ONLINE_STATUS,
+                CacheFlag.SCHEDULED_EVENTS,
+                CacheFlag.STICKER
+            )
+            .setActivityProvider((i) -> Activity.listening(activityStatus))
+            .setBulkDeleteSplittingEnabled(false);
 
         final String os = System.getProperty("os.name").toLowerCase();
         final String arch = System.getProperty("os.arch");

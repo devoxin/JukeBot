@@ -53,7 +53,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
     init {
         player.addListener(this)
-        this.mutableFrame.setBuffer(buffer)
+        mutableFrame.setBuffer(buffer)
     }
 
     fun enqueue(track: AudioTrack, userID: Long, playNext: Boolean): Boolean { // boolean: shouldAnnounce
