@@ -38,7 +38,7 @@ object Helpers {
                 }
             }
 
-            if ((0 until barLength).none { it == blocks }) {
+            if (hasBlocks && (0 until barLength).none { it == blocks }) {
                 append("]($link)")
             }
         }
