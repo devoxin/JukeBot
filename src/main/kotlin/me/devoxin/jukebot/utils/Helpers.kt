@@ -24,15 +24,21 @@ object Helpers {
         val barChar = bar.toString()
 
         return buildString {
-            append("[")
-            val hasTerminator = (0 until barLength).any { it == blocks }
-            val segments = (0 until barLength).map { if (it == blocks) "]($link)" else barChar }
+            val hasBlocks = blocks > 0
 
-            for (segment in segments) {
-                append(segment)
+            if (hasBlocks) {
+                append("[")
             }
 
-            if (!hasTerminator) {
+            (0 until barLength).forEach {
+                if (hasBlocks && it == blocks) {
+                    append("]($link)")
+                } else {
+                    append(barChar)
+                }
+            }
+
+            if ((0 until barLength).none { it == blocks }) {
                 append("]($link)")
             }
         }
