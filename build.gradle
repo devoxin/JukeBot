@@ -32,7 +32,7 @@ repositories {
     }
     mavenCentral()
     jcenter()
-    maven { url 'https://dl.bintray.com/natanbc/maven' }
+    //maven { url 'https://dl.bintray.com/natanbc/maven' }
     maven { url 'https://jitpack.io' }
 }
 
@@ -44,13 +44,13 @@ dependencies {
 
     /* Audio */
     //implementation 'com.github.devoxin:walkyst-lavaplayer:f4ec4f3'
-    implementation 'com.github.devoxin.lavaplayer:lavaplayer:1.4.2'
-    implementation 'com.github.walkyst.lavaplayer-fork:lavaplayer-ext-youtube-rotator:1.3.99.2'
+    implementation 'com.github.devoxin.lavaplayer:lavaplayer:68d661e'
+    implementation 'com.github.walkyst.lavaplayer-fork:lavaplayer-ext-youtube-rotator:1.4.2'
     implementation 'com.sedmelluq:jda-nas:1.1.0'
-    implementation (group: 'com.github.natanbc', name: 'lavadsp', version: '0.7.7')
+    implementation 'com.github.natanbc:lavadsp:0.7.7'
 
     /* Database */
-    implementation 'org.xerial:sqlite-jdbc:3.40.1.0'
+    implementation 'org.xerial:sqlite-jdbc:3.41.2.2'
     implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'redis.clients:jedis:4.3.1'
 
@@ -82,10 +82,6 @@ shadowJar {
     from("src/main/Resources")
 }
 
-wrapper {
-    gradleVersion = '6.3'
-}
-
 def getBuildVersion() {
     def gitVersion = new ByteArrayOutputStream()
     exec {
@@ -95,7 +91,7 @@ def getBuildVersion() {
     return gitVersion.toString().trim()
 }
 
-task writeVersion() {
+tasks.register('writeVersion') {
     def resourcePath = sourceSets.main.resources.srcDirs[0]
     def resources = file(resourcePath)
 
