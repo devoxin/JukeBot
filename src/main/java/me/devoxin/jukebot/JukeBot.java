@@ -200,7 +200,7 @@ public class JukeBot {
 
         playerManager.registerSourceManager(new CachingSourceManager());
 
-        if (config.contains("deezer_key")) {
+        if (config.contains("deezer_key") && !config.get("deezer_key", "").isEmpty()) {
             playerManager.registerSourceManager(new DeezerAudioSourceManager(config.get("deezer_key", null)));
         }
 

@@ -5,6 +5,7 @@ spotify_client=not required
 spotify_secret=not required
 nsfw=true
 youtube=false
+deezer_key=deezer decipher key (not required)
 proxy_host=IP of proxy server (not required)
 proxy_port=port of proxy server (not required)
 proxy_user=proxy username (not required)
