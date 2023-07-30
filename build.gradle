@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 group 'me.devoxin.jukebot'
 version getBuildVersion()
 
@@ -23,8 +25,19 @@ apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = 'me.devoxin.jukebot.JukeBot'
-sourceCompatibility = JavaVersion.VERSION_12
-targetCompatibility = JavaVersion.VERSION_12
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "11"
+}
+
+/*tasks.named('compileKotlin', KotlinCompilationTask) {
+    compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+}*/
 
 repositories {
     maven {
