@@ -82,7 +82,9 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.4'
 
     // Transitive overrides
-    implementation "org.json:json:20230227"
+    implementation "org.json:json:20231013"
+    implementation "commons-codec:commons-codec:1.13"
+    implementation "com.squareup.okio:okio-jvm:3.4.0"
 }
 
 shadowJar {
