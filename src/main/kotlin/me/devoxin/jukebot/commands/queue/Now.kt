@@ -21,7 +21,7 @@ class Now : Command(ExecutionType.STANDARD) {
         val duration = if (current.info.isStream) "LIVE" else current.duration.toTimeString()
 
         val requesterId = current.userData as Long
-        val requesterInfo = JukeBot.shardManager.getUserById(requesterId)?.let { "• Queued by ${it.asTag}" } ?: ""
+        val requesterInfo = JukeBot.shardManager.getUserById(requesterId)?.let { "• Queued by ${it.name}" } ?: ""
 
         val playbackSettings = "Shuffle: ${if (player.shuffle) "On" else "Off"} " +
             "• Repeat: ${player.repeat.humanized()} $requesterInfo"

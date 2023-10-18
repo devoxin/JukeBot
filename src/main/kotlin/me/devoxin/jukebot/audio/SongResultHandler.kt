@@ -17,7 +17,6 @@ import me.devoxin.jukebot.utils.Helpers
 import me.devoxin.jukebot.utils.Limits
 import me.devoxin.jukebot.utils.editEmbed
 import me.devoxin.jukebot.utils.toTimeString
-import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 
 class SongResultHandler(
     private val ctx: Context,
@@ -126,7 +125,7 @@ class SongResultHandler(
                 .take(Limits.playlist(ctx.donorTier))
 
             val estPlay = musicManager.queue
-                .sumByLong { it.duration }
+                .sumOf { it.duration }
                 .plus(musicManager.current?.let { it.duration - it.position } ?: 0)
 
             for (track in tracks) {
@@ -174,7 +173,7 @@ class SongResultHandler(
     private fun calculateEstimatedPlayTime(): Long {
         val current = musicManager.current
         val remaining = current?.duration?.minus(current.position) ?: 0L
-        return if (playNext) remaining else musicManager.queue.sumByLong { it.duration } + remaining
+        return if (playNext) remaining else musicManager.queue.sumOf { it.duration } + remaining
     }
 
     private fun canQueueTrack(track: AudioTrack): Boolean {

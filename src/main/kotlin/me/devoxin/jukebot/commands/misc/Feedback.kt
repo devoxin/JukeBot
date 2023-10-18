@@ -25,7 +25,7 @@ class Feedback : Command(ExecutionType.STANDARD) {
                 setFooter("Misuse of this command will revoke your access.", null)
             }
 
-        val sender = "${context.author.asTag}\n(${context.author.id})"
+        val sender = "${context.author.name}\n(${context.author.id})"
         val guild = "${context.guild.name}\n(${context.guild.id})"
 
         val fields = listOf(

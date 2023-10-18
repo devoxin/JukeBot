@@ -4,7 +4,6 @@ import me.devoxin.jukebot.framework.*
 import me.devoxin.jukebot.utils.iterate
 import me.devoxin.jukebot.utils.toTimeString
 import net.dv8tion.jda.api.interactions.commands.OptionType
-import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -31,7 +30,7 @@ class Queue : Command(ExecutionType.STANDARD) {
         val maxPages = ceil(queue.size.toDouble() / 10).toInt()
         val page = selectedPage.coerceIn(1, maxPages)
 
-        val queueDuration = queue.sumByLong { it.duration }.toTimeString()
+        val queueDuration = queue.sumOf { it.duration }.toTimeString()
         val fQueue = buildString {
             val begin = (page - 1) * 10
             val end = min(begin + 10, queue.size)
