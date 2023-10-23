@@ -60,7 +60,7 @@ dependencies {
     implementation "com.github.devoxin.lavaplayer:lavaplayer-ext-youtube-rotator:$lavaplayerVersion"
     implementation 'com.sedmelluq:jda-nas:1.1.0'
     // Audio Filters
-    implementation 'com.github.devoxin:LavaDSPX:090e22d'
+    implementation 'com.github.devoxin:LavaDSPX:1.0.2'
     implementation 'com.github.natanbc:lavadsp:0.7.7'
 
     // Database

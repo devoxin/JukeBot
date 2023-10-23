@@ -1,7 +1,7 @@
 package me.devoxin.jukebot.commands.controls
 
-import me.devoxin.jukebot.audio.filters.HighPassFilter
 import me.devoxin.jukebot.framework.*
+import me.devoxin.lavadspx.HighPassFilter
 import net.dv8tion.jda.api.interactions.commands.OptionType
 
 @CommandProperties(aliases = ["hp"], description = "Filter out frequencies below a threshold.", category = CommandCategory.CONTROLS, slashCompatible = true)
