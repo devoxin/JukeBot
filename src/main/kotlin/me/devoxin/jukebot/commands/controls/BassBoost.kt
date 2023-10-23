@@ -2,6 +2,7 @@ package me.devoxin.jukebot.commands.controls
 
 import me.devoxin.jukebot.framework.*
 import me.devoxin.jukebot.utils.Helpers
+import net.dv8tion.jda.api.interactions.commands.OptionType
 
 @CommandProperties(aliases = ["bb", "bass"], description = "Bass boosts the audio", category = CommandCategory.CONTROLS)
 @CommandChecks.Dj(alone = true)
