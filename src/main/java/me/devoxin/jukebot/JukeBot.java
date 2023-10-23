@@ -268,11 +268,7 @@ public class JukeBot {
             final Map<String, Command> commandRegistry = CommandHandler.Companion.getCommands();
             commandRegistry.remove("patreon");
             commandRegistry.remove("verify");
-            final Command feedback = commandRegistry.remove("feedback");
-
-            if (feedback != null) {
-                feedback.destroy();
-            }
+            commandRegistry.remove("feedback");
         }
     }
 

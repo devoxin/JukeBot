@@ -147,8 +147,6 @@ abstract class Command(private val executionType: ExecutionType) {
         }
     }
 
-    open fun destroy() = Unit
-
     abstract fun execute(context: Context)
 
     enum class ExecutionType {

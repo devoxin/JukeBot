@@ -1,20 +1,22 @@
 package me.devoxin.jukebot.commands.misc
 
-import club.minnced.discord.webhook.WebhookClient
-import club.minnced.discord.webhook.WebhookClientBuilder
-import club.minnced.discord.webhook.send.WebhookEmbed
 import me.devoxin.jukebot.JukeBot
 import me.devoxin.jukebot.framework.Command
 import me.devoxin.jukebot.framework.CommandProperties
 import me.devoxin.jukebot.framework.Context
-import java.time.OffsetDateTime
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.IncomingWebhookClient
+import net.dv8tion.jda.api.entities.WebhookClient
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import java.time.Instant
 
 @CommandProperties(aliases = ["suggest"], description = "Send feedback to the developer")
 class Feedback : Command(ExecutionType.STANDARD) {
-    private val webhookClient: WebhookClient? = if ("feedback_webhook" in JukeBot.config) {
-        WebhookClientBuilder(JukeBot.config["feedback_webhook"]).build()
-    } else {
-        null
+    private val webhookClient = createWebhook()
+
+    private fun createWebhook(): IncomingWebhookClient? {
+        return JukeBot.config.opt("feedback_webhook", null)?.takeIf { it.isBlank() }
+            ?.let { WebhookClient.createClient(JukeBot.shardManager.shards.first(), it) }
     }
 
     override fun execute(context: Context) {
@@ -25,32 +27,17 @@ class Feedback : Command(ExecutionType.STANDARD) {
                 setFooter("Misuse of this command will revoke your access.", null)
             }
 
-        val sender = "${context.author.name}\n(${context.author.id})"
-        val guild = "${context.guild.name}\n(${context.guild.id})"
+        val embed = EmbedBuilder()
+            .setColor(JukeBot.config.embedColour)
+            .setTitle("New Feedback")
+            .setDescription(feedback)
+            .addField("Sender:", "${context.author.name}\n(${context.author.id})", true)
+            .addField("Guild:", "${context.guild.name}\n(${context.guild.id})", true)
+            .addBlankField(true)
+            .setTimestamp(Instant.now())
+            .build()
 
-        val fields = listOf(
-            WebhookEmbed.EmbedField(true, "Sender:", sender),
-            WebhookEmbed.EmbedField(true, "Guild:", guild),
-            WebhookEmbed.EmbedField(true, "\u200b", "\u200b")
-        )
-
-        val whe = WebhookEmbed(
-            OffsetDateTime.now(),
-            JukeBot.config.embedColour.rgb,
-            feedback,
-            null,
-            null,
-            null,
-            WebhookEmbed.EmbedTitle("New Feedback", null),
-            null,
-            fields
-        )
-
-        webhookClient?.send(whe)
+        webhookClient?.sendMessage(MessageCreateData.fromEmbeds(embed))?.queue()
         context.embed("Feedback sent!", "Thanks for your feedback! :)")
-    }
-
-    override fun destroy() {
-        webhookClient?.close()
     }
 }
