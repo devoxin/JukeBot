@@ -49,7 +49,7 @@ repositories {
 }
 
 dependencies {
-    final String lavaplayerVersion = "1.4.4"
+    final String lavaplayerVersion = "1.4.6"
 
     implementation ('net.dv8tion:JDA:5.0.0-beta.16') {
         exclude module: 'opus-java'
