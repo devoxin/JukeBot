@@ -16,7 +16,6 @@
 //
 //@CommandProperties(description = "Manage personal playlists stored within the bot.", aliases = ["pl", "playlist"])
 //class Playlists : Command(ExecutionType.STANDARD) {
-//
 //    @SubCommand(trigger = "view", description = "Lists the tracks in a playlist.")
 //    fun viewPlaylist(ctx: Context) {
 //        val playlistName = ctx.args.next("playlist_name", ArgumentResolver.STRING)
@@ -135,56 +134,6 @@
 //        }
 //    }
 //
-//    @SubCommand(trigger = "delete", description = "Deletes a custom playlist.")
-//    fun delete(ctx: Context) {
-//        val playlistName = ctx.args.gatherNext("playlist_name").takeIf { it.isNotEmpty() }
-//            ?: return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to delete.")
-//
-//        Database.getPlaylist(ctx.author.idLong, playlistName)
-//            ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
-//
-//        Database.deletePlaylist(ctx.author.idLong, playlistName)
-//        ctx.embed("Custom Playlists", "Playlist deleted.")
-//    }
-//
-//    @SubCommand(trigger = "load", description = "Loads a playlist into the queue.")
-//    fun load(ctx: Context) {
-//        val playlistName = ctx.args.gatherNext("playlist_name").takeIf { it.isNotEmpty() }
-//            ?: return ctx.embed("Custom Playlists", "You need to provide the name of the playlist to load.")
-//
-//        val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
-//            ?: return ctx.embed("Custom Playlists", "That playlist doesn't exist.")
-//
-//        if (!this.connectToChannel(ctx)) {
-//            return
-//        }
-//
-//        val player = ctx.audioPlayer
-//
-//        if (!player.isPlaying) {
-//            player.channelId = ctx.channel.idLong
-//        }
-//
-//        for (track in playlist.tracks) {
-//            player.enqueue(track, ctx.author.idLong, false)
-//        }
-//
-//        ctx.embed("Custom Playlists", "Loaded `${playlist.tracks.size}` tracks from playlist `${playlist.title}`")
-//    }
-//
-//    private fun createPlaylistWithTitle(ctx: Context, title: String) {
-//        if (title.length > 32) {
-//            return ctx.embed("Custom Playlists", "The playlist name cannot be longer than 32 characters!")
-//        }
-//
-//        Database.createPlaylist(ctx.author.idLong, title)
-//
-//        ctx.embed(
-//            "Custom Playlists", ":fire: Any time you hear a song you like, you can add it to your new playlist " +
-//                "by running `${ctx.prefix}save $title`"
-//        )
-//    }
-//
 //    private fun buildEmbed(ctx: Context, playlist: CustomPlaylist, selectedPage: Int = 1): MessageEmbed {
 //        val page = Page.paginate(playlist.tracks, selectedPage)
 //
@@ -194,29 +143,5 @@
 //            .setDescription(page.content)
 //            .setFooter("Duration: ${page.duration} • Page ${page.page}/${page.maxPages} • Send \"help\" for management commands")
 //            .build()
-//    }
-//
-//    private fun checkPlaylistCount(ctx: Context, count: Int): Boolean {
-//        if (Launcher.isSelfHosted || ctx.author.idLong == Launcher.botOwnerId) {
-//            return true
-//        }
-//
-//        val donorTier = Database.getTier(ctx.author.idLong)
-//        val cap = Limits.customPlaylists(donorTier)
-//
-//        if (count < cap) {
-//            return true
-//        }
-//
-//        val response = buildString {
-//            appendLine("You've reached the maximum amount of custom playlists.")
-//
-//            if (count < 100) { // Hit 5/50 cap
-//                append("[Upgrade your tier](https://patreon.com/devoxin) to get more slots!")
-//            }
-//        }
-//
-//        ctx.embed("Custom Playlists", response)
-//        return false
 //    }
 //}

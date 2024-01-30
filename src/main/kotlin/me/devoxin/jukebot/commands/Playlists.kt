@@ -12,6 +12,9 @@ import me.devoxin.jukebot.extensions.audioPlayer
 import me.devoxin.jukebot.extensions.embed
 import me.devoxin.jukebot.extensions.premiumTier
 import me.devoxin.jukebot.utils.Limits
+import me.devoxin.jukebot.utils.StringUtils
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 class Playlists : Cog {
     @Command(aliases = ["pl"], description = "Manage your custom playlists.", guildOnly = true)
@@ -41,6 +44,7 @@ class Playlists : Cog {
 
     @SubCommand(aliases = ["c", "new"], description = "Create a new custom playlist.")
     fun create(ctx: Context,
+               @Autocomplete("autocompletePlaylistName")
                @Describe("The name of your new playlist.")
                @Range(string = [1, 32])
                @Greedy playlistName: String) {
@@ -59,6 +63,7 @@ class Playlists : Cog {
     suspend fun import(ctx: Context,
                        @Describe("The URL of the playlist to import.")
                        url: String,
+                       @Autocomplete("autocompletePlaylistName")
                        @Describe("The name of the playlist to add the imported tracks to.")
                        @Range(string = [1, 32])
                        @Greedy playlistName: String) {
@@ -98,9 +103,24 @@ class Playlists : Cog {
         ctx.embed("Custom Playlists (Import)", "Added ${loaded.tracks.size.coerceAtMost(remainingTrackCapacity)} tracks to `$playlistName`!")
     }
 
+    @SubCommand(aliases = ["remove", "rm", "del"], description = "Delete one of your custom playlists.")
+    fun delete(ctx: Context,
+               @Autocomplete("autocompletePlaylistName")
+               @Describe("The name of the playlist to delete.")
+               @Range(string = [1, 32])
+               @Greedy playlistName: String) {
+        if (Database.getPlaylist(ctx.author.idLong, playlistName) == null) {
+            return ctx.embed("Custom Playlists (Delete)", "A playlist with that name wasn't found.\nYou can check your playlists with `/playlists list`")
+        }
+
+        Database.deletePlaylist(ctx.author.idLong, playlistName)
+        ctx.embed("Custom Playlists (Delete)", "Your playlist has been deleted.")
+    }
+
     @SubCommand(aliases = ["play", "p"], description = "Play a custom playlist of yours.")
     @TriggerConnect
     suspend fun load(ctx: Context,
+                     @Autocomplete("autocompletePlaylistName")
                      @Describe("The name of the playlist to load.")
                      @Range(string = [1, 32])
                      @Greedy playlistName: String) {
@@ -143,6 +163,20 @@ class Playlists : Cog {
 
         ctx.embed("Custom Playlists", response)
         return false
+    }
+
+    fun autocompletePlaylistName(event: CommandAutoCompleteInteractionEvent) {
+        val playlists = Database.getPlaylists(event.user.idLong)
+
+        if (playlists.isEmpty()) {
+            return event.replyChoices().queue()
+        }
+
+        val value = event.focusedOption.value
+        val filtered = playlists.filter { StringUtils.isSubstringWithin(it, value) }
+            .map { Choice(it, it) }
+
+        event.replyChoices(filtered).queue()
     }
 
     // view

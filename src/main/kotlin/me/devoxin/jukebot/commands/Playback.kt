@@ -22,7 +22,7 @@ class Playback : Cog {
     @Command(aliases = ["p"], description = "Find and play a track.", guildOnly = true)
     @TriggerConnect
     fun play(ctx: Context,
-             @Autocomplete("playSuggestions")
+             @Autocomplete("autocompletePlaySuggestions")
              @Describe("The query, or URL to search for.")
              @Greedy query: String) { // TODO: Nullable to allow loading attachments.
         play0(ctx, query)
@@ -32,7 +32,7 @@ class Playback : Cog {
     @Playing
     @RequireMutualVoiceChannel
     fun playNext(ctx: Context,
-                 @Autocomplete("playSuggestions")
+                 @Autocomplete("autocompletePlaySuggestions")
                  @Describe("The query, or URL to search for.")
                  @Greedy query: String) { // TODO: Nullable to allow loading attachments.
         if (ctx.audioPlayer == null) {
@@ -45,7 +45,7 @@ class Playback : Cog {
     @Command(aliases = ["search", "sel", "s", "add"], description = "Search and select from up to 5 tracks.", guildOnly = true)
     @TriggerConnect
     fun select(ctx: Context,
-               @Autocomplete("playSuggestions")
+               @Autocomplete("autocompletePlaySuggestions")
                @Describe("The query, or URL to search for.")
                @Greedy query: String) {
         play0(ctx, query, useSelection = true)
@@ -57,7 +57,7 @@ class Playback : Cog {
                @Choices(string = [StringChoice("soundcloud", "scsearch"), StringChoice("spotify", "spsearch")])
                @Describe("The source to search.")
                searchProvider: String,
-               @Autocomplete("playSuggestions")
+               @Autocomplete("autocompletePlaySuggestions")
                @Describe("The query, or URL to search for.")
                @Greedy query: String) {
         play0(ctx, "$searchProvider:$query", useSelection = true)
@@ -122,7 +122,7 @@ class Playback : Cog {
         }
     }
 
-    suspend fun playSuggestions(event: CommandAutoCompleteInteractionEvent) {
+    suspend fun autocompletePlaySuggestions(event: CommandAutoCompleteInteractionEvent) {
         val query = event.focusedOption.value
 
         if (query.isEmpty() || query.startsWith("http") || query.startsWith("spotify:")) {
