@@ -2,7 +2,7 @@ group 'me.devoxin.jukebot'
 version getBuildVersion()
 
 buildscript {
-    ext.kotlin_version = '1.9.10'
+    ext.kotlin_version = '1.9.22'
     ext.kotlin_coroutines = '1.7.3'
     ext.logger_version = '2.17.2'
 
@@ -49,18 +49,31 @@ repositories {
 }
 
 dependencies {
-    final String lavaplayerVersion = "1.4.6"
+    final String lavaplayerVersion = "4a16df2"
+    final String udpqueueVersion = "0.2.7"
 
-    implementation ('net.dv8tion:JDA:5.0.0-beta.16') {
+    final List<String> udpqueueModules = [
+        "linux-x86-64", "linux-x86", "linux-aarch64", "linux-arm", "linux-musl-x86-64", "linux-musl-aarch64", "win-x86-64", "win-x86", "darwin"
+    ]
+
+    implementation ('net.dv8tion:JDA:5.0.0-beta.20') {
         exclude module: 'opus-java'
     }
+
+    implementation "com.github.devoxin:flight:572acd6"
 
     // Audio
     implementation "com.github.devoxin.lavaplayer:lavaplayer:$lavaplayerVersion"
     implementation "com.github.devoxin.lavaplayer:lavaplayer-ext-youtube-rotator:$lavaplayerVersion"
-    implementation 'com.sedmelluq:jda-nas:1.1.0'
+    implementation ('com.sedmelluq:jda-nas:1.1.0') {
+        exclude module: 'udp-queue'
+    }
+    udpqueueModules.forEach {
+        implementation "club.minnced:udpqueue-native-$it:$udpqueueVersion"
+    }
+
     // Audio Filters
-    implementation 'com.github.devoxin:LavaDSPX:1.0.2'
+    implementation 'com.github.devoxin:LavaDSPX:2.0.1'
     implementation 'com.github.natanbc:lavadsp:0.7.7'
 
     // Database
@@ -68,22 +81,21 @@ dependencies {
     implementation 'com.zaxxer:HikariCP:5.0.1'
     implementation 'redis.clients:jedis:5.0.0'
 
-    // Reflections (framework)
-    implementation 'com.google.guava:guava:32.1.3-jre'
-
     // Logging
     implementation "org.apache.logging.log4j:log4j-core:$logger_version"
     implementation "org.apache.logging.log4j:log4j-slf4j-impl:$logger_version"
     implementation 'io.sentry:sentry:1.7.30'
 
     // stdlib (Kotlin)
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlin_coroutines"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     // Utilities
     implementation 'com.grack:nanojson:1.7'
     implementation 'org.jsoup:jsoup:1.16.2'
+    implementation 'commons-cli:commons-cli:1.6.0'
 
     // Transitive overrides
     implementation "org.json:json:20231013"

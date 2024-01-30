@@ -14,10 +14,6 @@
    limitations under the License.
 */
 
-// ==========
-// Basically, don't steal this and we won't have a problem.
-// ==========
-
 package me.devoxin.jukebot.audio
 
 import com.sedmelluq.discord.lavaplayer.filter.equalizer.EqualizerFactory
@@ -25,31 +21,28 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import java.text.DecimalFormat
 
 class BassBooster(private val player: AudioPlayer) : EqualizerFactory() {
-    var percentage: Float = 0.0f
+    var percentage: Int = 0
         private set
 
-    val pcString: String
-        get() = dpFormatter.format(percentage)
-
     val isEnabled: Boolean
-        get() = percentage != 0.0f
+        get() = percentage != 0
 
-    fun boost(pc: Float) {
+    fun boost(pc: Int) {
         val lastPc = percentage
-        this.percentage = pc
+        percentage = pc
 
-        if (pc == 0.0f) {
+        if (pc == 0) {
             return player.setFilterFactory(null)
         }
 
-        if (lastPc == 0.0f) {
+        if (lastPc == 0) {
             player.setFilterFactory(this)
         }
 
         val multiplier = pc / 100
 
         for ((band, gain) in freqGains) {
-            this.setGain(band, gain * multiplier)
+            setGain(band, gain * multiplier)
         }
     }
 

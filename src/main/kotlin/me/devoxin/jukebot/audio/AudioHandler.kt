@@ -1,30 +1,59 @@
 package me.devoxin.jukebot.audio
 
+import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
+import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrameFlags
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame
 import io.sentry.Sentry
 import io.sentry.event.BreadcrumbBuilder
 import io.sentry.event.Event
 import io.sentry.event.EventBuilder
 import io.sentry.event.interfaces.ExceptionInterface
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import me.devoxin.flight.internal.utils.TextUtils
 import me.devoxin.jukebot.Database
-import me.devoxin.jukebot.JukeBot
-import me.devoxin.jukebot.utils.*
+import me.devoxin.jukebot.Launcher
+import me.devoxin.jukebot.audio.AudioHandler.RepeatMode.ALL
+import me.devoxin.jukebot.audio.AudioHandler.RepeatMode.SINGLE
+import me.devoxin.jukebot.audio.sources.spotify.SpotifyAudioTrack
+import me.devoxin.jukebot.extensions.await
+import me.devoxin.jukebot.extensions.capitalise
+import me.devoxin.jukebot.extensions.toTimeString
+import me.devoxin.jukebot.utils.Helpers
+import me.devoxin.jukebot.utils.Scopes
+import me.devoxin.jukebot.utils.collections.FixedDeque
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.Permission.*
 import net.dv8tion.jda.api.audio.AudioSendHandler
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEventAdapter(), AudioSendHandler {
+class AudioHandler(private val guildId: Long,
+                   var channelId: Long,
+                   private val initialVoiceChannelId: Long,
+                   val player: AudioPlayer) : AudioEventAdapter(), AudioSendHandler {
+    private val mutex = Mutex()
+
     private val mutableFrame = MutableAudioFrame()
-    private val buffer = ByteBuffer.allocate(1024)
-    // ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize())
+    private val buffer = ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize())
+
+    private var initialConnect = false
 
     // Playback Settings
     val bassBooster = BassBooster(player)
@@ -33,10 +62,9 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
     val queue = LinkedList<AudioTrack>()
     private val skips = hashSetOf<Long>()
-    private val selector = Random()
 
+    var lastAnnouncement: Message? = null
     var shouldAnnounce = true
-    var channelId: Long? = null
 
     // Performance Tracking
     var trackPacketLost = 0
@@ -45,11 +73,17 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         private set
 
     // Player Stuff
-    val autoPlay = AutoPlay(guildId)
-    var previous: AudioTrack? = null
-    var current: AudioTrack? = null
-    val isPlaying: Boolean
-        get() = player.playingTrack != null
+    private val autoPlay = AutoPlay(guildId)
+
+    private val history = FixedDeque<AudioTrack>(10)
+    private var backwards = false
+    val canGoBack: Boolean get() = history.isNotEmpty()
+
+    val isPlaying: Boolean get() = player.playingTrack != null
+    val isEncoding: Boolean get() = AudioFrameFlags.OPUS_PASSTHROUGH !in mutableFrame.flags
+
+    private val guild: Guild?
+        get() = Launcher.shardManager.getGuildById(guildId)
 
     init {
         player.addListener(this)
@@ -57,6 +91,10 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     }
 
     fun enqueue(track: AudioTrack, userID: Long, playNext: Boolean): Boolean { // boolean: shouldAnnounce
+        if (!initialConnect) {
+            guild?.let { it.audioManager.openAudioConnection(it.getVoiceChannelById(initialVoiceChannelId)) }
+        }
+
         track.userData = userID
 
         if (!player.startTrack(track, true)) {
@@ -76,18 +114,35 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         return skips.size
     }
 
-    fun playNext(shouldAutoPlay: Boolean = true) {
+    fun previous() {
+        if (!canGoBack) {
+            return
+        }
+
+        val track = player.playingTrack
+        backwards = true
+
+        if (track != null) {
+            queue.add(0, track.makeClone())
+        }
+
+        player.playTrack(history.removeLast().makeClone())
+    }
+
+    fun next(shouldAutoPlay: Boolean = true, lastTrack: AudioTrack? = player.playingTrack) {
         var nextTrack: AudioTrack? = null
 
-        current?.let(autoPlay::store)
+        if (lastTrack is SpotifyAudioTrack && lastTrack.position >= minOf(lastTrack.duration * 0.20, 30000.0)) {
+            autoPlay.store(lastTrack)
+        }
 
-        if (current != null && repeat != RepeatMode.NONE) {
-            val cloned = current!!.makeClone().also { it.userData = current!!.userData }
+        if (lastTrack != null && repeat != RepeatMode.NONE) {
+            val cloned = lastTrack.makeClone()
 
-            if (repeat == RepeatMode.ALL) {
-                queue.offer(cloned)
-            } else if (repeat == RepeatMode.SINGLE) {
-                nextTrack = cloned
+            when (repeat) {
+                ALL -> queue.offer(cloned)
+                SINGLE -> nextTrack = cloned
+                else -> {}
             }
         }
 
@@ -99,61 +154,78 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             return player.playTrack(nextTrack)
         }
 
-        if (shouldAutoPlay && autoPlay.enabled && autoPlay.hasSufficientData) {
+        if (shouldAutoPlay && autoPlay.enabled && autoPlay.isUsable) {
             val recommendedTrack = autoPlay.getRelatedTrack()
 
             if (recommendedTrack != null) {
                 return player.playTrack(recommendedTrack)
             }
-
-            playNext(false)
-            return announce("AutoPlay", "AutoPlay was unable to find a track to play.")
+            
+            announce("AutoPlay", "AutoPlay was unable to find a track to play.", set = false)
         }
 
-        current = null
+        announce("Queue Concluded", "Keep the party going by adding more tracks!", set = false)
         player.stopTrack()
-        bassBooster.boost(0.0f)
+        bassBooster.boost(0)
 
-        val audioManager = JukeBot.shardManager.getGuildById(guildId)?.audioManager
-            ?: return JukeBot.removePlayer(guildId)
+        val audioManager = guild?.audioManager
+            ?: return Launcher.playerManager.removePlayer(guildId).let { cleanup() }
 
         if (audioManager.isConnected) {
             Helpers.schedule(audioManager::closeAudioConnection, 1, TimeUnit.SECONDS)
-
-            if (Database.getIsPremiumServer(guildId)) {
-                announce("Queue Concluded", "Enable AutoPlay to keep the party going!")
-            } else {
-                announce("Queue Concluded!", "[Support the development of JukeBot!](https://www.patreon.com/Devoxin)")
-            }
         }
 
         cleanup()
     }
 
-    private fun announce(title: String, description: String) {
-        if (!shouldAnnounce || channelId == null) {
+    private fun announce(title: String?,
+                         description: String,
+                         thumbnailUrl: String? = null,
+                         set: Boolean = true,
+                         extra: MessageCreateBuilder.() -> Unit = {}) {
+        if (!shouldAnnounce) {
             return
         }
 
-        val channel = JukeBot.shardManager.getTextChannelById(channelId!!)?.takeIf { it.canSendEmbed() }
+        val channel = guild?.getChannelById(TextChannel::class.java, channelId)
+            ?.takeIf { it.guild.selfMember.hasPermission(VIEW_CHANNEL, MESSAGE_SEND, MESSAGE_EMBED_LINKS) }
             ?: return
 
-        channel.sendMessage(
-            EmbedBuilder().apply {
-                setColor(Database.getColour(channel.guild.idLong))
-                setTitle(title)
-                setDescription(Helpers.truncate(description, 1000))
-                build()
-            }.build().toMessage()
-        ).queue()
+        Scopes.IO.launch {
+            announce0(channel, title, description, thumbnailUrl, set, extra)
+        }
+    }
+
+    private suspend fun announce0(channel: GuildMessageChannel,
+                                  title: String?,
+                                  description: String,
+                                  thumbnailUrl: String?,
+                                  set: Boolean,
+                                  extra: MessageCreateBuilder.() -> Unit) {
+        mutex.withLock {
+            lastAnnouncement?.runCatching { delete().await() }
+
+            channel.runCatching {
+                sendMessage(MessageCreateBuilder()
+                    .addEmbeds(EmbedBuilder()
+                        .setColor(Database.getColour(guildId))
+                        .setTitle(title)
+                        .setDescription(Helpers.truncate(description, 1000))
+                        .setThumbnail(thumbnailUrl)
+                        .build())
+                    .apply(extra)
+                    .build())
+                    .await()
+            }.onSuccess {
+                if (set) lastAnnouncement = it
+            }
+        }
     }
 
     private fun setNick(nick: String?) {
-        val guild = JukeBot.shardManager.getGuildById(guildId) ?: return
-
-        if (guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guild.idLong)) {
-            guild.selfMember.modifyNickname(nick).queue()
-        }
+        guild?.selfMember
+            ?.takeIf { it.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guildId) }
+            ?.modifyNickname(nick)?.queue()
     }
 
     fun cleanup() {
@@ -161,7 +233,7 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         skips.clear()
         player.destroy()
 
-        JukeBot.shardManager.getGuildById(guildId)?.audioManager?.sendingHandler = null
+        guild?.audioManager?.sendingHandler = null
         setNick(null)
     }
 
@@ -173,15 +245,26 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
     override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
         player.isPaused = false
 
-        if (current == null || current!!.identifier != track.identifier) {
-            current = track
-            val durString = if (track.info.isStream) "LIVE" else track.info.length.toTimeString()
-            announce("Now Playing", "${track.info.title} - `$durString`")
-
-            val title = track.info.title
-            val nick = if (title.length > 32) "${title.substring(0, 29)}..." else title
-            setNick(nick)
+        if (history.isNotEmpty() && track.identifier == history.first().identifier) {
+            // TODO check if last sent message ID is the now playing message?
+            return
         }
+
+        val duration = track.takeIf { !it.info.isStream }?.duration?.toTimeString() ?: "∞"
+        val requester = if (track.userData as Long == Launcher.shardManager.botId) "AutoPlay" else "<@${track.userData}>"
+
+        announce(null, "**${track.info.title}**\n*${track.info.author} — $duration*\n$requester", (track as? SpotifyAudioTrack)?.artworkUrl) {
+            setComponents(
+                ActionRow.of(
+                    Button.secondary("prev:$guild", Emoji.fromCustom("prev", 1200984412611948605, false)),
+                    Button.secondary("play:$guild", Emoji.fromCustom("pause", 1200984439958798458, false)),
+                    Button.secondary("next:$guild", Emoji.fromCustom("next", 1200984449068843099, false))
+                )
+            )
+        }
+
+        val nick = TextUtils.truncate("${track.info.title} - ${track.info.author}", 32)
+        setNick(nick)
     }
 
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
@@ -189,10 +272,14 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         trackPacketLost = 0
         trackPacketsSent = 0
 
-        previous = track
+        if (!backwards) {
+            history.add(track)
+        }
+
+        backwards = false
 
         if (endReason.mayStartNext) {
-            playNext()
+            next(lastTrack = track)
         }
     }
 
@@ -202,7 +289,8 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
             .setMessage("Track ID: ${track.identifier}")
             .build()
 
-        val eventBuilder = EventBuilder().withMessage(exception.message)
+        val eventBuilder = EventBuilder()
+            .withMessage(exception.message)
             .withLevel(Event.Level.ERROR)
             .withSentryInterface(ExceptionInterface(exception))
             .withBreadcrumbs(listOf(breadCrumb))
@@ -210,20 +298,14 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
         Sentry.capture(eventBuilder)
         repeat = RepeatMode.NONE
 
-        val problem = Helpers.rootCauseOf(exception)
-
-//        if (banned && Database.getIsAutoPlayEnabled(guildId)) {
-//            Database.setAutoPlayEnabled(guildId, false)
-//        }
-
-        announce("Playback Error", "Playback of **${track.info.title}** encountered an error!\n${problem.localizedMessage}")
+        announce("Track Unavailable", "An error occurred during the playback of **${track.info.title}**\nSkipping...", set = false)
     }
 
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long) {
         repeat = RepeatMode.NONE
 
-        announce("Track Stuck", "Playback of **${track.info.title}** has frozen and is unable to resume!")
-        playNext()
+        announce("Track Unavailable", "The track **${track.info.title}** has frozen and cannot be played\nSkipping...", set = false)
+        next(lastTrack = track)
     }
 
     /*
@@ -260,5 +342,6 @@ class AudioHandler(private val guildId: Long, val player: AudioPlayer) : AudioEv
 
     companion object {
         const val EXPECTED_PACKET_COUNT_PER_MIN = ((60 * 1000) / 20).toDouble()
+        private val selector = Random()
     }
 }

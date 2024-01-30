@@ -2,12 +2,11 @@ package me.devoxin.jukebot
 
 import com.zaxxer.hikari.HikariDataSource
 import io.sentry.Sentry
-import me.devoxin.jukebot.entities.CustomPlaylist
-import me.devoxin.jukebot.entities.PremiumGuild
-import me.devoxin.jukebot.utils.get
+import me.devoxin.jukebot.extensions.get
+import me.devoxin.jukebot.models.CustomPlaylist
+import me.devoxin.jukebot.models.PremiumGuild
 import java.sql.Connection
 import java.sql.PreparedStatement
-import java.sql.SQLException
 import java.time.Instant
 
 object Database {
@@ -68,18 +67,17 @@ object Database {
     }
 
     fun getPlaylist(creator: Long, title: String): CustomPlaylist? = suppressedWithConnection({ null }) {
-        val results =
-            buildStatement(it, "SELECT title, creator, tracks FROM customplaylists WHERE creator = ? AND title = ?", creator, title)
-                .executeQuery()
+        val results = buildStatement(it, "SELECT title, creator, tracks FROM customplaylists WHERE creator = ? AND title = ?", creator, title)
+            .executeQuery()
 
         if (results.next()) CustomPlaylist(results["title"], creator, results["tracks"]) else null
     }
 
-    fun createPlaylist(creator: Long, title: String) = runSuppressed {
-        connection.use {
-            buildStatement(it, "INSERT INTO customplaylists VALUES (?, ?, ?)", title, creator, "")
-                .executeUpdate()
-        }
+    fun createPlaylist(creator: Long, title: String) = suppressedWithConnection({ null }) {
+        buildStatement(it, "INSERT INTO customplaylists VALUES (?, ?, ?)", title, creator, "")
+            .executeUpdate()
+
+        CustomPlaylist(title, creator, "")
     }
 
     fun updatePlaylist(creator: Long, title: String, tracks: String) = runSuppressed {
@@ -97,7 +95,7 @@ object Database {
     }
 
     fun getPrefix(guildId: Long) = getFromDatabase("prefixes", guildId, "prefix")
-        ?: JukeBot.config.defaultPrefix
+        ?: Launcher.config.defaultPrefix
 
     fun setPrefix(guildId: Long, newPrefix: String) = runSuppressed {
         connection.use {
@@ -155,11 +153,11 @@ object Database {
         list
     }
 
-    fun getColour(guildId: Long) = suppressedWithConnection({ JukeBot.config.embedColour.rgb }) {
+    fun getColour(guildId: Long) = suppressedWithConnection({ Launcher.config.embedColour.rgb }) {
         val results = buildStatement(it, "SELECT id, rgb FROM colours WHERE id = ?", guildId)
             .executeQuery()
 
-        if (results.next()) results.getInt("rgb") else JukeBot.config.embedColour.rgb
+        if (results.next()) results.getInt("rgb") else Launcher.config.embedColour.rgb
     }
 
     fun setColour(guildId: Long, rgb: Int) = runSuppressed {
@@ -170,7 +168,7 @@ object Database {
     }
 
     fun getIsPremiumServer(guildId: Long) = suppressedWithConnection({ false }) {
-        if (JukeBot.isSelfHosted) {
+        if (Launcher.isSelfHosted) {
             return@suppressedWithConnection true
         }
 
@@ -258,29 +256,18 @@ object Database {
         }
     }
 
-    fun buildStatement(con: Connection, sql: String, vararg obj: Any): PreparedStatement {
+    private fun buildStatement(con: Connection, sql: String, vararg obj: Any): PreparedStatement {
         val statement = con.prepareStatement(sql)
 
         for ((i, o) in obj.withIndex()) {
-            when (o) {
-                is String -> statement.setString(i + 1, o)
-                is Int -> statement.setInt(i + 1, o)
-                is Long -> statement.setLong(i + 1, o)
-                is Double -> statement.setDouble(i + 1, o)
-            }
+            statement.setObject(i + 1, o)
         }
 
         return statement
     }
 
-    fun runSuppressed(block: () -> Unit) = runCatching(block).onFailure(Sentry::capture)
+    private fun runSuppressed(block: () -> Unit) = runCatching(block).onFailure(Sentry::capture)
 
-    fun <T> suppressedWithConnection(default: () -> T, block: (Connection) -> T) = try {
-        connection.use {
-            block(it)
-        }
-    } catch (e: SQLException) {
-        Sentry.capture(e)
-        default()
-    }
+    private fun <T> suppressedWithConnection(default: () -> T, block: (Connection) -> T) =
+        runCatching { connection.use(block) }.onFailure(Sentry::capture).getOrNull() ?: default()
 }

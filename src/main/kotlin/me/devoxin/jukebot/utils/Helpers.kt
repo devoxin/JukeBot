@@ -15,8 +15,8 @@ object Helpers {
         val stream = Helpers::class.java.classLoader.getResourceAsStream("version.txt")!!
         InputStreamReader(stream, Charsets.UTF_8).readText()
     }
-    private val timer: ScheduledExecutorService =
-        Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
+
+    private val timer: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { Thread(it, "JukeBot-Timer") }
 
     fun createBar(v: Int, max: Int, barLength: Int, bar: Char = '\u25AC', link: String = Constants.WEBSITE): String {
         val percent = v.toFloat() / max
