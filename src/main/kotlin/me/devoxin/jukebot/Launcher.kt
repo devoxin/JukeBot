@@ -53,6 +53,7 @@ object Launcher {
             addOption("h", "help", false, "Displays command line arguments.")
             addOption("m", "enable-message-content", false, "Enables the 'MESSAGE_CONTENT' intent.")
             addOption("n", "enable-nsfw", false, "Enables NSFW audio sources.")
+            addOption("o", "delegate-youtube-only", false, "Disallows loading of YouTube tracks directly, but allows delegation.")
             addOption("s", "sync-commands", false, "Sync commands with Discord on launch.")
             addOption("u", "disable-http", false, "Disables the HTTP source manager.")
             addOption("y", "disable-youtube", false, "Disables the YouTube source manager.")
@@ -97,6 +98,7 @@ object Launcher {
             .build()
 
         commandClient.commands.register("me.devoxin.jukebot.commands")
+        log.info("registered ${commandClient.commands.size} commands")
 
         shardManager = ExtendedShardManager.create(config.token) {
             setActivityProvider { Activity.listening("/help") }
@@ -137,10 +139,9 @@ object Launcher {
             commandClient.commands.remove("feedback")
         }
 
-
         if (parsed.hasOption("sync-commands")) {
-            log.info("syncing commands...")
             val slashCommands = commandClient.commands.toDiscordCommands()
+            log.info("syncing ${slashCommands.size} commands...")
             shardManager.shards[0].updateCommands().addCommands(slashCommands).queue(
                 { log.info("synced ${slashCommands.size} commands with discord") },
                 { log.error("failed to sync commands with discord", it) }
