@@ -19,3 +19,7 @@ fun Long.toTimeString(): String {
         else -> String.format("%02d:%02d", minutes, seconds)
     }
 }
+
+fun Number.plural(s: String): String {
+    return "$this ${if (this.toInt() == 1) s else "${s}s"}"
+}

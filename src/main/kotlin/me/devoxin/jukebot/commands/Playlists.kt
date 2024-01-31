@@ -17,6 +17,8 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 class Playlists : Cog {
+    override fun name() = "Playlists"
+
     @Command(aliases = ["pl"], description = "Manage your custom playlists.", guildOnly = true)
     fun playlists(ctx: Context) {
         val cmd = ctx.invokedCommand as? CommandFunction

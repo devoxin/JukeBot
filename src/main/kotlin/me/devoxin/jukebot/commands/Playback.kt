@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 class Playback : Cog {
+    override fun name() = "Playback"
+
     @Command(aliases = ["p"], description = "Find and play a track.", guildOnly = true)
     @TriggerConnect
     fun play(ctx: Context,

@@ -15,6 +15,8 @@ import me.devoxin.jukebot.extensions.embed
 import me.devoxin.jukebot.utils.Helpers
 
 class Configuration : Cog {
+    override fun name() = "Configuration"
+
     @Command(description = "Configure track announcements.", guildOnly = true)
     @DJ(alone = false)
     fun announce(ctx: Context,

@@ -7,6 +7,8 @@ import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.extensions.await
 
 class Developer : Cog {
+    override fun name() = "Developer"
+
     @Command(description = "Re-sync commands with Discord.", developerOnly = true)
     suspend fun resync(ctx: Context) {
         val commands = ctx.commandClient.commands.toDiscordCommands()

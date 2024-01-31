@@ -18,6 +18,8 @@ import me.devoxin.jukebot.extensions.parseAsTimeStringToMillisecondsOrNull
 import kotlin.math.ceil
 
 class Controls : Cog {
+    override fun name() = "Controls"
+
     @Command(aliases = ["rewind", "rs", "rw"], description = "Restart the current track.", guildOnly = true)
     @DJ(alone = true)
     @Playing

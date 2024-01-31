@@ -20,6 +20,8 @@ import java.text.DecimalFormat
 import kotlin.math.max
 
 class Misc : Cog {
+    override fun name() = "Misc"
+
     @Command(aliases = ["info"], description = "Displays some information about the bot.")
     fun about(ctx: Context) {
         val commitHash = Helpers.version

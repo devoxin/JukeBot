@@ -29,3 +29,7 @@ fun String.parseAsTimeStringToMillisecondsOrNull(): Long? {
 
     return parsed?.times(1000)
 }
+
+fun String.truncate(maxLength: Int): String {
+    return if (maxLength >= length) this else "${take(maxLength)}..."
+}

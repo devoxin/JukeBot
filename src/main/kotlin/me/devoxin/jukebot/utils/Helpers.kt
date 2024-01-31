@@ -44,16 +44,8 @@ object Helpers {
         }
     }
 
-    fun pad(s: String) = String.format("%-12s", s).replace(" ", " \u200B")
-
     fun schedule(task: () -> Unit, delay: Int, unit: TimeUnit) {
         timer.schedule(task, delay.toLong(), unit)
-    }
-
-    fun truncate(content: String, maxLength: Int): String {
-        return if (content.length > maxLength) {
-            content.substring(0, maxLength - 3) + "..."
-        } else content
     }
 
     fun readFile(path: String, def: String): String {

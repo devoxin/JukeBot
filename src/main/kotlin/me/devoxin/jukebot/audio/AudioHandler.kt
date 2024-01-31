@@ -25,6 +25,7 @@ import me.devoxin.jukebot.audio.sources.spotify.SpotifyAudioTrack
 import me.devoxin.jukebot.extensions.await
 import me.devoxin.jukebot.extensions.capitalise
 import me.devoxin.jukebot.extensions.toTimeString
+import me.devoxin.jukebot.extensions.truncate
 import me.devoxin.jukebot.utils.Helpers
 import me.devoxin.jukebot.utils.Scopes
 import me.devoxin.jukebot.utils.collections.FixedDeque
@@ -210,7 +211,7 @@ class AudioHandler(private val guildId: Long,
                     .addEmbeds(EmbedBuilder()
                         .setColor(Database.getColour(guildId))
                         .setTitle(title)
-                        .setDescription(Helpers.truncate(description, 1000))
+                        .setDescription(description.truncate(1000))
                         .setThumbnail(thumbnailUrl)
                         .build())
                     .apply(extra)

@@ -20,6 +20,8 @@ import me.devoxin.lavadspx.LowPassFilter
 import me.devoxin.lavadspx.NormalizationFilter
 
 class Filters : Cog {
+    override fun name() = "Filters"
+
     @Command(aliases = ["filter"], description = "Apply audio filters.", guildOnly = true)
     fun filters(ctx: Context) {
         val cmd = ctx.invokedCommand as? CommandFunction

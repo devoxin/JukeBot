@@ -16,6 +16,8 @@ import me.devoxin.jukebot.extensions.toTimeString
 import me.devoxin.jukebot.utils.Limits
 
 class Media : Cog {
+    override fun name() = "Media"
+
     @Command(aliases = ["n", "np", "now", "current"], description = "View the currently playing track.", guildOnly = true)
     @Playing
     fun nowplaying(ctx: Context) {

@@ -12,6 +12,8 @@ import me.devoxin.jukebot.extensions.*
 import kotlin.math.ceil
 
 class Queue : Cog {
+    override fun name() = "Media"
+
     @Command(aliases = ["q"], description = "Queue management.", guildOnly = true)
     fun queue(ctx: Context, page: Int = 1) { // This parameter is only usable by text commands.
         view(ctx, page)

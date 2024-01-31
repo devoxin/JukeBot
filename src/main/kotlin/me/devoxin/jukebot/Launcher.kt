@@ -93,7 +93,7 @@ object Launcher {
             .setPrefixProvider(CustomPrefixProvider())
             .setPrefixes(config.defaultPrefix)
             .addEventListeners(FlightEventAdapter())
-            .configureDefaultHelpCommand { enabled = true }
+            .configureDefaultHelpCommand { enabled = false }
             .registerDefaultParsers()
             .build()
 
