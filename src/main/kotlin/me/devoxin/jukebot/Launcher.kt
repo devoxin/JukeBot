@@ -118,6 +118,7 @@ object Launcher {
         playerManager = ExtendedAudioPlayerManager(
             disableYoutube = parsed.hasOption("disable-youtube"),
             disableYoutubeDelegate = parsed.hasOption("disable-youtube-delegate"),
+            youtubeDelegationOnly = parsed.hasOption("delegate-youtube-only"),
             disableHttp = parsed.hasOption("disable-http"),
             enableNsfw = parsed.hasOption("enable-nsfw")
         )

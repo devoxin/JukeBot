@@ -53,6 +53,7 @@ import java.util.concurrent.ConcurrentHashMap
 class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAudioPlayerManager(),
                                  disableYoutube: Boolean,
                                  disableYoutubeDelegate: Boolean,
+                                 youtubeDelegationOnly: Boolean,
                                  disableHttp: Boolean,
                                  val enableNsfw: Boolean) : AudioPlayerManager by dapm {
     val players = ConcurrentHashMap<Long, AudioHandler>()
@@ -93,7 +94,9 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
                     YoutubeIpRotatorSetup(planner).forSource(youtubeAudioSourceManager).setup()
                 }
 
-                registerSourceManager(youtubeAudioSourceManager)
+                if (!youtubeDelegationOnly) {
+                    registerSourceManager(youtubeAudioSourceManager)
+                }
             }
 
             registerSourceManager(SoundCloudAudioSourceManager.createDefault())
