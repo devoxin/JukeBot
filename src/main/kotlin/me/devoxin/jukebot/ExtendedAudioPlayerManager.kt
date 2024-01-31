@@ -130,7 +130,7 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
             }
 
             delegateSource = when {
-                !disableYoutube && !disableYoutubeDelegate -> YoutubeDelegateSource(this, source(YoutubeAudioSourceManager::class.java))
+                !disableYoutube && !disableYoutubeDelegate -> YoutubeDelegateSource(this, youtubeAudioSourceManager)
                 !deezerKey.isNullOrEmpty() -> DeezerDelegateSource(this, source(DeezerAudioSourceManager::class.java))
                 else -> SoundcloudDelegateSource(this, source(SoundCloudAudioSourceManager::class.java))
             }
