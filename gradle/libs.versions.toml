@@ -1,0 +1,6 @@
+[versions]
+kotlin = "1.9.22"
+coroutines = "1.7.3"
+logger = "2.17.2"
+lavaplayer = "4a16df2"
+udpqueue = "0.2.7"

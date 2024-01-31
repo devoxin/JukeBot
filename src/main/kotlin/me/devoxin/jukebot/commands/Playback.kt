@@ -95,8 +95,6 @@ class Playback : Cog {
 
     private fun play0(ctx: Context, query: String, useSelection: Boolean = false, playNext: Boolean = false) {
         val player = ctx.audioPlayer()
-
-        val manager = ctx.guild!!.audioManager
         val userQuery = query.removePrefix("<").removeSuffix(">")
         val identifier: String
 

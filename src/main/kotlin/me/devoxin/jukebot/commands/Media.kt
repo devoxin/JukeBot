@@ -70,8 +70,9 @@ class Media : Cog {
         val player = ctx.audioPlayer
             ?: return ctx.embed("No Audio Player", "There's no audio player for this server.")
 
-        val track = player.player.playingTrack
-            ?: return ctx.embed("Not Playing", "There's nothing playing.")
+        if (player.queue.isEmpty()) {
+            return ctx.embed("Save Tracks", "There's nothing to save as the queue is empty.")
+        }
 
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
             ?: return ctx.embed("Save Tracks", "That playlist doesn't exist.")

@@ -42,16 +42,20 @@ object Launcher {
 
     @JvmStatic
     fun main(args: Array<String>) {
+        val jarPath = javaClass.protectionDomain.codeSource.location.path
+        val jarName = jarPath.substring(jarPath.lastIndexOf("/") + 1)
+
         val options = Options().apply {
-            addOption("h", "help", false, "Displays command line arguments.")
+            addOption("a", "disable-nas", false, "Disables the native audio send system.")
             addOption("b", "banner", false, "Displays the banner and immediately exits.")
             addOption("c", "config", true, "Specify the path of the config.properties file.")
-            addOption("a", "disable-nas", false, "Disables the native audio send system.")
-            addOption("y", "disable-youtube", false, "Disables the YouTube source manager.")
             addOption("d", "disable-youtube-delegate", false, "Disables delegating Spotify tracks to YouTube.")
-            addOption("s", "sync-commands", false, "Sync commands with Discord on launch.")
-            addOption("n", "enable-nsfw", false, "Enables NSFW audio sources.")
+            addOption("h", "help", false, "Displays command line arguments.")
             addOption("m", "enable-message-content", false, "Enables the 'MESSAGE_CONTENT' intent.")
+            addOption("n", "enable-nsfw", false, "Enables NSFW audio sources.")
+            addOption("s", "sync-commands", false, "Sync commands with Discord on launch.")
+            addOption("u", "disable-http", false, "Disables the HTTP source manager.")
+            addOption("y", "disable-youtube", false, "Disables the YouTube source manager.")
         }
 
         val parser = DefaultParser()
@@ -60,7 +64,7 @@ object Launcher {
             parser.parse(options, args)
         }.getOrElse {
             if (it is ParseException) {
-                helpFormatter.printHelp("JukeBot", options)
+                helpFormatter.printHelp("java -jar $jarName", options)
                 exitProcess(1)
             }
 
@@ -68,7 +72,7 @@ object Launcher {
         }
 
         if (parsed.hasOption("help")) {
-            helpFormatter.printHelp("JukeBot", options)
+            helpFormatter.printHelp("java -jar $jarName", options)
             exitProcess(0)
         }
 
@@ -110,6 +114,7 @@ object Launcher {
         playerManager = ExtendedAudioPlayerManager(
             disableYoutube = parsed.hasOption("disable-youtube"),
             disableYoutubeDelegate = parsed.hasOption("disable-youtube-delegate"),
+            disableHttp = parsed.hasOption("disable-http"),
             enableNsfw = parsed.hasOption("enable-nsfw")
         )
 
@@ -148,15 +153,15 @@ object Launcher {
         val banner = readFile("banner.txt", "")
 
         System.out.printf(
-            "%s\nRevision %s | JDA %s | Lavaplayer %s | SQLite %s | %s-bit JVM | %s %s\n\n",
+            "%s\nRevision %s | %s-bit JVM | %s %s\nJDA %s | Lavaplayer %s | SQLite %s\n\n",
             banner,
             version,
-            JDAInfo.VERSION,
-            PlayerLibrary.VERSION,
-            SQLiteJDBCLoader.getVersion(),
             System.getProperty("sun.arch.data.model"),
             os,
-            arch
+            arch,
+            JDAInfo.VERSION,
+            PlayerLibrary.VERSION,
+            SQLiteJDBCLoader.getVersion()
         )
     }
 }

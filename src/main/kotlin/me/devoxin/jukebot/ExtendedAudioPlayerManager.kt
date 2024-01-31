@@ -53,6 +53,7 @@ import java.util.concurrent.ConcurrentHashMap
 class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAudioPlayerManager(),
                                  disableYoutube: Boolean,
                                  disableYoutubeDelegate: Boolean,
+                                 disableHttp: Boolean,
                                  val enableNsfw: Boolean) : AudioPlayerManager by dapm {
     val players = ConcurrentHashMap<Long, AudioHandler>()
     val delegateSource: DelegateSource
@@ -101,28 +102,29 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
             registerSourceManager(TwitchStreamAudioSourceManager())
             registerSourceManager(GetyarnAudioSourceManager())
 
-            val httpAudioSourceManager = HttpAudioSourceManager()
-            httpAudioSourceManager.configureBuilder { cfg: HttpClientBuilder ->
-                val proxyHost = config.opt("proxy_host", null)
-                val proxyPort = config.getInt("proxy_port", 3128)
-                val proxyAuthUser = config.opt("proxy_user", null)
-                val proxyAuthPassword = config["proxy_password", ""]
+            if (!disableHttp) {
+                val httpAudioSourceManager = HttpAudioSourceManager().apply {
+                    configureBuilder {
+                        val proxyHost = config.opt("proxy_host", null)
+                        val proxyPort = config.getInt("proxy_port", 3128)
 
-                if (!proxyHost.isNullOrEmpty()) {
-                    cfg.setProxy(HttpHost(proxyHost, proxyPort))
+                        val proxyAuthUser = config.opt("proxy_user", null)
+                        val proxyAuthPassword = config["proxy_password", ""]
 
-                    if (!proxyAuthUser.isNullOrEmpty()) {
-                        cfg.setDefaultCredentialsProvider(BasicCredentialsProvider().apply {
-                            setCredentials(
-                                AuthScope(proxyHost, proxyPort),
-                                UsernamePasswordCredentials(proxyAuthUser, proxyAuthPassword)
-                            )
-                        })
+                        if (!proxyHost.isNullOrEmpty()) {
+                            it.setProxy(HttpHost(proxyHost, proxyPort))
+
+                            if (!proxyAuthUser.isNullOrEmpty()) {
+                                val credentialsProvider = BasicCredentialsProvider()
+                                credentialsProvider.setCredentials(AuthScope(proxyHost, proxyPort), UsernamePasswordCredentials(proxyAuthUser, proxyAuthPassword))
+                                it.setDefaultCredentialsProvider(credentialsProvider)
+                            }
+                        }
                     }
                 }
-            }
 
-            registerSourceManager(httpAudioSourceManager)
+                registerSourceManager(httpAudioSourceManager)
+            }
 
             delegateSource = when {
                 !disableYoutube && !disableYoutubeDelegate -> YoutubeDelegateSource(this, source(YoutubeAudioSourceManager::class.java))
