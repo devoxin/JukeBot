@@ -96,6 +96,8 @@ object Launcher {
             .registerDefaultParsers()
             .build()
 
+        commandClient.commands.register("me.devoxin.jukebot.commands")
+
         shardManager = ExtendedShardManager.create(config.token) {
             setActivityProvider { Activity.listening("/help") }
             addEventListeners(commandClient, EventHandler())
@@ -135,6 +137,7 @@ object Launcher {
             commandClient.commands.remove("feedback")
         }
 
+
         if (parsed.hasOption("sync-commands")) {
             log.info("syncing commands...")
             val slashCommands = commandClient.commands.toDiscordCommands()
@@ -143,8 +146,6 @@ object Launcher {
                 { log.error("failed to sync commands with discord", it) }
             )
         }
-
-        commandClient.commands.register("me.devoxin.jukebot.commands")
     }
 
     private fun printBanner() {
