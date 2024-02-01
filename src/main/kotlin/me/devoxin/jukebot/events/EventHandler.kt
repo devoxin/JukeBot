@@ -14,7 +14,7 @@ class EventHandler : EventListener {
         when (event) {
             is GuildLeaveEvent -> onGuildLeave(event)
             is GuildVoiceUpdateEvent -> {
-                if (event.channelJoined == null && event.channelLeft != null) onGuildVoiceLeave(event, event.channelLeft!!)
+                if (event.channelJoined == null && event.channelLeft != null) onGuildVoiceLeave(event)
                 if (event.channelJoined != null && event.member.idLong == event.jda.selfUser.idLong) (event.channelJoined as? StageChannel)?.requestToSpeak()?.queue()
             }
         }
@@ -24,9 +24,9 @@ class EventHandler : EventListener {
         Launcher.playerManager.removePlayer(event.guild.idLong)
     }
 
-    private fun onGuildVoiceLeave(e: GuildVoiceUpdateEvent, channelLeft: AudioChannel) {
+    private fun onGuildVoiceLeave(e: GuildVoiceUpdateEvent) {
         when {
-            !e.member.user.isBot -> handleLeave(channelLeft)
+            !e.member.user.isBot -> handleLeave(e.channelLeft!!)
             e.member.idLong == e.jda.selfUser.idLong -> Launcher.playerManager.removePlayer(e.guild.idLong)
         }
     }

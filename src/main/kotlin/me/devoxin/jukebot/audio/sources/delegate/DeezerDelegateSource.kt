@@ -8,7 +8,7 @@ import me.devoxin.jukebot.audio.sources.deezer.DeezerAudioSourceManager
 
 class DeezerDelegateSource(private val apm: AudioPlayerManager,
                            private val sm: DeezerAudioSourceManager) : DelegateSource {
-    override val supportsIsrcSearch = true
+    override val name = sm.sourceName!!
 
     override fun findByIsrc(isrc: String): AudioTrack? {
         return sm.loadItem(apm, AudioReference("dzisrc:$isrc", null)) as? AudioTrack

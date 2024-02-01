@@ -8,11 +8,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 
 class SoundcloudDelegateSource(private val apm: AudioPlayerManager,
                                private val sm: SoundCloudAudioSourceManager) : DelegateSource {
-    override val supportsIsrcSearch = false
+    override val name = sm.sourceName!!
 
-    override fun findByIsrc(isrc: String): AudioTrack? {
-        throw UnsupportedOperationException()
-    }
+    override fun findByIsrc(isrc: String) = null
 
     override fun findBySearch(query: String, original: AudioTrack): AudioTrack? {
         val results = sm.loadItem(apm, AudioReference("scsearch:$query", null)) as? AudioPlaylist

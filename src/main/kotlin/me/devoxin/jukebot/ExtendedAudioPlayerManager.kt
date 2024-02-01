@@ -31,10 +31,7 @@ import me.devoxin.jukebot.audio.AudioHandler
 import me.devoxin.jukebot.audio.LoadResultHandler
 import me.devoxin.jukebot.audio.sources.caching.CachingSourceManager
 import me.devoxin.jukebot.audio.sources.deezer.DeezerAudioSourceManager
-import me.devoxin.jukebot.audio.sources.delegate.DeezerDelegateSource
-import me.devoxin.jukebot.audio.sources.delegate.DelegateSource
-import me.devoxin.jukebot.audio.sources.delegate.SoundcloudDelegateSource
-import me.devoxin.jukebot.audio.sources.delegate.YoutubeDelegateSource
+import me.devoxin.jukebot.audio.sources.delegate.*
 import me.devoxin.jukebot.audio.sources.mixcloud.MixcloudAudioSourceManager
 import me.devoxin.jukebot.audio.sources.pornhub.PornHubAudioSourceManager
 import me.devoxin.jukebot.audio.sources.spotify.SpotifyAudioSourceManager
@@ -57,7 +54,7 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
                                  disableHttp: Boolean,
                                  val enableNsfw: Boolean) : AudioPlayerManager by dapm {
     val players = ConcurrentHashMap<Long, AudioHandler>()
-    val delegateSource: DelegateSource
+    val delegateSource: DelegateHandler
 
     init {
         dapm.apply {
@@ -129,11 +126,19 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
                 registerSourceManager(httpAudioSourceManager)
             }
 
-            delegateSource = when {
-                !disableYoutube && !disableYoutubeDelegate -> YoutubeDelegateSource(this, youtubeAudioSourceManager)
-                !deezerKey.isNullOrEmpty() -> DeezerDelegateSource(this, source(DeezerAudioSourceManager::class.java))
-                else -> SoundcloudDelegateSource(this, source(SoundCloudAudioSourceManager::class.java))
+            val delegates = mutableSetOf<DelegateSource>().apply {
+                if (!disableYoutube && !disableYoutubeDelegate) {
+                    add(YoutubeDelegateSource(this@ExtendedAudioPlayerManager, youtubeAudioSourceManager))
+                }
+
+                if (!deezerKey.isNullOrEmpty()) {
+                    add(DeezerDelegateSource(this@ExtendedAudioPlayerManager, source(DeezerAudioSourceManager::class.java)))
+                }
+
+                add(SoundcloudDelegateSource(this@ExtendedAudioPlayerManager, source(SoundCloudAudioSourceManager::class.java)))
             }
+
+            delegateSource = DelegateHandler(delegates)
         }
     }
 

@@ -100,7 +100,7 @@ class AudioHandler(private val guildId: Long,
      *
      * @return true, if the calling function should announce that the track has been enqueued.
      */
-    fun enqueue(track: AudioTrack, userId: Long, playNext: Boolean): Boolean { // boolean: shouldAnnounce
+    fun enqueue(track: AudioTrack, userId: Long, playNext: Boolean): Boolean {
         if (!initialConnect) {
             val guild = guild
             val channel = guild?.getVoiceChannelById(initialVoiceChannelId)

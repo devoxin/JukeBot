@@ -10,7 +10,7 @@ import kotlin.math.exp
 
 class YoutubeDelegateSource(private val apm: AudioPlayerManager,
                             private val sm: YoutubeAudioSourceManager) : DelegateSource {
-    override val supportsIsrcSearch = true
+    override val name = sm.sourceName!!
 
     override fun findByIsrc(isrc: String): AudioTrack? {
         val results = sm.loadItem(apm, AudioReference("ytmsearch:\"$isrc\"", null)) as? AudioPlaylist
