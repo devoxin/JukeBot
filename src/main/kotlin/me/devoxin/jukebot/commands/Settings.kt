@@ -11,9 +11,7 @@ import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.annotations.Checks.DJ
 import me.devoxin.jukebot.annotations.Checks.PremiumServer
-import me.devoxin.jukebot.extensions.embed
-import me.devoxin.jukebot.extensions.embedColor
-import me.devoxin.jukebot.extensions.toColorOrNull
+import me.devoxin.jukebot.extensions.*
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.requests.GatewayIntent
 
@@ -107,45 +105,36 @@ class Settings : Cog {
     @SubCommand(aliases = ["nickname", "nick"], description = "Sets whether the nickname displays the current track.")
     fun musicnick(ctx: Context, enabled: Boolean) {
         Database.setMusicNickEnabled(ctx.guild!!.idLong, enabled)
-
-        val human = if (enabled) "enabled" else "disabled"
-        ctx.embed("Music Nick Updated", "Nickname changing for playing tracks `$human`")
+        ctx.embed("Music Nick Updated", "Nickname changing for playing tracks `${enabled.humanized()}`")
     }
 
     @SubCommand(description = "Set whether the bot finds songs to play when queue is empty.")
     @PremiumServer
     fun autoplay(ctx: Context, enabled: Boolean) {
         Database.setAutoPlayEnabled(ctx.guild!!.idLong, enabled)
-
-        val human = if (enabled) "enabled" else "disabled"
-        ctx.embed("AutoPlay Updated", "AutoPlay is now `$human`")
+        ctx.embed("AutoPlay Updated", "AutoPlay is now `${enabled.humanized()}`")
     }
 
     @SubCommand(description = "Set whether the bot disconnects when alone in a voice channel.")
     @PremiumServer
     fun autodc(ctx: Context, enabled: Boolean) {
         Database.setAutoDcDisabled(ctx.guild!!.idLong, enabled)
-
-        val human = if (enabled) "disabled" else "enabled"
-        ctx.embed("Auto-DC Updated", "Auto-DC is now `$human`")
+        ctx.embed("Auto-DC Updated", "Auto-DC is now `${enabled.humanized()}`")
     }
 
     @SubCommand(description = "Displays the current server settings.")
     fun view(ctx: Context) {
-        val customDjRole: Long? = Database.getDjRole(ctx.guild!!.idLong)
-        val djRoleFormatted = customDjRole?.let { "<@&$it>" } ?: "Default (DJ)"
-        val skipThreshold = "${Database.getSkipThreshold(ctx.guild!!.idLong) * 100}%"
-        val hex = '#' + Integer.toHexString(ctx.embedColor and 0xffffff)
-        val musicNick = if (Database.getIsMusicNickEnabled(ctx.guild!!.idLong)) "Enabled" else "Disabled"
-        val autoPlay = if (Database.getIsPremiumServer(ctx.guild!!.idLong) && Database.getIsAutoPlayEnabled(ctx.guild!!.idLong)) "Enabled" else "Disabled"
-        val autoDc = if (!Database.getIsPremiumServer(ctx.guild!!.idLong) || !Database.getIsAutoDcDisabled(ctx.guild!!.idLong)) "Enabled" else "Disabled"
+        val customDjRole = Database.getDjRole(ctx.guild!!.idLong)
+        val musicNick = Database.getIsMusicNickEnabled(ctx.guild!!.idLong).humanized().capitalise()
+        val autoPlay = (Database.getIsPremiumServer(ctx.guild!!.idLong) && Database.getIsAutoPlayEnabled(ctx.guild!!.idLong)).humanized().capitalise()
+        val autoDc = (!Database.getIsPremiumServer(ctx.guild!!.idLong) || !Database.getIsAutoDcDisabled(ctx.guild!!.idLong)).humanized().capitalise()
 
         ctx.embed {
             setTitle("Server Settings for ${ctx.guild!!.name}")
             addField("Server Prefix", Database.getPrefix(ctx.guild!!.idLong), true)
-            addField("DJ Role", djRoleFormatted, true)
-            addField("Skip Vote %", skipThreshold, true)
-            addField("Embed Color", hex, true)
+            addField("DJ Role", customDjRole?.let { "<@&$it>" } ?: "Default (DJ)", true)
+            addField("Skip Vote %", "${(Database.getSkipThreshold(ctx.guild!!.idLong) * 100).toInt()}%", true)
+            addField("Embed Color", "#${Integer.toHexString(ctx.embedColor and 0xffffff)}", true)
             addField("Music Nickname", musicNick, true)
             addField("AutoPlay", autoPlay, true)
             addField("Auto-DC", autoDc, true)
