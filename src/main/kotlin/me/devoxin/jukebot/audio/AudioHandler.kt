@@ -91,12 +91,30 @@ class AudioHandler(private val guildId: Long,
         mutableFrame.setBuffer(buffer)
     }
 
-    fun enqueue(track: AudioTrack, userID: Long, playNext: Boolean): Boolean { // boolean: shouldAnnounce
+    /**
+     * Enqueues a track to be played.
+     * @param track
+     *        The track to add to the queue, or to begin playing.
+     * @param userId
+     *        The ID of the user who requested the track.
+     *
+     * @return true, if the calling function should announce that the track has been enqueued.
+     */
+    fun enqueue(track: AudioTrack, userId: Long, playNext: Boolean): Boolean { // boolean: shouldAnnounce
         if (!initialConnect) {
-            guild?.let { it.audioManager.openAudioConnection(it.getVoiceChannelById(initialVoiceChannelId)) }
+            val guild = guild
+            val channel = guild?.getVoiceChannelById(initialVoiceChannelId)
+
+            if (guild == null || channel == null) {
+                Launcher.playerManager.removePlayer(guildId)
+                return false
+            }
+
+            guild.audioManager.openAudioConnection(channel)
+            initialConnect = true
         }
 
-        track.userData = userID
+        track.userData = userId
 
         if (!player.startTrack(track, true)) {
             if (playNext) {
@@ -225,7 +243,7 @@ class AudioHandler(private val guildId: Long,
 
     private fun setNick(nick: String?) {
         guild?.selfMember
-            ?.takeIf { it.hasPermission(Permission.NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guildId) }
+            ?.takeIf { it.hasPermission(NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guildId) }
             ?.modifyNickname(nick)?.queue()
     }
 

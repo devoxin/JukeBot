@@ -39,10 +39,6 @@ class Help : Cog {
         }
 
         val page = buildString {
-            appendLine("There are multiple categories to choose from.")
-            appendLine("Each category contains different commands, categorised by their functions.")
-            appendLine("For example, the `Playback` category will hold commands for playing tracks.")
-            appendLine()
             appendLine("**__Categories:__**")
 
             for ((category, cmds) in categories) {
