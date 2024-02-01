@@ -6,7 +6,8 @@ class DelegateHandler(private val delegates: Set<DelegateSource>) {
     fun findByIsrc(isrc: String, vararg excluding: String): AudioTrack? {
         return delegates.asSequence()
             .filter { it.name !in excluding }
-            .map { it.runCatching { findByIsrc(isrc) }.getOrNull() }.firstOrNull()
+            .map { it.runCatching { findByIsrc(isrc) }.getOrNull() }
+            .firstOrNull()
     }
 
     fun findBySearch(query: String, original: AudioTrack, vararg excluding: String): AudioTrack? {

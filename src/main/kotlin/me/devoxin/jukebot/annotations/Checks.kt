@@ -12,4 +12,8 @@ object Checks {
     @Target(AnnotationTarget.FUNCTION)
     @Retention(AnnotationRetention.RUNTIME)
     annotation class Premium(val tier: Int)
+
+    @Target(AnnotationTarget.FUNCTION)
+    @Retention(AnnotationRetention.RUNTIME)
+    annotation class PremiumServer
 }

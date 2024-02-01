@@ -26,8 +26,8 @@ class Playlists : Cog {
 
         val padLength = cmd.subcommands.keys.maxOf { it.length }
 
-        val subcommands = cmd.subcommands.values.joinToString("\n") {
-            "`${it.name.padEnd(padLength)}:` ${it.properties.description}"
+        val subcommands = cmd.subcommands.values.sortedBy { it.name }.joinToString("\n") {
+            "`${it.name.padEnd(padLength)}` — ${it.properties.description}"
         }
 
         ctx.embed("Subcommand Required", subcommands)

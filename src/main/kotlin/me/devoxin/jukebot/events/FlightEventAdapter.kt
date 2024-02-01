@@ -5,10 +5,12 @@ import me.devoxin.flight.api.CommandFunction
 import me.devoxin.flight.api.context.Context
 import me.devoxin.flight.api.exceptions.BadArgument
 import me.devoxin.flight.api.hooks.DefaultCommandEventAdapter
+import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.annotations.Checks.DJ
 import me.devoxin.jukebot.annotations.Checks.Playing
 import me.devoxin.jukebot.annotations.Checks.Premium
+import me.devoxin.jukebot.annotations.Checks.PremiumServer
 import me.devoxin.jukebot.annotations.Prerequisites.RequireMutualVoiceChannel
 import me.devoxin.jukebot.annotations.Prerequisites.TriggerConnect
 import me.devoxin.jukebot.extensions.audioPlayer
@@ -76,7 +78,18 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
                 val requiredTier = it.tier
 
                 if (requiredTier > ctx.premiumTier) {
-                    ctx.embed("Premium Required", "You must be have [premium tier $requiredTier or higher](https://patreon.com/devoxin)")
+                    ctx.embed("Premium Required", "You must have [premium tier $requiredTier or higher](https://patreon.com/devoxin)")
+                    return false
+                }
+            }
+
+            method.findAnnotation<PremiumServer>()?.let {
+                if (!ctx.isFromGuild) {
+                    return@let
+                }
+
+                if (!Database.getIsPremiumServer(ctx.guild!!.idLong)) {
+                    ctx.embed("Premium Server Required", "This server is not a premium server.\n[Join Premium to enable premium servers!](https://patreon.com/devoxin)")
                     return false
                 }
             }

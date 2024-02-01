@@ -6,6 +6,7 @@ import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.audio.AudioHandler
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission.ADMINISTRATOR
 
 val Context.audioPlayer: AudioHandler?
     get() = Launcher.playerManager.players[guild!!.idLong]
@@ -58,7 +59,8 @@ fun Context.isDJ(allowLoneVC: Boolean): Boolean {
     val roleMatch = customDjRoleId?.let { id -> id == guild!!.publicRole.idLong || member.roles.any { it.idLong == id } }
         ?: member.roles.any { it.name.equals("dj", true) }
 
-    val isElevated = member.isOwner || author.idLong in Launcher.commandClient.ownerIds || roleMatch
+    val isElevated = member.isOwner || author.idLong in Launcher.commandClient.ownerIds || roleMatch ||
+        member.hasPermission(ADMINISTRATOR)
 
     if (!isElevated && allowLoneVC) {
         return member.voiceState!!.channel?.members?.count { !it.user.isBot } == 1
