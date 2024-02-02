@@ -5,17 +5,30 @@ import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.annotations.ComponentId
 import me.devoxin.jukebot.annotations.InteractionHandler
 import me.devoxin.jukebot.utils.Components
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.buttons.Button
 import kotlin.math.ceil
 
 @InteractionHandler
 class NowPlayingButtons : InteractionBase() {
-    @ComponentId("np_previous")
+    @ComponentId("np_prev")
     fun previousButton(event: ButtonInteractionEvent) {
+        if (!checkVoiceChannel(event)) {
+            return
+        }
 
+        if (!isDJ(event.member!!, allowLoneVC = true)) {
+            return
+        }
+
+        val player = Launcher.playerManager.players[event.guild!!.idLong]
+            ?: return
+
+        if (!player.canGoBack) {
+            return event.reply("There's no previous track to go back to.").setEphemeral(true).queue()
+        }
+
+        player.previous()
+        event.reply("Going back to the previous track!").queue()
     }
 
     @ComponentId("np_pause")
