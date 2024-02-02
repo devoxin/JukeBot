@@ -28,7 +28,10 @@ class NowPlayingButtons : InteractionBase() {
         }
 
         player.previous()
-        event.reply("Going back to the previous track!").queue()
+
+        event.reply("${event.user.asMention} has gone back to the previous track!")
+            .setSuppressedNotifications(true)
+            .queue()
     }
 
     @ComponentId("np_pause")
