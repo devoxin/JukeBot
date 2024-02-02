@@ -60,7 +60,9 @@ dependencies {
         exclude(module = "opus-java")
     }
 
+    // Framework
     implementation("com.github.devoxin:flight:572acd6")
+    implementation("org.reflections:reflections:0.10.2")
 
     // Audio
     implementation("com.github.devoxin.lavaplayer:lavaplayer:${libs.versions.lavaplayer.get()}")

@@ -56,7 +56,7 @@ class Controls : Cog {
         }
 
         player.next()
-        ctx.asSlashContext?.reply("Skipped.", true)
+        ctx.asSlashContext?.reply("Skipped.")
     }
 
     @Command(description = "Pause the audio player.", guildOnly = true)
@@ -68,7 +68,7 @@ class Controls : Cog {
             ?: return ctx.embed("No Audio Player", "There's no audio player for this server.")
 
         player.player.isPaused = true
-        ctx.asSlashContext?.reply("Paused.", true)
+        ctx.asSlashContext?.reply("Paused.")
     }
 
     @Command(description = "Resume the audio player.", guildOnly = true)
@@ -80,7 +80,7 @@ class Controls : Cog {
             ?: return ctx.embed("No Audio Player", "There's no audio player for this server.")
 
         player.player.isPaused = false
-        ctx.asSlashContext?.reply("Resumed.", true)
+        ctx.asSlashContext?.reply("Resumed.")
     }
 
     @Command(description = "Toggle queue shuffling.", guildOnly = true)
@@ -147,7 +147,7 @@ class Controls : Cog {
         player.queue.clear()
         player.next(false)
 
-        ctx.asSlashContext?.reply("The music has been stopped, and the queue has been cleared.", true)
+        ctx.asSlashContext?.reply("The music has been stopped, and the queue has been cleared.")
     }
 
     @Command(aliases = ["jump"], description = "Seek to a position in the current track.", guildOnly = true)
@@ -166,6 +166,6 @@ class Controls : Cog {
             ?: return ctx.embed("Track Seeking", "That's not a valid time. You can specify a timestamp such as `mm:ss`/`hh:mm:ss` or the number of seconds to seek.")
 
         track.position += seekPosition
-        ctx.asSlashContext?.reply("Track seeking has been requested.", true)
+        ctx.asSlashContext?.reply("Track seeking has been requested.")
     }
 }

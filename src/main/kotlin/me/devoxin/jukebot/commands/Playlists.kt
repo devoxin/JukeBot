@@ -11,6 +11,7 @@ import me.devoxin.jukebot.annotations.Prerequisites.TriggerConnect
 import me.devoxin.jukebot.extensions.audioPlayer
 import me.devoxin.jukebot.extensions.embed
 import me.devoxin.jukebot.extensions.premiumTier
+import me.devoxin.jukebot.models.CustomPlaylist
 import me.devoxin.jukebot.utils.Limits
 import me.devoxin.jukebot.utils.StringUtils
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -72,11 +73,17 @@ class Playlists : Cog {
         val allPlaylists = Database.getPlaylists(ctx.author.idLong)
         val strippedUrl = url.removePrefix("<").removeSuffix(">")
 
-        val playlist = if (playlistName !in allPlaylists && checkPlaylistCount(ctx, allPlaylists.size)) {
-            Database.createPlaylist(ctx.author.idLong, playlistName)
+        val playlist: CustomPlaylist
+
+        if (playlistName !in allPlaylists) {
+            if (!checkPlaylistCount(ctx, allPlaylists.size)) {
+                return
+            }
+
+            playlist = Database.createPlaylist(ctx.author.idLong, playlistName)
                 ?: return ctx.embed("Custom Playlists (Import)", "Failed to create a new playlist!")
         } else {
-            Database.getPlaylist(ctx.author.idLong, playlistName)!!
+            playlist = Database.getPlaylist(ctx.author.idLong, playlistName)!!
         }
 
         if (Limits.customPlaylistTracks(ctx) - playlist.tracks.size <= 0) {

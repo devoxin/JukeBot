@@ -26,6 +26,7 @@ import me.devoxin.jukebot.extensions.await
 import me.devoxin.jukebot.extensions.capitalise
 import me.devoxin.jukebot.extensions.toTimeString
 import me.devoxin.jukebot.extensions.truncate
+import me.devoxin.jukebot.utils.Components
 import me.devoxin.jukebot.utils.Helpers
 import me.devoxin.jukebot.utils.Scopes
 import me.devoxin.jukebot.utils.collections.FixedDeque
@@ -254,6 +255,7 @@ class AudioHandler(private val guildId: Long,
 
         guild?.audioManager?.sendingHandler = null
         setNick(null)
+        lastAnnouncement?.runCatching { delete().queue() }
     }
 
     /*
@@ -273,13 +275,7 @@ class AudioHandler(private val guildId: Long,
         val requester = if (track.userData as Long == Launcher.shardManager.botId) "AutoPlay" else "<@${track.userData}>"
 
         announce(null, "**${track.info.title}**\n*${track.info.author} — $duration*\n$requester", (track as? SpotifyAudioTrack)?.artworkUrl) {
-            setComponents(
-                ActionRow.of(
-                    Button.secondary("prev:$guild", Emoji.fromCustom("prev", 1200984412611948605, false)),
-                    Button.secondary("play:$guild", Emoji.fromCustom("pause", 1200984439958798458, false)),
-                    Button.secondary("next:$guild", Emoji.fromCustom("next", 1200984449068843099, false))
-                )
-            )
+            setComponents(Components.nowPlayingRowUnpaused)
         }
 
         val nick = TextUtils.truncate("${track.info.title} - ${track.info.author}", 32)

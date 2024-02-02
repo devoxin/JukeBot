@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import net.dv8tion.jda.api.hooks.EventListener
 
-class EventHandler : EventListener {
+class GuildEventHandler : EventListener {
     override fun onEvent(event: GenericEvent) {
         when (event) {
             is GuildLeaveEvent -> onGuildLeave(event)

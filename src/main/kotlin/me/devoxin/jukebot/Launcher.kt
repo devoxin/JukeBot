@@ -4,7 +4,8 @@ import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary
 import io.sentry.Sentry
 import me.devoxin.flight.api.CommandClient
-import me.devoxin.jukebot.events.EventHandler
+import me.devoxin.jukebot.events.ComponentInteractionHandler
+import me.devoxin.jukebot.events.GuildEventHandler
 import me.devoxin.jukebot.events.FlightEventAdapter
 import me.devoxin.jukebot.integrations.flight.CustomPrefixProvider
 import me.devoxin.jukebot.integrations.patreon.PatreonAPI
@@ -102,7 +103,7 @@ object Launcher {
 
         shardManager = ExtendedShardManager.create(config.token) {
             setActivityProvider { Activity.listening("/help") }
-            addEventListeners(commandClient, EventHandler())
+            addEventListeners(commandClient, GuildEventHandler(), ComponentInteractionHandler())
 
             if (!parsed.hasOption("disable-nas")) {
                 log.info("enabling native audio send system...")
