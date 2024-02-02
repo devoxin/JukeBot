@@ -2,6 +2,7 @@ package me.devoxin.jukebot.events
 
 import io.sentry.Sentry
 import me.devoxin.flight.api.CommandFunction
+import me.devoxin.flight.api.SubCommandFunction
 import me.devoxin.flight.api.context.Context
 import me.devoxin.flight.api.exceptions.BadArgument
 import me.devoxin.flight.api.hooks.DefaultCommandEventAdapter
@@ -26,12 +27,26 @@ import kotlin.reflect.full.hasAnnotation
 class FlightEventAdapter : DefaultCommandEventAdapter() {
     override fun onBadArgument(ctx: Context, command: CommandFunction, error: BadArgument) {
         val message = error.original?.localizedMessage ?: error.localizedMessage
+        val syntax = buildString {
+            append("/${command.name}")
+
+            if (ctx.invokedCommand is SubCommandFunction) {
+                append(" ")
+                append(ctx.invokedCommand.name)
+            }
+
+            for (arg in ctx.invokedCommand.arguments) {
+                append(" ")
+                append(arg.format(withType = false))
+            }
+        }
 
         ctx.embed("Incorrect Command Usage", """
             $message
             
-            `${error.argument.slashFriendlyName}`'s description:
-            ${error.argument.description}
+            `${error.argument.slashFriendlyName}`': ${error.argument.description}
+            
+            Syntax: `$syntax`
             
             If you're still having trouble using this command, join the [support server](${Constants.HOME_SERVER})
         """.trimIndent())

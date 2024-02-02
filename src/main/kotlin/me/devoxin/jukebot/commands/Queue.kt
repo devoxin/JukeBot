@@ -39,7 +39,7 @@ class Queue : Cog {
 
             for ((i, track) in queue.iterate(begin..end)) {
                 append("`${i + 1}.` ")
-                append("**[${track.info.title} - ${track.info.author}](${track.info.uri})** ")
+                append("**${track.info.title} - ${track.info.author}** ")
 
                 if (track.userData as Long == Launcher.shardManager.botId) {
                     appendLine("AutoPlay")

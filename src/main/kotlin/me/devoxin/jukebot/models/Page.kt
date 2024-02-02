@@ -23,7 +23,7 @@ class Page(val content: String, val duration: String, val page: Int, val maxPage
 
                 for (i in begin until end) {
                     val track = tracks[i]
-                    content.append("`${i + 1}.` **[${track.info.title}](${track.info.uri})**\n")
+                    content.append("`${i + 1}.` **${track.info.title}**\n")
                 }
             }
 

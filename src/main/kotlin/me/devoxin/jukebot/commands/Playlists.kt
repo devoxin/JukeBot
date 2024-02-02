@@ -92,7 +92,7 @@ class Playlists : Cog {
 
         ctx.asSlashContext?.deferAsync()
 
-        val loaded = Launcher.playerManager.loadAsync(strippedUrl)
+        val loaded = Launcher.playerManager.runCatching { loadAsync(strippedUrl) }.getOrNull()
             ?: return ctx.embed("Custom Playlists (Import)", "The URL provided was invalid (no playlist found).")
 
         if (loaded !is AudioPlaylist) {

@@ -13,6 +13,7 @@ import me.devoxin.jukebot.extensions.audioPlayer
 import me.devoxin.jukebot.extensions.createProgressBar
 import me.devoxin.jukebot.extensions.embed
 import me.devoxin.jukebot.extensions.toTimeString
+import me.devoxin.jukebot.utils.Constants
 import me.devoxin.jukebot.utils.Limits
 
 class Media : Cog {
@@ -31,7 +32,7 @@ class Media : Cog {
         val requester = if (track.userData as Long == Launcher.shardManager.botId) "AutoPlay" else "<@${track.userData}>"
 
         ctx.embed {
-            setDescription("**${track.info.title}**\n*${track.info.author} - $duration*\n$requester\n${track.position.toTimeString()} ${track.position.createProgressBar(track.duration, 10, track.info.uri)} $duration")
+            setDescription("**${track.info.title}**\n*${track.info.author} - $duration*\n$requester\n${track.position.toTimeString()} ${track.position.createProgressBar(track.duration, 10, Constants.WEBSITE)} $duration")
 
             if (track is SpotifyAudioTrack) {
                 setThumbnail(track.artworkUrl)
