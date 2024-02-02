@@ -5,7 +5,10 @@ import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.annotations.ComponentId
 import me.devoxin.jukebot.annotations.InteractionHandler
 import me.devoxin.jukebot.utils.Components
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.interactions.InteractionHook
+import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.math.ceil
 
 @InteractionHandler
@@ -31,7 +34,9 @@ class NowPlayingButtons : InteractionBase() {
 
         event.reply("${event.user.asMention} has gone back to the previous track!")
             .setSuppressedNotifications(true)
-            .queue()
+            .delay(10, SECONDS)
+            .flatMap(InteractionHook::deleteOriginal)
+            .queue(null) {}
     }
 
     @ComponentId("np_pause")
@@ -55,7 +60,11 @@ class NowPlayingButtons : InteractionBase() {
         player.player.isPaused = setting
 
         event.editComponents(if (setting) Components.nowPlayingRowPaused else Components.nowPlayingRowUnpaused).queue()
-        event.hook.sendMessage("${event.user.asMention} has ${if (setting) "paused" else "resumed"} the player.").setSuppressedNotifications(true).queue()
+        event.hook.sendMessage("${event.user.asMention} has ${if (setting) "paused" else "resumed"} the player.")
+            .setSuppressedNotifications(true)
+            .delay(10, SECONDS)
+            .flatMap(Message::delete)
+            .queue(null) {}
     }
 
     @ComponentId("np_next")
@@ -74,7 +83,11 @@ class NowPlayingButtons : InteractionBase() {
 
         if (isDj || current.userData as Long == event.user.idLong) {
             player.next()
-            event.reply("${event.user.asMention} has force-skipped the track.").setSuppressedNotifications(true).queue()
+            event.reply("${event.user.asMention} has force-skipped the track.")
+                .setSuppressedNotifications(true)
+                .delay(10, SECONDS)
+                .flatMap(InteractionHook::deleteOriginal)
+                .queue(null) {}
         } else {
             val totalVotes = player.voteSkip(event.user.idLong)
             val voteThreshold = Database.getSkipThreshold(event.guild!!.idLong)
