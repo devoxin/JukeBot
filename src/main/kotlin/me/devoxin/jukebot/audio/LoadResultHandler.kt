@@ -180,7 +180,8 @@ class LoadResultHandler(
     }
 
     private fun canQueueTrack(track: AudioTrack): Boolean {
-        val (canQueueStreams, maxTrackDuration) = Limits.duration(ctx)
-        return track.info.isStream && canQueueStreams || maxTrackDuration >= track.duration
+        return true
+//        val (canQueueStreams, maxTrackDuration) = Limits.duration(ctx)
+//        return track.info.isStream && canQueueStreams || maxTrackDuration >= track.duration
     }
 }

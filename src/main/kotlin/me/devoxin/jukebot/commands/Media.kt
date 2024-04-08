@@ -9,10 +9,7 @@ import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.annotations.Checks.Playing
 import me.devoxin.jukebot.audio.sources.spotify.SpotifyAudioTrack
-import me.devoxin.jukebot.extensions.audioPlayer
-import me.devoxin.jukebot.extensions.createProgressBar
-import me.devoxin.jukebot.extensions.embed
-import me.devoxin.jukebot.extensions.toTimeString
+import me.devoxin.jukebot.extensions.*
 import me.devoxin.jukebot.utils.Constants
 import me.devoxin.jukebot.utils.Limits
 
@@ -57,7 +54,13 @@ class Media : Cog {
         val remainingSlots = limit - playlist.tracks.size
 
         if (remainingSlots <= 0) {
-            return ctx.embed("Save Track", "Your playlist is at maximum capacity! (${playlist.tracks.size}/$limit)")
+            var message = "Your playlist is at maximum capacity!\nRemove some tracks and try again."
+
+            if (ctx.premiumUser?.shared != false) { // null or is true
+                message += "\nOr, [upgrade to get more slots!](https://patreon.com/devoxin)"
+            }
+
+            return ctx.embed("Save Track", message)
         }
 
         playlist.tracks.add(track.makeClone())
@@ -84,7 +87,13 @@ class Media : Cog {
         val remainingSlots = limit - playlist.tracks.size
 
         if (remainingSlots <= 0) {
-            return ctx.embed("Save Tracks", "Your playlist is at maximum capacity! (${playlist.tracks.size}/$limit)")
+            var message = "Your playlist is at maximum capacity!\nRemove some tracks and try again."
+
+            if (ctx.premiumUser?.shared != false) { // null or is true
+                message += "\nOr, [upgrade to get more slots!](https://patreon.com/devoxin)"
+            }
+
+            return ctx.embed("Save Tracks", message)
         }
 
         val tracksToAdd = player.queue

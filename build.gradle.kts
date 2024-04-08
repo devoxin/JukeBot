@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-import org.gradle.api.JavaVersion.VERSION_11
+import org.gradle.api.JavaVersion.VERSION_17
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
@@ -28,12 +28,12 @@ plugins {
 }
 
 java {
-    sourceCompatibility = VERSION_11
-    targetCompatibility = VERSION_11
+    sourceCompatibility = VERSION_17
+    targetCompatibility = VERSION_17
 }
 
 kotlin {
-    compilerOptions.jvmTarget = JvmTarget.JVM_11
+    compilerOptions.jvmTarget = JvmTarget.JVM_17
 }
 
 repositories {
@@ -61,7 +61,7 @@ dependencies {
     }
 
     // Framework
-    implementation("com.github.devoxin:flight:572acd6")
+    implementation("com.github.devoxin:flight:08a1b73")
     implementation("org.reflections:reflections:0.10.2")
 
     // Audio

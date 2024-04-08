@@ -5,6 +5,8 @@ import me.devoxin.flight.api.context.Context
 import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.audio.AudioHandler
+import me.devoxin.jukebot.integrations.patreon.PatreonTier
+import me.devoxin.jukebot.models.PremiumUser
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission.ADMINISTRATOR
 
@@ -14,11 +16,11 @@ val Context.audioPlayer: AudioHandler?
 val Context.embedColor: Int
     get() = guild?.idLong?.let(Database::getColour) ?: Launcher.config.embedColour.rgb
 
-val Context.premiumTier: Int
+val Context.premiumUser: PremiumUser?
     get() = when {
-        author.idLong in Launcher.commandClient.ownerIds -> Integer.MAX_VALUE
-        guild != null && Database.getIsPremiumServer(guild!!.idLong) -> 2
-        else -> Database.getTier(author.idLong)
+        author.idLong in Launcher.commandClient.ownerIds -> PremiumUser.fromTier(author.idLong, PatreonTier.DEVELOPER)
+        guild != null && Database.getIsPremiumServer(guild!!.idLong) -> PremiumUser.fromTier(author.idLong, PatreonTier.PERSONAL)
+        else -> Database.getPatron(author.idLong)
     }
 
 fun Context.audioPlayer() = member?.voiceState?.channel?.let {

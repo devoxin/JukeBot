@@ -14,10 +14,7 @@ import me.devoxin.jukebot.annotations.Checks.Premium
 import me.devoxin.jukebot.annotations.Checks.PremiumServer
 import me.devoxin.jukebot.annotations.Prerequisites.RequireMutualVoiceChannel
 import me.devoxin.jukebot.annotations.Prerequisites.TriggerConnect
-import me.devoxin.jukebot.extensions.audioPlayer
-import me.devoxin.jukebot.extensions.embed
-import me.devoxin.jukebot.extensions.isDJ
-import me.devoxin.jukebot.extensions.premiumTier
+import me.devoxin.jukebot.extensions.*
 import me.devoxin.jukebot.utils.Constants
 import net.dv8tion.jda.api.Permission
 import org.slf4j.LoggerFactory
@@ -26,7 +23,7 @@ import kotlin.reflect.full.hasAnnotation
 
 class FlightEventAdapter : DefaultCommandEventAdapter() {
     override fun onBadArgument(ctx: Context, command: CommandFunction, error: BadArgument) {
-        val message = error.original?.localizedMessage ?: error.localizedMessage
+        val message = error.cause?.localizedMessage ?: error.localizedMessage
         val syntax = buildString {
             append("/${command.name}")
 
@@ -90,10 +87,15 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
 
         if (!Launcher.isSelfHosted) {
             method.findAnnotation<Premium>()?.let {
-                val requiredTier = it.tier
+                val premiumUser = ctx.premiumUser
 
-                if (requiredTier > ctx.premiumTier) {
-                    ctx.embed("Premium Required", "You must have [premium tier $requiredTier or higher](https://patreon.com/devoxin)")
+                if (premiumUser == null) {
+                    ctx.embed("Premium Required", "[Join premium to access this command!](https://patreon.com/devoxin)")
+                    return false
+                }
+
+                if (!it.allowShared && premiumUser.shared) {
+                    ctx.embed("Premium Required", "[This command requires Personal perks!](https://patreon.com/devoxin)")
                     return false
                 }
             }

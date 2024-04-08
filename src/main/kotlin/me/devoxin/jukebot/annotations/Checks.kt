@@ -11,7 +11,7 @@ object Checks {
 
     @Target(AnnotationTarget.FUNCTION)
     @Retention(AnnotationRetention.RUNTIME)
-    annotation class Premium(val tier: Int)
+    annotation class Premium(val allowShared: Boolean = true)
 
     @Target(AnnotationTarget.FUNCTION)
     @Retention(AnnotationRetention.RUNTIME)

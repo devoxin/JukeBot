@@ -5,6 +5,7 @@ import io.sentry.Sentry
 import me.devoxin.jukebot.extensions.get
 import me.devoxin.jukebot.models.CustomPlaylist
 import me.devoxin.jukebot.models.PremiumGuild
+import me.devoxin.jukebot.models.PremiumUser
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.time.Instant
@@ -30,7 +31,7 @@ object Database {
             it.createStatement().apply {
                 // Dev/Bot stuff
                 addBatch("CREATE TABLE IF NOT EXISTS blocked (id INTEGER PRIMARY KEY)")
-                addBatch("CREATE TABLE IF NOT EXISTS donators (id INTEGER PRIMARY KEY, tier TEXT NOT NULL)")
+                addBatch("CREATE TABLE IF NOT EXISTS patrons (id INTEGER PRIMARY KEY, tierId INTEGER NOT NULL, pledgeAmount REAL NOT NULL, override INTEGER NOT NULL DEFAULT 0)")
                 addBatch("CREATE TABLE IF NOT EXISTS premiumservers (guildid INTEGER PRIMARY KEY, userid INTEGER, added INTEGER)")
                 // Guild Settings
                 addBatch("CREATE TABLE IF NOT EXISTS prefixes (id INTEGER PRIMARY KEY, prefix TEXT NOT NULL)")
@@ -104,17 +105,33 @@ object Database {
         }
     }
 
-    fun getTier(userId: Long) = getFromDatabase("donators", userId, "tier")?.toInt() ?: 0
+    fun getPatron(userId: Long): PremiumUser? = suppressedWithConnection({ null }) {
+        val results = buildStatement(it, "SELECT id, tierId, override FROM patrons WHERE id = ?", userId)
+            .executeQuery()
 
-    fun setTier(userId: Long, newTier: Int) = runSuppressed {
+        if (results.next()) PremiumUser(results["id"].toLong(), results["tierId"].toInt(), results["pledgeAmount"].toInt(), results["override"] == "1") else null
+    }
+
+    fun setPatron(userId: Long, tierId: Int, pledgeAmountCents: Int, override: Boolean) = runSuppressed {
         connection.use {
-            if (newTier == 0) {
-                buildStatement(it, "DELETE FROM donators WHERE id = ?", userId).executeUpdate()
+            if (tierId == 0) { // failsafe
+                buildStatement(it, "DELETE FROM patrons WHERE id = ?", userId).executeUpdate()
                 return@runSuppressed
             }
 
-            buildStatement(it, "INSERT INTO donators(id, tier) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET tier = ?", userId, newTier, newTier)
-                .executeUpdate()
+            val overrideInt = if (override) 1 else 0
+
+            buildStatement(
+                it,
+                "INSERT INTO patrons(id, tierId, pledgeAmount, override) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET tier = ?, pledgeAmount = ?, override = ?",
+                userId, tierId, pledgeAmountCents, overrideInt, tierId, pledgeAmountCents, overrideInt
+            ).executeUpdate()
+        }
+    }
+
+    fun deletePatron(userId: Long) = runSuppressed {
+        connection.use {
+            buildStatement(it, "DELETE FROM patrons WHERE id = ?", userId).executeUpdate()
         }
     }
 
@@ -142,12 +159,12 @@ object Database {
         }
     }
 
-    fun getDonorIds(): List<Long> = suppressedWithConnection({ emptyList() }) {
-        val results = buildStatement(it, "SELECT id, tier FROM donators").executeQuery()
-        val list = mutableListOf<Long>()
+    fun getPatrons(): List<PremiumUser> = suppressedWithConnection({ emptyList() }) {
+        val results = buildStatement(it, "SELECT id, tierId, pledgeAmount, override FROM patrons").executeQuery()
+        val list = mutableListOf<PremiumUser>()
 
         while (results.next()) {
-            list.add(results.getLong(1))
+            list.add(PremiumUser(results["id"].toLong(), results["tierId"].toInt(), results["pledgeAmount"].toInt(), results["override"] == "1"))
         }
 
         list

@@ -10,7 +10,7 @@ import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.annotations.Prerequisites.TriggerConnect
 import me.devoxin.jukebot.extensions.audioPlayer
 import me.devoxin.jukebot.extensions.embed
-import me.devoxin.jukebot.extensions.premiumTier
+import me.devoxin.jukebot.extensions.premiumUser
 import me.devoxin.jukebot.models.CustomPlaylist
 import me.devoxin.jukebot.utils.Limits
 import me.devoxin.jukebot.utils.StringUtils
@@ -87,7 +87,13 @@ class Playlists : Cog {
         }
 
         if (Limits.customPlaylistTracks(ctx) - playlist.tracks.size <= 0) {
-            return ctx.embed("Custom Playlists (Import)", "Your playlist is at maximum capacity!\nRemove some tracks and try again.")
+            var message = "Your playlist is at maximum capacity!\nRemove some tracks and try again."
+
+            if (ctx.premiumUser?.shared != false) { // null or is true
+                message += "\nOr, [upgrade to get more slots!](https://patreon.com/devoxin)"
+            }
+
+            return ctx.embed("Custom Playlists (Import)", message)
         }
 
         ctx.asSlashContext?.deferAsync()
@@ -103,7 +109,13 @@ class Playlists : Cog {
         val remainingTrackCapacity = Limits.customPlaylistTracks(ctx) - playlist.tracks.size
 
         if (remainingTrackCapacity <= 0) {
-            return ctx.embed("Custom Playlists (Import)", "Your playlist is at maximum capacity!\nRemove some tracks and try again.")
+            var message = "Your playlist is at maximum capacity!\nRemove some tracks and try again."
+
+            if (ctx.premiumUser?.shared != false) { // null or is true
+                message += "\nOr, [upgrade to get more slots!](https://patreon.com/devoxin)"
+            }
+
+            return ctx.embed("Custom Playlists (Import)", message)
         }
 
         playlist.tracks.addAll(loaded.tracks.take(remainingTrackCapacity))
@@ -165,8 +177,10 @@ class Playlists : Cog {
         val response = buildString {
             appendLine("You've reached the maximum amount of custom playlists.")
 
-            if (Limits.MAX_TIER > ctx.premiumTier) { // can't upgrade any further lol
-                append("[Upgrade your tier](https://patreon.com/devoxin) to get more slots!")
+            val premiumUser = ctx.premiumUser
+
+            if (premiumUser == null || premiumUser.shared) {
+                append("[Upgrade to get more slots!](https://patreon.com/devoxin)")
             }
         }
 
