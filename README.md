@@ -7,8 +7,8 @@ If your intention is to self-host, you're in luck! JukeBot is designed to consum
 Keep reading to see how to set it up.
 
 ## Self-Hosting
-First thing's first, you're going to need a server with [Java 13](https://adoptopenjdk.net/releases.html?variant=openjdk13&jvmVariant=hotspot) installed.
-You can use any version of Java, provided it is version 11 or newer. Ideally, you'll want to install the `JRE`, as it's significantly lighter than the `JDK`.
+First thing's first, you're going to need a server with [Java 17](https://adoptium.net/temurin/releases/?version=17) installed.
+You can use any version of Java, provided it is version 17 or newer. Ideally, you'll want to install the `JRE`, as it's significantly lighter than the `JDK`.
 The `JRE` is used for running applications, whereas the `JDK` is for building them.
 
 Once you've installed Java, head over to the [releases](/../../releases) tab and download the newest release.
