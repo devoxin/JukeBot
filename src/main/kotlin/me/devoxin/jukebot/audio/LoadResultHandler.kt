@@ -15,6 +15,7 @@ import me.devoxin.flight.api.context.Context
 import me.devoxin.jukebot.audio.sources.caching.CachingSourceManager
 import me.devoxin.jukebot.extensions.embed
 import me.devoxin.jukebot.extensions.toTimeString
+import me.devoxin.jukebot.extensions.truncate
 import me.devoxin.jukebot.utils.Helpers
 import me.devoxin.jukebot.utils.Limits
 import me.devoxin.jukebot.utils.Scopes
@@ -146,7 +147,7 @@ class LoadResultHandler(
         val selectMenu = StringSelectMenu.create(eventId)
 
         for ((index, track) in tracks.withIndex()) {
-            selectMenu.addOption(track.info.title, index.toString(), "${track.info.author} - ${track.duration.toTimeString()}")
+            selectMenu.addOption(track.info.title.truncate(95), index.toString(), "${track.info.author} - ${track.duration.toTimeString()}")
         }
 
         val prompt = ctx.respond {

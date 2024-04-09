@@ -41,7 +41,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
         ctx.embed("Incorrect Command Usage", """
             $message
             
-            `${error.argument.slashFriendlyName}`': ${error.argument.description}
+            `${error.argument.slashFriendlyName}`: ${error.argument.description}
             
             Syntax: `$syntax`
             

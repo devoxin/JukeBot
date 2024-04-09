@@ -14,6 +14,7 @@ import me.devoxin.jukebot.annotations.Prerequisites.TriggerConnect
 import me.devoxin.jukebot.extensions.audioPlayer
 import me.devoxin.jukebot.extensions.embed
 import me.devoxin.jukebot.extensions.toTimeString
+import me.devoxin.jukebot.extensions.truncate
 import me.devoxin.jukebot.utils.Scopes
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
@@ -137,7 +138,7 @@ class Playback : Cog {
                 ?: return event.replyChoices().queue()
 
             event.replyChoices(
-                searchResults.tracks.map { Choice("${it.info.author} - ${it.info.title} (${it.duration.toTimeString()})", it.info.uri) }
+                searchResults.tracks.map { Choice("${it.info.author} - ${it.info.title}".truncate(85) + " (${it.duration.toTimeString()})", it.info.uri) }
             ).queue()
         } catch (t: Throwable) {
             event.replyChoices().queue()
