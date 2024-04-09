@@ -80,13 +80,13 @@ class PatreonAPI(private val accessToken: String) {
 
     fun fetchPledges(campaignId: String = "750822") = fetchPledgesOfCampaign0(campaignId)
 
-    private fun fetchPledgesOfCampaign0(campaignId: String, offset: String? = null): CompletableFuture<List<Patron>> {
+    private fun fetchPledgesOfCampaign0(campaignId: String): CompletableFuture<List<Patron>> {
         val initialUrl = baseUrl.newBuilder().apply {
-            addPathSegments("api/oauth2/v2/campaigns/$campaignId/members")
+            addPathSegments("/campaigns/$campaignId/members")
             setQueryParameter("include", "currently_entitled_tiers,user")
             setQueryParameter("fields[member]", "full_name,last_charge_date,last_charge_status,lifetime_support_cents,currently_entitled_amount_cents,patron_status,pledge_relationship_start")
             setQueryParameter("fields[user]", "social_connections")
-            setQueryParameter("page[count]", "100")
+            setQueryParameter("page[count]", "1000")
         }.build()
 
         return fetchPageOfPledgeRecursive(initialUrl, mutableListOf())
@@ -128,53 +128,8 @@ class PatreonAPI(private val accessToken: String) {
         }
     }
 
-    private fun fetchPageOfPledge(campaignId: String, offset: String?): CompletableFuture<ResultPage> {
-        return get {
-            addPathSegments("api/campaigns/$campaignId/pledges")
-            setQueryParameter("include", "pledge,patron")
-            offset?.let { setQueryParameter("page[cursor]", it) }
-        }.thenApply {
-            val pledges = it.getJSONArray("data")
-            val nextPage = getNextPage(it)
-            val users = mutableListOf<PatreonUser>()
-
-            for ((index, obj) in it.getJSONArray("included").withIndex()) {
-                obj as JSONObject
-
-                if (obj.getString("type") == "user") {
-                    val pledge = pledges.getJSONObject(index)
-                    users.add(PatreonUser.fromJsonObject(obj, pledge))
-                }
-            }
-
-            // users
-            ResultPage(listOf(), nextPage)
-        }
-    }
-
     private fun getNextPage(json: JSONObject): String? {
-        if (json.isNull("links")) {
-            return null
-        }
-
-        return json.getJSONObject("links")
-            .takeIf { it.has("next") }
-            ?.getString("next")
-        //?.let { parseQueryString(it.getString("next"))["page[cursor]"] }
-    }
-
-    private fun parseQueryString(url: String): Map<String, String> {
-        return URI(url).query
-            .split('&')
-            .map { it.split("=") }
-            .associateBy({ decode(it[0]) }, { decode(it[1]) })
-    }
-
-    private fun decode(s: String) = URLDecoder.decode(s, Charsets.UTF_8)
-
-    private fun get(urlOpts: HttpUrl.Builder.() -> Unit): CompletableFuture<JSONObject> {
-        val url = baseUrl.newBuilder().apply(urlOpts).build()
-        return request { url(url) }
+        return json.optJSONObject("links")?.optString("next")
     }
 
     private fun request(requestOpts: Request.Builder.() -> Unit): CompletableFuture<JSONObject> {
@@ -186,6 +141,6 @@ class PatreonAPI(private val accessToken: String) {
 
     companion object {
         private val log = LoggerFactory.getLogger(PatreonAPI::class.java)
-        private val baseUrl = "https://www.patreon.com/".toHttpUrl()
+        private val baseUrl = "https://www.patreon.com/api/oauth2/v2".toHttpUrl()
     }
 }

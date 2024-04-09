@@ -104,20 +104,30 @@ class Settings : Cog {
 
     @SubCommand(aliases = ["nickname", "nick"], description = "Sets whether the nickname displays the current track.")
     fun musicnick(ctx: Context, enabled: Boolean) {
+        if (enabled && ctx.premiumUser == null) {
+            return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
+        }
+
         Database.setMusicNickEnabled(ctx.guild!!.idLong, enabled)
         ctx.embed("Music Nick Updated", "Nickname changing for playing tracks `${enabled.humanized()}`")
     }
 
     @SubCommand(description = "Set whether the bot finds songs to play when queue is empty.")
-    @PremiumServer
     fun autoplay(ctx: Context, enabled: Boolean) {
+        if (enabled && ctx.premiumUser == null) {
+            return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
+        }
+
         Database.setAutoPlayEnabled(ctx.guild!!.idLong, enabled)
         ctx.embed("AutoPlay Updated", "AutoPlay is now `${enabled.humanized()}`")
     }
 
     @SubCommand(description = "Set whether the bot disconnects when alone in a voice channel.")
-    @PremiumServer
     fun autodc(ctx: Context, enabled: Boolean) {
+        if (enabled && ctx.premiumUser == null) {
+            return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
+        }
+
         Database.setAutoDcDisabled(ctx.guild!!.idLong, enabled)
         ctx.embed("Auto-DC Updated", "Auto-DC is now `${enabled.humanized()}`")
     }
@@ -125,7 +135,7 @@ class Settings : Cog {
     @SubCommand(description = "Displays the current server settings.")
     fun view(ctx: Context) {
         val customDjRole = Database.getDjRole(ctx.guild!!.idLong)
-        val musicNick = Database.getIsMusicNickEnabled(ctx.guild!!.idLong).humanized().capitalise()
+        val musicNick = (Database.getIsPremiumServer(ctx.guild!!.idLong) && Database.getIsMusicNickEnabled(ctx.guild!!.idLong)).humanized().capitalise()
         val autoPlay = (Database.getIsPremiumServer(ctx.guild!!.idLong) && Database.getIsAutoPlayEnabled(ctx.guild!!.idLong)).humanized().capitalise()
         val autoDc = (!Database.getIsPremiumServer(ctx.guild!!.idLong) || !Database.getIsAutoDcDisabled(ctx.guild!!.idLong)).humanized().capitalise()
 

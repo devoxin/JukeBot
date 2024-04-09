@@ -244,7 +244,7 @@ class AudioHandler(private val guildId: Long,
 
     private fun setNick(nick: String?) {
         guild?.selfMember
-            ?.takeIf { it.hasPermission(NICKNAME_CHANGE) && Database.getIsMusicNickEnabled(guildId) }
+            ?.takeIf { it.hasPermission(NICKNAME_CHANGE) && Database.getIsPremiumServer(guildId) && Database.getIsMusicNickEnabled(guildId) }
             ?.modifyNickname(nick)?.queue()
     }
 
