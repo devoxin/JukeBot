@@ -10,11 +10,14 @@ import me.devoxin.flight.api.context.Context
 import me.devoxin.flight.api.entities.Cog
 import me.devoxin.jukebot.annotations.Checks.DJ
 import me.devoxin.jukebot.annotations.Checks.Playing
+import me.devoxin.jukebot.annotations.Checks.Premium
+import me.devoxin.jukebot.annotations.Checks.PremiumServer
 import me.devoxin.jukebot.annotations.Prerequisites.RequireMutualVoiceChannel
 import me.devoxin.jukebot.audio.filters.ReverbFilter
 import me.devoxin.jukebot.extensions.audioPlayer
 import me.devoxin.jukebot.extensions.createProgressBar
 import me.devoxin.jukebot.extensions.embed
+import me.devoxin.jukebot.extensions.premiumUser
 import me.devoxin.lavadspx.HighPassFilter
 import me.devoxin.lavadspx.LowPassFilter
 import me.devoxin.lavadspx.NormalizationFilter
@@ -48,8 +51,12 @@ class Filters : Cog {
 
         val booster = player.bassBooster
 
-        if (percent == null) {
+        if (percent == null || percent <= 0) {
             return ctx.embed("Audio Filters (Bass Boost)", "${booster.percentage.createProgressBar(200, 10)} `${booster.percentage}%`")
+        }
+
+        if (ctx.premiumUser == null) {
+            return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
         }
 
         booster.boost(percent)
@@ -66,9 +73,13 @@ class Filters : Cog {
         val player = ctx.audioPlayer
             ?: return ctx.embed("No Audio Player", "There's no audio player for this server.")
 
-        if (maxAmplitude == 0.0) {
+        if (maxAmplitude <= 0.0) {
             player.player.setFilterFactory(null)
             return ctx.embed("Audio Filters (Normalization)", "Audio filter disabled.")
+        }
+
+        if (ctx.premiumUser == null) {
+            return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
         }
 
         player.player.setFilterFactory { _, _, output ->
@@ -93,6 +104,10 @@ class Filters : Cog {
             return ctx.embed("Audio Filters (Low Pass)", "Audio filter disabled.")
         }
 
+        if (ctx.premiumUser == null) {
+            return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
+        }
+
         player.player.setFilterFactory { _, format, output ->
             listOf(LowPassFilter(output, format.sampleRate, format.channelCount, cutoffFrequency))
         }
@@ -113,6 +128,10 @@ class Filters : Cog {
         if (cutoffFrequency == null) {
             player.player.setFilterFactory(null)
             return ctx.embed("Audio Filters (High Pass)", "Audio filter disabled.")
+        }
+
+        if (ctx.premiumUser == null) {
+            return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
         }
 
         player.player.setFilterFactory { _, format, output ->
@@ -137,6 +156,10 @@ class Filters : Cog {
             return ctx.embed("Audio Filters (Reverb)", "Audio filter disabled.")
         }
 
+        if (ctx.premiumUser == null) {
+            return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
+        }
+
         player.player.setFilterFactory { _, format, output ->
             listOf(ReverbFilter(output, decay.toFloat(), format.channelCount))
         }
@@ -154,9 +177,13 @@ class Filters : Cog {
         val player = ctx.audioPlayer
             ?: return ctx.embed("No Audio Player", "There's no audio player for this server.")
 
-        if (multiplier == 0) {
+        if (multiplier <= 0) {
             player.player.setFilterFactory(null)
             return ctx.embed("Audio Filters (Smoothing)", "Audio filter disabled.")
+        }
+
+        if (ctx.premiumUser == null) {
+            return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
         }
 
         player.player.setFilterFactory { _, format, output ->

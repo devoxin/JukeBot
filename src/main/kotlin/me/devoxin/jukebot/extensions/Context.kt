@@ -18,6 +18,7 @@ val Context.embedColor: Int
 
 val Context.premiumUser: PremiumUser?
     get() = when {
+        Launcher.isSelfHosted -> PremiumUser.fromTier(author.idLong, PatreonTier.DEVELOPER, shared = false)
         author.idLong in Launcher.commandClient.ownerIds -> PremiumUser.fromTier(author.idLong, PatreonTier.DEVELOPER)
         guild != null && Database.getIsPremiumServer(guild!!.idLong) -> PremiumUser.fromTier(author.idLong, PatreonTier.PERSONAL)
         else -> Database.getPatron(author.idLong)

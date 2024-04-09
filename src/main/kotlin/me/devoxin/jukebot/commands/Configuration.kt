@@ -12,6 +12,7 @@ import me.devoxin.jukebot.annotations.Checks.Playing
 import me.devoxin.jukebot.annotations.Prerequisites.RequireMutualVoiceChannel
 import me.devoxin.jukebot.extensions.audioPlayer
 import me.devoxin.jukebot.extensions.embed
+import me.devoxin.jukebot.extensions.premiumUser
 import me.devoxin.jukebot.utils.Helpers
 
 class Configuration : Cog {
@@ -51,6 +52,10 @@ class Configuration : Cog {
         if (volume == null) {
             val currentVolume = player.player.volume
             return ctx.embed("Player Volume", "${Helpers.createBar(currentVolume, 250, 10)} `$currentVolume%`")
+        }
+
+        if (volume != 100 && ctx.premiumUser == null) {
+            return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
         }
 
         player.player.volume = volume
