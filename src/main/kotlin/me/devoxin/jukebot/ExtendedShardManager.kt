@@ -25,7 +25,8 @@ class ExtendedShardManager(private val shardManager: ShardManager, val botId: Lo
             GUILD_MODERATION,
             GUILD_PRESENCES,
             GUILD_WEBHOOKS,
-            GATEWAY_SCHEDULED_EVENTS
+            GATEWAY_SCHEDULED_EVENTS,
+            MESSAGE_CONTENT,
         )
 
         private val defaultEnabledIntents = EnumSet.complementOf(disabledIntents)
