@@ -1,6 +1,8 @@
 @file:Suppress("DEPRECATION")
 
 import org.gradle.api.JavaVersion.VERSION_17
+import org.gradle.api.file.DuplicatesStrategy.INCLUDE
+import org.gradle.api.file.DuplicatesStrategy.INHERIT
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
@@ -114,7 +116,7 @@ tasks.register("writeVersion") {
 
 tasks.shadowJar {
     archiveFileName = "JukeBot.jar"
-//    from("src/main/Resources")
+    from("src/main/Resources")
 
     manifest {
         attributes["Main-Class"] = "me.devoxin.jukebot.Launcher"
