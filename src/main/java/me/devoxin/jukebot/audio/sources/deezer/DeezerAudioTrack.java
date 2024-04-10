@@ -124,11 +124,6 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
             throw new IllegalStateException("Failed to get track token");
         }
 
-        if (requestPremiumFormats && trackTokenJson.get("results").get("FILESIZE_FLAC").asLong(0) == 0) {
-            // no flac format available.
-            return this.getSource(false, false);
-        }
-
         final String trackToken = trackTokenJson.get("results").get("TRACK_TOKEN").text();
 
         final HttpPost getMediaURL = new HttpPost(DeezerAudioSourceManager.MEDIA_BASE + "/get_url");
