@@ -222,6 +222,10 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
             String format = media.get("format").text();
             TrackFormat trackFormat = TrackFormat.from(format);
 
+            if (media.isNull() || trackFormat == null) {
+                throw new RuntimeException("Could not find media URL");
+            }
+
             JsonBrowser sources = media.get("sources");
             String url = sources.index(0).get("url").text();
             long contentLength = trackJson.get("results").get("FILESIZE_" + trackFormat.name()).asLong(Units.CONTENT_LENGTH_UNKNOWN);
