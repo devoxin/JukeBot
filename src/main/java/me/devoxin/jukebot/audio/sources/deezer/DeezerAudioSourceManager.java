@@ -41,7 +41,7 @@ public class DeezerAudioSourceManager implements AudioSourceManager, HttpConfigu
     public static final String MEDIA_BASE = "https://media.deezer.com/v1";
 
     private final String masterDecryptionKey;
-    private final String arl;
+    private String arl;
 
     private final HttpInterfaceManager httpInterfaceManager;
 
@@ -53,6 +53,10 @@ public class DeezerAudioSourceManager implements AudioSourceManager, HttpConfigu
         this.masterDecryptionKey = masterDecryptionKey;
         this.arl = arl != null && arl.isEmpty() ? null : arl;
         this.httpInterfaceManager = HttpClientTools.createCookielessThreadLocalManager();
+    }
+
+    public void setArl(String newArl) {
+        this.arl = arl;
     }
 
     @Override
