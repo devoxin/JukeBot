@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
 import com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.InternalAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor
+import io.sentry.Sentry
 import me.devoxin.jukebot.Launcher.playerManager
 
 class SpotifyAudioTrack(private val sourceManager: SpotifyAudioSourceManager,
@@ -17,6 +18,7 @@ class SpotifyAudioTrack(private val sourceManager: SpotifyAudioSourceManager,
         try {
             processDelegate(track as InternalAudioTrack, executor)
         } catch (t: Throwable) {
+            Sentry.capture(t)
             processDelegate(findDelegateTrack(track.sourceManager.sourceName) as InternalAudioTrack, executor)
         }
     }
