@@ -99,8 +99,8 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
         return sessionIdJson.get("results").get("SESSION").text();
     }
 
-    private SourceWithFormat getSource(boolean tryFlac, boolean isRetry) throws URISyntaxException {
-        JsonBrowser userTokenJson = this.generateLicenceToken(tryFlac);
+    private SourceWithFormat getSource(boolean requestPremiumFormats, boolean isRetry) throws URISyntaxException {
+        JsonBrowser userTokenJson = this.generateLicenceToken(requestPremiumFormats);
 
         if (userTokenJson.get("data").index(0).get("errors").index(0).get("code").asLong(0) != 0) {
             throw new RuntimeException("Failed to get user token");
@@ -112,19 +112,19 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
         final HttpPost getTrackToken = new HttpPost(DeezerAudioSourceManager.PRIVATE_API_BASE + "?method=song.getData&input=3&api_version=1.0&api_token=" + apiToken);
         getTrackToken.setEntity(new StringEntity("{\"sng_id\":\"" + this.trackInfo.identifier + "\"}", ContentType.APPLICATION_JSON));
 
-        final JsonBrowser trackTokenJson = this.getJsonResponse(getTrackToken, tryFlac);
+        final JsonBrowser trackTokenJson = this.getJsonResponse(getTrackToken, requestPremiumFormats);
 
         if (trackTokenJson.get("error").get("VALID_TOKEN_REQUIRED").text() != null && !isRetry) {
             // "error":{"VALID_TOKEN_REQUIRED":"Invalid CSRF token"}
             // seems to indicate an invalid API token?
-            return this.getSource(tryFlac, true);
+            return this.getSource(requestPremiumFormats, true);
         }
 
         if (trackTokenJson.get("data").index(0).get("errors").index(0).get("code").asLong(0) != 0) {
             throw new IllegalStateException("Failed to get track token");
         }
 
-        if (tryFlac && trackTokenJson.get("results").get("FILESIZE_FLAC").asLong(0) == 0) {
+        if (requestPremiumFormats && trackTokenJson.get("results").get("FILESIZE_FLAC").asLong(0) == 0) {
             // no flac format available.
             return this.getSource(false, false);
         }
@@ -135,7 +135,7 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
         final JsonStringWriter formatWriter = JsonWriter.string().array();
 
         for (TrackFormat format : TrackFormat.values()) {
-            if (tryFlac || format != TrackFormat.FLAC) {
+            if (requestPremiumFormats || !format.isPremiumFormat) {
                 // @formatter:off
                 formatWriter
                     .object()
@@ -149,7 +149,7 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
         final String requestedFormats = formatWriter.end().done();
         getMediaURL.setEntity(new StringEntity("{\"license_token\":\"" + userLicenseToken + "\",\"media\":[{\"type\":\"FULL\",\"formats\":" + requestedFormats + "}],\"track_tokens\": [\"" + trackToken + "\"]}", ContentType.APPLICATION_JSON));
 
-        final JsonBrowser mediaUrlJson = this.getJsonResponse(getMediaURL, tryFlac);
+        final JsonBrowser mediaUrlJson = this.getJsonResponse(getMediaURL, requestPremiumFormats);
         JsonBrowser error = mediaUrlJson.get("data").index(0).get("errors").index(0);
         long errorCode = error.get("code").asLong(0);
 
@@ -160,10 +160,10 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
             // maybe because deezer didn't respond with a 'premium' licence token.
             // seems to happen sporadically, and not sure why, when other requests succeed.
             if (errorCode == 2000 && !isRetry) {
-                return this.getSource(tryFlac, true);
+                return this.getSource(requestPremiumFormats, true);
             }
 
-            if (tryFlac) {
+            if (requestPremiumFormats) {
                 cookieStore.clear();
                 return this.getSource(false, false);
             }
@@ -242,16 +242,19 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
     // and vice-versa! AAC_64 can probably be bumped up here as it's in theory better quality than its
     // MP3 counterpart.
     private enum TrackFormat {
-        FLAC(FlacAudioTrack::new),
-        MP3_320(Mp3AudioTrack::new),
-        MP3_256(Mp3AudioTrack::new),
-        MP3_128(Mp3AudioTrack::new),
-        MP3_64(Mp3AudioTrack::new),
-        AAC_64(MpegAudioTrack::new);
+        FLAC(true, FlacAudioTrack::new),
+        MP3_320(true, Mp3AudioTrack::new),
+        MP3_256(true, Mp3AudioTrack::new),
+        MP3_128(false, Mp3AudioTrack::new),
+        MP3_64(false, Mp3AudioTrack::new),
+        AAC_64(true, MpegAudioTrack::new); // not sure if this one is so better to be safe.
 
+        private final boolean isPremiumFormat;
         private final BiFunction<AudioTrackInfo, PersistentHttpStream, InternalAudioTrack> trackFactory;
 
-        TrackFormat(BiFunction<AudioTrackInfo, PersistentHttpStream, InternalAudioTrack> trackFactory) {
+        TrackFormat(boolean isPremiumFormat,
+                    BiFunction<AudioTrackInfo, PersistentHttpStream, InternalAudioTrack> trackFactory) {
+            this.isPremiumFormat = isPremiumFormat;
             this.trackFactory = trackFactory;
         }
 
