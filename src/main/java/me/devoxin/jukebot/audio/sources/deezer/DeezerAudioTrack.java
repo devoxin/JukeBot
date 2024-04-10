@@ -101,7 +101,6 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
 
     private SourceWithFormat getSource(boolean tryFlac, boolean isRetry) throws URISyntaxException {
         JsonBrowser userTokenJson = this.generateLicenceToken(tryFlac);
-        System.out.println("userTokenJson.format() = " + userTokenJson.format());
 
         if (userTokenJson.get("data").index(0).get("errors").index(0).get("code").asLong(0) != 0) {
             throw new RuntimeException("Failed to get user token");
@@ -136,11 +135,15 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
         final JsonStringWriter formatWriter = JsonWriter.string().array();
 
         for (TrackFormat format : TrackFormat.values()) {
-            formatWriter
-                .object()
-                    .value("cipher", "BF_CBC_STRIPE")
-                    .value("format", format.name())
-                .end();
+            if (tryFlac || format != TrackFormat.FLAC) {
+                // @formatter:off
+                formatWriter
+                    .object()
+                        .value("cipher", "BF_CBC_STRIPE")
+                        .value("format", format.name())
+                    .end();
+                // @formatter:on
+            }
         }
 
         final String requestedFormats = formatWriter.end().done();
