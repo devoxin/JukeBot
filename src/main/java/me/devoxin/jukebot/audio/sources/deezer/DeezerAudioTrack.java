@@ -18,6 +18,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.InternalAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor;
+import me.devoxin.jukebot.audio.HighQualityAudioTrack;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.RequestConfig;
@@ -37,11 +38,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
-public class DeezerAudioTrack extends DelegatedAudioTrack {
+public class DeezerAudioTrack extends DelegatedAudioTrack implements HighQualityAudioTrack {
     private final String isrc;
     private final String artworkURL;
     private final DeezerAudioSourceManager sourceManager;
+    private boolean allowHighQuality = false;
     private final CookieStore cookieStore;
+
+    private SourceWithFormat preparedSource = null;
 
     public DeezerAudioTrack(final AudioTrackInfo trackInfo, final String isrc, final String artworkURL,
                             final DeezerAudioSourceManager sourceManager) {
@@ -58,6 +62,11 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
 
     public String getArtworkURL() {
         return this.artworkURL;
+    }
+
+    @Override
+    public void setAllowHighQuality(boolean allowHighQuality) {
+        this.allowHighQuality = allowHighQuality;
     }
 
     private JsonBrowser getJsonResponse(HttpUriRequest request, boolean includeArl) {
@@ -182,9 +191,19 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
         return key;
     }
 
+    public SourceWithFormat prepareSource() throws URISyntaxException {
+        synchronized (this) {
+            if (preparedSource == null) {
+                return (preparedSource = this.getSource(allowHighQuality && this.sourceManager.getArl() != null, false));
+            }
+        }
+
+        return preparedSource;
+    }
+
     @Override
     public void process(LocalAudioTrackExecutor executor) throws Exception {
-        SourceWithFormat source = this.getSource(this.sourceManager.getArl() != null, false);
+        SourceWithFormat source = preparedSource != null ? preparedSource : this.prepareSource();
 
         try (final HttpInterface httpInterface = this.sourceManager.getHttpInterface()) {
             try (final DeezerPersistentHttpStream stream = new DeezerPersistentHttpStream(httpInterface, source.url, source.contentLength, this.getTrackDecryptionKey())) {
@@ -203,10 +222,10 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
         return this.sourceManager;
     }
 
-    private static class SourceWithFormat {
-        private final URI url;
-        private final TrackFormat format;
-        private final long contentLength;
+    public static class SourceWithFormat {
+        public final URI url;
+        public final TrackFormat format;
+        public final long contentLength;
 
         private SourceWithFormat(String url, TrackFormat format, long contentLength) throws URISyntaxException {
             this.url = new URI(url);
@@ -240,7 +259,7 @@ public class DeezerAudioTrack extends DelegatedAudioTrack {
     // If any formats are added in future that supersede FLAC, they must be added above FLAC,
     // and vice-versa! AAC_64 can probably be bumped up here as it's in theory better quality than its
     // MP3 counterpart.
-    private enum TrackFormat {
+    public enum TrackFormat {
         FLAC(true, FlacAudioTrack::new),
         MP3_320(true, Mp3AudioTrack::new),
         MP3_256(true, Mp3AudioTrack::new),
