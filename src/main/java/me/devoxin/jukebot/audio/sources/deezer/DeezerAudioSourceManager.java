@@ -41,16 +41,22 @@ public class DeezerAudioSourceManager implements AudioSourceManager, HttpConfigu
     public static final String MEDIA_BASE = "https://media.deezer.com/v1";
 
     private final String masterDecryptionKey;
+    private final String arl;
 
     private final HttpInterfaceManager httpInterfaceManager;
 
     public DeezerAudioSourceManager(final String masterDecryptionKey) {
+        this(masterDecryptionKey, null);
+    }
+
+    public DeezerAudioSourceManager(final String masterDecryptionKey, final String arl) {
         if (masterDecryptionKey == null || masterDecryptionKey.isEmpty()) {
             throw new IllegalArgumentException("Deezer master key must be set");
         }
 
         this.masterDecryptionKey = masterDecryptionKey;
-        this.httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager();
+        this.arl = arl;
+        this.httpInterfaceManager = HttpClientTools.createCookielessThreadLocalManager();
     }
 
     @Override
@@ -259,6 +265,14 @@ public class DeezerAudioSourceManager implements AudioSourceManager, HttpConfigu
 
     public String getMasterDecryptionKey() {
         return this.masterDecryptionKey;
+    }
+
+    public String getArl() {
+        if (this.arl == null || this.arl.isEmpty()) {
+            return null;
+        }
+
+        return this.arl;
     }
 
     public HttpInterface getHttpInterface() {
