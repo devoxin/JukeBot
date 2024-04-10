@@ -113,7 +113,7 @@ class AudioHandler(private val guildId: Long,
 
         track.userData = userId
 
-        if (!player.startTrack(track, true)) {
+        if (!startTrack(track, true)) {
             if (playNext) {
                 queue.add(0, track)
             } else {
@@ -142,7 +142,7 @@ class AudioHandler(private val guildId: Long,
             queue.add(0, track.makeClone())
         }
 
-        player.playTrack(history.removeLast().makeClone())
+        startTrack(history.removeLast().makeClone())
     }
 
     fun next(shouldAutoPlay: Boolean = true, lastTrack: AudioTrack? = player.playingTrack) {
@@ -167,14 +167,16 @@ class AudioHandler(private val guildId: Long,
         }
 
         if (nextTrack != null) {
-            return player.playTrack(nextTrack)
+            startTrack(nextTrack)
+            return
         }
 
         if (shouldAutoPlay && autoPlay.enabled && autoPlay.isUsable) {
             val recommendedTrack = autoPlay.getRelatedTrack()
 
             if (recommendedTrack != null) {
-                return player.playTrack(recommendedTrack)
+                startTrack(recommendedTrack)
+                return
             }
             
             announce("AutoPlay", "AutoPlay was unable to find a track to play.", set = false)
@@ -252,6 +254,14 @@ class AudioHandler(private val guildId: Long,
         guild?.audioManager?.sendingHandler = null
         setNick(null)
         lastAnnouncement?.runCatching { delete().queue() }
+    }
+
+    private fun startTrack(track: AudioTrack, noInterrupt: Boolean = false): Boolean {
+        if (track is HighQualityAudioTrack) {
+            track.setAllowHighQuality(Database.getIsPremiumServer(guildId))
+        }
+
+        return player.startTrack(track, noInterrupt)
     }
 
     /*

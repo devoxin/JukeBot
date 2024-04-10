@@ -3,6 +3,7 @@ package me.devoxin.jukebot
 import com.grack.nanojson.JsonParser
 import com.grack.nanojson.JsonWriter
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration.ResamplingQuality.HIGHEST
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler
@@ -39,7 +40,6 @@ import org.apache.http.HttpHost
 import org.apache.http.auth.AuthScope
 import org.apache.http.auth.UsernamePasswordCredentials
 import org.apache.http.impl.client.BasicCredentialsProvider
-import org.apache.http.impl.client.HttpClientBuilder
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -60,9 +60,12 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
         dapm.apply {
             configuration.setFrameBufferFactory(::NonAllocatingAudioFrameBuffer)
             configuration.setFilterHotSwapEnabled(true)
+            // TODO: Need to implement a way of setting resampling quality on a per-player basis.
 
             if (Launcher.isSelfHosted || Launcher.shardManager.botId == 314145804807962634L) {
-                configuration.resamplingQuality = AudioConfiguration.ResamplingQuality.HIGH
+                configuration.resamplingQuality = AudioConfiguration.ResamplingQuality.HIGHEST
+            } else {
+                configuration.resamplingQuality = AudioConfiguration.ResamplingQuality.MEDIUM
             }
 
             registerSourceManager(CachingSourceManager())
@@ -70,7 +73,7 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
             val deezerKey = config.opt("deezer_key")
 
             if (!deezerKey.isNullOrEmpty()) {
-                registerSourceManager(DeezerAudioSourceManager(config["deezer_key"]))
+                registerSourceManager(DeezerAudioSourceManager(config["deezer_key"], config["deezer_arl", ""]))
             }
 
             registerSourceManager(MixcloudAudioSourceManager())

@@ -7,31 +7,58 @@ import com.sedmelluq.discord.lavaplayer.track.InternalAudioTrack
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor
 import io.sentry.Sentry
 import me.devoxin.jukebot.Launcher.playerManager
+import me.devoxin.jukebot.audio.HighQualityAudioTrack
+import me.devoxin.jukebot.audio.sources.deezer.DeezerAudioTrack
+import me.devoxin.jukebot.audio.sources.deezer.DeezerAudioTrack.TrackFormat
+import me.devoxin.jukebot.audio.sources.delegate.DeezerDelegateSource
 
 class SpotifyAudioTrack(private val sourceManager: SpotifyAudioSourceManager,
                         info: AudioTrackInfo,
                         val isrc: String?,
-                        val artworkUrl: String?) : DelegatedAudioTrack(info) {
+                        val artworkUrl: String?) : DelegatedAudioTrack(info), HighQualityAudioTrack {
+    private var allowHighQualityDelegate = false
+
     override fun process(executor: LocalAudioTrackExecutor) {
-        val track = findDelegateTrack()
+        var track = findDelegateTrack()
+            ?: throw IllegalStateException("No available source for track!")
+
+        if (allowHighQualityDelegate) {
+            if (track is DeezerAudioTrack) {
+                track.setAllowHighQuality(true)
+                val preparedSource = track.prepareSource()
+
+                if (preparedSource.format >= TrackFormat.MP3_256) {
+                    // skip if we get served a 256Kbps MP3 or lower.
+                    findDelegateTrack(track.sourceManager.sourceName)?.let { track = it }
+                }
+            }
+        }
 
         try {
             processDelegate(track as InternalAudioTrack, executor)
         } catch (t: Throwable) {
             Sentry.capture(t)
-            processDelegate(findDelegateTrack(track.sourceManager.sourceName) as InternalAudioTrack, executor)
+
+            val alt = findDelegateTrack(track.sourceManager.sourceName)
+                ?: throw IllegalStateException("No available source for track!")
+
+            processDelegate(alt as InternalAudioTrack, executor)
         }
     }
 
-    private fun findDelegateTrack(vararg excluding: String): AudioTrack {
+    private fun findDelegateTrack(vararg excluding: String): AudioTrack? {
         val delegate = playerManager.delegateSource
+        val prefer = if (allowHighQualityDelegate) DeezerDelegateSource::class.java else null
 
-        return isrc?.let { delegate.findByIsrc(it.replace("-", ""), *excluding) }
-            ?: delegate.findBySearch("${info.title} ${info.author}", this, *excluding)
-            ?: throw IllegalStateException("No available source for track!")
+        return isrc?.let { delegate.findByIsrc(it.replace("-", ""), prefer, *excluding) }
+            ?: delegate.findBySearch("${info.title} ${info.author}", this, null, *excluding)
     }
 
     override fun getSourceManager() = sourceManager
 
     override fun makeShallowClone() = SpotifyAudioTrack(sourceManager, info, isrc, artworkUrl)
+
+    override fun setAllowHighQuality(allowHighQuality: Boolean) {
+        allowHighQualityDelegate = allowHighQuality
+    }
 }
