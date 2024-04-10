@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import org.reflections.Reflections
-import org.reflections.Reflections.log
 import org.slf4j.LoggerFactory
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation

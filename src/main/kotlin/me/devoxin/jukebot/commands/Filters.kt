@@ -10,8 +10,6 @@ import me.devoxin.flight.api.context.Context
 import me.devoxin.flight.api.entities.Cog
 import me.devoxin.jukebot.annotations.Checks.DJ
 import me.devoxin.jukebot.annotations.Checks.Playing
-import me.devoxin.jukebot.annotations.Checks.Premium
-import me.devoxin.jukebot.annotations.Checks.PremiumServer
 import me.devoxin.jukebot.annotations.Prerequisites.RequireMutualVoiceChannel
 import me.devoxin.jukebot.audio.filters.ReverbFilter
 import me.devoxin.jukebot.extensions.audioPlayer

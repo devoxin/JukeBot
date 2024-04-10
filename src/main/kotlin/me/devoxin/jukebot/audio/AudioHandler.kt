@@ -31,16 +31,12 @@ import me.devoxin.jukebot.utils.Helpers
 import me.devoxin.jukebot.utils.Scopes
 import me.devoxin.jukebot.utils.collections.FixedDeque
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.Permission.*
 import net.dv8tion.jda.api.audio.AudioSendHandler
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
-import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import java.nio.ByteBuffer
 import java.util.*

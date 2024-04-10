@@ -5,8 +5,8 @@ import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary
 import io.sentry.Sentry
 import me.devoxin.flight.api.CommandClient
 import me.devoxin.jukebot.events.ComponentInteractionHandler
-import me.devoxin.jukebot.events.GuildEventHandler
 import me.devoxin.jukebot.events.FlightEventAdapter
+import me.devoxin.jukebot.events.GuildEventHandler
 import me.devoxin.jukebot.integrations.flight.CustomPrefixProvider
 import me.devoxin.jukebot.integrations.patreon.PatreonAPI
 import me.devoxin.jukebot.models.Config

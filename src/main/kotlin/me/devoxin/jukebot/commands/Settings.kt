@@ -10,7 +10,6 @@ import me.devoxin.flight.api.entities.Cog
 import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.annotations.Checks.DJ
-import me.devoxin.jukebot.annotations.Checks.PremiumServer
 import me.devoxin.jukebot.extensions.*
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.requests.GatewayIntent

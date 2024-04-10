@@ -5,9 +5,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioReference
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import kotlin.math.abs
 import kotlin.math.absoluteValue
-import kotlin.math.exp
 import kotlin.math.roundToInt
 
 class YoutubeDelegateSource(private val apm: AudioPlayerManager,

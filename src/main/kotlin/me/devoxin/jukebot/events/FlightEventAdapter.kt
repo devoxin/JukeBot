@@ -14,7 +14,10 @@ import me.devoxin.jukebot.annotations.Checks.Premium
 import me.devoxin.jukebot.annotations.Checks.PremiumServer
 import me.devoxin.jukebot.annotations.Prerequisites.RequireMutualVoiceChannel
 import me.devoxin.jukebot.annotations.Prerequisites.TriggerConnect
-import me.devoxin.jukebot.extensions.*
+import me.devoxin.jukebot.extensions.audioPlayer
+import me.devoxin.jukebot.extensions.embed
+import me.devoxin.jukebot.extensions.isDJ
+import me.devoxin.jukebot.extensions.premiumUser
 import me.devoxin.jukebot.utils.Constants
 import net.dv8tion.jda.api.Permission
 import org.slf4j.LoggerFactory
