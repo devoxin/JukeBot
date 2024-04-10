@@ -51,11 +51,11 @@ class Filters : Cog {
 
         val booster = player.bassBooster
 
-        if (percent == null || percent <= 0) {
+        if (percent == null) {
             return ctx.embed("Audio Filters (Bass Boost)", "${booster.percentage.createProgressBar(200, 10)} `${booster.percentage}%`")
         }
 
-        if (ctx.premiumUser == null) {
+        if (percent >= 0 && ctx.premiumUser == null) {
             return ctx.embed("Premium Required", "Sorry, you can't enable this without a [Premium subscription](https://patreon.com/devoxin)")
         }
 

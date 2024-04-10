@@ -31,7 +31,7 @@ class Configuration : Cog {
             "here" -> {
                 player.channelId = ctx.messageChannel.idLong
                 player.shouldAnnounce = true
-                ctx.embed("Track Announcements", "This channel will now be used to for track announcements.")
+                ctx.embed("Track Announcements", "This channel will now be used for track announcements.")
             }
             "off" -> {
                 player.shouldAnnounce = false
