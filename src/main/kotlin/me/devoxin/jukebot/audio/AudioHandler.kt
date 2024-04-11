@@ -254,6 +254,7 @@ class AudioHandler(private val guildId: Long,
         guild?.audioManager?.sendingHandler = null
         setNick(null)
         lastAnnouncement?.runCatching { delete().queue() }
+        Launcher.playerManager.removePlayer(guildId)
     }
 
     private fun startTrack(track: AudioTrack, noInterrupt: Boolean = false): Boolean {

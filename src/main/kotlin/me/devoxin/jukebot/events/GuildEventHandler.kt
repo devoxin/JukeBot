@@ -32,12 +32,14 @@ class GuildEventHandler : EventListener {
     }
 
     private fun handleLeave(channel: AudioChannel) {
-        if (!Launcher.playerManager.players.containsKey(channel.guild.idLong)) {
+        val guildId = channel.guild.idLong
+
+        if (!Launcher.playerManager.players.containsKey(guildId)) {
             return
         }
 
-        val audioManager = channel.guild.audioManager.takeIf { it.isConnected } ?: return
-        val connectedChannel = audioManager.connectedChannel ?: return
+        val audioManager = channel.guild.audioManager.takeIf { it.isConnected } ?: return Launcher.playerManager.removePlayer(guildId)
+        val connectedChannel = audioManager.connectedChannel ?: return Launcher.playerManager.removePlayer(guildId)
         val isAlone = connectedChannel.members.none { !it.user.isBot }
 
         if (isAlone) {

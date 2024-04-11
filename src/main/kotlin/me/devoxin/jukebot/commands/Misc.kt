@@ -50,7 +50,7 @@ class Misc : Cog {
 
         val players = Launcher.playerManager.players.size
         val playingPlayers = Launcher.playerManager.players.values.count { it.isPlaying }
-        val encodingPlayers = Launcher.playerManager.players.values.count { it.isEncoding }
+        val encodingPlayers = Launcher.playerManager.players.values.count { it.isPlaying && it.isEncoding }
 
         val servers = Launcher.shardManager.guildCache.size()
         val users = Launcher.shardManager.guilds.sumOf { it.memberCount }
