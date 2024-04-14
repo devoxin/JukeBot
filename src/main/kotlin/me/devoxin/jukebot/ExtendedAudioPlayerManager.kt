@@ -51,7 +51,8 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
                                  disableYoutubeDelegate: Boolean,
                                  youtubeDelegationOnly: Boolean,
                                  disableHttp: Boolean,
-                                 val enableNsfw: Boolean) : AudioPlayerManager by dapm {
+                                 val enableNsfw: Boolean,
+                                 val allowOpusEncoderConfiguration: Boolean) : AudioPlayerManager by dapm {
     val players = ConcurrentHashMap<Long, AudioHandler>()
     val delegateSource: DelegateHandler
 

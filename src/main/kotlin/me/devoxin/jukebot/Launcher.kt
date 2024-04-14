@@ -51,6 +51,7 @@ object Launcher {
             addOption("b", "banner", false, "Displays the banner and immediately exits.")
             addOption("c", "config", true, "Specify the path of the config.properties file.")
             addOption("d", "disable-youtube-delegate", false, "Disables delegating Spotify tracks to YouTube.")
+            addOption("e", "allow-opus-encoder-configuration", false, "Allow configuration of the opus encoder for higher quality (not supported on all platforms).")
             addOption("h", "help", false, "Displays command line arguments.")
             addOption("m", "enable-message-content", false, "Enables the 'MESSAGE_CONTENT' intent.")
             addOption("n", "enable-nsfw", false, "Enables NSFW audio sources.")
@@ -121,7 +122,8 @@ object Launcher {
             disableYoutubeDelegate = parsed.hasOption("disable-youtube-delegate"),
             youtubeDelegationOnly = parsed.hasOption("delegate-youtube-only"),
             disableHttp = parsed.hasOption("disable-http"),
-            enableNsfw = parsed.hasOption("enable-nsfw")
+            enableNsfw = parsed.hasOption("enable-nsfw"),
+            allowOpusEncoderConfiguration = parsed.hasOption("allow-opus-encoder-configuration")
         )
 
         if ("patreon" in config && !isSelfHosted) {

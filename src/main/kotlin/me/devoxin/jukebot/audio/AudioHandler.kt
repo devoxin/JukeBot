@@ -92,9 +92,12 @@ class AudioHandler(private val guildId: Long,
 
         player.configuration.apply {
             resamplingQuality = HIGHEST
-            opusEncoderConfiguration.apply {
-                setVbr(false)
-                setBitrate(OpusEncoderLibrary.OPUS_BITRATE_MAX)
+
+            if (Launcher.playerManager.allowOpusConfiguration) {
+                opusEncoderConfiguration.apply {
+                    setVbr(false)
+                    setBitrate(OpusEncoderLibrary.OPUS_BITRATE_MAX)
+                }
             }
         }
     }

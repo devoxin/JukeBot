@@ -50,6 +50,10 @@ class Developer : Cog {
 
     @SubCommand(description = "Configure per-player opus encoder options.")
     fun configureOpusEncoder(ctx: Context, @Autocomplete("opusRequestAutocomplete") request: Int, value: Int) {
+        if (!Launcher.playerManager.allowOpusEncoderConfiguration) {
+            return ctx.respondUnit("The opus encoder cannot be configured.")
+        }
+
         val player = ctx.audioPlayer
             ?: return ctx.respondUnit("No player here.")
 
