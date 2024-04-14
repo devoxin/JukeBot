@@ -1,7 +1,10 @@
 package me.devoxin.jukebot.audio
 
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats
+import com.sedmelluq.discord.lavaplayer.natives.opus.OpusEncoderLibrary
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration.ResamplingQuality.HIGHEST
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
@@ -86,6 +89,14 @@ class AudioHandler(private val guildId: Long,
     init {
         player.addListener(this)
         mutableFrame.setBuffer(buffer)
+
+        player.configuration.apply {
+            resamplingQuality = HIGHEST
+            opusEncoderConfiguration.apply {
+                setVbr(false)
+                setBitrate(OpusEncoderLibrary.OPUS_BITRATE_MAX)
+            }
+        }
     }
 
     /**

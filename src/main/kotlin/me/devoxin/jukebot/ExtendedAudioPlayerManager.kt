@@ -3,7 +3,6 @@ package me.devoxin.jukebot
 import com.grack.nanojson.JsonParser
 import com.grack.nanojson.JsonWriter
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration
-import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration.ResamplingQuality.HIGHEST
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler
@@ -60,7 +59,6 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
         dapm.apply {
             configuration.setFrameBufferFactory(::NonAllocatingAudioFrameBuffer)
             configuration.setFilterHotSwapEnabled(true)
-            // TODO: Need to implement a way of setting resampling quality on a per-player basis.
 
             if (Launcher.isSelfHosted || Launcher.shardManager.botId == 314145804807962634L) {
                 configuration.resamplingQuality = AudioConfiguration.ResamplingQuality.HIGHEST

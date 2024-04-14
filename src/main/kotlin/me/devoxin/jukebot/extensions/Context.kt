@@ -28,6 +28,10 @@ fun Context.audioPlayer() = member?.voiceState?.channel?.let {
     Launcher.playerManager.getOrCreatePlayer(guild!!.idLong, messageChannel.idLong, it.idLong)
 } ?: throw IllegalStateException("Cannot create an AudioPlayer with a voice channel ID!")
 
+fun Context.respondUnit(content: String) {
+    respond(content)
+}
+
 fun Context.embed(create: EmbedBuilder.() -> Unit) {
     respond {
         embed {

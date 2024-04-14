@@ -109,6 +109,7 @@ public class DeezerAudioTrack extends DelegatedAudioTrack implements HighQuality
     }
 
     private SourceWithFormat getSource(boolean requestPremiumFormats, boolean isRetry) throws URISyntaxException {
+        cookieStore.clear();
         JsonBrowser userTokenJson = this.generateLicenceToken(requestPremiumFormats);
 
         if (userTokenJson.get("data").index(0).get("errors").index(0).get("code").asLong(0) != 0) {
@@ -168,7 +169,6 @@ public class DeezerAudioTrack extends DelegatedAudioTrack implements HighQuality
             }
 
             if (requestPremiumFormats) {
-                cookieStore.clear();
                 return this.getSource(false, false);
             }
 

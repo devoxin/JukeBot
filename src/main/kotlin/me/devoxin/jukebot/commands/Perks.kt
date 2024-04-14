@@ -11,6 +11,7 @@ import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.annotations.Checks.Premium
 import me.devoxin.jukebot.extensions.embed
 import me.devoxin.jukebot.extensions.premiumUser
+import me.devoxin.jukebot.extensions.respondUnit
 import me.devoxin.jukebot.integrations.patreon.PatreonTier
 import me.devoxin.jukebot.models.PremiumUser
 import me.devoxin.jukebot.utils.Constants
@@ -141,7 +142,7 @@ class Perks : Cog {
                 }
             }
 
-            return ctx.send("**Perks (Server Management)**\n" +
+            return ctx.respondUnit("**Perks (Server Management)**\n" +
                 "You need to specify the ID of the server you want to unregister.\n\n" +
                 "```\n$sb```"
             )

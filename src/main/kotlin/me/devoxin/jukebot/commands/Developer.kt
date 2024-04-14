@@ -1,5 +1,7 @@
 package me.devoxin.jukebot.commands
 
+import com.sedmelluq.discord.lavaplayer.natives.opus.OpusEncoderLibrary.*
+import me.devoxin.flight.api.annotations.Autocomplete
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.context.Context
@@ -8,7 +10,12 @@ import me.devoxin.flight.api.entities.Cog
 import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.audio.sources.deezer.DeezerAudioSourceManager
+import me.devoxin.jukebot.extensions.audioPlayer
 import me.devoxin.jukebot.extensions.await
+import me.devoxin.jukebot.extensions.respondUnit
+import me.devoxin.jukebot.utils.StringUtils
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 class Developer : Cog {
     override fun name() = "Developer"
@@ -39,5 +46,30 @@ class Developer : Cog {
 
         source.arl = sourceToken
         ctx.reply("Source token updated.", true)
+    }
+
+    @SubCommand(description = "Configure per-player opus encoder options.")
+    fun configureOpusEncoder(ctx: Context, @Autocomplete("opusRequestAutocomplete") request: Int, value: Int) {
+        val player = ctx.audioPlayer
+            ?: return ctx.respondUnit("No player here.")
+
+        player.player.configuration.opusEncoderConfiguration.configureRaw(request, value)
+        ctx.respond("Configuration applied. Changes will take effect at the start of a new track.")
+    }
+
+    fun opusRequestAutocomplete(event: CommandAutoCompleteInteractionEvent) {
+        val typed = event.focusedOption.value
+        val matches = OPUS_REQUESTS.entries.filter { StringUtils.isSubstringWithin(it.key, typed) }
+            .map { Choice(it.key, it.value.toLong()) }
+
+        return event.replyChoices(matches).queue()
+    }
+
+    companion object {
+        private val OPUS_REQUESTS = mapOf(
+            "SET_VBR_REQUEST" to SET_VBR_REQUEST,
+            "SET_BITRATE_REQUEST" to SET_BITRATE_REQUEST,
+            "SET_VBR_CONSTRAINT_REQUEST" to SET_VBR_CONSTRAINT_REQUEST
+        )
     }
 }
