@@ -58,7 +58,7 @@ dependencies {
         "darwin"
     )
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.20") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.23") {
         exclude(module = "opus-java")
     }
 
@@ -67,6 +67,7 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
 
     // Audio
+    implementation("com.github.lavalink-devs.youtube-source:common:1.0.5")
     implementation("com.github.devoxin.lavaplayer:lavaplayer:${libs.versions.lavaplayer.get()}")
     implementation("com.github.devoxin.lavaplayer:lavaplayer-ext-youtube-rotator:${libs.versions.lavaplayer.get()}")
     implementation("com.sedmelluq:jda-nas:1.1.0") {
@@ -82,9 +83,9 @@ dependencies {
     implementation("com.github.natanbc:lavadsp:0.7.7")
 
     // Database
-    implementation("org.xerial:sqlite-jdbc:3.43.2.1")
-    implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("redis.clients:jedis:5.0.0")
+    implementation("org.xerial:sqlite-jdbc:3.45.3.0")
+    implementation("com.zaxxer:HikariCP:5.1.0")
+    implementation("redis.clients:jedis:5.1.2")
 
     // Logging
     implementation("org.apache.logging.log4j:log4j-core:${libs.versions.logger.get()}")
@@ -98,8 +99,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${libs.versions.coroutines.get()}")
 
     // Utilities
-    implementation("com.grack:nanojson:1.7")
-    implementation("org.jsoup:jsoup:1.16.2")
+    implementation("com.grack:nanojson:1.9")
+    implementation("org.jsoup:jsoup:1.17.2")
     implementation("commons-cli:commons-cli:1.6.0")
 
     // Transitive overrides

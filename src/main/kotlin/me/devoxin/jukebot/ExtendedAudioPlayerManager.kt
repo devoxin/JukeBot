@@ -12,7 +12,6 @@ import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
@@ -24,6 +23,7 @@ import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup
 import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRoutePlanner
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block
+import dev.lavalink.youtube.YoutubeAudioSourceManager
 import kotlinx.coroutines.future.await
 import me.devoxin.flight.api.context.Context
 import me.devoxin.jukebot.Launcher.config
@@ -90,7 +90,7 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
                     log.info("using ipv6 block with RotatingNanoIpRoutePlanner")
                     val blocks = listOf<IpBlock<*>>(Ipv6Block(config.ipv6Block))
                     val planner = RotatingNanoIpRoutePlanner(blocks)
-                    YoutubeIpRotatorSetup(planner).forSource(youtubeAudioSourceManager).setup()
+                    YoutubeIpRotatorSetup(planner).forConfiguration(youtubeAudioSourceManager.httpInterfaceManager, false).setup()
                 }
 
                 if (!youtubeDelegationOnly) {

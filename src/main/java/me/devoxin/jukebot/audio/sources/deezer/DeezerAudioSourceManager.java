@@ -56,7 +56,7 @@ public class DeezerAudioSourceManager implements AudioSourceManager, HttpConfigu
     }
 
     public void setArl(String newArl) {
-        this.arl = arl;
+        this.arl = newArl;
     }
 
     @Override

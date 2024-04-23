@@ -87,7 +87,7 @@ public class DeezerAudioTrack extends DelegatedAudioTrack implements HighQuality
     }
 
     private JsonBrowser generateLicenceToken(boolean useArl) {
-        final HttpGet request = new HttpGet("https://www.deezer.com/ajax/gw-light.php?method=deezer.getUserData&input=3&api_version=1.0&api_token=");
+        final HttpGet request = new HttpGet("https://www.deezer.com/ajax/gw-light.php?method=deezer.getUserData&input=3&api_version=1.0&api_token=null");
 
         // session ID is not needed with ARL and vice-versa.
         if (!useArl || this.sourceManager.getArl() == null) {
@@ -98,7 +98,7 @@ public class DeezerAudioTrack extends DelegatedAudioTrack implements HighQuality
     }
 
     private String getSessionId() {
-        final HttpPost getSessionID = new HttpPost(DeezerAudioSourceManager.PRIVATE_API_BASE + "?method=deezer.ping&input=3&api_version=1.0&api_token=");
+        final HttpPost getSessionID = new HttpPost(DeezerAudioSourceManager.PRIVATE_API_BASE + "?method=deezer.ping&input=3&api_version=1.0&api_token=null");
         final JsonBrowser sessionIdJson = this.getJsonResponse(getSessionID, false);
 
         if (sessionIdJson.get("data").index(0).get("errors").index(0).get("code").asLong(0) != 0) {
