@@ -91,7 +91,9 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
                     log.info("using ipv6 block with RotatingNanoIpRoutePlanner")
                     val blocks = listOf<IpBlock<*>>(Ipv6Block(config.ipv6Block))
                     val planner = RotatingNanoIpRoutePlanner(blocks)
-                    YoutubeIpRotatorSetup(planner).forConfiguration(youtubeAudioSourceManager.httpInterfaceManager, false).setup()
+                    YoutubeIpRotatorSetup(planner).forConfiguration(youtubeAudioSourceManager.httpInterfaceManager, false)
+                        .withMainDelegateFilter(null)
+                        .setup()
                 }
 
                 if (!youtubeDelegationOnly) {
