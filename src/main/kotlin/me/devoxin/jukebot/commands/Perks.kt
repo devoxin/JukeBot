@@ -122,7 +122,7 @@ class Perks : Cog {
     }
 
     @SubCommand(description = "Unregisters the given server and revokes its perks", guildOnly = true)
-    fun removeServer(ctx: Context, serverId: Long?) {
+    fun removeServer(ctx: Context, serverId: String?) {
         val sm = Launcher.shardManager
         val allServers = Database.getPremiumServersOf(ctx.author.idLong)
 
@@ -148,7 +148,10 @@ class Perks : Cog {
             )
         }
 
-        val selectedServer = allServers.firstOrNull { it.guildId == serverId }
+        val sidLong = serverId.toLongOrNull()
+            ?: return ctx.respondUnit("You need to provide the ID of the server you wish to remove.")
+
+        val selectedServer = allServers.firstOrNull { it.guildId == sidLong }
             ?: return ctx.embed(
                 "Perks (Server Management)",
                 "Invalid server ID. Run this command without arguments to view a list of registered servers."
@@ -163,7 +166,7 @@ class Perks : Cog {
             )
         }
 
-        Database.removePremiumServer(serverId)
+        Database.removePremiumServer(sidLong)
         ctx.embed("Perks (Server Management)", "Server unregistered successfully.")
     }
 

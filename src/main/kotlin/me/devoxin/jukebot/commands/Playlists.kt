@@ -152,8 +152,10 @@ class Playlists : Cog {
         val playlist = Database.getPlaylist(ctx.author.idLong, playlistName)
             ?: return ctx.embed("Custom Playlists (Load)", "A playlist with that name wasn't found.\nYou can check your playlists with `/playlists list`")
 
+        val incompatibleMessage = if (playlist.hasIncompatibleTracks) "\nSome tracks could not be loaded as they are incompatible." else ""
+
         if (playlist.tracks.isEmpty()) {
-            return ctx.embed("Custom Playlists (Load)", "That playlist doesn't have any tracks. Why not add some?")
+            return ctx.embed("Custom Playlists (Load)", "That playlist doesn't have any tracks. Why not add some?$incompatibleMessage")
         }
 
         ctx.asSlashContext?.deferAsync()
@@ -164,7 +166,7 @@ class Playlists : Cog {
             player.enqueue(track, ctx.author.idLong, false)
         }
 
-        ctx.embed("Custom Playlists (Load)", "Loaded ${playlist.tracks.size} tracks from playlist `${playlist.title}`.")
+        ctx.embed("Custom Playlists (Load)", "Loaded ${playlist.tracks.size} tracks from playlist `${playlist.title}`.$incompatibleMessage")
     }
 
     private fun checkPlaylistCount(ctx: Context, count: Int): Boolean {

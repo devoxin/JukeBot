@@ -51,7 +51,7 @@ class SpotifyAudioTrack(private val sourceManager: SpotifyAudioSourceManager,
         val prefer = if (allowHighQualityDelegate) DeezerDelegateSource::class.java else null
 
         return isrc?.let { delegate.findByIsrc(it.replace("-", ""), prefer, *excluding) }
-            ?: delegate.findBySearch("${info.title} ${info.author}", this, null, *excluding)
+            ?: delegate.findBySearch("${info.title} ${info.author}", this, prefer, *excluding)
     }
 
     override fun getSourceManager() = sourceManager
