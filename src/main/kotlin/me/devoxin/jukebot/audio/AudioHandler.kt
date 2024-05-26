@@ -333,6 +333,10 @@ class AudioHandler(private val guildId: Long,
         Sentry.capture(eventBuilder)
         repeat = RepeatMode.NONE
 
+        if (exception.cause?.localizedMessage == "No available source for track!") {
+            return announce("Track Unavailable", "Unable to find a playback source for **${track.info.title}**\nSkipping...", set = false)
+        }
+
         announce("Track Unavailable", "An error occurred during the playback of **${track.info.title}**\nSkipping...", set = false)
     }
 

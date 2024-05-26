@@ -20,7 +20,7 @@ class SpotifyAudioTrack(private val sourceManager: SpotifyAudioSourceManager,
 
     override fun process(executor: LocalAudioTrackExecutor) {
         var track = findDelegateTrack()
-            ?: throw IllegalStateException("No available source for track!")
+            ?: throw RuntimeException("No available source for track!")
 
         if (allowHighQualityDelegate) {
             if (track is DeezerAudioTrack) {
@@ -40,7 +40,7 @@ class SpotifyAudioTrack(private val sourceManager: SpotifyAudioSourceManager,
             Sentry.capture(t)
 
             val alt = findDelegateTrack(track.sourceManager.sourceName)
-                ?: throw IllegalStateException("No available source for track!")
+                ?: throw RuntimeException("No available source for track!")
 
             processDelegate(alt as InternalAudioTrack, executor)
         }
@@ -48,7 +48,7 @@ class SpotifyAudioTrack(private val sourceManager: SpotifyAudioSourceManager,
 
     private fun findDelegateTrack(vararg excluding: String): AudioTrack? {
         val delegate = playerManager.delegateSource
-        val prefer = if (allowHighQualityDelegate) DeezerDelegateSource::class.java else null
+        val prefer = if (allowHighQualityDelegate && "deezer" !in excluding) DeezerDelegateSource::class.java else null
 
         return isrc?.let { delegate.findByIsrc(it.replace("-", ""), prefer, *excluding) }
             ?: delegate.findBySearch("${info.title} ${info.author}", this, prefer, *excluding)

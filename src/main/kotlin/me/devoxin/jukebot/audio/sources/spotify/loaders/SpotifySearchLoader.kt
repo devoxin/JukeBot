@@ -31,7 +31,7 @@ class SpotifySearchLoader : Loader {
 
         val trackList = trackObj.getArray("items")
 
-        if (trackList.isNotEmpty()) {
+        if (trackList.isEmpty()) {
             return AudioReference.NO_TRACK
         }
 
