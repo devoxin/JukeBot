@@ -157,7 +157,7 @@ class Perks : Cog {
                 "Invalid server ID. Run this command without arguments to view a list of registered servers."
             )
 
-        if (selectedServer.daysSinceAdded < 28) {
+        if (selectedServer.daysSinceAdded < 28 && ctx.author.idLong !in ctx.commandClient.ownerIds) {
             return ctx.embed(
                 "Perks (Server Management)",
                 "This server was registered less than 28 days ago. It cannot be unregistered " +

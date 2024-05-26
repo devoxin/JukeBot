@@ -48,6 +48,15 @@ class Developer : Cog {
         ctx.reply("Source token updated.", true)
     }
 
+    @SubCommand(description = "Remove a premium server.")
+    fun removePremiumServer(ctx: SlashContext, serverId: String) {
+        val sid = serverId.toLongOrNull()
+            ?: return ctx.reply("Provide a valid ID.", true)
+
+        Database.removePremiumServer(sid)
+        ctx.reply("Removed.", true)
+    }
+
     @SubCommand(description = "Configure per-player opus encoder options.")
     fun configureOpusEncoder(ctx: Context, @Autocomplete("opusRequestAutocomplete") request: Int, value: Int) {
         if (!Launcher.playerManager.allowOpusEncoderConfiguration) {

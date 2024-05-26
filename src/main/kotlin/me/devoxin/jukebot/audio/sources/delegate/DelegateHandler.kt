@@ -1,19 +1,27 @@
 package me.devoxin.jukebot.audio.sources.delegate
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import org.slf4j.LoggerFactory
 
+@Suppress("LoggingSimilarMessage")
 class DelegateHandler(private val delegates: Set<DelegateSource>) {
     fun findByIsrc(isrc: String, prefer: Class<out DelegateSource>?, vararg excluding: String): AudioTrack? {
+        log.debug("Finding delegate for isrc \"{}\" (prefer = {}, excluding = {})", isrc, prefer?.simpleName, excluding.joinToString(", "))
+
         return getDelegates(prefer)
+            .onEach { log.debug("Matching delegate \"{}\" for isrc \"{}\"", it.name, isrc) }
             .filter { it.name !in excluding }
-            .map { it.runCatching { findByIsrc(isrc) }.getOrNull() }
+            .mapNotNull { it.runCatching { findByIsrc(isrc) }.getOrNull().also { t -> log.debug("Delegate \"{}\" yielded {}", it.name, t) } }
             .firstOrNull()
     }
 
     fun findBySearch(query: String, original: AudioTrack, prefer: Class<out DelegateSource>?, vararg excluding: String): AudioTrack? {
+        log.debug("Finding delegate for query \"{}\" (prefer = {}, excluding = {})", query, prefer?.simpleName, excluding.joinToString(", "))
+
         return getDelegates(prefer)
+            .onEach { log.debug("Matching delegate \"{}\" for query \"{}\"", it.name, query) }
             .filter { it.name !in excluding }
-            .map { it.runCatching { findBySearch(query, original) }.getOrNull() }
+            .mapNotNull { it.runCatching { findBySearch(query, original) }.getOrNull().also { t -> log.debug("Delegate \"{}\" yielded {}", it.name, t) } }
             .firstOrNull()
     }
 
@@ -29,5 +37,9 @@ class DelegateHandler(private val delegates: Set<DelegateSource>) {
                 yield(delegate)
             }
         }
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(DelegateHandler::class.java)
     }
 }
