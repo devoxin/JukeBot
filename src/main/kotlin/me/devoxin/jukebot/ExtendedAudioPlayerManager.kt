@@ -24,6 +24,7 @@ import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRouteP
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block
 import dev.lavalink.youtube.YoutubeAudioSourceManager
+import dev.lavalink.youtube.clients.*
 import kotlinx.coroutines.future.await
 import me.devoxin.flight.api.context.Context
 import me.devoxin.jukebot.Launcher.config
@@ -83,7 +84,7 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
 
             registerSourceManager(SpotifyAudioSourceManager(config["spotify_client"], config["spotify_secret"]))
 
-            val youtubeAudioSourceManager = YoutubeAudioSourceManager()
+            val youtubeAudioSourceManager = YoutubeAudioSourceManager(Music(), MediaConnect(), AndroidLite(), AndroidTestsuite(), Web(), TvHtml5Embedded())
 
             if (!disableYoutube) {
                 if (!config.ipv6Block.isNullOrEmpty()) {
