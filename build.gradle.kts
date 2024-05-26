@@ -39,16 +39,12 @@ kotlin {
 }
 
 repositories {
-    maven {
-        name = "m2-dv8tion"
-        setUrl("https://m2.dv8tion.net/releases")
-    }
+    maven(url = "https://m2.dv8tion.net/releases")
     mavenCentral()
     jcenter()
+    maven(url = "https://maven.lavalink.dev/releases")
     //maven { url "https://dl.bintray.com/natanbc/maven" }
-    maven {
-        setUrl("https://jitpack.io")
-    }
+    maven(url = "https://jitpack.io")
 }
 
 dependencies {
@@ -58,16 +54,16 @@ dependencies {
         "darwin"
     )
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.23") {
+    implementation("net.dv8tion:JDA:5.0.0-beta.24") {
         exclude(module = "opus-java")
     }
 
     // Framework
-    implementation("com.github.devoxin:flight:08a1b73")
+    implementation("com.github.devoxin:flight:e30e521")
     implementation("org.reflections:reflections:0.10.2")
 
     // Audio
-    implementation("com.github.lavalink-devs.youtube-source:common:1.0.5")
+    implementation("dev.lavalink.youtube:common:1.3.0")
     implementation("com.github.devoxin.lavaplayer:lavaplayer:${libs.versions.lavaplayer.get()}")
     implementation("com.github.devoxin.lavaplayer:lavaplayer-ext-youtube-rotator:${libs.versions.lavaplayer.get()}")
     implementation("com.sedmelluq:jda-nas:1.1.0") {
@@ -89,7 +85,7 @@ dependencies {
 
     // Logging
     implementation("org.apache.logging.log4j:log4j-core:${libs.versions.logger.get()}")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:${libs.versions.logger.get()}")
+    implementation("org.apache.logging.log4j:log4j-slf4j2-impl:${libs.versions.logger.get()}")
     implementation("io.sentry:sentry:1.7.30")
 
     // stdlib (Kotlin)

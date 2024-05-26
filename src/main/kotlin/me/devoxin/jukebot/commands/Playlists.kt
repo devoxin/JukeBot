@@ -204,6 +204,4 @@ class Playlists : Cog {
 
     // view
     // manage
-    // delete
-    // load
 }

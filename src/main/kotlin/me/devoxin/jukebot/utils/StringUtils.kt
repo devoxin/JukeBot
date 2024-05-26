@@ -41,8 +41,6 @@ object StringUtils {
         var lastIndex = 0
 
         return substring.chars()
-            .allMatch { (s.indexOf(it.toChar(), lastIndex)
-                .also { i -> lastIndex = i }) != -1
-        }
+            .allMatch { (s.indexOf(it.toChar(), lastIndex).also { i -> lastIndex = i }) != -1 }
     }
 }

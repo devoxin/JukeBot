@@ -19,7 +19,7 @@ val Context.embedColor: Int
 val Context.premiumUser: PremiumUser?
     get() = when {
         Launcher.isSelfHosted -> PremiumUser.fromTier(author.idLong, PatreonTier.DEVELOPER, shared = false)
-        author.idLong in Launcher.commandClient.ownerIds -> PremiumUser.fromTier(author.idLong, PatreonTier.DEVELOPER)
+        author.idLong in Launcher.commandClient.ownerIds -> PremiumUser.fromTier(author.idLong, PatreonTier.DEVELOPER, shared = false)
         guild != null && Database.getIsPremiumServer(guild!!.idLong) -> PremiumUser.fromTier(author.idLong, PatreonTier.PERSONAL)
         else -> Database.getPatron(author.idLong)
     }
@@ -43,20 +43,9 @@ fun Context.embed(create: EmbedBuilder.() -> Unit) {
 
 fun Context.embed(title: String, description: String) {
     embed {
-        setColor(embedColor)
         setTitle(title)
         setDescription(description)
     }
-}
-
-suspend fun Context.embedAsync(title: String, description: String) {
-    respond {
-        embed {
-            setColor(embedColor)
-            setTitle(title)
-            setDescription(description)
-        }
-    }.await()
 }
 
 fun Context.isDJ(allowLoneVC: Boolean): Boolean {
