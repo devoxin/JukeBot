@@ -1,5 +1,6 @@
 package me.devoxin.jukebot
 
+import com.jockie.jda.memory.MemoryOptimizations
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary
 import io.sentry.Sentry
@@ -84,6 +85,9 @@ object Launcher {
         if (parsed.hasOption("banner")) {
             exitProcess(0)
         }
+
+        MemoryOptimizations.setSelfSynchronized(true)
+        MemoryOptimizations.installOptimizations()
 
         config = Config.load(parsed.getOptionValue("config") ?: "config.properties")
 

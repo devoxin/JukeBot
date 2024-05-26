@@ -57,6 +57,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-beta.24") {
         exclude(module = "opus-java")
     }
+    implementation("com.github.21Joakim:JDA-Memory-Optimizations:0.0.15")
 
     // Framework
     implementation("com.github.devoxin:flight:e30e521")
