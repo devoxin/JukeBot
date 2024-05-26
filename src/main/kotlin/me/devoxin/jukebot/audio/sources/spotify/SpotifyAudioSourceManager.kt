@@ -1,5 +1,6 @@
 package me.devoxin.jukebot.audio.sources.spotify
 
+import com.grack.nanojson.JsonObject
 import com.grack.nanojson.JsonParser
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
@@ -100,24 +101,7 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
                 return log.warn("received code ${it.statusLine.statusCode} from spotify while trying to update anonymous access token")
             }
 
-            val json = JsonParser.`object`().from(it.entity.content)
-
-            if (json.has("error") && json.getString("error").startsWith("invalid_")) {
-                log.error("spotify api access disabled: (${json.getString("error")})")
-                disabled = true
-                accessToken = null
-                return
-            }
-
-            if (json.isNull("access_token")) {
-                log.error("cannot update spotify access token as response does not contain a token")
-                accessToken = null
-                return
-            }
-
-            accessToken = json.getString("accessToken")
-            tokenExpiration = json.getLong("accessTokenExpirationTimestampMs")
-            log.info("anonymous access token successfully refreshed")
+            extractToken(JsonParser.`object`().from(it.entity.content), isAnonymous = true)
         }
     }
 
@@ -135,25 +119,29 @@ class SpotifyAudioSourceManager(private val clientId: String, private val client
                 return log.warn("received code ${it.statusLine.statusCode} from spotify while trying to update access token")
             }
 
-            val json = JsonParser.`object`().from(it.entity.content)
-
-            if (json.has("error") && json.getString("error").startsWith("invalid_")) {
-                log.error("spotify api access disabled: (${json.getString("error")})")
-                disabled = true
-                accessToken = null
-                return
-            }
-
-            if (json.isNull("access_token")) {
-                log.error("cannot update spotify access token as response does not contain a token")
-                accessToken = null
-                return
-            }
-
-            accessToken = json.getString("access_token")
-            tokenExpiration = System.currentTimeMillis() + (json.getLong("expires_in") * 1000)
-            log.info("access token successfully refreshed")
+            extractToken(JsonParser.`object`().from(it.entity.content), isAnonymous = false)
         }
+    }
+
+    private fun extractToken(json: JsonObject, isAnonymous: Boolean) {
+        if (json.has("error") && json.getString("error").startsWith("invalid_")) {
+            log.error("spotify api access disabled: (${json.getString("error")})")
+            disabled = true
+            accessToken = null
+            return
+        }
+
+        val tokenKey = "accessToken".takeIf { isAnonymous } ?: "access_token"
+
+        if (json.isNull(tokenKey)) {
+            log.error("cannot update spotify access token as response does not contain a token")
+            accessToken = null
+            return
+        }
+
+        accessToken = json.getString(tokenKey)
+        tokenExpiration = if (isAnonymous) json.getLong("accessTokenExpirationTimestampMs") else System.currentTimeMillis() + (json.getLong("expires_in") * 1000)
+        log.info("${if (isAnonymous) "anonymous " else ""}access token successfully refreshed")
     }
 
     internal fun request(request: HttpUriRequest, validateToken: Boolean = true): CloseableHttpResponse {
