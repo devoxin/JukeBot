@@ -18,6 +18,6 @@ class DeezerDelegateSource(private val apm: AudioPlayerManager,
         val results = sm.getSearch(query) as? AudioPlaylist
             ?: return null
 
-        return results.tracks.elementAtOrNull(0)
+        return results.tracks.firstOrNull()
     }
 }

@@ -16,7 +16,7 @@ class YoutubeDelegateSource(private val apm: AudioPlayerManager,
         val results = sm.loadItem(apm, AudioReference("ytmsearch:\"$isrc\"", null)) as? AudioPlaylist
             ?: return null
 
-        return results.tracks.elementAtOrNull(0)
+        return results.tracks.firstOrNull()
     }
 
     override fun findBySearch(query: String, original: AudioTrack): AudioTrack? {
