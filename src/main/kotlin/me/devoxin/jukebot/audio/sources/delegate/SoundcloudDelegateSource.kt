@@ -2,7 +2,6 @@ package me.devoxin.jukebot.audio.sources.delegate
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager
-import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioTrack
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundcloudAudioTrackInfo
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioReference
