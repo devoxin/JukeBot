@@ -1,6 +1,5 @@
 package me.devoxin.jukebot.extensions
 
-import kotlinx.coroutines.future.await
 import me.devoxin.flight.api.context.Context
 import me.devoxin.jukebot.Database
 import me.devoxin.jukebot.Launcher
