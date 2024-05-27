@@ -21,6 +21,10 @@ class SpotifySearchLoader : Loader {
             return AudioReference(query, null)
         }
 
+        if (query.trim().isEmpty()) {
+            return AudioReference.NO_TRACK
+        }
+
         val searchResult = fetchTracksFromSearch(sourceManager, query)
 
         val trackObj = searchResult.getObject("tracks")
