@@ -86,8 +86,7 @@ object Launcher {
             exitProcess(0)
         }
 
-        MemoryOptimizations.setSelfSynchronized(true)
-        MemoryOptimizations.installOptimizations()
+        installMemoryOptimizations()
 
         config = Config.load(parsed.getOptionValue("config") ?: "config.properties")
 
@@ -155,6 +154,12 @@ object Launcher {
                 { log.error("failed to sync commands with discord", it) }
             )
         }
+    }
+
+    private fun installMemoryOptimizations() {
+        MemoryOptimizations.removeField("net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildMessageChannelImpl", "topic")
+        MemoryOptimizations.setSelfSynchronized(true)
+        MemoryOptimizations.installOptimizations()
     }
 
     private fun printBanner() {
