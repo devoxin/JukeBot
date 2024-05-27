@@ -50,6 +50,10 @@ abstract class DelegatingAudioTrack(info: AudioTrackInfo,
         } catch (t: Throwable) {
             Sentry.capture(t)
 
+            if (track.position > 2000) {
+                throw t
+            }
+
             val alt = findDelegateTrack(*excluding, track.sourceManager.sourceName)
                 ?: throw RuntimeException("No available source for track!")
 
