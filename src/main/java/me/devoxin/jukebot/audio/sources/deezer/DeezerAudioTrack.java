@@ -205,7 +205,7 @@ public class DeezerAudioTrack extends DelegatingAudioTrack implements ArtworkPro
             try {
                 source = prepareSource();
             } catch (Throwable ignored) {
-                super.findAndPlayDelegate(executor, "deezer");
+                super.findAndPlayDelegate(executor, sourceManager.getSourceName());
                 return;
             }
         }
