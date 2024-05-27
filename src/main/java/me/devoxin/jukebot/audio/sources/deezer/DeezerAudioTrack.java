@@ -15,10 +15,10 @@ import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface;
 import com.sedmelluq.discord.lavaplayer.tools.io.PersistentHttpStream;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.InternalAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor;
-import me.devoxin.jukebot.audio.HighQualityAudioTrack;
+import me.devoxin.jukebot.audio.sources.delegate.DelegatingAudioTrack;
+import me.devoxin.jukebot.audio.track.ArtworkProvider;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.RequestConfig;
@@ -29,6 +29,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URI;
@@ -38,8 +39,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
-public class DeezerAudioTrack extends DelegatedAudioTrack implements HighQualityAudioTrack {
-    private final String isrc;
+public class DeezerAudioTrack extends DelegatingAudioTrack implements ArtworkProvider {
     private final String artworkURL;
     private final DeezerAudioSourceManager sourceManager;
     private boolean allowHighQuality = false;
@@ -49,18 +49,14 @@ public class DeezerAudioTrack extends DelegatedAudioTrack implements HighQuality
 
     public DeezerAudioTrack(final AudioTrackInfo trackInfo, final String isrc, final String artworkURL,
                             final DeezerAudioSourceManager sourceManager) {
-        super(trackInfo);
-        this.isrc = isrc;
+        super(trackInfo, isrc);
         this.artworkURL = artworkURL;
         this.sourceManager = sourceManager;
         this.cookieStore = new BasicCookieStore();
     }
 
-    public String getISRC() {
-        return this.isrc;
-    }
-
-    public String getArtworkURL() {
+    @Override
+    public String getArtworkUrl() {
         return this.artworkURL;
     }
 
@@ -202,8 +198,17 @@ public class DeezerAudioTrack extends DelegatedAudioTrack implements HighQuality
     }
 
     @Override
-    public void process(LocalAudioTrackExecutor executor) throws Exception {
-        SourceWithFormat source = preparedSource != null ? preparedSource : this.prepareSource();
+    public void process(@NotNull final LocalAudioTrackExecutor executor) throws Exception {
+        SourceWithFormat source = preparedSource;
+
+        if (source == null) {
+            try {
+                source = prepareSource();
+            } catch (Throwable ignored) {
+                super.findAndPlayDelegate(executor, "deezer");
+                return;
+            }
+        }
 
         try (final HttpInterface httpInterface = this.sourceManager.getHttpInterface()) {
             try (final DeezerPersistentHttpStream stream = new DeezerPersistentHttpStream(httpInterface, source.url, source.contentLength, this.getTrackDecryptionKey())) {
@@ -214,7 +219,7 @@ public class DeezerAudioTrack extends DelegatedAudioTrack implements HighQuality
 
     @Override
     protected AudioTrack makeShallowClone() {
-        return new DeezerAudioTrack(this.trackInfo, this.isrc, this.artworkURL, this.sourceManager);
+        return new DeezerAudioTrack(this.trackInfo, this.getIsrc(), this.artworkURL, this.sourceManager);
     }
 
     @Override

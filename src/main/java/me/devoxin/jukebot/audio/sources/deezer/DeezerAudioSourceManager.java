@@ -230,8 +230,8 @@ public class DeezerAudioSourceManager implements AudioSourceManager, HttpConfigu
     @Override
     public void encodeTrack(final AudioTrack track, final DataOutput output) throws IOException {
         final DeezerAudioTrack deezerAudioTrack = ((DeezerAudioTrack) track);
-        DataFormatTools.writeNullableText(output, deezerAudioTrack.getISRC());
-        DataFormatTools.writeNullableText(output, deezerAudioTrack.getArtworkURL());
+        DataFormatTools.writeNullableText(output, deezerAudioTrack.getIsrc());
+        DataFormatTools.writeNullableText(output, deezerAudioTrack.getArtworkUrl());
     }
 
     @Override

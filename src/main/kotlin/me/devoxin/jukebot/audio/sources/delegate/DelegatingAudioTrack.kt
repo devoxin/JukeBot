@@ -10,13 +10,27 @@ import me.devoxin.jukebot.Launcher.playerManager
 import me.devoxin.jukebot.audio.HighQualityAudioTrack
 import me.devoxin.jukebot.audio.sources.deezer.DeezerAudioTrack
 import me.devoxin.jukebot.audio.sources.deezer.DeezerAudioTrack.TrackFormat
+import kotlin.jvm.Throws
 
 abstract class DelegatingAudioTrack(info: AudioTrackInfo,
                                     val isrc: String?) : DelegatedAudioTrack(info), HighQualityAudioTrack {
     private var allowHighQualityDelegate = false
+    private var isDelegateTrack = false
 
+    val preferredSource: Pair<String, Class<out DelegateSource>>
+        get() = "deezer" to DeezerDelegateSource::class.java
+
+    @Throws(Exception::class)
     override fun process(executor: LocalAudioTrackExecutor) {
-        var track = findDelegateTrack()
+        findAndPlayDelegate(executor)
+    }
+
+    protected fun findAndPlayDelegate(executor: LocalAudioTrackExecutor, vararg excluding: String) {
+        if (isDelegateTrack) {
+            throw RuntimeException("Delegate tracks cannot delegate")
+        }
+
+        var track = findDelegateTrack(*excluding)
             ?: throw RuntimeException("No available source for track!")
 
         if (allowHighQualityDelegate) {
@@ -26,7 +40,7 @@ abstract class DelegatingAudioTrack(info: AudioTrackInfo,
 
                 if (preparedSource == null || preparedSource.format >= TrackFormat.MP3_256) {
                     // skip if we get served a 256Kbps MP3 or lower.
-                    findDelegateTrack(track.sourceManager.sourceName)?.let { track = it }
+                    findDelegateTrack(*excluding, track.sourceManager.sourceName)?.let { track = it }
                 }
             }
         }
@@ -36,7 +50,7 @@ abstract class DelegatingAudioTrack(info: AudioTrackInfo,
         } catch (t: Throwable) {
             Sentry.capture(t)
 
-            val alt = findDelegateTrack(track.sourceManager.sourceName)
+            val alt = findDelegateTrack(*excluding, track.sourceManager.sourceName)
                 ?: throw RuntimeException("No available source for track!")
 
             processDelegate(alt as InternalAudioTrack, executor)
@@ -45,10 +59,16 @@ abstract class DelegatingAudioTrack(info: AudioTrackInfo,
 
     private fun findDelegateTrack(vararg excluding: String): AudioTrack? {
         val delegate = playerManager.delegateSource
-        val prefer = if (allowHighQualityDelegate && "deezer" !in excluding) DeezerDelegateSource::class.java else null
+        val prefer = preferredSource.takeIf { it.first !in excluding }?.second
 
-        return isrc?.let { delegate.findByIsrc(it.replace("-", ""), prefer, *excluding) }
+        val track = isrc?.let { delegate.findByIsrc(it.replace("-", ""), prefer, *excluding) }
             ?: delegate.findBySearch("${info.title} ${info.author}", this, prefer, *excluding)
+
+        return track.also {
+            if (it is DelegatingAudioTrack) {
+                it.isDelegateTrack = true
+            }
+        }
     }
 
     override fun setAllowHighQuality(allowHighQuality: Boolean) {

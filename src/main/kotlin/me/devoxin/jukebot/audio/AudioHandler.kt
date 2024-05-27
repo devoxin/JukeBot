@@ -24,6 +24,7 @@ import me.devoxin.jukebot.Launcher
 import me.devoxin.jukebot.audio.AudioHandler.RepeatMode.ALL
 import me.devoxin.jukebot.audio.AudioHandler.RepeatMode.SINGLE
 import me.devoxin.jukebot.audio.sources.spotify.SpotifyAudioTrack
+import me.devoxin.jukebot.audio.track.ArtworkProvider
 import me.devoxin.jukebot.extensions.await
 import me.devoxin.jukebot.extensions.capitalise
 import me.devoxin.jukebot.extensions.toTimeString
@@ -294,7 +295,7 @@ class AudioHandler(private val guildId: Long,
         val duration = track.takeIf { !it.info.isStream }?.duration?.toTimeString() ?: "∞"
         val requester = if (track.userData as Long == Launcher.shardManager.botId) "AutoPlay" else "<@${track.userData}>"
 
-        announce(null, "**${track.info.title}**\n*${track.info.author} — $duration*\n$requester", (track as? SpotifyAudioTrack)?.artworkUrl) {
+        announce(null, "**${track.info.title}**\n*${track.info.author} — $duration*\n$requester", (track as? ArtworkProvider)?.artworkUrl) {
             setComponents(Components.nowPlayingRowUnpaused)
         }
 
