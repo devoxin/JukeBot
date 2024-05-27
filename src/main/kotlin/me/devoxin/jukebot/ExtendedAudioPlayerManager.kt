@@ -145,6 +145,10 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
 
             delegateSource = DelegateHandler(delegates)
         }
+
+        if (allowOpusEncoderConfiguration) {
+            log.info("Opus encoder configuration is enabled")
+        }
     }
 
     @Synchronized
