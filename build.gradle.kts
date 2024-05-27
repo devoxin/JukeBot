@@ -42,7 +42,7 @@ repositories {
     maven(url = "https://m2.dv8tion.net/releases")
     mavenCentral()
     jcenter()
-    maven(url = "https://maven.lavalink.dev/releases")
+    maven(url = "https://maven.lavalink.dev/snapshots")
     //maven { url "https://dl.bintray.com/natanbc/maven" }
     maven(url = "https://jitpack.io")
 }
@@ -64,7 +64,7 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
 
     // Audio
-    implementation("dev.lavalink.youtube:common:1.3.0")
+    implementation("dev.lavalink.youtube:common:b2c8c070cdc4caa1fa93d0d7ac3f9d468bfa27a8-SNAPSHOT")
     implementation("com.github.devoxin.lavaplayer:lavaplayer:${libs.versions.lavaplayer.get()}")
     implementation("com.github.devoxin.lavaplayer:lavaplayer-ext-youtube-rotator:${libs.versions.lavaplayer.get()}")
     implementation("com.sedmelluq:jda-nas:1.1.0") {
