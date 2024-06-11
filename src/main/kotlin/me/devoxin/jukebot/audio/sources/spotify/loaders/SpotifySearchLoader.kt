@@ -46,7 +46,7 @@ class SpotifySearchLoader : Loader {
         val tracks = mutableListOf<AudioTrack>()
 
         for (jTrack in trackList) {
-            val track = (jTrack as JsonObject)
+            val track = jTrack as? JsonObject ?: continue
 
             if (track.getBoolean("is_local", false)) {
                 continue
