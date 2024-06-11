@@ -77,7 +77,7 @@ class Help : Cog {
             append("`/${command.name}")
 
             if (command.subcommands.isNotEmpty()) {
-                val longest = command.subcommands.values.maxOf { it.name.length }
+                val longest = command.subcommands.maxOf { it.key.length }
 
                 appendLine(" <subcommand>`")
                 appendLine()
