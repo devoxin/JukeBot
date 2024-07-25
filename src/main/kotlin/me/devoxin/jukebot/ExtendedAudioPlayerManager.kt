@@ -84,7 +84,15 @@ class ExtendedAudioPlayerManager(val dapm: DefaultAudioPlayerManager = DefaultAu
 
             registerSourceManager(SpotifyAudioSourceManager(config["spotify_client"], config["spotify_secret"]))
 
-            val youtubeAudioSourceManager = YoutubeAudioSourceManager(Music(), AndroidTestsuite(), AndroidLite(), MediaConnect(), Web(), TvHtml5Embedded())
+            val youtubeAudioSourceManager = YoutubeAudioSourceManager(
+                Music(),
+                AndroidTestsuite(),
+                AndroidMusic(),
+                Web(),
+                AndroidLite(),
+                MediaConnect(),
+                TvHtml5Embedded()
+            )
 
             if (!disableYoutube) {
                 if (!config.ipv6Block.isNullOrEmpty()) {
