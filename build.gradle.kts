@@ -64,7 +64,7 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
 
     // Audio
-    implementation("dev.lavalink.youtube:common:1.5.0")
+    implementation("dev.lavalink.youtube:common:1.5.1")
     implementation("com.github.devoxin.lavaplayer:lavaplayer:${libs.versions.lavaplayer.get()}")
     implementation("com.github.devoxin.lavaplayer:lavaplayer-ext-youtube-rotator:${libs.versions.lavaplayer.get()}")
     implementation("com.sedmelluq:jda-nas:1.1.0") {
